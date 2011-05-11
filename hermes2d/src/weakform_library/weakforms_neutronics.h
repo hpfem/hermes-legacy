@@ -394,7 +394,11 @@ namespace WeakFormsNeutronics
             
             MaterialPropertyMap1 D;
             MaterialPropertyMap1 Sigma_r;
+            
             MaterialPropertyMap2 Sigma_s;
+            MaterialPropertyMap2 Sigma_s_1;
+            MaterialPropertyMap1 mu_av;
+            
             MaterialPropertyMap1 src;
             
             MaterialPropertyMap1 Sigma_t;
@@ -409,6 +413,7 @@ namespace WeakFormsNeutronics
             MaterialPropertyMap1 extract_map2_diagonals(const MaterialPropertyMap2& map2);
             
             MaterialPropertyMap1 sum_map2_columns(const MaterialPropertyMap2& map2);
+            MaterialPropertyMap1 sum_map2_rows(const MaterialPropertyMap2& map2);
             
             MaterialPropertyMap2 create_map2_by_diagonals(const MaterialPropertyMap1& diags);
             
@@ -455,12 +460,38 @@ namespace WeakFormsNeutronics
               this->Sigma_s = Ss;
             }
             
+            void set_Sigma_s_1(const MaterialPropertyMap2& Ss) {
+              this->Sigma_s_1 = Ss;
+            }
+            
+            void set_mu_av(const MaterialPropertyMap1& mu_av) {
+              this->mu_av = mu_av;
+            }
+            
+            void set_mu_av(const MaterialPropertyMap0& mu_av) {
+              extend_to_multigroup(mu_av, &this->mu_av);            
+            }
+            
+            void set_mu_av(const rank1& mu_av) {
+              extend_to_multiregion(mu_av, &this->mu_av);
+            }
+            
+            void set_mu_av(const double& mu_av) {
+              extend_to_multiregion_multigroup(mu_av, &this->mu_av);
+            }
+            
             void set_scattering_multigroup_structure(const bool2& Ss_nnz) {
               this->scattering_multigroup_structure = Ss_nnz;
             }
             
             const MaterialPropertyMap2& get_Sigma_s() const {
               return this->Sigma_s;
+            }
+            const MaterialPropertyMap2& get_Sigma_s_1() const {
+              return this->Sigma_s_1;
+            }
+            const MaterialPropertyMap1& get_mu_av() const {
+              return this->mu_av;
             }
             const MaterialPropertyMap1& get_Sigma_r() const {
               return this->Sigma_r;

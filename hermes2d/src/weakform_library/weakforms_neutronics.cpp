@@ -263,6 +263,28 @@ namespace WeakFormsNeutronics
           return summed;
         }
         
+        MaterialPropertyMap1 MaterialPropertyMaps::sum_map2_rows(const MaterialPropertyMap2& map2)
+        {
+          MaterialPropertyMap1 summed;
+          
+          MaterialPropertyMap2::const_iterator map2_it = map2.begin();
+          for ( ; map2_it != map2.end(); ++map2_it)
+          {
+            summed[map2_it->first].reserve(G);
+            for (unsigned int gto = 0; gto < G; gto++)
+            {
+              double sum = 0.0;
+              
+              for (unsigned int gfrom = 0; gfrom < G; gfrom++)
+                sum += map2_it->second[gto][gfrom];
+              
+              summed[map2_it->first].push_back(sum);    
+            }
+          }
+          
+          return summed;
+        }
+        
         MaterialPropertyMap2 MaterialPropertyMaps::create_map2_by_diagonals(const MaterialPropertyMap1& diags)
         {
           MaterialPropertyMap2 map2;
@@ -293,6 +315,8 @@ namespace WeakFormsNeutronics
           bool D_given = !D.empty();
           bool Sigma_r_given = !Sigma_r.empty();
           bool Sigma_s_given = !Sigma_s.empty();
+          bool Sigma_s_1_given = !Sigma_s_1.empty();
+          bool mu_av_given = !mu_av.empty();
           bool Sigma_t_given = !Sigma_t.empty();
           bool Sigma_a_given = !Sigma_a.empty();
           bool Sigma_f_given = !Sigma_f.empty();
@@ -386,10 +410,28 @@ namespace WeakFormsNeutronics
           
           if (!D_given)
           {
-            MaterialPropertyMap1::const_iterator Sr_elem = Sigma_r.begin();
-            for ( ; Sr_elem != Sigma_r.end(); ++Sr_elem)
-              for (unsigned int g = 0; g < G; g++)
-                D[Sr_elem->first][g] = 1./(3.*Sr_elem->second[g]);
+            MaterialPropertyMap1 Sigma_tr;
+            if (Sigma_t_given && Sigma_s_1_given)
+              Sigma_tr = Common::NDArrayMapOp::subtract<rank1>(Sigma_t, sum_map2_rows(Sigma_s_1));
+            else if (Sigma_t_given && mu_av_given)
+              Sigma_tr = Common::NDArrayMapOp::subtract<rank1>(
+                  Sigma_t, Common::NDArrayMapOp::multiply<rank1>(mu_av, sum_map2_rows(Sigma_s))
+              );
+            
+            if (Sigma_tr.empty()) 
+            {
+              MaterialPropertyMap1::const_iterator Sr_elem = Sigma_r.begin();
+              for ( ; Sr_elem != Sigma_r.end(); ++Sr_elem)
+                for (unsigned int g = 0; g < G; g++)
+                  D[Sr_elem->first][g] = 1./(3.*Sr_elem->second[g]);
+            }
+            else
+            {
+              MaterialPropertyMap1::const_iterator Str_elem = Sigma_tr.begin();
+              for ( ; Str_elem != Sigma_tr.end(); ++Str_elem)
+                for (unsigned int g = 0; g < G; g++)
+                  D[Str_elem->first][g] = 1./(3.*Str_elem->second[g]);
+            }
               
               D_given = true;
           }
