@@ -1,7 +1,7 @@
 #include "weakform/weakform.h"
 #include "integrals/hcurl.h"
 #include "boundaryconditions/essential_bcs.h"
-#include "weakform_library/hcurl.h"
+#include "weakform_library/weakforms_hcurl.h"
 
 using namespace WeakFormsHcurl;
 
@@ -102,10 +102,18 @@ public:
   CustomWeakForm(double mu_r, double kappa) : WeakForm(1)
   {
     cplx ii = cplx(0.0, 1.0);
-    add_matrix_form(new DefaultLinearCurlCurl(0, 0, 1.0/mu_r));
-    add_matrix_form(new DefaultLinearMass(0, 0, -sqr(kappa)));
+
+    // Jacobian.
+    add_matrix_form(new DefaultJacobianCurlCurl(0, 0, 1.0/mu_r));
+    add_matrix_form(new DefaultMatrixFormVol(0, 0, -sqr(kappa)));
     add_matrix_form_surf(new DefaultMatrixFormSurf(0, 0, -kappa*ii));
     add_matrix_form_surf(new CustomMatrixFormSurf(0, 0));
+
+    // Residual.
+    add_vector_form(new DefaultResidualCurlCurl(0, 1.0/mu_r));
+    add_vector_form(new DefaultVectorFormVol(0, -sqr(kappa)));
+    add_vector_form_surf(new DefaultVectorFormSurf(0, -kappa*ii));
+    add_vector_form_surf(new CustomVectorFormSurf(0));
   };
 
   class CustomMatrixFormSurf : public WeakForm::MatrixFormSurf
