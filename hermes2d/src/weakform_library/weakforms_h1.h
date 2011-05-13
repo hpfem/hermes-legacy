@@ -31,6 +31,7 @@ namespace WeakFormsH1
     DefaultMatrixFormVol(int i, int j, std::string area = HERMES_ANY,
                          scalar const_coeff = 1.0, DefaultFunction* f_coeff = HERMES_DEFAULT_FUNCTION,
                          SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
+
     DefaultMatrixFormVol(int i, int j, Hermes::vector<std::string> areas,
                          scalar const_coeff = 1.0, DefaultFunction* f_coeff = HERMES_DEFAULT_FUNCTION,
                          SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
@@ -43,7 +44,6 @@ namespace WeakFormsH1
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u,
                     Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const;
 
-    // This is to make the form usable in rk_time_step().
     virtual WeakForm::MatrixFormVol* clone();
 
     private:
@@ -64,6 +64,7 @@ namespace WeakFormsH1
     DefaultJacobianDiffusion(int i, int j, std::string area = HERMES_ANY, scalar const_coeff = 1.0,
                              CubicSpline* c_spline = HERMES_DEFAULT_SPLINE,
                              SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
+
     DefaultJacobianDiffusion(int i, int j, Hermes::vector<std::string> areas, scalar const_coeff = 1.0,
                              CubicSpline* c_spline = HERMES_DEFAULT_SPLINE,
                              SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
@@ -76,7 +77,6 @@ namespace WeakFormsH1
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v,
                     Geom<Ord> *e, ExtData<Ord> *ext) const;
 
-    // This is to make the form usable in rk_time_step().
     virtual WeakForm::MatrixFormVol* clone();
 
     private:
@@ -101,6 +101,7 @@ namespace WeakFormsH1
                              scalar const_coeff1 = 1.0, scalar const_coeff2 = 1.0,
                              CubicSpline* c_spline1 = HERMES_DEFAULT_SPLINE,
                              CubicSpline* c_spline2 = HERMES_DEFAULT_SPLINE, GeomType gt = HERMES_PLANAR);
+
    DefaultJacobianAdvection(int i, int j, Hermes::vector<std::string> areas, 
                             scalar const_coeff1 = 1.0, scalar const_coeff2 = 1.0,
                             CubicSpline* c_spline1 = HERMES_DEFAULT_SPLINE,
@@ -119,7 +120,6 @@ namespace WeakFormsH1
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v,
                     Geom<Ord> *e, ExtData<Ord> *ext) const;
 
-    // This is to make the form usable in rk_time_step().
     virtual WeakForm::MatrixFormVol* clone();
 
     private:
@@ -140,6 +140,7 @@ namespace WeakFormsH1
     DefaultVectorFormVol(int i, std::string area = HERMES_ANY, scalar const_coeff = 1.0,
                          DefaultFunction* f_coeff = HERMES_DEFAULT_FUNCTION,
                          GeomType gt = HERMES_PLANAR);
+
     DefaultVectorFormVol(int i, Hermes::vector<std::string> areas, scalar const_coeff = 1.0,
                          DefaultFunction* f_coeff = HERMES_DEFAULT_FUNCTION,
                          GeomType gt = HERMES_PLANAR);
@@ -152,7 +153,6 @@ namespace WeakFormsH1
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v,
                     Geom<Ord> *e, ExtData<Ord> *ext) const;
 
-    // This is to make the form usable in rk_time_step().
     virtual WeakForm::VectorFormVol* clone();
 
     private:
@@ -184,7 +184,6 @@ namespace WeakFormsH1
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v,
                     Geom<Ord> *e, ExtData<Ord> *ext) const;
 
-    // This is to make the form usable in rk_time_step().
     virtual WeakForm::VectorFormVol* clone();
 
     private:
@@ -222,8 +221,7 @@ namespace WeakFormsH1
 
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v,
                     Geom<Ord> *e, ExtData<Ord> *ext) const;
-      
-    // This is to make the form usable in rk_time_step().
+
     virtual WeakForm::VectorFormVol* clone();
 
     private:
@@ -263,7 +261,6 @@ namespace WeakFormsH1
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v,
                     Geom<Ord> *e, ExtData<Ord> *ext) const;
 
-    // This is to make the form usable in rk_time_step().
     virtual WeakForm::VectorFormVol* clone();
 
     private:
@@ -284,6 +281,7 @@ namespace WeakFormsH1
     DefaultMatrixFormSurf(int i, int j, std::string area = HERMES_ANY,
                           scalar const_coeff = 1.0, DefaultFunction* f_coeff = HERMES_DEFAULT_FUNCTION,
                           GeomType gt = HERMES_PLANAR);
+
     DefaultMatrixFormSurf(int i, int j, Hermes::vector<std::string> areas,
                           scalar const_coeff = 1.0, DefaultFunction* f_coeff = HERMES_DEFAULT_FUNCTION,
                           GeomType gt = HERMES_PLANAR);
@@ -295,8 +293,7 @@ namespace WeakFormsH1
       
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u,
                     Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const;
-      
-    // This is to make the form usable in rk_time_step().
+
     virtual WeakForm::MatrixFormSurf* clone();
 
     private:
@@ -332,7 +329,6 @@ namespace WeakFormsH1
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u,
                     Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const;
 
-    // This is to make the form usable in rk_time_step().
     virtual WeakForm::MatrixFormSurf* clone();
 
     private:
@@ -365,7 +361,6 @@ namespace WeakFormsH1
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v,
                     Geom<Ord> *e, ExtData<Ord> *ext) const;
 
-    // This is to make the form usable in rk_time_step().
     virtual WeakForm::VectorFormSurf* clone();
 
     private:
@@ -391,8 +386,7 @@ namespace WeakFormsH1
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v,
                     Geom<Ord> *e, ExtData<Ord> *ext) const;
 
-    /*
-    // This is to make the form usable in rk_time_step().
+    /* FIXME
     virtual WeakForm::VectorFormSurf* clone() {
       return new DefaultMultiComponentVectorFormSurf(*this);
     }
@@ -426,7 +420,6 @@ namespace WeakFormsH1
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v,
                     Geom<Ord> *e, ExtData<Ord> *ext) const;
 
-    // This is to make the form usable in rk_time_step().
     virtual WeakForm::VectorFormSurf* clone();
 
     private:
