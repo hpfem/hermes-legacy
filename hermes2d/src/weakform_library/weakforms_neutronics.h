@@ -60,6 +60,7 @@ namespace WeakFormsNeutronics
         
         typedef std::vector<bool > bool1;
         typedef std::vector<std::vector<bool > > bool2;
+        typedef std::vector<std::vector<std::vector<bool > > > bool3;
       }
       
       namespace Messages
@@ -303,15 +304,21 @@ namespace WeakFormsNeutronics
             std::set<std::string> materials_list;
             unsigned int G;
             
-            bool1 fission_multigroup_structure;
+            bool1 fission_nonzero_structure;
                   
-            void extend_to_multigroup(const MaterialPropertyMap0& mrsg_map, MaterialPropertyMap1 *mrmg_map);
-            
+            void extend_to_multigroup(const MaterialPropertyMap0& mrsg_map, MaterialPropertyMap1 *mrmg_map);     
             void extend_to_multiregion(const rank1& srmg_array, MaterialPropertyMap1 *mrmg_map);
-            
             void extend_to_multiregion_multigroup(const rank0& srsg_value, MaterialPropertyMap1 *mrmg_map);
             
+            MaterialPropertyMap1 extract_map2_diagonals(const MaterialPropertyMap2& map2) const;
+            
+            MaterialPropertyMap1 sum_map2_columns(const MaterialPropertyMap2& map2) const;
+            MaterialPropertyMap1 sum_map2_rows(const MaterialPropertyMap2& map2) const;
+            
+            MaterialPropertyMap2 create_map2_by_diagonals(const MaterialPropertyMap1& diags) const;
+            
             void fill_with(double c, MaterialPropertyMap1 *mrmg_map);
+            void fill_with(double c, MaterialPropertyMap2 *mrmg_map);
                       
             MaterialPropertyMaps(unsigned int G, std::set<std::string> mat_list = std::set<std::string>()) 
               : materials_list(mat_list), G(G)  { };
@@ -320,44 +327,48 @@ namespace WeakFormsNeutronics
             
           public:
             
-            void set_nu(const MaterialPropertyMap1& nu) {
+            virtual void set_nu(const MaterialPropertyMap1& nu) {
               this->nu = nu;
             }
             
-            void set_nu(const MaterialPropertyMap0& nu) {
+            virtual void set_nu(const MaterialPropertyMap0& nu) {
               extend_to_multigroup(nu, &this->nu);      
             }
             
-            void set_nu(const rank1& nu) {
+            virtual void set_nu(const rank1& nu) {
               extend_to_multiregion(nu, &this->nu);
             }
             
-            void set_nu(const rank0& nu) {
+            virtual void set_nu(const rank0& nu) {
               extend_to_multiregion_multigroup(nu, &this->nu);
             }
                   
-            void set_chi(const MaterialPropertyMap1& chi) {
+            virtual void set_chi(const MaterialPropertyMap1& chi) {
               this->chi = chi;
             }
             
-            void set_chi(const rank1& chi) {
+            virtual void set_chi(const rank1& chi) {
               extend_to_multiregion(chi, &this->chi);
             }
             
-            void set_fission_multigroup_structure(const bool1& chi_nnz)  {
-              this->fission_multigroup_structure = chi_nnz;
+            virtual void set_fission_nonzero_structure(const bool1& chi_nnz)  {
+              this->fission_nonzero_structure = chi_nnz;
             }
             
-            void set_Sigma_a(const MaterialPropertyMap1& Sa) {
+            virtual void set_Sigma_a(const MaterialPropertyMap1& Sa) {
               this->Sigma_a = Sa;
             }
             
-            void set_Sigma_f(const MaterialPropertyMap1& Sf) {
+            virtual void set_Sigma_f(const MaterialPropertyMap1& Sf) {
               this->Sigma_f = Sf;
             }
             
-            void set_nuSigma_f(const MaterialPropertyMap1 nSf) {
+            virtual void set_nuSigma_f(const MaterialPropertyMap1 nSf) {
               this->nuSigma_f = nSf;
+            }
+            
+            virtual void set_materials_list(std::set<std::string> mat_list) {
+              this->materials_list = mat_list;
             }
             
             const MaterialPropertyMap1& get_Sigma_f() const {
@@ -369,8 +380,11 @@ namespace WeakFormsNeutronics
             const MaterialPropertyMap1& get_chi() const {
               return this->chi;
             }
-            const bool1& get_fission_multigroup_structure() const {
-              return this->fission_multigroup_structure;
+            const bool1& get_fission_nonzero_structure() const {
+              return this->fission_nonzero_structure;
+            }
+            const std::set<std::string>& get_materials_list() const {
+              return this->materials_list;
             }
             
             const rank1& get_Sigma_f(std::string material) const;
@@ -394,31 +408,19 @@ namespace WeakFormsNeutronics
             
             MaterialPropertyMap1 D;
             MaterialPropertyMap1 Sigma_r;
-            
             MaterialPropertyMap2 Sigma_s;
-            MaterialPropertyMap2 Sigma_s_1;
-            MaterialPropertyMap1 mu_av;
             
             MaterialPropertyMap1 src;
             
             MaterialPropertyMap1 Sigma_t;
             
-            bool2 scattering_multigroup_structure;
+            bool2 scattering_nonzero_structure;
             
           public:
             
             MaterialPropertyMaps(unsigned int G, std::set<std::string> mat_list = std::set<std::string>()) 
-              : Common::MaterialPropertyMaps(G, mat_list) { };
-              
-            MaterialPropertyMap1 extract_map2_diagonals(const MaterialPropertyMap2& map2);
-            
-            MaterialPropertyMap1 sum_map2_columns(const MaterialPropertyMap2& map2);
-            MaterialPropertyMap1 sum_map2_rows(const MaterialPropertyMap2& map2);
-            
-            MaterialPropertyMap2 create_map2_by_diagonals(const MaterialPropertyMap1& diags);
-            
-            void fill_with(double c, MaterialPropertyMap2 *mrmg_map);
-            
+            : Common::MaterialPropertyMaps(G, mat_list) { };
+                        
             // We always need to supply chi, nu, Sigma_f, Sigma_r, Sigma_s and D to our neutronics weak forms. 
             // These parameters are often defined in terms of the other ones, or not specified at all and assumed 
             // to be zero for a particular simplified situation. This method, together with its complement in the
@@ -428,70 +430,44 @@ namespace WeakFormsNeutronics
             // already included in them.
             virtual void validate();
             
-            void set_src(const MaterialPropertyMap1& src) {
+            virtual void set_src(const MaterialPropertyMap1& src) {
               this->src = src;
             }
             
-            void set_src(const MaterialPropertyMap0& src) {
+            virtual void set_src(const MaterialPropertyMap0& src) {
               extend_to_multigroup(src, &this->src);            
             }
             
-            void set_src(const rank1& src) {
+            virtual void set_src(const rank1& src) {
               extend_to_multiregion(src, &this->src);
             }
             
-            void set_src(const double& src) {
+            virtual void set_src(const double& src) {
               extend_to_multiregion_multigroup(src, &this->src);
             }
             
-            void set_D(const MaterialPropertyMap1& D) {
+            virtual void set_D(const MaterialPropertyMap1& D) {
               this->D = D;
             }
             
-            void set_Sigma_r(const MaterialPropertyMap1& Sr) {
+            virtual void set_Sigma_r(const MaterialPropertyMap1& Sr) {
               this->Sigma_r = Sr;
             }
             
-            void set_Sigma_t(const MaterialPropertyMap1& St) {
+            virtual void set_Sigma_t(const MaterialPropertyMap1& St) {
               this->Sigma_t = St;
             }
             
-            void set_Sigma_s(const MaterialPropertyMap2& Ss) {
+            virtual void set_Sigma_s(const MaterialPropertyMap2& Ss) {
               this->Sigma_s = Ss;
             }
-            
-            void set_Sigma_s_1(const MaterialPropertyMap2& Ss) {
-              this->Sigma_s_1 = Ss;
-            }
-            
-            void set_mu_av(const MaterialPropertyMap1& mu_av) {
-              this->mu_av = mu_av;
-            }
-            
-            void set_mu_av(const MaterialPropertyMap0& mu_av) {
-              extend_to_multigroup(mu_av, &this->mu_av);            
-            }
-            
-            void set_mu_av(const rank1& mu_av) {
-              extend_to_multiregion(mu_av, &this->mu_av);
-            }
-            
-            void set_mu_av(const double& mu_av) {
-              extend_to_multiregion_multigroup(mu_av, &this->mu_av);
-            }
-            
-            void set_scattering_multigroup_structure(const bool2& Ss_nnz) {
-              this->scattering_multigroup_structure = Ss_nnz;
+                       
+            virtual void set_scattering_nonzero_structure(const bool2& Ss_nnz) {
+              this->scattering_nonzero_structure = Ss_nnz;
             }
             
             const MaterialPropertyMap2& get_Sigma_s() const {
               return this->Sigma_s;
-            }
-            const MaterialPropertyMap2& get_Sigma_s_1() const {
-              return this->Sigma_s_1;
-            }
-            const MaterialPropertyMap1& get_mu_av() const {
-              return this->mu_av;
             }
             const MaterialPropertyMap1& get_Sigma_r() const {
               return this->Sigma_r;
@@ -502,8 +478,8 @@ namespace WeakFormsNeutronics
             const MaterialPropertyMap1& get_src() const {
               return this->src;
             }
-            const bool2& get_scattering_multigroup_structure() const {
-              return this->scattering_multigroup_structure;
+            const bool2& get_scattering_nonzero_structure() const {
+              return this->scattering_nonzero_structure;
             }
             
             const rank2& get_Sigma_s(std::string material) const;
@@ -513,8 +489,132 @@ namespace WeakFormsNeutronics
             
             friend std::ostream & operator<< (std::ostream& os, const MaterialPropertyMaps& matprop);
         };
+        
+        class TransportCorrectedMaterialPropertyMaps : public MaterialPropertyMaps
+        {
+          protected:
+            
+            MaterialPropertyMap1 Sigma_s_1_out;
+            MaterialPropertyMap1 mu_av;
+          
+          public:
+            
+            TransportCorrectedMaterialPropertyMaps(unsigned int G, 
+                                                   const MaterialPropertyMap2& Ss_1);                                            
+            TransportCorrectedMaterialPropertyMaps(unsigned int G,
+                                                   const MaterialPropertyMap1& mu_av);
+            TransportCorrectedMaterialPropertyMaps(unsigned int G,
+                                                   const MaterialPropertyMap0& mu_av);                                                                              
+            TransportCorrectedMaterialPropertyMaps(unsigned int G,
+                                                   std::set<std::string> mat_list,
+                                                   const rank1& mu_av);
+            TransportCorrectedMaterialPropertyMaps(unsigned int G,
+                                                   std::set<std::string> mat_list,
+                                                   const rank0& mu_av);
+                                                   
+            virtual void set_D(const MaterialPropertyMap1& D) {
+              warning("Diffusion coefficient is determined automatically according to the transport correction formula."
+                      " Ignoring user setting.");
+            }
+            
+            virtual void validate();
+        };
       }  
-    
+      
+      namespace SPN
+      {
+        using namespace Definitions;
+        using namespace Messages;
+        
+        class MaterialPropertyMaps : public Common::MaterialPropertyMaps
+        {
+          protected:
+            
+            MaterialPropertyMap3 Sigma_rn;
+            MaterialPropertyMap3 Sigma_rn_inv;
+            MaterialPropertyMap1 src0;
+            
+            MaterialPropertyMap3 Sigma_sn;
+            MaterialPropertyMap3 Sigma_tn;
+            
+            bool3 scattering_nonzero_structure;
+            bool diagonal_Sigma_r;
+            
+            void extend_to_rank3(const MaterialPropertyMap2& src, MaterialPropertyMap3* dest);
+            void extend_to_rank3(const MaterialPropertyMap1& src, MaterialPropertyMap3* dest);
+            void invert_Sigma_rn();
+            
+          public:
+            
+            MaterialPropertyMaps(unsigned int G, unsigned int N,
+                                 std::set<std::string> mat_list = std::set<std::string>()) 
+              : Common::MaterialPropertyMaps(G, mat_list) { };
+                        
+            void fill_with(double c, MaterialPropertyMap3 *mrmg_map);
+            
+            virtual void validate();
+            
+            virtual void set_src0(const MaterialPropertyMap1& src) {
+              this->src0 = src;
+            }
+            
+            virtual void set_src(const MaterialPropertyMap0& src) {
+              extend_to_multigroup(src, &this->src0);            
+            }
+            
+            virtual void set_src(const rank1& src) {
+              extend_to_multiregion(src, &this->src0);
+            }
+            
+            virtual void set_src(const double& src) {
+              extend_to_multiregion_multigroup(src, &this->src0);
+            }
+                        
+            virtual void set_Sigma_rn(const MaterialPropertyMap3& Sr) {
+              this->Sigma_rn = Sr;
+            }
+                        
+            virtual void set_Sigma_sn(const MaterialPropertyMap3& Ss) {
+              this->Sigma_sn = Ss;
+            }
+            
+            virtual void set_Sigma_tn(const MaterialPropertyMap3& St) {
+              this->Sigma_tn = St;
+            }
+            
+            virtual void set_Sigma_tn(const MaterialPropertyMap2& St) {
+              extend_to_rank3(St, &this->Sigma_tn);
+            }
+            
+            virtual void set_Sigma_tn(const MaterialPropertyMap1& St) {
+              extend_to_rank3(St, &this->Sigma_tn);
+            }
+                        
+            virtual void set_scattering_nonzero_structure(const bool3& Ss_nnz) {
+              this->scattering_nonzero_structure = Ss_nnz;
+            }
+            
+            const MaterialPropertyMap3& get_Sigma_sn() const {
+              return this->Sigma_sn;
+            }
+            const MaterialPropertyMap3& get_Sigma_rn() const {
+              return this->Sigma_rn;
+            }
+            const MaterialPropertyMap1& get_src0() const {
+              return this->src0;
+            }
+            const bool3& get_scattering_nonzero_structure() const {
+              return this->scattering_nonzero_structure;
+            }
+            
+            const rank3& get_Sigma_rn(std::string material) const;
+            const rank3& get_Sigma_rn_inv(std::string material) const;
+            const rank1& get_src0(std::string material) const;
+            
+            friend std::ostream & operator<< (std::ostream& os, const MaterialPropertyMaps& matprop);
+        };
+      }  
+      
       template <typename NDArrayType>
       class material_property_map
       {
@@ -557,10 +657,12 @@ namespace WeakFormsNeutronics
       
       namespace Definitions
       {
-        typedef MultiArray<rank0> grow;
-        typedef MultiArray<rank1> gmat;
+        typedef MultiArray<rank0> row;
+        typedef MultiArray<rank1> matrix;
+        typedef MultiArray<rank2> page;
         typedef MultiArray<bool> bool_row;
-        typedef MultiArray< std::vector<bool> > bool_mat;
+        typedef MultiArray< std::vector<bool> > bool_matrix;
+        typedef MultiArray< std::vector< std::vector<bool> > > bool_page;
       }
     }
                                  

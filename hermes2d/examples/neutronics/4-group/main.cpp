@@ -112,8 +112,8 @@ int main(int argc, char* argv[])
   matprop.set_D(D);
   matprop.set_Sigma_r(Sr);
   matprop.set_Sigma_s(Ss);
-  matprop.set_scattering_multigroup_structure(Ss_nnz);
-  matprop.set_fission_multigroup_structure(chi_nnz);
+  matprop.set_scattering_nonzero_structure(Ss_nnz);
+  matprop.set_fission_nonzero_structure(chi_nnz);
   matprop.set_Sigma_a(Sa);
   matprop.set_Sigma_f(Sf);
   matprop.set_nu(nu);
