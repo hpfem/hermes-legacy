@@ -3,8 +3,6 @@
 #include "boundaryconditions/essential_bcs.h"
 #include "weakform_library/weakforms_hcurl.h"
 
-using namespace WeakFormsHcurl;
-
 /* Exact solution */
 
 double jv(double n, double x);
@@ -73,13 +71,15 @@ public:
   CustomExactSolution(Mesh* mesh) : ExactSolutionVector(mesh) {};
   ~CustomExactSolution() {};
 
-  virtual scalar2 value(double x, double y) const {
+  virtual scalar2 value(double x, double y) const 
+  {
     scalar2 ex(0.0, 0.0);
     exact_sol_val(x, y,  ex.val[0], ex.val[1]);
     return ex;
   };
 
-  virtual void derivatives (double x, double y, scalar2& dx, scalar2& dy) const {
+  virtual void derivatives (double x, double y, scalar2& dx, scalar2& dy) const 
+  {
     scalar e1dx, e0dy;
     exact_sol_der(x, y, e1dx, e0dy);
     dx.val[0] = 0;
@@ -89,7 +89,8 @@ public:
     return;
   };
   
-  virtual Ord ord(Ord x, Ord y) const {
+  virtual Ord ord(Ord x, Ord y) const 
+  {
     return Ord(10);
   } 
 };
@@ -104,26 +105,28 @@ public:
     cplx ii = cplx(0.0, 1.0);
 
     // Jacobian.
-    add_matrix_form(new DefaultJacobianCurlCurl(0, 0, 1.0/mu_r));
-    add_matrix_form(new DefaultMatrixFormVol(0, 0, -sqr(kappa)));
-    add_matrix_form_surf(new DefaultMatrixFormSurf(0, 0, -kappa*ii));
-    add_matrix_form_surf(new CustomMatrixFormSurf(0, 0));
+    add_matrix_form(new WeakFormsHcurl::DefaultJacobianCurlCurl(0, 0, HERMES_ANY, 1.0/mu_r));
+    add_matrix_form(new WeakFormsHcurl::DefaultMatrixFormVol(0, 0, HERMES_ANY, -sqr(kappa)));
+    add_matrix_form_surf(new WeakFormsHcurl::DefaultMatrixFormSurf(0, 0, HERMES_ANY, -kappa*ii));
 
     // Residual.
-    add_vector_form(new DefaultResidualCurlCurl(0, 1.0/mu_r));
-    add_vector_form(new DefaultVectorFormVol(0, -sqr(kappa)));
-    add_vector_form_surf(new DefaultVectorFormSurf(0, -kappa*ii));
-    add_vector_form_surf(new CustomVectorFormSurf(0));
+    add_vector_form(new WeakFormsHcurl::DefaultResidualCurlCurl(0, HERMES_ANY, 1.0/mu_r));
+    add_vector_form(new WeakFormsHcurl::DefaultVectorFormVol(0, HERMES_ANY, -sqr(kappa)));
+    add_vector_form_surf(new WeakFormsHcurl::DefaultVectorFormSurf(0, HERMES_ANY, -kappa*ii));
+    add_vector_form_surf(new CustomVectorFormSurf());
   };
 
-  class CustomMatrixFormSurf : public WeakForm::MatrixFormSurf
+  class CustomVectorFormSurf : public WeakForm::VectorFormSurf
   {
   public:
-    CustomMatrixFormSurf(int i, int j)
-              : WeakForm::MatrixFormSurf(i, j) {}
+    CustomVectorFormSurf()
+              : WeakForm::VectorFormSurf(0) 
+    {
+    }
 
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
-                         Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
+    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], 
+                         Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+    {
       scalar result = 0;
       for (int i = 0; i < n; i++) {
         double r = sqrt(e->x[i] * e->x[i] + e->y[i] * e->y[i]);
@@ -138,11 +141,12 @@ public:
 
         result += wt[i] * cplx(cos23t*j23, -Etau) * ((v->val0[i] * e->tx[i] + v->val1[i] * e->ty[i]));
       }
-      return result;
+      return -result;
     }
 
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v,
-                    Geom<Ord> *e, ExtData<Ord> *ext) const {
+    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v,
+                    Geom<Ord> *e, ExtData<Ord> *ext) const 
+    {
       return Ord(10);
     }
   };

@@ -33,7 +33,7 @@ namespace WeakFormsHcurl
   {
     scalar result = 0;
     if (gt == HERMES_PLANAR) {
-      result = const_coeff * int_e_f<doublw, scalar>(n, wt, u, v);
+      result = const_coeff * int_e_f<double, scalar>(n, wt, u, v);
     }
     else error("Axisymmetric Hcurl forms not implemented yet.");
 
@@ -85,20 +85,20 @@ namespace WeakFormsHcurl
     if (spline_coeff != HERMES_DEFAULT_SPLINE) delete spline_coeff;
   };
 
-  scalar DefaultLinearCurlCurl::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
-                                      Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+  scalar DefaultJacobianCurlCurl::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
+                                        Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
   {
     scalar result = 0;
     if (gt == HERMES_PLANAR) {
-      result = const_coeff * int_curl_e_curl_f<doublw, scalar>(n, wt, u, v);
+      result = const_coeff * int_curl_e_curl_f<double, scalar>(n, wt, u, v);
     }
     else error("Axisymmetric Hcurl forms not implemented yet.");
 
     return result;
   }
 
-  Ord DefaultLinearCurlCurl::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v,
-                                 Geom<Ord> *e, ExtData<Ord> *ext) const 
+  Ord DefaultJacobianCurlCurl::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v,
+                                   Geom<Ord> *e, ExtData<Ord> *ext) const 
   {
     Ord result = 0;
     if (gt == HERMES_PLANAR) {
@@ -123,9 +123,9 @@ namespace WeakFormsHcurl
   { 
     // If f_coeff0 is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
     if (f_coeff0 == HERMES_DEFAULT_FUNCTION) this->function_coeff0 = new DefaultFunction(1.0);
-    else error("Nonconstant coefficients in Hcurl forms not implemented yet.")
+    else error("Nonconstant coefficients in Hcurl forms not implemented yet.");
     if (f_coeff1 == HERMES_DEFAULT_FUNCTION) this->function_coeff1 = new DefaultFunction(1.0);
-    else error("Nonconstant coefficients in Hcurl forms not implemented yet.")
+    else error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
 
   DefaultVectorFormVol::DefaultVectorFormVol(int i, Hermes::vector<std::string> areas, 
@@ -137,9 +137,9 @@ namespace WeakFormsHcurl
   { 
     // If f_coeff0 is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
     if (f_coeff0 == HERMES_DEFAULT_FUNCTION) this->function_coeff0 = new DefaultFunction(1.0);
-    else error("Nonconstant coefficients in Hcurl forms not implemented yet.")
+    else error("Nonconstant coefficients in Hcurl forms not implemented yet.");
     if (f_coeff1 == HERMES_DEFAULT_FUNCTION) this->function_coeff1 = new DefaultFunction(1.0);
-    else error("Nonconstant coefficients in Hcurl forms not implemented yet.")
+    else error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
 
   DefaultVectorFormVol::~DefaultVectorFormVol() 
@@ -263,7 +263,7 @@ namespace WeakFormsHcurl
   scalar DefaultResidualCurlCurl::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
                                         Geom<double> *e, ExtData<scalar> *ext) const
   {
-    Func<Scalar>* u_prev = u_ext[idx_i];
+    Func<scalar>* u_prev = u_ext[idx_i];
     scalar result = 0;
     if (gt == HERMES_PLANAR) {
       for (int i = 0; i < n; i++) {
@@ -274,7 +274,7 @@ namespace WeakFormsHcurl
 	                * (u_prev->curl[i] * conj(v->curl[i]));
       }
     }
-    else error("Axisymmetric Hcurl forms not implemented yet.")
+    else error("Axisymmetric Hcurl forms not implemented yet.");
 
     return result;
   }
@@ -286,14 +286,14 @@ namespace WeakFormsHcurl
     Ord result = 0;
     if (gt == HERMES_PLANAR) {
       for (int i = 0; i < n; i++) {
-        double mag0_i = std::abs(u_prev->val0[i]);
-        double mag1_i = std::abs(u_prev->val1[i]);
-        double mag_i = sqrt(sqr(mag0_i) + sqr(mag1_i));
+        Ord mag0_i = u_prev->val0[i];
+        Ord mag1_i = u_prev->val1[i];
+        Ord mag_i = sqrt(sqr(mag0_i) + sqr(mag1_i));
         result += wt[i] * const_coeff*spline_coeff->get_value(mag_i) 
 	                * (u_prev->curl[i] * conj(v->curl[i]));
       }
     }
-    else error("Axisymmetric Hcurl forms not implemented yet.")
+    else error("Axisymmetric Hcurl forms not implemented yet.");
 
     return result;
   }
@@ -329,15 +329,16 @@ namespace WeakFormsHcurl
     if (function_coeff != HERMES_DEFAULT_FUNCTION) delete function_coeff;
   };
 
-
   scalar DefaultMatrixFormSurf::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v,
                                       Geom<double> *e, ExtData<scalar> *ext) const 
   {
     scalar result = 0;
     if (gt == HERMES_PLANAR) {
-      result = const_coeff * int_e_tau_f_tau<Real, Scalar>(n, wt, u, v, e);
+      result = const_coeff * int_e_tau_f_tau<double, scalar>(n, wt, u, v, e);
     }
     else error("Axisymmetric Hcurl forms not implemnted yet.");
+
+    return result;
   }
 
   Ord DefaultMatrixFormSurf::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u,
@@ -345,9 +346,11 @@ namespace WeakFormsHcurl
   {
     Ord result = 0;
     if (gt == HERMES_PLANAR) {
-      result = const_coeff * int_e_tau_f_tau<Real, Scalar>(n, wt, u, v, e);
+      result = const_coeff * int_e_tau_f_tau<Ord, Ord>(n, wt, u, v, e);
     }
     else error("Axisymmetric Hcurl forms not implemnted yet.");
+
+    return result;
   }
 
   WeakForm::MatrixFormSurf* DefaultMatrixFormSurf::clone() 
