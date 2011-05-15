@@ -360,6 +360,66 @@ namespace WeakFormsHcurl
   }
 
 
+  DefaultResidualSurf::DefaultResidualSurf(int i, std::string area,
+                                           scalar const_coeff, DefaultFunction* f_coeff,
+                                           GeomType gt)
+    : WeakForm::VectorFormSurf(i, area), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
+  {
+    // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    else error("Nonconstant functions in Hcurl forms not implemented yet.");
+  }
+
+  DefaultResidualSurf::DefaultResidualSurf(int i, Hermes::vector<std::string> areas,
+                                           scalar const_coeff, DefaultFunction* f_coeff,
+                                           GeomType gt)
+    : WeakForm::VectorFormSurf(i, areas), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
+  {
+    // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    else error("Nonconstant functions in Hcurl forms not implemented yet.");
+  }
+
+  DefaultResidualSurf::~DefaultResidualSurf()
+  {
+    if (function_coeff != HERMES_DEFAULT_FUNCTION) delete function_coeff;
+  };
+
+  scalar DefaultResidualSurf::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
+                                    Geom<double> *e, ExtData<scalar> *ext) const
+  {
+    scalar result = 0;
+    if (gt == HERMES_PLANAR) {
+      for (int i = 0; i < n; i++)
+        result += wt[i] * (    (u_ext[0]->val0[i] * e->tx[i] + u_ext[0]->val1[i] * e->ty[i]) *
+                           conj(v->val0[i] * e->tx[i] + v->val1[i] * e->ty[i]));
+      result *= const_coeff;
+    }
+    else error("Axisymmetric Hcurl forms not implemnted yet.");
+
+    return result;
+  }
+
+  Ord DefaultResidualSurf::ord(int n, double *wt, Func<Ord> *u_ext[],
+                               Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const
+  {
+    Ord result = 0;
+    if (gt == HERMES_PLANAR) {
+      for (int i = 0; i < n; i++)
+        result += wt[i] * (  (u_ext[0]->val0[i] * e->tx[i] + u_ext[0]->val1[i] * e->ty[i]) *
+                           conj(v->val0[i] * e->tx[i] + v->val1[i] * e->ty[i]));
+    }
+    else error("Axisymmetric Hcurl forms not implemnted yet.");
+
+    return result;
+  }
+
+  WeakForm::VectorFormSurf* DefaultResidualSurf::clone()
+  {
+    return new DefaultResidualSurf(*this);
+  }
+
+
   DefaultVectorFormSurf::DefaultVectorFormSurf(int i, std::string area, scalar const_coeff,
                                                DefaultFunction* f_coeff,
                                                GeomType gt)

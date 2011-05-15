@@ -253,6 +253,38 @@ namespace WeakFormsHcurl
       DefaultFunction* function_coeff;
       GeomType gt;
   };
+
+  /* FIXME
+     Default surface residual form \int_{area} coeff u_ext[0] tau f tau dS
+     coeff... constant number
+  */
+
+  class HERMES_API DefaultResidualSurf : public WeakForm::VectorFormSurf
+  {
+  public:
+    DefaultResidualSurf(int i, std::string area = HERMES_ANY,
+                        scalar const_coeff = 1.0, DefaultFunction* f_coeff = HERMES_DEFAULT_FUNCTION,
+                        GeomType gt = HERMES_PLANAR);
+
+    DefaultResidualSurf(int i, Hermes::vector<std::string> areas,
+                        scalar const_coeff = 1.0, DefaultFunction* f_coeff = HERMES_DEFAULT_FUNCTION,
+                        GeomType gt = HERMES_PLANAR);
+
+    ~DefaultResidualSurf();
+
+    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
+                         Geom<double> *e, ExtData<scalar> *ext) const;
+
+    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[],
+                    Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const;
+
+    virtual WeakForm::VectorFormSurf* clone();
+
+  private:
+      scalar const_coeff;
+      DefaultFunction* function_coeff;
+      GeomType gt;
+  };
 }
 
 #endif

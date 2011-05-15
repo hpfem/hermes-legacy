@@ -5,7 +5,7 @@
 
 /* Exact solution */
 
-double jv(double n, double x);
+#include "bessel.cpp"
 
 static void exact_sol_val(double x, double y, scalar& e0, scalar& e1)
 {
@@ -111,8 +111,8 @@ public:
 
     // Residual.
     add_vector_form(new WeakFormsHcurl::DefaultResidualCurlCurl(0, HERMES_ANY, 1.0/mu_r));
-    add_vector_form(new WeakFormsHcurl::DefaultVectorFormVol(0, HERMES_ANY, -sqr(kappa)));
-    add_vector_form_surf(new WeakFormsHcurl::DefaultVectorFormSurf(0, HERMES_ANY, -kappa*ii));
+    add_vector_form(new WeakFormsHcurl::DefaultResidualVol(0, HERMES_ANY, -sqr(kappa)));
+    add_vector_form_surf(new WeakFormsHcurl::DefaultResidualSurf(0, HERMES_ANY, -kappa*ii));
     add_vector_form_surf(new CustomVectorFormSurf());
   };
 
