@@ -206,8 +206,14 @@ public:
 class CustomWeakFormScreen : public WeakForm
 {
 public:
-  CustomWeakFormScreen() : WeakForm(1) {
-    add_matrix_form(new WeakFormsHcurl::DefaultLinearCurlCurl(0, 0, 1.0));
-    add_matrix_form(new WeakFormsHcurl::DefaultLinearMass(0, 0, -1.0));
+  CustomWeakFormScreen() : WeakForm(1) 
+  {
+    // Jacobian.
+    add_matrix_form(new WeakFormsHcurl::DefaultJacobianCurlCurl(0, 0, HERMES_ANY, 1.0));
+    add_matrix_form(new WeakFormsHcurl::DefaultMatrixFormVol(0, 0, HERMES_ANY, -1.0));
+
+    // Residual.
+    add_vector_form(new WeakFormsHcurl::DefaultResidualCurlCurl(0, HERMES_ANY, 1.0));
+    add_vector_form(new WeakFormsHcurl::DefaultVectorFormVol(0, HERMES_ANY, -1.0));
   };
 };
