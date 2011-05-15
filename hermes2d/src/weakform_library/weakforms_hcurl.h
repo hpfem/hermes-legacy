@@ -253,5 +253,6 @@ namespace WeakFormsHcurl
       DefaultFunction* function_coeff;
       GeomType gt;
   };
+}
 
 #endif
