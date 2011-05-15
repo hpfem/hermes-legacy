@@ -205,7 +205,8 @@ namespace WeakFormsHcurl
     scalar result = 0;
     if (gt == HERMES_PLANAR) {
       for (int i = 0; i < n; i++) {
-        result += wt[i] * function_coeff->value(e->x[i], e->y[i]) * u_ext[idx_i]->val[i] * v->val[i];
+        result += wt[i] * function_coeff->value(e->x[i], e->y[i]) * (u_ext[idx_i]->val0[i] * v->val0[i] +
+                                                                     u_ext[idx_i]->val1[i] * v->val1[i]);
       }
     }
     else error("Axisymmetric Hcurl forms not implemented yet.");

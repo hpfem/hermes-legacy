@@ -214,6 +214,6 @@ public:
 
     // Residual.
     add_vector_form(new WeakFormsHcurl::DefaultResidualCurlCurl(0, HERMES_ANY, 1.0));
-    add_vector_form(new WeakFormsHcurl::DefaultVectorFormVol(0, HERMES_ANY, -1.0));
+    add_vector_form(new WeakFormsHcurl::DefaultResidualVol(0, HERMES_ANY, -1.0));
   };
 };

@@ -140,7 +140,8 @@ int main(int argc, char* argv[])
     memset(coeff_vec, 0, ndof_ref * sizeof(scalar));
 
     // Perform Newton's iteration.
-    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs)) error("Newton's iteration failed.");
+    bool jacobian_changed = true;
+    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs, jacobian_changed)) error("Newton's iteration failed.");
 
     // Translate the resulting coefficient vector into the Solution sln.
     Solution ref_sln;
