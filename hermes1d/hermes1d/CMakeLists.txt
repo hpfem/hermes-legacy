@@ -2,7 +2,10 @@ include_directories(${PROJECT_BINARY_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/hermes_common/)
 
 add_subdirectory(h1d_wrapper)
-add_subdirectory(fekete)
+if((NOT NMAKE) AND (NOT MSVC))
+	add_subdirectory(fekete)
+endif((NOT NMAKE) AND (NOT MSVC))
+		
 
 set(PY_PATH ${PYTHON_INSTALL_PATH}/hermes1d/)
 
