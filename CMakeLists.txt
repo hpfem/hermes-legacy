@@ -420,9 +420,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 
 # Enabling multiprocessor build on MSVC
-if(MSVC)
+if(MSVC OR NMAKE)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP") 
-endif(MSVC)
+endif(MSVC OR NMAKE)
 
 
 #------------------------------------------------------------------------------
