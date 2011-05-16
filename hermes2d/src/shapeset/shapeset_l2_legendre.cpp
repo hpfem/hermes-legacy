@@ -4021,13 +4021,14 @@ int leg_quad_index_to_order[] =
 
 //// triangle legendre shapeset /////////////////////////////////////////////////////////////////
 
+/* Constant function */
 
-static double leg_tri_l0_l0(double x, double y)
+static double leg_tri_l0_l0_constant(double x, double y)
 {
   return Legendre0(lambda3(x,y) - lambda2(x,y)) * Legendre0(lambda2(x,y) - lambda1(x,y));
 }
 
-static double leg_tri_l0_l0x(double x, double y)
+static double leg_tri_l0_l0_constantx(double x, double y)
 {
   double l1 = lambda1(x,y), l2 = lambda2(x,y), l3 = lambda3(x,y);
   double L1 = Legendre0(l3 - l2), L1x = Legendre0x(l3 - l2);
@@ -4035,13 +4036,32 @@ static double leg_tri_l0_l0x(double x, double y)
   return L1x * (lambda3x(x,y) - lambda2x(x,y)) * L2 + L1 * L2x * (lambda2x(x,y) - lambda1x(x,y));
 }
 
-static double leg_tri_l0_l0y(double x, double y)
+static double leg_tri_l0_l0_constanty(double x, double y)
 {
   double l1 = lambda1(x,y), l2 = lambda2(x,y), l3 = lambda3(x,y);
   double L1 = Legendre0(l3 - l2), L1y = Legendre0x(l3 - l2);
   double L2 = Legendre0(l2 - l1), L2y = Legendre0x(l2 - l1);
   return L1y * (lambda3y(x,y) - lambda2y(x,y)) * L2 + L1 * L2y * (lambda2y(x,y) - lambda1y(x,y));
 }
+
+
+static double leg_tri_l0_l0(double x, double y)
+{
+  return - (x + y) / 2.0;
+}
+
+static double leg_tri_l0_l0x(double x, double y)
+{
+  return - 0.5;
+}
+
+static double leg_tri_l0_l0y(double x, double y)
+{
+  return - 0.5;
+}
+
+
+/*
 
 static double leg_tri_l0_l1(double x, double y)
 {
@@ -4063,6 +4083,25 @@ static double leg_tri_l0_l1y(double x, double y)
   double L2 = Legendre0(l2 - l1), L2y = Legendre1x(l2 - l1);
   return L1y * (lambda3y(x,y) - lambda2y(x,y)) * L2 + L1 * L2y * (lambda2y(x,y) - lambda1y(x,y));
 }
+*/
+
+static double leg_tri_l0_l1(double x, double y)
+{
+  return (x + 1.0) / 2.0;
+}
+
+static double leg_tri_l0_l1x(double x, double y)
+{
+  return 0.5;
+}
+
+static double leg_tri_l0_l1y(double x, double y)
+{
+  return 0.0;
+}
+
+// 
+/*
 
 static double leg_tri_l1_l0(double x, double y)
 {
@@ -4084,6 +4123,27 @@ static double leg_tri_l1_l0y(double x, double y)
   double L2 = Legendre1(l2 - l1), L2y = Legendre0x(l2 - l1);
   return L1y * (lambda3y(x,y) - lambda2y(x,y)) * L2 + L1 * L2y * (lambda2y(x,y) - lambda1y(x,y));
 }
+
+*/
+
+static double leg_tri_l1_l0(double x, double y)
+{
+  return (y + 1.0) / 2.0;
+}
+
+static double leg_tri_l1_l0x(double x, double y)
+{
+  return 0.0;
+}
+
+static double leg_tri_l1_l0y(double x, double y)
+{
+  return 0.5;
+}
+
+
+//
+
 
 static double leg_tri_l0_l2(double x, double y)
 {
@@ -5423,7 +5483,7 @@ static Shapeset::shape_fn_t leg_tri_fn[] =
   leg_tri_l8_l2,   leg_tri_l3_l3,   leg_tri_l3_l4,   leg_tri_l4_l3,   leg_tri_l3_l5,
   leg_tri_l5_l3,   leg_tri_l3_l6,   leg_tri_l6_l3,   leg_tri_l3_l7,   leg_tri_l7_l3,
   leg_tri_l4_l4,   leg_tri_l4_l5,   leg_tri_l5_l4,   leg_tri_l4_l6,   leg_tri_l6_l4,
-  leg_tri_l5_l5,
+  leg_tri_l5_l5, leg_tri_l0_l0_constant
 };
 static Shapeset::shape_fn_t leg_tri_fn_dx[] =
 {
@@ -5440,7 +5500,7 @@ static Shapeset::shape_fn_t leg_tri_fn_dx[] =
   leg_tri_l8_l2x,   leg_tri_l3_l3x,   leg_tri_l3_l4x,   leg_tri_l4_l3x,   leg_tri_l3_l5x,
   leg_tri_l5_l3x,   leg_tri_l3_l6x,   leg_tri_l6_l3x,   leg_tri_l3_l7x,   leg_tri_l7_l3x,
   leg_tri_l4_l4x,   leg_tri_l4_l5x,   leg_tri_l5_l4x,   leg_tri_l4_l6x,   leg_tri_l6_l4x,
-  leg_tri_l5_l5x,
+  leg_tri_l5_l5x, leg_tri_l0_l0_constantx
 };
 static Shapeset::shape_fn_t leg_tri_fn_dy[] =
 {
@@ -5457,13 +5517,13 @@ static Shapeset::shape_fn_t leg_tri_fn_dy[] =
   leg_tri_l8_l2y,   leg_tri_l3_l3y,   leg_tri_l3_l4y,   leg_tri_l4_l3y,   leg_tri_l3_l5y,
   leg_tri_l5_l3y,   leg_tri_l3_l6y,   leg_tri_l6_l3y,   leg_tri_l3_l7y,   leg_tri_l7_l3y,
   leg_tri_l4_l4y,   leg_tri_l4_l5y,   leg_tri_l5_l4y,   leg_tri_l4_l6y,   leg_tri_l6_l4y,
-  leg_tri_l5_l5y,
+  leg_tri_l5_l5y, leg_tri_l0_l0_constanty
 };
 Shapeset::shape_fn_t* leg_tri_shape_fn_table[1]     = { leg_tri_fn };
 Shapeset::shape_fn_t* leg_tri_shape_fn_table_dx[1]  = { leg_tri_fn_dx };
 Shapeset::shape_fn_t* leg_tri_shape_fn_table_dy[1]  = { leg_tri_fn_dy };
 
-static int qb_0[] = { 0, };
+static int qb_0[] = { 66, };
 static int qb_1[] = { 0, 1, 2, };
 static int qb_2[] = { 0, 1, 2, 3, 4, 21, };
 static int qb_3[] = { 0, 1, 2, 3, 4, 5, 6, 21, 22, 23, };
@@ -5498,12 +5558,12 @@ int* leg_tri_edge_indices[4] =
 
 
 int leg_tri_index_to_order[] = {
-  0,   1,   1,   2,   2,   3,   3,   4,   4,   5,  5,   6,   6,   7,   7,   8,   8,   9,   9,   10,  10,
+  1,   1,   1,   2,   2,   3,   3,   4,   4,   5,  5,   6,   6,   7,   7,   8,   8,   9,   9,   10,  10,
   2,   3,   3,   4,   4,   5,  5,   6,   6,   7,   7,   8,   8,   9,   9,   10,  10,
   4,   5,  5,   6,   6,   7,   7,   8,   8,   9,   9,   10,  10,
   6,   7,   7,   8,   8,   9,   9,   10,  10,
   8,   9,   9,   10,  10,
-  10,
+  10, 0
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
