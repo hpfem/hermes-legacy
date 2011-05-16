@@ -107,7 +107,9 @@ static double gn[8] = {
  9.999841934744914E-001
 };
 
-
+#ifndef M_PI
+#define M_PI           3.14159265358979323846
+#endif
 #define PIF M_PI
 #define PIO2F PIF/2.0
 
