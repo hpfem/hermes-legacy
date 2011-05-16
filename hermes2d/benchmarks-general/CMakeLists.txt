@@ -5,9 +5,13 @@ add_subdirectory(smooth-aniso-y)
 add_subdirectory(lshape)
 add_subdirectory(layer-interior)
 add_subdirectory(layer-boundary)
+# TODO: This does not work in Windows.
+if((NOT NMAKE) AND (NOT MSVC))
 #add_subdirectory(neutronics-heat-conduction) TODO: Convert to new forms.
 #add_subdirectory(neutronics-heat-conduction-adapt) TODO: Convert to new forms.
 add_subdirectory(neutronics-2-group-adapt) 
+endif((NOT NMAKE) AND (NOT MSVC))
+
 #add_subdirectory(stabilized-advection-diffusion) TODO: Convert to new forms.
 #add_subdirectory(stabilized-advection-reaction) TODO: Convert to new forms.
 #add_subdirectory(sdirk-22) TODO: Convert to new forms.
