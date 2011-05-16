@@ -3,7 +3,6 @@
 double OMEGA;
 double ALPHA;
 
-
 double CustomExactSolution::value(double x, double y) const
 {
     if (PARAM == 0) {

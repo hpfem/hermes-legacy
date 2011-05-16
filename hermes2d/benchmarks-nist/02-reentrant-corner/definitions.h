@@ -6,7 +6,9 @@ class CustomExactSolution : public ExactSolutionScalar
 {
 public:
   CustomExactSolution(Mesh* mesh, double PARAM)
-            : ExactSolutionScalar(mesh), PARAM(PARAM) {};
+            : ExactSolutionScalar(mesh), PARAM(PARAM) 
+  {
+  };
 
   double value(double x, double y) const;
 
@@ -16,12 +18,13 @@ public:
 
   double PARAM;
   
-  double get_angle(double y, double x) const {
+  double get_angle(double y, double x) const 
+  {
     double theta = atan2(y, x);
     if (theta < 0)
       theta += 2 * M_PI;
     return theta;
-    };
+  };
 
 
 };
