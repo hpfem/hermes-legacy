@@ -55,7 +55,7 @@ public:
       Scalar result = 0;
       for (int i = 0; i < n; i++) {
         if(e->nx[i] - e->ny[i] > 0)
-          result += wt[i] * u->val[i] * 0.5 * v->val[i] * (e->nx[i] - e->ny[i]);
+          result += wt[i] * u->val[i] * v->val[i] * (e->nx[i] - e->ny[i]);
       }
   
       return result;
@@ -146,7 +146,7 @@ public:
       Scalar result = 0;
       for (int i = 0; i < n; i++) {
         if(e->nx[i] - e->ny[i] > 0)
-          result += wt[i] * u_ext[0]->val[i] * 0.5 * v->val[i] * (e->nx[i] - e->ny[i]);
+          result += wt[i] * u_ext[0]->val[i] * v->val[i] * (e->nx[i] - e->ny[i]);
       }
   
       return result;
@@ -202,7 +202,7 @@ public:
       double result = 0;
       for (int i = 0; i < n; i++) {
         if(e->nx[i] - e->ny[i] <= 0)
-        result += wt[i] * (e->x[i] + e->y[i]) * 0.5 * v->val[i] * (e->nx[i] - e->ny[i]);
+        result += wt[i] * (e->x[i] + e->y[i]) * v->val[i] * (e->nx[i] - e->ny[i]);
       }
 
       return result;
