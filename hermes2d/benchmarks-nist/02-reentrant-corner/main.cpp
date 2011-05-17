@@ -61,6 +61,9 @@ const int NDOF_STOP = 60000;                      // Adaptivity process stops wh
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
+// Problem parameters
+double OMEGA;
+double ALPHA;
 
 int main(int argc, char* argv[])
 {
@@ -71,19 +74,35 @@ int main(int argc, char* argv[])
   Mesh mesh;
   H2DReader mloader;
 
-  switch (PARAM) {
-    case 0: mloader.load("geom0.mesh", &mesh); break;
-    case 1: mloader.load("geom1.mesh", &mesh); break;
-    case 2: mloader.load("geom2.mesh", &mesh); break;
-    case 3: mloader.load("geom3.mesh", &mesh); break;
+  switch (PARAM) 
+    {
+    case 0: 
+    mloader.load("geom0.mesh", &mesh); 
+    OMEGA = ((5.0 * M_PI)/ 4.0);
+    ALPHA = (M_PI/ OMEGA);
+    break;
+    case 1: 
+    mloader.load("geom1.mesh", &mesh); 
+    OMEGA = ((3.0 * M_PI)/ 2.0);
+    ALPHA = (M_PI/ OMEGA);
+    break;
+    case 2: 
+    mloader.load("geom2.mesh", &mesh); 
+    OMEGA = ((7.0 * M_PI)/ 4.0);
+    ALPHA = (M_PI/ OMEGA);
+    break;
+    case 3: mloader.load("geom3.mesh", &mesh); 
+    OMEGA = (2.0 * M_PI);
+    ALPHA = (M_PI/ OMEGA);
+    break;
     default: error("Admissible values of PARAM are 0, 1, 2, 3.");
-  }
+    }
 
   // Perform initial mesh refinements.
   for (int i = 0; i<INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Set exact solution.
-  CustomExactSolution exact(&mesh, PARAM);
+  CustomExactSolution exact(&mesh, ALPHA, OMEGA);
 
   // Initialize the weak formulation.
   WeakFormsH1::DefaultWeakFormLaplace wf;

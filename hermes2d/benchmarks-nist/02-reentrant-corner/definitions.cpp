@@ -1,29 +1,10 @@
 #include "definitions.h"
 
-double OMEGA;
-double ALPHA;
-
 
 double CustomExactSolution::value(double x, double y) const
 {
-    if (PARAM == 0) {
-      OMEGA = ((5.0 * M_PI)/ 4.0);
-      ALPHA = (M_PI/ OMEGA);
-     }
-    else if (PARAM == 1) {
-      OMEGA = ((3.0 * M_PI)/ 2.0);
-      ALPHA = (M_PI/ OMEGA);
-    }
-    else if (PARAM == 2) {
-      OMEGA = ((7.0 * M_PI)/ 4.0);
-      ALPHA = (M_PI/ OMEGA);
-    }
-    else{
-      OMEGA = (2.0 * M_PI);
-      ALPHA = (M_PI/ OMEGA);
-    }
-
-    return (pow(sqrt(x*x + y*y), ALPHA) * sin(ALPHA * get_angle(y, x)));
+  
+  return (pow(sqrt(x*x + y*y), ALPHA) * sin(ALPHA * get_angle(y, x)));
   };
 
   void CustomExactSolution::derivatives (double x, double y, scalar& dx, scalar& dy) const

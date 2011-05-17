@@ -5,8 +5,8 @@
 class CustomExactSolution : public ExactSolutionScalar
 {
 public:
-  CustomExactSolution(Mesh* mesh, double PARAM)
-            : ExactSolutionScalar(mesh), PARAM(PARAM) {};
+  CustomExactSolution(Mesh* mesh, double ALPHA, double OMEGA)
+            : ExactSolutionScalar(mesh), ALPHA(ALPHA), OMEGA(OMEGA) {};
 
   double value(double x, double y) const;
 
@@ -14,9 +14,11 @@ public:
 
   virtual Ord ord(Ord x, Ord y) const;
 
-  double PARAM;
+  double ALPHA;
+  double OMEGA;
   
-  double get_angle(double y, double x) const {
+  double get_angle(double y, double x) const 
+    {
     double theta = atan2(y, x);
     if (theta < 0)
       theta += 2 * M_PI;
