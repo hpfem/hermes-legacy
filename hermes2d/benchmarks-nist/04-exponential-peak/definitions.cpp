@@ -1,6 +1,5 @@
 #include "definitions.h"
 
-
 double CustomRightHandSide::value(double x, double y) const
 {
   double a_P = (-alpha * pow((x - x_loc), 2) - alpha * pow((y - y_loc), 2));
@@ -13,8 +12,6 @@ Ord CustomRightHandSide::ord(Ord x, Ord y) const
 {
   return Ord(8);
 }
-
-
 
 double CustomExactSolution::value(double x, double y) const
 {

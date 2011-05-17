@@ -66,8 +66,8 @@ int main(int argc, char* argv[])
   // Load the mesh.
   Mesh mesh;
   H2DReader mloader;
-  mloader.load("square_quad.mesh", &mesh);     // quadrilaterals
-  //mloader.load("square_tri.mesh", &mesh);   // triangles
+  mloader.load("square_quad.mesh", &mesh);     // Quadrilaterals.
+  //mloader.load("square_tri.mesh", &mesh);    // Triangles.
 
   // Perform initial mesh refinements.
   for (int i = 0; i<INIT_REF_NUM; i++) mesh.refine_all_elements();
