@@ -6,8 +6,8 @@ class CustomExactSolution : public ExactSolutionScalar
 {
 public:
 
-  CustomExactSolution(Mesh* mesh, double alpha, double omega)
-            : ExactSolutionScalar(mesh), alpha(alpha), omega(omega) 
+  CustomExactSolution(Mesh* mesh, double alpha)
+            : ExactSolutionScalar(mesh), alpha(alpha)
   {
   };
 
@@ -27,6 +27,5 @@ public:
 
  protected:
   double alpha;
-  double omega;
 };
 

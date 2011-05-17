@@ -12,7 +12,7 @@ using namespace RefinementSelectors;
 //
 //  PDE: -Laplace u = 0
 //
-//  Known exact solution: (pow(sqrt(x*x + y*y), ALPHA) * sin(ALPHA * atan2(y,x))).
+//  Known exact solution: (pow(sqrt(x*x + y*y), alpha) * sin(alpha * atan2(y,x))).
 //  See functions fn() and fndd() in "exact_solution.cpp".
 //
 //  Domain: square (-1, 1)^2, with a section removed from the clockwise side of the positive x-axis.
@@ -23,7 +23,7 @@ using namespace RefinementSelectors;
 
 int PARAM = 1;         // PARAM determines which parameter values you wish to use for the strength of the singularity in
                        // the current (nist-2) Reentrant Corner problem.
-                       // PARAM      strength         OMEGA            ALPHA
+                       // PARAM      strength         omega            alpha
                        // 0:   		1             5*Pi/4           4/5
                        // 1:    	2             3*Pi/2           2/3
                        // 2:            3             7*Pi/4           4/7
@@ -61,10 +61,6 @@ const int NDOF_STOP = 60000;                      // Adaptivity process stops wh
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
-// Problem parameters
-double OMEGA;
-double ALPHA;
-
 int main(int argc, char* argv[])
 {
   // Instantiate a class with global functions.
@@ -74,35 +70,36 @@ int main(int argc, char* argv[])
   Mesh mesh;
   H2DReader mloader;
 
+  double alpha, omega;
   switch (PARAM) 
-    {
+  {
     case 0: 
     mloader.load("geom0.mesh", &mesh); 
-    OMEGA = ((5.0 * M_PI)/ 4.0);
-    ALPHA = (M_PI/ OMEGA);
+    omega = ((5.0 * M_PI)/ 4.0);
+    alpha = (M_PI/ omega);
     break;
     case 1: 
     mloader.load("geom1.mesh", &mesh); 
-    OMEGA = ((3.0 * M_PI)/ 2.0);
-    ALPHA = (M_PI/ OMEGA);
+    omega = ((3.0 * M_PI)/ 2.0);
+    alpha = (M_PI/ omega);
     break;
     case 2: 
     mloader.load("geom2.mesh", &mesh); 
-    OMEGA = ((7.0 * M_PI)/ 4.0);
-    ALPHA = (M_PI/ OMEGA);
+    omega = ((7.0 * M_PI)/ 4.0);
+    alpha = (M_PI/ omega);
     break;
     case 3: mloader.load("geom3.mesh", &mesh); 
-    OMEGA = (2.0 * M_PI);
-    ALPHA = (M_PI/ OMEGA);
+    omega = (2.0 * M_PI);
+    alpha = (M_PI/omega);
     break;
     default: error("Admissible values of PARAM are 0, 1, 2, 3.");
-    }
+  }
 
   // Perform initial mesh refinements.
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Set exact solution.
-  CustomExactSolution exact(&mesh, ALPHA, OMEGA);
+  CustomExactSolution exact(&mesh, alpha);
 
   // Initialize the weak formulation.
   WeakFormsH1::DefaultWeakFormLaplace wf;
