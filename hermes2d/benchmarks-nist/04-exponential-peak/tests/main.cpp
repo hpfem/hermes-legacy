@@ -61,9 +61,9 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.                      
-double ALPHA_P = 1000;      // This problem has and exponential peak in the interior of the domain.
-double X_LOC = 0.5;         // (X_LOC, Y_LOC) is the location of the peak, and ALPHA determines the strenghth of the peak.
-double Y_LOC = 0.5;
+double alpha = 1000;        // This problem has and exponential peak in the interior of the domain.
+double x_loc = 0.5;         // (x_loc, y_loc) is the location of the peak, and alpha determines the strenghth of the peak.
+double y_loc = 0.5;
 
 // Weak forms.
 #include "../definitions.cpp"
@@ -83,13 +83,13 @@ int main(int argc, char* argv[])
   for (int i=0; i<INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Set exact solution.
-  CustomExactSolution exact(&mesh, ALPHA_P, X_LOC, Y_LOC);
+  CustomExactSolution exact(&mesh, alpha, x_loc, y_loc);
 
   // Define right-hand side.
-  CustomRightHandSide rhs(ALPHA_P, X_LOC, Y_LOC);
+  CustomRightHandSide rhs(alpha, x_loc, y_loc);
 
   // Initialize the weak formulation.
-  DefaultWeakFormPoisson wf(&rhs);
+  WeakFormsH1::DefaultWeakFormPoisson wf(&rhs);
   
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc("Bdy", &exact);

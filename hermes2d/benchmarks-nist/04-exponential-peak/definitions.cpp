@@ -1,52 +1,34 @@
-#include "hermes2d.h"
+#include "definitions.h"
 
-using namespace WeakFormsH1;
 
-/* Right-hand side */
-
-class CustomRightHandSide: public DefaultFunction
+double CustomRightHandSide::value(double x, double y) const
 {
-public:
-  CustomRightHandSide(double alpha, double x_loc, double y_loc)
-    : DefaultFunction(), alpha(alpha), x_loc(x_loc), y_loc(y_loc) {};
+  double a_P = (-alpha * pow((x - x_loc), 2) - alpha * pow((y - y_loc), 2));
 
-  virtual double value(double x, double y) const {
-    double a_P = (-alpha * pow((x - x_loc), 2) - alpha * pow((y - y_loc), 2));
+  return -(4 * exp(a_P) * alpha * (alpha * (x - x_loc) * (x - x_loc)
+         + alpha * (y - y_loc) * (y - y_loc) - 1));
+}
+ 
+Ord CustomRightHandSide::ord(Ord x, Ord y) const
+{
+  return Ord(8);
+}
 
-    return -(4 * exp(a_P) * alpha * (alpha * (x - x_loc) * (x - x_loc)
-              + alpha * (y - y_loc) * (y - y_loc) - 1));
-  }
 
-  virtual Ord ord(Ord x, Ord y) const {
-    return Ord(8);
-  }
 
-  double alpha, x_loc, y_loc;
+double CustomExactSolution::value(double x, double y) const
+{
+  return exp(-alpha * (pow((x - x_loc), 2) + pow((y - y_loc), 2)));
 };
 
-/* Exact solution */
-
-class CustomExactSolution : public ExactSolutionScalar
+void CustomExactSolution::derivatives (double x, double y, scalar& dx, scalar& dy) const
 {
-public:
-  CustomExactSolution(Mesh* mesh, double ALPHA_P, double X_LOC, double Y_LOC)
-         : ExactSolutionScalar(mesh), ALPHA_P(ALPHA_P), X_LOC(X_LOC), Y_LOC(Y_LOC) {};
+  double a = -alpha * ( (x - x_loc) * (x - x_loc) + (y - y_loc) * (y - y_loc));
+  dx = -exp(a) * (2 * alpha * (x - x_loc));
+  dy = -exp(a) * (2 * alpha * (y - y_loc));
+};
 
-  virtual scalar value (double x, double y) const {
-    return exp(-ALPHA_P * (pow((x - X_LOC), 2) + pow((y - Y_LOC), 2)));
-  };
-
-  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const {
-    double a = -ALPHA_P * ( (x - X_LOC) * (x - X_LOC) + (y - Y_LOC) * (y - Y_LOC));
-    dx = -exp(a) * (2 * ALPHA_P * (x - X_LOC));
-    dy = -exp(a) * (2 * ALPHA_P * (y - Y_LOC));
-  };
-
-  virtual Ord ord (Ord x, Ord y) const {
-    return Ord(8);
-  };
-
-  double ALPHA_P;
-  double X_LOC;
-  double Y_LOC;
+Ord CustomExactSolution::ord(Ord x, Ord y) const
+{
+  return Ord(8);
 };
