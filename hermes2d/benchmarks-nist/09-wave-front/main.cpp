@@ -1,21 +1,21 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 
 using namespace RefinementSelectors;
 
 //  This is the ninth in the series of NIST benchmarks with known exact solutions. This benchmark
-//  has four different versions, use the global variable PROB_PARAM below to switch among them.
+//  has four different versions, use the global variable "PARAM" (below) to switch among them.
 //
 //  Reference: W. Mitchell, A Collection of 2D Elliptic Problems for Testing Adaptive Algorithms, 
 //                          NIST Report 7668, February 2010.
 //
 //  PDE: -Laplace u - f = 0
 //
-//  Known exact solution: atan(ALPHA * (sqrt(pow(x - X_LOC, 2) + pow(y - Y_LOC, 2)) - R_ZERO));
-//  See the class CustomExactSolution.
+//  Known exact solution: atan(alpha * (sqrt(pow(x - x_loc, 2) + pow(y - y_loc, 2)) - r_zero))
+//  See the class CustomExactSolution::value in "definitions.cpp"
 //
-//  Domain: unit square (0, 1) x (0, 1), see the file square.mesh.
+//  Domain: unit square (0, 1) x (0, 1), see the file square_quad.mesh or square_tri.mesh.
 //
 //  BC:  Dirichlet, given by exact solution.
 //
@@ -23,7 +23,7 @@ using namespace RefinementSelectors;
 
 int PARAM = 3;         // PARAM determines which parameter values you wish to use 
                        // for the steepness and location of the wave front. 
-                       //  | name       | ALPHA | X_LOC	| Y_LOC | R_ZERO
+                       //  | name       | alpha | x_loc	| y_loc | r_zero
                        // 0: mild         20      -0.05   -0.05    0.7
                        // 1: steep        1000    -0.05   -0.05    0.7
                        // 2: asymmetric   1000     1.5     0.25    0.92
@@ -61,15 +61,15 @@ const int NDOF_STOP = 60000;                      // Adaptivity process stops wh
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {
   // Define problem parameters: (x_loc, y_loc) is the center of the circular wave front, R_ZERO is the distance from the 
   // wave front to the center of the circle, and alpha gives the steepness of the wave front.
+  
   double alpha, x_loc, y_loc, r_zero;
-  switch(PARAM) {
+  switch(PARAM) 
+  {
   case 0:
     alpha = 20;
     x_loc = -0.05;
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
   CustomRightHandSide rhs(alpha, x_loc, y_loc, r_zero);
 
   // Initialize the weak formulation.
-  DefaultWeakFormPoisson wf(&rhs);
+  WeakFormsH1::DefaultWeakFormPoisson wf(&rhs);
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc("Bdy", &exact);

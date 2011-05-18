@@ -30,7 +30,7 @@ using namespace RefinementSelectors;
 
 int PARAM = 3;         // PARAM determines which parameter values you wish to use for the steepness and location of the wave front. 
                        // #| name   |   ALPHA | X_LOC	| Y_LOC | R_ZERO
-                       // 0: mild		    20      -0.05  -0.05    0.7
+                       // 0: mild       20      -0.05  -0.05    0.7
                        // 1: steep      1000    -0.05  -0.05    0.7
                        // 2: asymmetric 1000     1.5    0.25    0.92
                        // 3: well       50       0.5    0.5     0.25
@@ -74,7 +74,8 @@ int main(int argc, char* argv[])
 {
   // Define problem parameters.
   double alpha, x_loc, y_loc, r_zero;
-  switch(PARAM) {
+  switch(PARAM) 
+  {
   case 0:
     alpha = 20;
     x_loc = -0.05;
@@ -126,7 +127,7 @@ int main(int argc, char* argv[])
   CustomRightHandSide rhs(alpha, x_loc, y_loc, r_zero);
 
   // Initialize the weak formulation.
-  DefaultWeakFormPoisson wf(&rhs);
+  WeakFormsH1::DefaultWeakFormPoisson wf(&rhs);
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc_essential("Bdy", &exact);
