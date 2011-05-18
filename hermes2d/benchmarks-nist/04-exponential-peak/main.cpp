@@ -11,7 +11,7 @@ using namespace RefinementSelectors;
 //
 //  PDE: -Laplace u - f = 0.
 //
-//  Known exact solution: exp(-ALPHA*(pow(x - x_loc, 2) + pow(y - y_loc, 2))).
+//  Known exact solution: exp(-alpha * (pow(x - x_loc, 2) + pow(y - y_loc, 2))).
 //  See functions CustomExactSolution::value and CustomExactSolution::derivatives in "exact_solution.cpp".
 //
 //  Domain: unit square (0, 1)x(0, 1), see the file "square_tri" or "square_quad.mesh".
