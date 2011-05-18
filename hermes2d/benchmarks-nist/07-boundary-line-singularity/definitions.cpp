@@ -1,45 +1,30 @@
-#include "hermes2d.h"
+#include "definitions.h"
 
-using namespace WeakFormsH1;
 
-/* Right-hand side */
-
-class CustomRightHandSide: public DefaultFunction
+double CustomRightHandSide::value(double x, double y) const
 {
-public:
-  CustomRightHandSide(double alpha) : DefaultFunction(), alpha(alpha) {};
+  return - alpha * (alpha - 1.) * pow(x, alpha - 2.);
+}
 
-  virtual double value(double x, double y) const {
-    return - alpha * (alpha - 1.) * pow(x, alpha - 2.);
-  }
+Ord CustomRightHandSide::ord(Ord x, Ord y) const 
+{
+  return Ord((int)(alpha + 3.1));
+}
 
-  virtual Ord ord(Ord x, Ord y) const {
-    return Ord((int)(alpha + 3.1));
-  }
 
-  double alpha;
+
+double CustomExactSolution::value(double x, double y) const
+{
+  return pow(x, alpha);
 };
 
-/* Exact solution */
-
-class CustomExactSolution : public ExactSolutionScalar
+void CustomExactSolution::derivatives (double x, double y, scalar& dx, scalar& dy) const 
 {
-public:
-  CustomExactSolution(Mesh* mesh, double alpha)
-        : ExactSolutionScalar(mesh), alpha(alpha) {};
+  dx = alpha * pow(x, alpha - 1.);
+  dy = 0;
+};
 
-  virtual scalar value(double x, double y) const {
-    return pow(x, alpha);
-  };
-
-  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const {
-    dx = alpha * pow(x, alpha - 1.);
-    dy = 0;
-  };
-
-  virtual Ord ord(Ord x, Ord y) const {
-    return Ord((int)(alpha + 1));
-  }
-
-  double alpha;
+Ord CustomExactSolution::ord(Ord x, Ord y) const
+{
+  return Ord((int)(alpha + 1));
 };
