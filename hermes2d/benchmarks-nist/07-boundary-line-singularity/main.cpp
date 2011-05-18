@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -11,10 +11,10 @@ using namespace RefinementSelectors;
 //
 //  PDE: -Laplace u - f = 0.
 //
-//  Known exact solution: pow(x, ALPHA).
-//  See functions fn() and fndd() in "exact_solution.cpp".
+//  Known exact solution: pow(x, alpha).
+//  See functions CustomExactSolution::value and CustomExactSolution::derivatives in "exact_solution.cpp".
 //
-//  Domain: unit square (0, 1)x(0, 1), see the file "square.mesh".
+//  Domain: unit square (0, 1)x(0, 1), see the file "square_tri" or "square_quad.mesh".
 //
 //  BC:  Dirichlet, given by exact solution.
 //
@@ -53,11 +53,9 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.                      
-double ALPHA = 0.6;      // ALPHA greater than or equal to 1/2 determines the strength of the singularity.  All of the
-                         // cited references use ALPHA = 0.6.
- 
-// Weak forms.
-#include "definitions.cpp"
+double alpha = 0.6;      // "Alpha" greater than or equal to 1/2 determines the strength of the singularity.  All of the
+                         // cited references use "alpha" = 0.6.
+
 
 int main(int argc, char* argv[])
 {
@@ -74,13 +72,13 @@ int main(int argc, char* argv[])
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Set exact solution.
-  CustomExactSolution exact(&mesh, ALPHA);
+  CustomExactSolution exact(&mesh, alpha);
 
   // Define right-hand side.
-  CustomRightHandSide rhs(ALPHA);
+  CustomRightHandSide rhs(alpha);
 
   // Initialize the weak formulation.
-  DefaultWeakFormPoisson wf(&rhs);
+  WeakFormsH1::DefaultWeakFormPoisson wf(&rhs);
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc_essential("Bdy", &exact);

@@ -59,8 +59,8 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.                      
-double ALPHA = 0.6;      // ALPHA greater than or equal to 1/2 determines the strength of the singularity.  All of the
-                         // cited references use ALPHA = 0.6.
+double alpha = 0.6;      // "Alpha" greater than or equal to 1/2 determines the strength of the singularity.  All of the
+                         // cited references use "alpha" = 0.6.
 
 // Weak forms.
 #include "../definitions.cpp"
@@ -80,13 +80,13 @@ int main(int argc, char* argv[])
   for (int i=0; i<INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Set exact solution.
-  CustomExactSolution exact(&mesh, ALPHA);
+  CustomExactSolution exact(&mesh, alpha);
 
   // Define right-hand side.
-  CustomRightHandSide rhs(ALPHA);
+  CustomRightHandSide rhs(alpha);
 
   // Initialize the weak formulation.
-  DefaultWeakFormPoisson wf(&rhs);
+  WeakFormsH1::DefaultWeakFormPoisson wf(&rhs);
   
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc_essential("Bdy", &exact);
