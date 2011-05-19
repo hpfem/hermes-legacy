@@ -22,12 +22,12 @@ using Hermes::EigenSolver;
 //  The following parameters can be changed:
 
 // Select one of the mesh files below.
-//const char* mesh_file = "domain_square_quad_1_sym.mesh";     // Square domain with one single element (symmetric).
-//const char* mesh_file = "domain_square_quad_2_sym.mesh";     // Square domain with four quad elements (symmetric).
-//const char* mesh_file = "domain_lshape_quad_sym.mesh";       // L-Shape domain with quadrilateral mesh (symmetric). 
-//const char* mesh_file = "domain_square_quad_2_nonsym.mesh";  // Square domain with four quad elements (non-symmetric).
-const char* mesh_file = "domain_square_tria_nonsym.mesh";    // Square domain with triangular mesh    (non-symmetric).
-//const char* mesh_file = "domain_lshape_tria_nonsym.mesh";    // L-Shape domain with triangular mesh   (non-symmetric).  
+//const char* mesh_file = "../domain_square_quad_1_sym.mesh";     // Square domain with one single element (symmetric).
+//const char* mesh_file = "../domain_square_quad_2_sym.mesh";     // Square domain with four quad elements (symmetric).
+//const char* mesh_file = "../domain_lshape_quad_sym.mesh";       // L-Shape domain with quadrilateral mesh (symmetric). 
+//const char* mesh_file = "../domain_square_quad_2_nonsym.mesh";  // Square domain with four quad elements (non-symmetric).
+const char* mesh_file = "../domain_square_tria_nonsym.mesh";    // Square domain with triangular mesh    (non-symmetric).
+//const char* mesh_file = "../domain_lshape_tria_nonsym.mesh";    // L-Shape domain with triangular mesh   (non-symmetric).  
 
 int TARGET_EIGENFUNCTION = 2;                     // Desired eigenfunction: 1 for the first, 2 for the second, etc.
 
@@ -89,7 +89,7 @@ const int USE_SHIFT = 0;
 const std::string BDY_MARKER = "1";
 
 // Weak forms and Extras.
-#include "definitions.cpp"
+#include "../definitions.cpp"
 
 // Main function.
 int main(int argc, char* argv[])
