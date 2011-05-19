@@ -20,6 +20,7 @@
 //  DC: Determined by the IC.
 //
 //  The following parameters can be changed:
+
 const int NEQ = 2;                      // Number of equations.
 const int NELEM = 1292;                 // Number of elements.
 const double A = 0, B = 10;             // Domain end points.
@@ -34,7 +35,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Boundary conditions.
-Hermes::vector<BCSpec *>DIR_BC_LEFT = Hermes::vector<BCSpec *>(new BCSpec(0,M_PI/2.), new BCSpec(1,0));
+Hermes::vector<BCSpec *> DIR_BC_LEFT = Hermes::vector<BCSpec *>(new BCSpec(0,M_PI/2.), new BCSpec(1,0));
 Hermes::vector<BCSpec *> DIR_BC_RIGHT = Hermes::vector<BCSpec *>();
 
 // Weak forms for Jacobi matrix and residual.
