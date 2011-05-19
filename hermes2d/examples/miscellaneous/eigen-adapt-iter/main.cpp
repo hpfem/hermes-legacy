@@ -309,12 +309,12 @@ int main(int argc, char* argv[])
 
         // Read solution vectors from file and visualize it.
         double* coeff_vec_tmp = new double[ndof_ref];
-        double* eigenval =new double[DIMENSION_SUBSPACE];
+        double* eigenval_ref =new double[DIMENSION_SUBSPACE];
         int neig = es.get_n_eigs(); 
         for (int ieig = 0; ieig < neig; ieig++) {
           info("ieig: %d", ieig);
           // Get next eigenvalue from the file
-          eigenval[ieig] = es.get_eigenvalue(ieig);  
+          eigenval_ref[ieig] = es.get_eigenvalue(ieig);  
           int n;
           es.get_eigenvector(ieig, &coeff_vec_tmp, &n);
           for (int i = 0; i < ndof_ref; i++){
@@ -341,19 +341,19 @@ int main(int argc, char* argv[])
         info("Pysparse finished.");
 
         // Read solution vectors from file and visualize it.
-        double* eigenval =new double[DIMENSION_SUBSPACE];
+        eigenval_ref = new double[DIMENSION_SUBSPACE];
         FILE *file = fopen("eivecs.dat", "r");
         char line [64];                  // Maximum line size.
         fgets(line, sizeof line, file);  // ndof
         int n = atoi(line);            
         if (n != ndof_ref) error("Mismatched ndof in the eigensolver output file.");  
         fgets(line, sizeof line, file);  // Number of eigenvectors in the file.
-        int neig = atoi(line); 
+        neig = atoi(line); 
         if (neig != DIMENSION_SUBSPACE) error("Mismatched number of eigenvectors in the eigensolver output file.");  
         for (int ieig = 0; ieig < neig; ieig++) {
           // Get next eigenvalue from the file
           fgets(line, sizeof line, file);  // eigenval
-          eigenval[ieig] = atof(line);            
+          eigenval_ref[ieig] = atof(line);            
           // Get the corresponding eigenvector.
           for (int i = 0; i < ndof_ref; i++) {  
             fgets(line, sizeof line, file);
