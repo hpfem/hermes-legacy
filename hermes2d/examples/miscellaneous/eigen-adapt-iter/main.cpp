@@ -102,7 +102,8 @@ int main(int argc, char* argv[])
   mloader.load(mesh_file, &mesh);
 
   // Perform initial mesh refinements (optional).
-  for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
+  for (int i = 0; i < INIT_REF_NUM; i++) 
+    mesh.refine_all_elements();
   
   // Initialize boundary conditions.
   DefaultEssentialBCConst bc_essential(BDY_MARKER, 0.0);
@@ -130,7 +131,6 @@ int main(int argc, char* argv[])
   // Initialize matrices and matrix solver.
   SparseMatrix* matrix_S = create_matrix(matrix_solver);
   SparseMatrix* matrix_M = create_matrix(matrix_solver);
-  //Solver* solver = create_linear_solver(matrix_solver, matrix_S);
 
   // Assemble the matrices.
   DiscreteProblem dp_S(&wf_S, &space);
@@ -197,10 +197,10 @@ int main(int argc, char* argv[])
   sprintf(title, "Eigenfunction %d on initial mesh", neig);
   sview.set_title(title);
   sview.show_mesh(false);
-  sview.show(&sln);
+  //sview.show(&sln);
   sprintf(title, "Initial mesh");
   oview.set_title(title);
-  oview.show(&space);
+  //oview.show(&space);
   View::wait(HERMES_WAIT_KEYPRESS);
 
   /*** Begin adaptivity ***/
@@ -254,10 +254,8 @@ int main(int argc, char* argv[])
     // Assemble matrices S and M on reference mesh.
     info("Assembling matrices S and M on reference mesh.");
     DiscreteProblem dp_S_ref(&wf_S, ref_space);
-    matrix_S_ref->zero();
     dp_S_ref.assemble(matrix_S_ref);
     DiscreteProblem dp_M_ref(&wf_M, ref_space);
-    matrix_M_ref->zero();
     dp_M_ref.assemble(matrix_M_ref);
 
     // Calculate eigenvalue corresponding to the new reference solution.
@@ -300,22 +298,23 @@ int main(int argc, char* argv[])
     }
     else {
         // Initialize matrices.
-        /*RCP<SparseMatrix> matrix_rcp_S = rcp(matrix_S_ref);
-        RCP<SparseMatrix> matrix_rcp_M = rcp(matrix_M_ref);
+        RCP<SparseMatrix> matrix_ref_rcp_S = rcp(matrix_S_ref);
+        RCP<SparseMatrix> matrix_ref_rcp_M = rcp(matrix_M_ref);
 
-        EigenSolver es(matrix_rcp_S, matrix_rcp_M);
+        EigenSolver es(matrix_ref_rcp_S, matrix_ref_rcp_M);
         info("Calling Pysparse...");
         es.solve(DIMENSION_SUBSPACE, PYSPARSE_TARGET_VALUE, PYSPARSE_TOL, PYSPARSE_MAX_ITER);
         info("Pysparse finished.");
         es.print_eigenvalues();
+
         // Read solution vectors from file and visualize it.
         double* coeff_vec_tmp = new double[ndof_ref];
-        double* eigenval =new double[DIMENSION_SUBSPACE];
+        double* eigenval_ref =new double[DIMENSION_SUBSPACE];
         int neig = es.get_n_eigs(); 
         for (int ieig = 0; ieig < neig; ieig++) {
           info("ieig: %d", ieig);
           // Get next eigenvalue from the file
-          eigenval[ieig] = es.get_eigenvalue(ieig);  
+          eigenval_ref[ieig] = es.get_eigenvalue(ieig);  
           int n;
           es.get_eigenvector(ieig, &coeff_vec_tmp, &n);
           for (int i = 0; i < ndof_ref; i++){
@@ -324,7 +323,7 @@ int main(int argc, char* argv[])
           // Normalize the eigenvector.
           normalize((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[ieig], ndof_ref);
         }
-        delete [] coeff_vec_tmp;*/
+        delete [] coeff_vec_tmp;
         
         // Write matrix_S in MatrixMarket format.
         write_matrix_mm("mat_S.mtx", matrix_S_ref);
@@ -342,19 +341,19 @@ int main(int argc, char* argv[])
         info("Pysparse finished.");
 
         // Read solution vectors from file and visualize it.
-        double* eigenval =new double[DIMENSION_SUBSPACE];
+        eigenval_ref = new double[DIMENSION_SUBSPACE];
         FILE *file = fopen("eivecs.dat", "r");
         char line [64];                  // Maximum line size.
         fgets(line, sizeof line, file);  // ndof
         int n = atoi(line);            
         if (n != ndof_ref) error("Mismatched ndof in the eigensolver output file.");  
         fgets(line, sizeof line, file);  // Number of eigenvectors in the file.
-        int neig = atoi(line); 
+        neig = atoi(line); 
         if (neig != DIMENSION_SUBSPACE) error("Mismatched number of eigenvectors in the eigensolver output file.");  
         for (int ieig = 0; ieig < neig; ieig++) {
           // Get next eigenvalue from the file
           fgets(line, sizeof line, file);  // eigenval
-          eigenval[ieig] = atof(line);            
+          eigenval_ref[ieig] = atof(line);            
           // Get the corresponding eigenvector.
           for (int i = 0; i < ndof_ref; i++) {  
             fgets(line, sizeof line, file);
@@ -366,26 +365,28 @@ int main(int argc, char* argv[])
         fclose(file);
       
     }
-    for (int i = 0; i < DIMENSION_SUBSPACE; i++) { 
+
+    for (int i = 0; i < DIMENSION_SUBSPACE; i++)
       Solution::vector_to_solution(coeff_space_ref[i], ref_space, &ref_sln_space[i]);
-    }
+
     // Perform eigenfunction reconstruction.
-    if (RECONSTRUCTION_ON == false) { 
+    if (RECONSTRUCTION_ON == false)
       Solution::vector_to_solution(coeff_space_ref[TARGET_EIGENFUNCTION-1], ref_space, &ref_sln);
-    }
+
     else {
       double* inners = new double[DIMENSION_TARGET_EIGENSPACE];
       double* coeff_vec_rec = new double[ndof_ref];
-      for (int i = 0; i < DIMENSION_TARGET_EIGENSPACE; i++) { 
+      for (int i = 0; i < DIMENSION_TARGET_EIGENSPACE; i++)
          inners[i] = calc_inner_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[FIRST_INDEX_EIGENSPACE-1+i], coeff_vec_ref, ndof_ref);
-      }
-      for (int j = 0; j < ndof_ref; j++) {  
+      
+      for (int j = 0; j < ndof_ref; j++) {
         coeff_vec_rec[j] = 0.0;
-        for (int i = 0; i < DIMENSION_TARGET_EIGENSPACE; i++) { 
+        for (int i = 0; i < DIMENSION_TARGET_EIGENSPACE; i++)
           coeff_vec_rec[j] += inners[i] * coeff_space_ref[FIRST_INDEX_EIGENSPACE-1+i][j];
-        }
       }
+
       Solution::vector_to_solution(coeff_vec_rec, ref_space, &ref_sln);
+
       delete [] coeff_vec_rec;
       delete [] inners;
     }
@@ -441,10 +442,10 @@ int main(int argc, char* argv[])
     sprintf(title, "Coarse mesh projection");
     sview.set_title(title);
     sview.show_mesh(false);
-    sview.show(&sln);
+    //sview.show(&sln);
     sprintf(title, "Coarse mesh, step %d", as);
     oview.set_title(title);
-    oview.show(&space);
+    //oview.show(&space);
 
     // Increase the counter of performed adaptivity steps.
     if (done == false) as++;
