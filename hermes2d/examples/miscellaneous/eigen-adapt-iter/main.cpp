@@ -197,10 +197,10 @@ int main(int argc, char* argv[])
   sprintf(title, "Eigenfunction %d on initial mesh", neig);
   sview.set_title(title);
   sview.show_mesh(false);
-  sview.show(&sln);
+  //sview.show(&sln);
   sprintf(title, "Initial mesh");
   oview.set_title(title);
-  oview.show(&space);
+  //oview.show(&space);
   View::wait(HERMES_WAIT_KEYPRESS);
 
   /*** Begin adaptivity ***/
@@ -442,10 +442,10 @@ int main(int argc, char* argv[])
     sprintf(title, "Coarse mesh projection");
     sview.set_title(title);
     sview.show_mesh(false);
-    sview.show(&sln);
+    //sview.show(&sln);
     sprintf(title, "Coarse mesh, step %d", as);
     oview.set_title(title);
-    oview.show(&space);
+    //oview.show(&space);
 
     // Increase the counter of performed adaptivity steps.
     if (done == false) as++;
