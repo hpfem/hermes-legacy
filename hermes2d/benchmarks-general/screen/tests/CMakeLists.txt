@@ -2,7 +2,7 @@ IF(H2D_COMPLEX)
 
 project(test-benchmark-screen)
 
-add_executable(${PROJECT_NAME} main.cpp fresnl.c)
+add_executable(${PROJECT_NAME} main.cpp ../fresnl.c)
 include (${hermes2d_SOURCE_DIR}/CMake.common)
 set_common_target_properties(${PROJECT_NAME} ${HERMES2D_CPLX})
 set(BIN ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
