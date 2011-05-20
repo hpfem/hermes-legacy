@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
   bool success = true;
   for (int i = 0; i < 6; i++)
   {
-    if (abs(value[i] - u_prev_time.get_pt_value(coor_x_y[i], coor_x_y[i])) > 1E-6) success = false;
+    if (fabs(value[i] - u_prev_time.get_pt_value(coor_x_y[i], coor_x_y[i])) > 1E-6) success = false;
   }
 
   if (success) {
