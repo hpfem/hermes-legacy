@@ -297,6 +297,41 @@ int main(int argc, char* argv[])
       }
     }
     else {
+
+        RCP<SparseMatrix> matrix_ref_rcp_S = rcp(matrix_S_ref);
+        RCP<SparseMatrix> matrix_ref_rcp_M = rcp(matrix_M_ref);
+
+        EigenSolver es_ref(matrix_ref_rcp_S, matrix_ref_rcp_M);
+        info("Calling Pysparse...");
+        es_ref.solve(DIMENSION_SUBSPACE, PYSPARSE_TARGET_VALUE, PYSPARSE_TOL, PYSPARSE_MAX_ITER);
+        info("Pysparse finished.");
+        es_ref.print_eigenvalues();
+
+        // Read solution vectors from file and visualize it.
+        double* eigenval_ref =new double[DIMENSION_SUBSPACE];
+
+        int neig_ref = es_ref.get_n_eigs();
+        //if (neig != DIMENSION_SUBSPACE) error("Mismatched number of eigenvectors in the eigensolver output file.");
+        for (int ieig = 0; ieig < neig_ref; ieig++) {
+          // Get next eigenvalue from the file
+          eigenval_ref[ieig] = es_ref.get_eigenvalue(ieig);
+          int n_ref;
+
+          es_ref.get_eigenvector(ieig, &coeff_vec_ref, &n_ref);
+          for (int i = 0; i < ndof_ref; i++){
+            coeff_space_ref[ieig][i] = coeff_vec_ref[i];
+          }
+          // Normalize the eigenvector.
+          normalize((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[ieig], ndof_ref);
+        }
+        //fclose(file);
+
+        // Retrieve desired eigenvalue.
+        double lambda = eigenval_ref[TARGET_EIGENFUNCTION-1];
+        info("Eigenvalue on fine mesh: %g", lambda);
+
+
+        /*
         // Initialize matrices.
         RCP<SparseMatrix> matrix_ref_rcp_S = rcp(matrix_S_ref);
         RCP<SparseMatrix> matrix_ref_rcp_M = rcp(matrix_M_ref);
@@ -309,7 +344,7 @@ int main(int argc, char* argv[])
 
         // Read solution vectors from file and visualize it.
         double* coeff_vec_tmp = new double[ndof_ref];
-        double* eigenval_ref =new double[DIMENSION_SUBSPACE];
+        double* eigenval_ref = new double[DIMENSION_SUBSPACE];
         int neig = es.get_n_eigs(); 
         for (int ieig = 0; ieig < neig; ieig++) {
           info("ieig: %d", ieig);
@@ -363,7 +398,7 @@ int main(int argc, char* argv[])
           normalize((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[ieig], ndof_ref);
         }
         fclose(file);
-      
+    */
     }
 
     for (int i = 0; i < DIMENSION_SUBSPACE; i++)
