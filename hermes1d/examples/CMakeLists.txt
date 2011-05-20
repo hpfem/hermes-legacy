@@ -4,6 +4,7 @@ add_subdirectory(laplace_bc_dirichlet)
 add_subdirectory(laplace_bc_neumann)
 add_subdirectory(laplace_bc_newton)
 add_subdirectory(laplace_bc_newton2)
+add_subdirectory(laplace_timedep)
 add_subdirectory(neutronics)
 
 if(WITH_PYTHON)
