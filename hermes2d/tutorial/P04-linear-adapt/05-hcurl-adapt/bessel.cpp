@@ -1876,7 +1876,7 @@ extern double exp ( double );
 extern double sin ( double );
 // extern double polevl ( double, void *, int );
 // extern double p1evl ( double, void *, int );
-extern double floor ( double );
+// extern double floor ( double );
 extern double fabs ( double );
 extern int isnan ( double );
 // extern int isfinite ( double );
@@ -1998,7 +1998,7 @@ while( x >= 3.0 )
 while( x < 0.0 )
   {
   if( x > -1.E-9 )
-    goto small;
+    goto small_;
   z /= x;
   x += 1.0;
   }
@@ -2006,7 +2006,7 @@ while( x < 0.0 )
 while( x < 2.0 )
   {
   if( x < 1.e-9 )
-    goto small;
+    goto small_;
   z /= x;
   x += 1.0;
   }
@@ -2019,7 +2019,7 @@ p = polevl( x, P, 6 );
 q = polevl( x, Q, 7 );
 return( z * p / q );
 
-small:
+small_:
 if( x == 0.0 )
   {
 #ifdef INFINITIES
@@ -2346,13 +2346,13 @@ Copyright 1984, 1987, 1989, 1992, 2000 by Stephen L. Moshier
 #ifdef ANSIPROT
 // extern int airy ( double, double *, double *, double *, double * );
 extern double fabs ( double );
-extern double floor ( double );
-extern double frexp ( double, int * );
+// extern double floor ( double );
+// extern double frexp ( double, int * );
 // extern double polevl ( double, void *, int );
-extern double j0 ( double );
-extern double j1 ( double );
+// extern double j0 ( double );
+// extern double j1 ( double );
 extern double sqrt ( double );
-extern double cbrt ( double );
+// extern double cbrt ( double );
 extern double exp ( double );
 extern double log ( double );
 extern double sin ( double );
