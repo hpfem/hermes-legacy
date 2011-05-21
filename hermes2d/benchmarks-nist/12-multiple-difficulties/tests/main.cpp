@@ -58,18 +58,18 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.                      
-const double OMEGA_C = 3.0 * M_PI / 2.0;
+const double omega_c = 3.0 * M_PI / 2.0;
 
-const double X_W = 0.0;
-const double Y_W = -3.0 / 4.0;
-const double R_0 = 3.0 / 4.0;
-const double ALPHA_W = 200.0;
+const double x_w = 0.0;
+const double y_w = -3.0 / 4.0;
+const double r_0 = 3.0 / 4.0;
+const double alpha_w = 200.0;
 
-const double X_P = -sqrt(5.0) / 4.0;
-const double Y_P = -1.0 / 4.0;
-const double ALPHA_P = 1000.0;
+const double x_p = -sqrt(5.0) / 4.0;
+const double y_p = -1.0 / 4.0;
+const double alpha_p = 1000.0;
 
-const double EPSILON = 1.0 / 100.0;
+const double epsilon = 1.0 / 100.0;
 
 // Weak forms.
 #include "../definitions.cpp"
@@ -88,13 +88,13 @@ int main(int argc, char* argv[])
   for (int i=0; i<INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Set exact solution.
-  CustomExactSolution exact(&mesh, ALPHA_P, X_P, Y_P, ALPHA_W, X_W, Y_W, OMEGA_C, R_0, EPSILON);
+  CustomExactSolution exact(&mesh, alpha_p, x_p, y_p, alpha_w, x_w, y_w, omega_c, r_0, epsilon);
 
   // Define right-hand side.
-  CustomRightHandSide rhs(ALPHA_P, X_P, Y_P, ALPHA_W, X_W, Y_W, OMEGA_C, R_0, EPSILON);
+  CustomRightHandSide rhs(alpha_p, x_p, y_p, alpha_w, x_w, y_w, omega_c, r_0, epsilon);
 
   // Initialize the weak formulation.
-  DefaultWeakFormPoisson wf(&rhs);
+  WeakFormsH1::DefaultWeakFormPoisson wf(&rhs);
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc_essential("Bdy", &exact);
