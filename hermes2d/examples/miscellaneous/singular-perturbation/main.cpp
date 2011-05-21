@@ -11,7 +11,7 @@ using namespace RefinementSelectors;
 //  be very difficult, but you'll see that Hermes can solve them easily even for large
 //  values of K.
 //
-//  PDE: -Laplace u + K*K*u = K*K.
+//  PDE: -Laplace u + K*K*u - K*K = 0.
 //
 //  Domain: square, see the file square.mesh.
 //
@@ -55,14 +55,14 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 // Problem parameters.
 const double K_squared = 1e4;    
 
-// Boundary markers.
-const int BDY_DIRICHLET = 1;
-
 // Weak forms.
 #include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {
+  // Instantiate a class with global functions.
+  Hermes2D hermes2d;
+
   // Load the mesh.
   Mesh mesh;
   H2DReader mloader;
@@ -70,23 +70,17 @@ int main(int argc, char* argv[])
 
   // Perform initial mesh refinements.
   for (int i=0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
-  mesh.refine_towards_boundary(1, INIT_REF_NUM_BDY);
+  mesh.refine_towards_boundary("Bdy", INIT_REF_NUM_BDY);
 
   // Initialize boundary conditions.
-  BCTypes bc_types;
-  bc_types.add_bc_dirichlet(BDY_DIRICHLET);
-
-  // Enter Dirichlet boundary values.
-  BCValues bc_values;
-  bc_values.add_zero(BDY_DIRICHLET);
+  DefaultEssentialBCConst bc_essential("Bdy", 0);
+  EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.
-  H1Space space(&mesh, &bc_types, &bc_values, P_INIT);
+  H1Space space(&mesh, &bcs, P_INIT);
 
   // Initialize the weak formulation.
-  WeakForm wf;
-  wf.add_matrix_form(callback(bilinear_form), HERMES_SYM);
-  wf.add_vector_form(callback(linear_form));
+  CustomWeakForm wf(K_squared);
 
   // Initialize coarse and reference mesh solution.
   Solution sln, ref_sln;
@@ -108,45 +102,44 @@ int main(int argc, char* argv[])
   cpu_time.tick();
 
   // Adaptivity loop:
-  int as = 1; 
-  bool done = false;
+  int as = 1; bool done = false;
   do
   {
     info("---- Adaptivity step %d:", as);
 
     // Construct globally refined reference mesh and setup reference space.
     Space* ref_space = Space::construct_refined_space(&space);
+    int ndof_ref = Space::get_num_dofs(ref_space);
 
-    // Assemble the reference problem.
-    info("Solving on reference mesh.");
-    bool is_linear = true;
-    DiscreteProblem* dp = new DiscreteProblem(&wf, ref_space, is_linear);
+    // Initialize matrix solver.
     SparseMatrix* matrix = create_matrix(matrix_solver);
     Vector* rhs = create_vector(matrix_solver);
     Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
-    dp->assemble(matrix, rhs);
+
+    // Initialize reference problem.
+    info("Solving on reference mesh.");
+    DiscreteProblem* dp = new DiscreteProblem(&wf, ref_space);
 
     // Time measurement.
     cpu_time.tick();
-    
-    // Solve the linear system of the reference problem. 
-    // If successful, obtain the solution.
-    if(solver->solve()) Solution::vector_to_solution(solver->get_solution(), ref_space, &ref_sln);
-    else error ("Matrix solver failed.\n");
+
+    // Initial coefficient vector for the Newton's method.  
+    scalar* coeff_vec = new scalar[ndof_ref];
+    memset(coeff_vec, 0, ndof_ref * sizeof(scalar));
+
+    // Perform Newton's iteration.
+    if (!hermes2d.solve_newton(coeff_vec, dp, solver, matrix, rhs)) error("Newton's iteration failed.");
+
+    // Translate the resulting coefficient vector into the Solution sln.
+    Solution::vector_to_solution(coeff_vec, ref_space, &ref_sln);
 
     // Project the fine mesh solution onto the coarse mesh.
     info("Projecting reference solution on coarse mesh.");
     OGProjection::project_global(&space, &ref_sln, &sln, matrix_solver); 
-
-    // Time measurement.
-    cpu_time.tick();
    
     // View the coarse mesh solution and polynomial orders.
     sview.show(&sln);
     oview.show(&space);
-
-    // Skip visualization time.
-    cpu_time.tick(HERMES_SKIP);
 
     // Calculate element errors and total error estimate.
     info("Calculating error estimate."); 
@@ -166,27 +159,28 @@ int main(int argc, char* argv[])
     graph_cpu.add_values(cpu_time.accumulated(), err_est_rel);
     graph_cpu.save("conv_cpu_est.dat");
 
-    // If err_est too large, adapt the mesh.
+    // If err_est_rel too large, adapt the mesh.
     if (err_est_rel < ERR_STOP) done = true;
     else 
     {
       info("Adapting coarse mesh.");
       done = adaptivity->adapt(&selector, THRESHOLD, STRATEGY, MESH_REGULARITY);
-      
-      // Increase the counter of performed adaptivity steps.
-      if (done == false)  as++;
     }
     if (Space::get_num_dofs(&space) >= NDOF_STOP) done = true;
 
     // Clean up.
+    delete [] coeff_vec;
     delete solver;
     delete matrix;
     delete rhs;
     delete adaptivity;
-    if(done == false) delete ref_space->get_mesh();
+    if (done == false)
+      delete ref_space->get_mesh();
     delete ref_space;
     delete dp;
     
+    // Increase counter.
+    as++;
   }
   while (done == false);
   
