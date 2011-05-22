@@ -11,24 +11,16 @@
 //
 //  Domain: arbitrary
 //
-//  BC:  Dirichlet for boundary marker 1: u = g_D(x,y)
-//       Natural for any other boundary marker:   (a_11(x,y)*nu_1 + a_21(x,y)*nu_2) * dudx
-//                                              + (a_12(x,y)*nu_1 + a_22(x,y)*nu_2) * dudy = g_N(x,y)
+//  BC:  Dirichlet for boundary marker "Horizontal": u = g_D(x,y)
+//       Natural for boundary marker "Vertical":   (a_11(x,y)*nu_1 + a_21(x,y)*nu_2) * dudx
+//                                               + (a_12(x,y)*nu_1 + a_22(x,y)*nu_2) * dudy = g_N(x,y)
 //
 //  The following parameters can be changed:
 
-const int P_INIT = 2;                             // Initial polynomial degree of all mesh elements.
+const int P_INIT = 3;                             // Initial polynomial degree of all mesh elements.
 const int INIT_REF_NUM = 3;                       // Number of initial uniform refinements.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
-
-const char* iterative_method = "cg";              // Name of the iterative method employed by AztecOO (ignored
-                                                  // by the other solvers).
-                                                  // Possibilities: gmres, cg, cgs, tfqmr, bicgstab.
-const char* preconditioner = "jacobi";            // Name of the preconditioner employed by AztecOO (ignored by
-                                                  // the other solvers).
-                                                  // Possibilities: none, jacobi, neumann, least-squares, or a
-                                                  // preconditioner from IFPACK (see solver/aztecoo.h).
 
 int main(int argc, char* argv[])
 {
@@ -45,10 +37,10 @@ int main(int argc, char* argv[])
   mloader.load("domain.mesh", &mesh);
 
   // Perform initial mesh refinements.
-  for (int i=0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
+  for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
   
   // Initialize boundary conditions
-  CustomEssentialBCNonConst bc_essential("Boundary horizontal");
+  CustomEssentialBCNonConst bc_essential("Horizontal");
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.
@@ -66,13 +58,6 @@ int main(int argc, char* argv[])
   Vector* rhs = create_vector(matrix_solver);
   Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
 
-  if (matrix_solver == SOLVER_AZTECOO)
-  {
-    ((AztecOOSolver*) solver)->set_solver(iterative_method);
-    ((AztecOOSolver*) solver)->set_precond(preconditioner);
-    // Using default iteration parameters (see solver/aztecoo.h).
-  }
-
   // Initial coefficient vector for the Newton's method.  
   scalar* coeff_vec = new scalar[ndof];
   memset(coeff_vec, 0, ndof*sizeof(scalar));
@@ -88,10 +73,10 @@ int main(int argc, char* argv[])
   cpu_time.tick();
 
   // Clean up.
+  delete [] coeff_vec;
   delete solver;
   delete matrix;
   delete rhs;
-  delete [] coeff_vec;
 
   // View the solution and mesh.
   ScalarView sview("Solution", new WinGeom(0, 0, 440, 350));

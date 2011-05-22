@@ -6,13 +6,13 @@ vertices = [
 ]
 
 elements = [
-  [ 0, 1, 2, 3, "Material A" ]
+  [ 0, 1, 2, 3, "Mat" ]
 ]
 
 boundaries = [
-  [ 0, 1, "Boundary horizontal" ],
-  [ 1, 2, "Boundary vertical" ],
-  [ 2, 3, "Boundary horizontal" ],
-  [ 3, 0, "Boundary vertical" ]
+  [ 0, 1, "Horizontal" ],
+  [ 1, 2, "Vertical" ],
+  [ 2, 3, "Horizontal" ],
+  [ 3, 0, "Vertical" ]
 ]
 

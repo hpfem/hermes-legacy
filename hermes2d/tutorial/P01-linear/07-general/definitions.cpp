@@ -13,7 +13,9 @@ double a_0(double x, double y) { return 0.0;}
 /* Custom non-constant Dirichlet condition */
 
 CustomEssentialBCNonConst::CustomEssentialBCNonConst(std::string marker) 
-      : EssentialBoundaryCondition(Hermes::vector<std::string>(marker)) { }
+      : EssentialBoundaryCondition(Hermes::vector<std::string>(marker)) 
+{ 
+}
 
 inline EssentialBoundaryCondition::EssentialBCValueType CustomEssentialBCNonConst::get_value_type() const 
 { 
@@ -40,8 +42,10 @@ CustomWeakFormGeneral::CustomWeakFormGeneral(std::string bdy_vertical) : WeakFor
   add_vector_form_surf(new VectorFormSurfGeneral(0, bdy_vertical));
 }
 
-CustomWeakFormGeneral::MatrixFormVolGeneral::MatrixFormVolGeneral(int i, int j) : WeakForm::MatrixFormVol(i, j, 
-                                                                                                          HERMES_ANY, HERMES_SYM) { }
+CustomWeakFormGeneral::MatrixFormVolGeneral::MatrixFormVolGeneral(int i, int j) 
+  : WeakForm::MatrixFormVol(i, j, HERMES_ANY, HERMES_SYM) 
+{ 
+}
 
 scalar CustomWeakFormGeneral::MatrixFormVolGeneral::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
                                                           Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
@@ -68,7 +72,9 @@ Ord CustomWeakFormGeneral::MatrixFormVolGeneral::ord(int n, double *wt, Func<Ord
   return u->val[0] * v->val[0] * e->x[0] * e->x[0]; 
 }
 
-CustomWeakFormGeneral::VectorFormVolGeneral::VectorFormVolGeneral(int i) : WeakForm::VectorFormVol(i) { }
+CustomWeakFormGeneral::VectorFormVolGeneral::VectorFormVolGeneral(int i) : WeakForm::VectorFormVol(i) 
+{ 
+}
 
 scalar CustomWeakFormGeneral::VectorFormVolGeneral::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, 
                                                           Geom<double> *e, ExtData<scalar> *ext) const 
@@ -102,7 +108,9 @@ double CustomWeakFormGeneral::VectorFormVolGeneral::rhs(double x, double y) cons
 }
 
 CustomWeakFormGeneral::VectorFormSurfGeneral::VectorFormSurfGeneral(int i, std::string area) 
-      : WeakForm::VectorFormSurf(i, area) { }
+      : WeakForm::VectorFormSurf(i, area) 
+{ 
+}
 
 scalar CustomWeakFormGeneral::VectorFormSurfGeneral::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, 
                                                            Geom<double> *e, ExtData<scalar> *ext) const 
