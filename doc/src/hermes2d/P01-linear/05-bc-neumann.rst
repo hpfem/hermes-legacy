@@ -49,7 +49,7 @@ Using the Neumann condition :eq:`poisson1c`, we obtain
     :label: poissonweak01bbc
 
          \int_\Omega \lambda \nabla u \cdot \nabla v \;\mbox{d\bfx} - \int_{\Gamma_{Outer}} C_{flux} v   \;\mbox{dS}
-        - \int_\Omega C v\;\mbox{d\bfx} = 0.
+        - \int_\Omega C_{src} v\;\mbox{d\bfx} = 0.
 
 This weak formulation contains all integrals from the example 04-bc-dirichlet plus one new surface
 integral
@@ -57,6 +57,9 @@ integral
 .. math::
 
     - \int_{\Gamma_{Outer}} C_{flux} v   \;\mbox{dS}
+
+Default surface vector form
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This integral can be added using the default $H^1$ form DefaultVectorFormSurf that 
 has the constructors
@@ -105,7 +108,8 @@ and its constructor in `definitions.cpp <http://git.hpfem.org/hermes.git/blob/HE
 Sample results
 ~~~~~~~~~~~~~~
 
-The output for the parameters A = 1.0, B = 1,0, C = 20.0 and HEAT_FLUX = 0.0 is shown below:
+The output for the parameters $C_{src} = 3000$, $\lambda_{Al} = 236$, $\lambda_{Cu} = 386$,
+$A = 1$, $B = 1$, $C = 20$ and $C_{flux} = 0$ is shown below:
 
 .. image:: 04-05-06-bc/neumann.png
    :align: center

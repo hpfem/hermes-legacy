@@ -58,6 +58,7 @@ Hermes, however, needs the equation in the form
     :label: poissonweak01b
 
          \int_\Omega \lambda \nabla u \cdot \nabla v \;\mbox{d\bfx} - \int_\Omega C_{src} v \;\mbox{d\bfx} = 0\ \ \ \mbox{for all}\ v \in V.
+
 Let us explain why.
 
 Jacobian-residual formulation
@@ -114,9 +115,9 @@ The corresponding code looks as follows::
       add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, marker_cu, lambda_cu));
 
       // Residual forms - volumetric.
-      add_vector_form(new WeakFormsH1::DefaultResidualLinearDiffusion(0, marker_al, lambda_al));
-      add_vector_form(new WeakFormsH1::DefaultResidualLinearDiffusion(0, marker_cu, lambda_cu));
-      add_vector_form(new WeakFormsH1::DefaultVectorFormConst(0, HERMES_ANY, -vol_heat_src));
+      add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, marker_al, lambda_al));
+      add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, marker_cu, lambda_cu));
+      add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, -vol_heat_src));
     };
 
 Here, vol_heat_src stands for $C_{src}$. 
@@ -133,9 +134,9 @@ $\lambda_{al}$ and $\lambda_{cu}$ to general cubic splines::
       add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, marker_cu, 1.0, lambda_cu));
 
       // Residual forms - volumetric.
-      add_vector_form(new WeakFormsH1::DefaultResidualLinearDiffusion(0, marker_al, 1.0, lambda_al));
-      add_vector_form(new WeakFormsH1::DefaultResidualLinearDiffusion(0, marker_cu, 1.0, lambda_cu));
-      add_vector_form(new WeakFormsH1::DefaultVectorFormConst(0, HERMES_ANY, -vol_heat_src));
+      add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, marker_al, 1.0, lambda_al));
+      add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, marker_cu, 1.0, lambda_cu));
+      add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, -vol_heat_src));
     };
 
 The constant 1.0 is a scaling factor for the spline - a useful thing 
@@ -147,15 +148,13 @@ in tutorial part P02.
 
 In the rest of part P01 we will focus on linear problems.
 
-
-Default weak forms
-~~~~~~~~~~~~~~~~~~
+Default Jacobian for the diffusion operator
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Weak forms in Hermes have a clean object-oriented hierarchy. For many problems they 
 are readily available, and for the rest they can be extended easily. The above 
 default forms can be found in the file `weakforms_h1.h 
 <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/src/weakform_library/weakforms_h1.h>`_.
-
 To begin with, the line 
 
 ::
@@ -192,11 +191,14 @@ The form can be assigned to multiple material markers::
                              CubicSpline* c_spline = HERMES_DEFAULT_SPLINE,
                              SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
+Default residual for the diffusion operator
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Similarly, the line
 
 ::
 
-    add_vector_form(new DefaultResidualLinearDiffusion(0, marker_al, lambda_al));
+    add_vector_form(new DefaultResidualDiffusion(0, marker_al, lambda_al));
 
 adds to the residual weak form the integral
 
@@ -218,9 +220,12 @@ to multiple material markers::
                              CubicSpline* c_spline = HERMES_DEFAULT_SPLINE, 
                              GeomType gt = HERMES_PLANAR);
 
+Default volumetric vector form
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 The last line that we did not cover is::
 
-    add_vector_form(new DefaultVectorFormConst(0, HERMES_ANY, -vol_heat_src));
+    add_vector_form(new DefaultVectorFormVol(0, HERMES_ANY, -vol_heat_src));
 
 which adds to the residual weak form the integral
 

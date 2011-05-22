@@ -1,5 +1,5 @@
-Determination of Quadrature Orders in Weak Forms
-------------------------------------------------
+About Quadrature Orders
+-----------------------
 
 You may wonder why templates are used in the definition of weak forms. As a matter of fact, 
 they do not have to be, as we will see in a moment. However, if the weak form only contains 
