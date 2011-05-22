@@ -1,6 +1,7 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
 #include "hermes2d.h"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -67,9 +68,6 @@ const double x_p = -sqrt(5.0) / 4.0;
 const double y_p = -1.0 / 4.0;
 const double alpha_p = 1000.0;
 const double epsilon = 1.0 / 100.0;
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
