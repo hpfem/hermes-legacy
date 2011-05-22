@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "../definitions.h"
+#include "hermes2d.h"
 
 using namespace RefinementSelectors;
 
@@ -68,6 +68,9 @@ const double y_p = -1.0 / 4.0;
 const double alpha_p = 1000.0;
 const double epsilon = 1.0 / 100.0;
 
+// Weak forms.
+#include "../definitions.cpp"
+
 int main(int argc, char* argv[])
 {
   // Instantiate a class with global functions.
@@ -76,7 +79,7 @@ int main(int argc, char* argv[])
   // Load the mesh.
   Mesh mesh;
   H2DReader mloader;
-  mloader.load("lshape.mesh", &mesh);
+  mloader.load("../lshape.mesh", &mesh);
 
   // Perform initial mesh refinement.
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
