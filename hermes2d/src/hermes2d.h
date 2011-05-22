@@ -114,7 +114,7 @@
 #include "ogprojection.h"
 
 #include "runge_kutta.h"
-#include "spline.h"
+#include "function/spline.h"
 #include "tables.h"
 
 #include "definitions.h"

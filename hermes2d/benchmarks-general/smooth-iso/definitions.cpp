@@ -25,10 +25,10 @@ public:
 
 /* Right-hand side */
 
-class CustomRightHandSide: public DefaultFunction
+class CustomRightHandSide: public HermesFunctionXY
 {
 public:
-    CustomRightHandSide() : DefaultFunction() { }
+    CustomRightHandSide() : HermesFunctionXY() { }
 
     virtual scalar value(double x, double y) const {
         return 2*sin(x)*sin(y);
@@ -44,7 +44,7 @@ public:
 class CustomWeakFormPoisson : public WeakForm
 {
 public:
-    CustomWeakFormPoisson(DefaultFunction* rhs) : WeakForm(1) {
+    CustomWeakFormPoisson(HermesFunctionXY* rhs) : WeakForm(1) {
         add_matrix_form(new DefaultJacobianDiffusion(0, 0));
         add_vector_form(new DefaultVectorFormVol(0, HERMES_ANY, 1.0, rhs));
     }

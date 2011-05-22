@@ -4,10 +4,10 @@ using namespace WeakFormsH1;
 
 /* Right-hand side */
 
-class CustomRightHandSide: public DefaultFunction
+class CustomRightHandSide: public HermesFunctionXY
 {
 public:
-  CustomRightHandSide(double alpha) : DefaultFunction(), alpha(alpha) {};
+  CustomRightHandSide(double alpha) : HermesFunctionXY(), alpha(alpha) {};
 
   virtual scalar value(double x, double y) const {
       return -sin(1.0/(alpha + pow((pow(x,2) + pow(y,2)),(1.0/2.0))))/pow((alpha

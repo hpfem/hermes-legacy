@@ -25,11 +25,11 @@
 
 #define callback(a)	a<double, scalar>, a<Ord, Ord>
 
-/// Base type for orders of functions.
+/// Base type for integration orders of functions.
 ///
 /// We defined a special arithmetics with this type to be able to analyze forms
-/// and determine the necessary integration order.  This works for forms, but it also
-/// works for user-defined functions.
+/// and determine the necessary integration order. This works for forms and
+/// for user-defined functions.
 class Ord
 {
 public:
@@ -445,16 +445,62 @@ public:
   }
 };
 
-// Generic class for functions of x, y in weak forms.
-class DefaultFunction
+// Generic class for functions of one variable.
+class HermesFunction
 {
 public:
-  DefaultFunction()
+  HermesFunction() 
   {
-    this->is_constant = false;
-    this->const_value = -9999;
   }
-  DefaultFunction(scalar value)
+
+  virtual scalar value(double x) const = 0;
+
+  virtual Ord ord(Ord x) const = 0;
+};
+
+// Generic class for functions of two variables.
+class HermesFunctionXY
+{
+public:
+  HermesFunctionXY() 
+  {
+  }
+
+  virtual scalar value(double x, double y) const = 0;
+
+  virtual Ord ord(Ord x, Ord y) const = 0;
+};
+
+// Class for constant functions of one variable.
+class ConstFunction : public HermesFunction
+{
+public:
+  ConstFunction(scalar value)
+  {
+    this->is_constant = true;
+    this->const_value = value;
+  };
+
+  virtual scalar value(double x) const
+  {
+    return const_value;
+  };
+
+  virtual Ord ord(Ord x) const
+  {
+    return Ord(1);
+  };
+
+protected:
+  bool is_constant;
+  scalar const_value;
+};
+
+// Class for constant functions of two variables.
+class ConstFunctionXY : public HermesFunctionXY
+{
+public:
+  ConstFunctionXY(scalar value)
   {
     this->is_constant = true;
     this->const_value = value;
@@ -474,6 +520,24 @@ protected:
   bool is_constant;
   scalar const_value;
 };
+
+
+// Class for smooth functions of one variable.
+class SmoothFunction : public HermesFunction
+{
+public:
+  SmoothFunction()
+  {
+  };
+
+  virtual scalar value(double x) const = 0;
+
+  virtual scalar derivative(double x) const = 0;
+
+  virtual Ord ord(Ord x) const = 0;
+};
+
+
 
 
 

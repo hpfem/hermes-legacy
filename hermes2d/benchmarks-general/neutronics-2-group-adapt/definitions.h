@@ -63,7 +63,7 @@ class CustomWeakForm : public DefaultWeakFormFixedSource
   
   public:
     CustomWeakForm(const MaterialPropertyMaps& matprop, std::string bdy_gamma,
-                   const std::vector<DefaultFunction*>& f_src);
+                   const std::vector<HermesFunctionXY*>& f_src);
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -86,11 +86,11 @@ class CustomPiecewiseFunction
     std::string get_material(double x, double y) const;
 };
 
-class CustomRightHandSide_g1 : public DefaultFunction, public CustomPiecewiseFunction
+class CustomRightHandSide_g1 : public HermesFunctionXY, public CustomPiecewiseFunction
 {
 public:
   CustomRightHandSide_g1(double a, double b, const MaterialPropertyMaps& matprop, const std::string regions[])
-    : DefaultFunction(), CustomPiecewiseFunction(a, b, matprop, regions)
+    : HermesFunctionXY(), CustomPiecewiseFunction(a, b, matprop, regions)
   {};
 
   virtual double value(double x, double y) const;
@@ -100,11 +100,11 @@ public:
   }
 };
 
-class CustomRightHandSide_g2 : public DefaultFunction, public CustomPiecewiseFunction
+class CustomRightHandSide_g2 : public HermesFunctionXY, public CustomPiecewiseFunction
 {
 public:
   CustomRightHandSide_g2(double a, double b, const MaterialPropertyMaps& matprop, const std::string regions[])
-    : DefaultFunction(), CustomPiecewiseFunction(a, b, matprop, regions)
+    : HermesFunctionXY(), CustomPiecewiseFunction(a, b, matprop, regions)
   {};
 
   virtual double value(double x, double y) const;

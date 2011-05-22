@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
   const double a = 0., b = 1.;
   CustomWeakForm wf( 
     matprop, "gamma",
-    Hermes::vector<DefaultFunction*>(
+    Hermes::vector<HermesFunctionXY*>(
       new CustomRightHandSide_g1(a, b, matprop, regions), 
       new CustomRightHandSide_g2(a, b, matprop, regions)
     )

@@ -4,21 +4,21 @@ namespace WeakFormsH1
 {
   DefaultMatrixFormVol::DefaultMatrixFormVol
     (int i, int j, std::string area, scalar const_coeff, 
-    DefaultFunction* f_coeff, SymFlag sym, 
+    HermesFunctionXY* f_coeff, SymFlag sym, 
     GeomType gt)
     : WeakForm::MatrixFormVol(i, j, area, sym), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
   }
 
   DefaultMatrixFormVol::DefaultMatrixFormVol
     (int i, int j, Hermes::vector<std::string> areas,scalar const_coeff, 
-    DefaultFunction* f_coeff, SymFlag sym, GeomType gt)
+    HermesFunctionXY* f_coeff, SymFlag sym, GeomType gt)
     : WeakForm::MatrixFormVol(i, j, areas, sym), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
   }
 
   DefaultMatrixFormVol::~DefaultMatrixFormVol() 
@@ -252,21 +252,21 @@ namespace WeakFormsH1
 
 
   DefaultVectorFormVol::DefaultVectorFormVol(int i, std::string area, scalar const_coeff,
-                                             DefaultFunction* f_coeff,
+                                             HermesFunctionXY* f_coeff,
                                              GeomType gt)
     : WeakForm::VectorFormVol(i, area), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
   }
 
   DefaultVectorFormVol::DefaultVectorFormVol(int i, Hermes::vector<std::string> areas, scalar const_coeff,
-                                             DefaultFunction* f_coeff,
+                                             HermesFunctionXY* f_coeff,
                                              GeomType gt)
     : WeakForm::VectorFormVol(i, areas), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
   }
 
   DefaultVectorFormVol::~DefaultVectorFormVol() 
@@ -330,23 +330,23 @@ namespace WeakFormsH1
 
 
   DefaultResidualVol::DefaultResidualVol(int i, std::string area, scalar const_coeff,
-                                         DefaultFunction* f_coeff,
+                                         HermesFunctionXY* f_coeff,
                                          GeomType gt)
     : WeakForm::VectorFormVol(i, area),
       idx_i(i), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
   }
 
   DefaultResidualVol::DefaultResidualVol(int i, Hermes::vector<std::string> areas, scalar const_coeff,
-                                         DefaultFunction* f_coeff,
+                                         HermesFunctionXY* f_coeff,
                                          GeomType gt)
     : WeakForm::VectorFormVol(i, areas),
       idx_i(i), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
   }
 
   DefaultResidualVol::~DefaultResidualVol() 
@@ -551,21 +551,21 @@ namespace WeakFormsH1
  
   
   DefaultMatrixFormSurf::DefaultMatrixFormSurf(int i, int j, std::string area,
-                                               scalar const_coeff, DefaultFunction* f_coeff,
+                                               scalar const_coeff, HermesFunctionXY* f_coeff,
                                                GeomType gt)
     : WeakForm::MatrixFormSurf(i, j, area), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
   }
   
   DefaultMatrixFormSurf::DefaultMatrixFormSurf(int i, int j, Hermes::vector<std::string> areas,
-                                               scalar const_coeff, DefaultFunction* f_coeff,
+                                               scalar const_coeff, HermesFunctionXY* f_coeff,
                                                GeomType gt)
     : WeakForm::MatrixFormSurf(i, j, areas), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
   }
 
   DefaultMatrixFormSurf::~DefaultMatrixFormSurf() 
@@ -687,21 +687,21 @@ namespace WeakFormsH1
 
 
   DefaultVectorFormSurf::DefaultVectorFormSurf(int i, std::string area, scalar const_coeff,
-                                               DefaultFunction* f_coeff,
+                                               HermesFunctionXY* f_coeff,
                                                GeomType gt)
     : WeakForm::VectorFormSurf(i, area), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
   }
   
   DefaultVectorFormSurf::DefaultVectorFormSurf(int i, Hermes::vector<std::string> areas, scalar const_coeff,
-                                               DefaultFunction* f_coeff,
+                                               HermesFunctionXY* f_coeff,
                                                GeomType gt)
     : WeakForm::VectorFormSurf(i, areas), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
   }
 
   DefaultVectorFormSurf::~DefaultVectorFormSurf() 
@@ -816,23 +816,23 @@ namespace WeakFormsH1
   */
 
   DefaultResidualSurf::DefaultResidualSurf(int i, std::string area, scalar const_coeff,
-                                           DefaultFunction* f_coeff,
+                                           HermesFunctionXY* f_coeff,
                                            GeomType gt)
     : WeakForm::VectorFormSurf(i, area),
       idx_i(i), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
   }
   
   DefaultResidualSurf::DefaultResidualSurf(int i, Hermes::vector<std::string> areas, scalar const_coeff,
-                                           DefaultFunction* f_coeff,
+                                           HermesFunctionXY* f_coeff,
                                            GeomType gt)
     : WeakForm::VectorFormSurf(i, areas),
       idx_i(i), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
   }
 
   DefaultResidualSurf::~DefaultResidualSurf() 
@@ -910,7 +910,7 @@ namespace WeakFormsH1
   };
   
   
-  DefaultWeakFormPoisson::DefaultWeakFormPoisson(DefaultFunction* rhs,
+  DefaultWeakFormPoisson::DefaultWeakFormPoisson(HermesFunctionXY* rhs,
                                                  std::string area, scalar const_coeff,
                                                  CubicSpline* spline_coeff,
                                                  GeomType gt) : WeakForm()

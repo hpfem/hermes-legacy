@@ -4,22 +4,22 @@ namespace WeakFormsHcurl
 {
   DefaultMatrixFormVol::DefaultMatrixFormVol
     (int i, int j, std::string area, scalar const_coeff, 
-    DefaultFunction* f_coeff, SymFlag sym, 
+    HermesFunctionXY* f_coeff, SymFlag sym, 
     GeomType gt)
     : WeakForm::MatrixFormVol(i, j, area, sym), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
     else error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
  
   DefaultMatrixFormVol::DefaultMatrixFormVol
     (int i, int j, Hermes::vector<std::string> areas,scalar const_coeff, 
-    DefaultFunction* f_coeff, SymFlag sym, GeomType gt)
+    HermesFunctionXY* f_coeff, SymFlag sym, GeomType gt)
     : WeakForm::MatrixFormVol(i, j, areas, sym), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
     else error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
 
@@ -116,29 +116,29 @@ namespace WeakFormsHcurl
      
       
   DefaultVectorFormVol::DefaultVectorFormVol(int i, std::string area, scalar const_coeff0, scalar const_coeff1,
-                                             DefaultFunction* f_coeff0, DefaultFunction* f_coeff1,
+                                             HermesFunctionXY* f_coeff0, HermesFunctionXY* f_coeff1,
                                              GeomType gt)
     : WeakForm::VectorFormVol(i, area), const_coeff0(const_coeff0), const_coeff1(const_coeff1),
                 function_coeff0(f_coeff0), function_coeff1(f_coeff1), gt(gt)
   { 
     // If f_coeff0 is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff0 == HERMES_DEFAULT_FUNCTION) this->function_coeff0 = new DefaultFunction(1.0);
+    if (f_coeff0 == HERMES_DEFAULT_FUNCTION) this->function_coeff0 = new ConstFunctionXY(1.0);
     else error("Nonconstant coefficients in Hcurl forms not implemented yet.");
-    if (f_coeff1 == HERMES_DEFAULT_FUNCTION) this->function_coeff1 = new DefaultFunction(1.0);
+    if (f_coeff1 == HERMES_DEFAULT_FUNCTION) this->function_coeff1 = new ConstFunctionXY(1.0);
     else error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
 
   DefaultVectorFormVol::DefaultVectorFormVol(int i, Hermes::vector<std::string> areas, 
                                              scalar const_coeff0, scalar const_coeff1,
-                                             DefaultFunction* f_coeff0, DefaultFunction* f_coeff1,
+                                             HermesFunctionXY* f_coeff0, HermesFunctionXY* f_coeff1,
                                              GeomType gt)
     : WeakForm::VectorFormVol(i, areas), const_coeff0(const_coeff0), const_coeff1(const_coeff1),
                 function_coeff0(f_coeff0), function_coeff1(f_coeff1), gt(gt)
   { 
     // If f_coeff0 is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff0 == HERMES_DEFAULT_FUNCTION) this->function_coeff0 = new DefaultFunction(1.0);
+    if (f_coeff0 == HERMES_DEFAULT_FUNCTION) this->function_coeff0 = new ConstFunctionXY(1.0);
     else error("Nonconstant coefficients in Hcurl forms not implemented yet.");
-    if (f_coeff1 == HERMES_DEFAULT_FUNCTION) this->function_coeff1 = new DefaultFunction(1.0);
+    if (f_coeff1 == HERMES_DEFAULT_FUNCTION) this->function_coeff1 = new ConstFunctionXY(1.0);
     else error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
 
@@ -173,24 +173,24 @@ namespace WeakFormsHcurl
 
 
   DefaultResidualVol::DefaultResidualVol(int i, std::string area, scalar const_coeff,
-                                         DefaultFunction* f_coeff,
+                                         HermesFunctionXY* f_coeff,
                                          GeomType gt)
     : WeakForm::VectorFormVol(i, area),
       idx_i(i), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
     else error("Nonconstant functions in Hcurl forms not implemented yet.");
   }
 
   DefaultResidualVol::DefaultResidualVol(int i, Hermes::vector<std::string> areas, scalar const_coeff,
-                                         DefaultFunction* f_coeff,
+                                         HermesFunctionXY* f_coeff,
                                          GeomType gt)
     : WeakForm::VectorFormVol(i, areas),
       idx_i(i), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
     else error("Nonconstant functions in Hcurl forms not implemented yet.");
   }
 
@@ -306,22 +306,22 @@ namespace WeakFormsHcurl
  
 
   DefaultMatrixFormSurf::DefaultMatrixFormSurf(int i, int j, std::string area,
-                                               scalar const_coeff, DefaultFunction* f_coeff,
+                                               scalar const_coeff, HermesFunctionXY* f_coeff,
                                                GeomType gt)
     : WeakForm::MatrixFormSurf(i, j, area), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
     else error("Nonconstant functions in Hcurl forms not implemented yet.");
   }
   
   DefaultMatrixFormSurf::DefaultMatrixFormSurf(int i, int j, Hermes::vector<std::string> areas,
-                                               scalar const_coeff, DefaultFunction* f_coeff,
+                                               scalar const_coeff, HermesFunctionXY* f_coeff,
                                                GeomType gt)
     : WeakForm::MatrixFormSurf(i, j, areas), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
     else error("Nonconstant functions in Hcurl forms not implemented yet.");
   }
 
@@ -361,22 +361,22 @@ namespace WeakFormsHcurl
 
 
   DefaultResidualSurf::DefaultResidualSurf(int i, std::string area,
-                                           scalar const_coeff, DefaultFunction* f_coeff,
+                                           scalar const_coeff, HermesFunctionXY* f_coeff,
                                            GeomType gt)
     : WeakForm::VectorFormSurf(i, area), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
     else error("Nonconstant functions in Hcurl forms not implemented yet.");
   }
 
   DefaultResidualSurf::DefaultResidualSurf(int i, Hermes::vector<std::string> areas,
-                                           scalar const_coeff, DefaultFunction* f_coeff,
+                                           scalar const_coeff, HermesFunctionXY* f_coeff,
                                            GeomType gt)
     : WeakForm::VectorFormSurf(i, areas), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
     else error("Nonconstant functions in Hcurl forms not implemented yet.");
   }
 
@@ -421,22 +421,22 @@ namespace WeakFormsHcurl
 
 
   DefaultVectorFormSurf::DefaultVectorFormSurf(int i, std::string area, scalar const_coeff,
-                                               DefaultFunction* f_coeff,
+                                               HermesFunctionXY* f_coeff,
                                                GeomType gt)
     : WeakForm::VectorFormSurf(i, area), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
     else error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
   
   DefaultVectorFormSurf::DefaultVectorFormSurf(int i, Hermes::vector<std::string> areas, scalar const_coeff,
-                                               DefaultFunction* f_coeff,
+                                               HermesFunctionXY* f_coeff,
                                                GeomType gt)
     : WeakForm::VectorFormSurf(i, areas), const_coeff(const_coeff), function_coeff(f_coeff), gt(gt)
   {
     // If f_coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new DefaultFunction(1.0);
+    if (f_coeff == HERMES_DEFAULT_FUNCTION) this->function_coeff = new ConstFunctionXY(1.0);
     else error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
 

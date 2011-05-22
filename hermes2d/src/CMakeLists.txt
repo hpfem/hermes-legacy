@@ -74,7 +74,7 @@ set(SRC
        h2d_common.cpp  
        discrete_problem.cpp
        runge_kutta.cpp
-       spline.cpp
+       function/spline.cpp
        boundaryconditions/essential_bcs.cpp
        hermes_module.cpp
 	   

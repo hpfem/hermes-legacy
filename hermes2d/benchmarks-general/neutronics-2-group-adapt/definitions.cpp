@@ -1,7 +1,7 @@
 #include "definitions.h"
    
 CustomWeakForm::CustomWeakForm( const MaterialPropertyMaps& matprop, std::string bdy_gamma,
-                                const std::vector<DefaultFunction*>& f_src )
+                                const std::vector<HermesFunctionXY*>& f_src )
   : DefaultWeakFormFixedSource(matprop, f_src)
 {
   for (unsigned int g = 0; g < matprop.get_G(); g++)

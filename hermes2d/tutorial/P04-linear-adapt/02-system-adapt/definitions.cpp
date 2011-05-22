@@ -40,11 +40,11 @@ public:
 
 /* Right-hand side */
 
-class CustomRightHandSide1: public DefaultFunction
+class CustomRightHandSide1: public HermesFunctionXY
 {
 public:
   CustomRightHandSide1(double K, double d_u, double sigma)
-    : DefaultFunction(), d_u(d_u), sigma(sigma) 
+    : HermesFunctionXY(), d_u(d_u), sigma(sigma) 
   {
     cef1 = new CustomExactFunction1();
     cef2 = new CustomExactFunction2(K);
@@ -70,11 +70,11 @@ public:
   double d_u, sigma;
 };
 
-class CustomRightHandSide2: public DefaultFunction
+class CustomRightHandSide2: public HermesFunctionXY
 {
 public:
   CustomRightHandSide2(double K, double d_v)
-    : DefaultFunction(), d_v(d_v) 
+    : HermesFunctionXY(), d_v(d_v) 
   {
     cef1 = new CustomExactFunction1();
     cef2 = new CustomExactFunction2(K);

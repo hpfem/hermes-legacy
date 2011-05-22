@@ -16,11 +16,11 @@ public:
   double k, alpha;
 };
 
-class CustomRightHandSide : public DefaultFunction
+class CustomRightHandSide : public HermesFunctionXY
 {
 public:
   CustomRightHandSide(double k, double alpha)
-    : DefaultFunction(), k(k), alpha(alpha) {
+    : HermesFunctionXY(), k(k), alpha(alpha) {
     cef = new CustomExactFunction(k, alpha);
   };
 

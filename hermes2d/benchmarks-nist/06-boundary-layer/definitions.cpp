@@ -4,10 +4,10 @@ using namespace WeakFormsH1;
 
 /* Right-hand side */
 
-class CustomRightHandSide: public DefaultFunction
+class CustomRightHandSide: public HermesFunctionXY
 {
 public:
-  CustomRightHandSide(double epsilon) : DefaultFunction(), epsilon(epsilon) {};
+  CustomRightHandSide(double epsilon) : HermesFunctionXY(), epsilon(epsilon) {};
 
   virtual double value(double x, double y) const{
     return -epsilon*(-2*pow(M_PI,2)*(1 - exp(-(1 - x)/epsilon))*(1 - exp(-(1 - y)/epsilon))*cos(M_PI*(x + y))

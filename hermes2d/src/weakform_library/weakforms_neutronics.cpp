@@ -772,7 +772,7 @@ namespace WeakFormsNeutronics
         }
         
         DefaultWeakFormFixedSource::DefaultWeakFormFixedSource( const MaterialPropertyMaps& matprop, 
-                                                                DefaultFunction *f_src, std::string src_area,
+                                                                HermesFunctionXY *f_src, std::string src_area,
                                                                 GeomType geom_type  ) : WeakForm(matprop.get_G())
         {
           lhs_init(matprop.get_G(), matprop, geom_type);
@@ -781,7 +781,7 @@ namespace WeakFormsNeutronics
         }
         
         DefaultWeakFormFixedSource::DefaultWeakFormFixedSource( const MaterialPropertyMaps& matprop, 
-                                                                DefaultFunction *f_src,
+                                                                HermesFunctionXY *f_src,
                                                                 Hermes::vector<std::string> src_areas,
                                                                 GeomType geom_type  ) : WeakForm(matprop.get_G())
         {
@@ -791,7 +791,7 @@ namespace WeakFormsNeutronics
         }
         
         DefaultWeakFormFixedSource::DefaultWeakFormFixedSource( const MaterialPropertyMaps& matprop, 
-                                                                const std::vector<DefaultFunction*>& f_src,
+                                                                const std::vector<HermesFunctionXY*>& f_src,
                                                                 std::string src_area, 
                                                                 GeomType geom_type ) : WeakForm(matprop.get_G())
         {
@@ -804,7 +804,7 @@ namespace WeakFormsNeutronics
         }
         
         DefaultWeakFormFixedSource::DefaultWeakFormFixedSource( const MaterialPropertyMaps& matprop, 
-                                                                const std::vector<DefaultFunction*>& f_src,
+                                                                const std::vector<HermesFunctionXY*>& f_src,
                                                                 Hermes::vector<std::string> src_areas,
                                                                 GeomType geom_type ) : WeakForm(matprop.get_G())
         {

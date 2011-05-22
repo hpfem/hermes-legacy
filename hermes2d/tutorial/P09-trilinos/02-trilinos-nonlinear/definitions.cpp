@@ -2,11 +2,13 @@
 
 /* Right-hand side */
 
-class CustomRightHandSide: public DefaultFunction
+class CustomRightHandSide: public HermesFunctionXY
 {
 public:
   CustomRightHandSide()
-    : DefaultFunction() {};
+    : HermesFunctionXY() 
+  {
+  };
 
   virtual double value(double x, double y) const {
     return - kx(x,y) * dudx(x,y) - ky(x,y) * dudy(x,y) - k(x,y) * (dudxx(x,y) + dudyy(x,y));
