@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -59,20 +59,14 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 
 // Problem parameters.                      
 const double omega_c = 3.0 * M_PI / 2.0;
-
 const double x_w = 0.0;
 const double y_w = -3.0 / 4.0;
 const double r_0 = 3.0 / 4.0;
 const double alpha_w = 200.0;
-
 const double x_p = -sqrt(5.0) / 4.0;
 const double y_p = -1.0 / 4.0;
 const double alpha_p = 1000.0;
-
 const double epsilon = 1.0 / 100.0;
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
@@ -82,16 +76,16 @@ int main(int argc, char* argv[])
   // Load the mesh.
   Mesh mesh;
   H2DReader mloader;
-  mloader.load("../lshape.mesh", &mesh);     // quadrilaterals
+  mloader.load("lshape.mesh", &mesh);
 
   // Perform initial mesh refinement.
-  for (int i=0; i<INIT_REF_NUM; i++) mesh.refine_all_elements();
+  for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Set exact solution.
-  CustomExactSolution exact(&mesh, alpha_p, x_p, y_p, alpha_w, x_w, y_w, omega_c, r_0, epsilon);
+  CustomExactSolution exact(&mesh, alpha_w, alpha_p, x_w, y_w, r_0, omega_c, epsilon, x_p, y_p);
 
   // Define right-hand side.
-  CustomRightHandSide rhs(alpha_p, x_p, y_p, alpha_w, x_w, y_w, omega_c, r_0, epsilon);
+  CustomRightHandSide rhs(alpha_w, alpha_p, x_w, y_w, r_0, omega_c, epsilon, x_p, y_p);
 
   // Initialize the weak formulation.
   WeakFormsH1::DefaultWeakFormPoisson wf(&rhs);

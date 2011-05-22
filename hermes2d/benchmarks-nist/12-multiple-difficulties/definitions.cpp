@@ -30,10 +30,10 @@ Ord CustomRightHandSide::ord(Ord x, Ord y) const
 
 double CustomExactSolution::value(double x, double y) const
 { 
-  double ALPHA_C = (M_PI/ omega_c);
+  double alpha_c = (M_PI/ omega_c);
 
   return exp(-alpha_p * (pow((x - x_p), 2) + pow((y - y_p), 2)))
-         + (pow(sqrt(x*x + y*y), ALPHA_C) * sin(ALPHA_C * get_angle(y, x)))
+         + (pow(sqrt(x*x + y*y), alpha_c) * sin(alpha_c * get_angle(y, x)))
          + atan(alpha_w * (sqrt(pow(x - x_w, 2) + pow(y - y_w, 2)) - r_0))
          + exp(-(1 + y) / epsilon);
 };
@@ -42,10 +42,10 @@ void CustomExactSolution::derivatives (double x, double y, scalar& dx, scalar& d
 {
   double a_P = -alpha_p * ( (x - x_p) * (x - x_p) + (y - y_p) * (y - y_p));
 
-  double ALPHA_C = (M_PI/ omega_c);
+  double alpha_c = (M_PI/ omega_c);
   double a_C = sqrt(x*x + y*y);
-  double b_C = pow(a_C, (ALPHA_C - 1.0));
-  double c_C = pow(a_C, ALPHA_C);
+  double b_C = pow(a_C, (alpha_c - 1.0));
+  double c_C = pow(a_C, alpha_c);
   double d_C = ((y*y)/(x*x) + 1.0 );
 
   double a_W = pow(x - x_w, 2);
@@ -56,17 +56,25 @@ void CustomExactSolution::derivatives (double x, double y, scalar& dx, scalar& d
   double f_W = (pow(alpha_w * c_W - (alpha_w * r_0), 2) + 1.0);
 
   dx = -exp(a_P) * (2 * alpha_p * (x - x_p))
-       + (((ALPHA_C* x* sin(ALPHA_C * get_angle(y,x)) *b_C)/a_C)
-       - ((ALPHA_C *y *cos(ALPHA_C * get_angle(y, x)) * c_C)/(pow(x, 2.0) *d_C)))
+       + (((alpha_c* x* sin(alpha_c * get_angle(y,x)) *b_C)/a_C)
+       - ((alpha_c *y *cos(alpha_c * get_angle(y, x)) * c_C)/(pow(x, 2.0) *d_C)))
        + (d_W / (c_W * f_W));
   dy = -exp(a_P) * (2 * alpha_p * (y - y_p))
-       + (((ALPHA_C* cos(ALPHA_C* get_angle(y, x)) *c_C)/(x * d_C))
-       + ((ALPHA_C* y* sin(ALPHA_C* get_angle(y, x)) *b_C)/a_C))
+       + (((alpha_c* cos(alpha_c* get_angle(y, x)) *c_C)/(x * d_C))
+       + ((alpha_c* y* sin(alpha_c* get_angle(y, x)) *b_C)/a_C))
        + (e_W / (c_W * f_W))
        + (-1) * (1.0 / epsilon) * exp(-(1 + y) / epsilon);
 };
 
-  Ord CustomExactSolution::ord(Ord x, Ord y) const 
+Ord CustomExactSolution::ord(Ord x, Ord y) const 
 {
   return Ord(10);
+}
+
+double CustomExactSolution::get_angle(double y, double x) const
+{
+  double theta = atan2(y, x);
+  if (theta < 0)
+    theta += 2 * M_PI;
+  return theta;
 }

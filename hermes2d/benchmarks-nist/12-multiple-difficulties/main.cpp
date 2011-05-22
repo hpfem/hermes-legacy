@@ -54,19 +54,14 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 
 // Problem parameters.                      
 const double omega_c = 3.0 * M_PI / 2.0;
-
 const double x_w = 0.0;             
 const double y_w = -3.0 / 4.0;
 const double r_0 = 3.0 / 4.0;
 const double alpha_w = 200.0;
-
 const double x_p = -sqrt(5.0) / 4.0;
 const double y_p = -1.0 / 4.0;
 const double alpha_p = 1000.0;
-
 const double epsilon = 1.0 / 100.0;
-
-
 
 int main(int argc, char* argv[])
 {
@@ -76,7 +71,7 @@ int main(int argc, char* argv[])
   // Load the mesh.
   Mesh mesh;
   H2DReader mloader;
-  mloader.load("lshape.mesh", &mesh);     // quadrilaterals
+  mloader.load("lshape.mesh", &mesh);
 
   // Perform initial mesh refinement.
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
