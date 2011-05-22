@@ -404,8 +404,8 @@ The following figure shows the corresponding Paraview visualization:
    :alt: Solution of the Poisson equation.
 
 
-Visualizing the solution using OpenGL (optional)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Visualizing the solution using OpenGL
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The solution can also be visualized via the ScalarView class::
 
@@ -421,15 +421,32 @@ Hermes' built-in OpenGL visualization looks as follows:
    :width: 400
    :alt: Solution of the Poisson equation.
 
-Cleaning up
-~~~~~~~~~~~
+Visualization quality
+~~~~~~~~~~~~~~~~~~~~~
 
-We finish the main.cpp file with::
+The method show() has an optional second parameter -- the visualization accuracy. 
+It can have the values HERMES_EPS_LOW, HERMES_EPS_NORMAL (default), HERMES_EPS_HIGH
+and HERMES_EPS_VERYHIGH. This parameter influences the number of linear triangles that 
+Hermes uses to approximate higher-order polynomial solutions with linear triangles for OpenGL. 
+In fact, the EPS value is a stopping criterion for automatic adaptivity that Hermes 
+uses to keep the number of the linear triangles as low as possible. 
 
-    // Clean up.
-    delete [] coeff_vec;
-    delete solver;
-    delete matrix;
-    delete rhs;
+**IMPORTANT**: If you notice in the image white points or even discontinuities 
+where the approximation is continuous, try to move from HERMES_EPS_NORMAL to 
+HERMES_EPS_HIGH. If the interval of solution values is very small compared to 
+the solution magnitude, such as if the solution values lie in the interval 
+$(50, 50.5)$, then you may need HERMES_EPS_VERYHIGH.
+
+Visualization of derivatives
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The method show() also has an optional third parameter to indicate whether 
+function values or partial derivatives should be displayed. For example,
+HERMES_FN_VAL_0 stands for the function value of solution component 0
+(first solution component which in this case is the VonMises stress).
+HERMES_FN_VAL_1 would mean the function value of the second solution component
+(relevant for vector-valued $Hcurl$ or $Hdiv$ elements only), 
+HERMES_FN_DX_0 means the x-derivative of the first solution component, etc.
+
 
 

@@ -31,14 +31,14 @@ int main(int argc, char* argv[])
   for (int i=0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Initialize boundary conditions
-  CustomEssentialBCNonConst bc_essential("Boundary horizontal");
+  CustomEssentialBCNonConst bc_essential("Horizontal");
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.
   H1Space space(&mesh, &bcs, P_INIT);
 
   // Initialize the weak formulation.
-  CustomWeakFormGeneral wf("Boundary vertical");
+  CustomWeakFormGeneral wf("Vertical");
 
   // Testing n_dof and correctness of solution vector
   // for p_init = 1, 2, ..., 10

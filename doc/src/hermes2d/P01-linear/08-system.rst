@@ -4,9 +4,9 @@ Systems of Equations (08-system)
 **Git reference:** Tutorial example `08-system <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/08-system>`_. 
 
 So far we have solved single PDEs with a weak formulation
-of the form $a(u,v) = l(v)$, where $u$ was a continuous approximation in the
+of the form $a(u,v) - l(v) = 0$, where $u$ was a continuous approximation in the
 $H^1$ space. Hermes can also solve equations whose solutions lie in the spaces
-$Hcurl$, $Hdiv$ or $L^2$, and one can combine these spaces for PDE systems
+$H(curl)$, $H(div)$ or $L^2$, and one can combine these spaces for PDE systems
 arbitrarily.
 
 General scheme
@@ -18,13 +18,13 @@ is written as
 .. math::
     :label: weaksystem
 
-      a_{11}(u_1,v_1)\,+ a_{12}(u_2,v_1)\,+ \cdots\,+ a_{1n}(u_n,v_1) = l_1(v_1),
+      a_{11}(u_1,v_1)\,+ a_{12}(u_2,v_1)\,+ \cdots\,+ a_{1n}(u_n,v_1) - l_1(v_1) = 0,
 
-      a_{21}(u_1,v_2)\,+ a_{22}(u_2,v_2)\,+ \cdots\,+ a_{2n}(u_n,v_2) = l_2(v_2),
+      a_{21}(u_1,v_2)\,+ a_{22}(u_2,v_2)\,+ \cdots\,+ a_{2n}(u_n,v_2) - l_2(v_2) = 0,
 
                                                           \vdots
 
-      a_{n1}(u_1,v_n) + a_{n2}(u_2,v_n) + \cdots + a_{nn}(u_n,v_n) = l_n(v_n).
+      a_{n1}(u_1,v_n) + a_{n2}(u_2,v_n) + \cdots + a_{nn}(u_n,v_n) - l_n(v_n) = 0.
 
 The solution $u = (u_1, u_2, \dots, u_n)$ and test functions $v =
 (v_1, v_2, \dots, v_n)$ belong to the space $W = V_1 \times V_2 \times \dots
@@ -70,8 +70,8 @@ The boundary conditions are
 The zero displacements are implemented as follows::
 
     // Initialize boundary conditions.
-    DirichletConstant zero_disp(BDY_1, 0.0);
-    BoundaryConditions bcs(&zero_disp);
+    DefaultEssentialBCConst zero_disp("Bottom", 0.0);
+    EssentialBCs bcs(&zero_disp);
 
 The surface force is a Neumann boundary conditions that will be incorporated into the 
 weak formulation.
@@ -79,13 +79,14 @@ weak formulation.
 Displacement spaces
 ~~~~~~~~~~~~~~~~~~~
 
-Next let us define function spaces for the two solution
+Next we define function spaces for the two solution
 components, $u_1$ and $u_2$::
 
-    // Create x- and y- displacement space using the default H1 shapeset.
-    H1Space u1_space(&mesh, &bcs, P_INIT);
-    H1Space u2_space(&mesh, &bcs, P_INIT);
-    info("ndof = %d.", Space::get_num_dofs(Hermes::vector<Space *>(&u1_space, &u2_space)));
+  // Create x- and y- displacement space using the default H1 shapeset.
+  H1Space u1_space(&mesh, &bcs, P_INIT);
+  H1Space u2_space(&mesh, &bcs, P_INIT);
+  int ndof = Space::get_num_dofs(Hermes::vector<Space *>(&u1_space, &u2_space));
+  info("ndof = %d", ndof);
 
 Weak formulation
 ~~~~~~~~~~~~~~~~
@@ -96,7 +97,7 @@ arrive at the following weak formulation:
 .. math::
     :nowrap:
 
-    \begin{eqnarray*}   \int_\Omega     (2\mu\!+\!\lambda)\dd{u_1}{x_1}\dd{v_1}{x_1} + \mu\dd{u_1}{x_2}\dd{v_1}{x_2} +     \mu\dd{u_2}{x_1}\dd{v_1}{x_2} + \lambda\dd{u_2}{x_2}\dd{v_1}{x_1}     \,\mbox{d}\bfx \!\!&=&\!\!\!     \int_{\Gamma_3} \!\!f_1 v_1 \,\mbox{d}S, \\ \smallskip   \int_\Omega     \mu\dd{u_1}{x_2}\dd{v_2}{x_1} + \lambda\dd{u_1}{x_1}\dd{v_2}{x_2} +     (2\mu\!+\!\lambda)\dd{u_2}{x_2}\dd{v_2}{x_2} + \mu\dd{u_2}{x_1}\dd{v_2}{x_1} \,\mbox{d}\bfx \!\!&=&\!\!\!  \int_{\Gamma_3} \!\!f_2 v_2 \,\mbox{d}S - \int_{\Omega} \!\!\rho g v_2 \,\mbox{d}\bfx. \end{eqnarray*}
+    \begin{eqnarray*}   \int_\Omega     (2\mu\!+\!\lambda)\dd{u_1}{x_1}\dd{v_1}{x_1} + \mu\dd{u_1}{x_2}\dd{v_1}{x_2} +     \mu\dd{u_2}{x_1}\dd{v_1}{x_2} + \lambda\dd{u_2}{x_2}\dd{v_1}{x_1}     \,\mbox{d}\bfx -     \int_{\Gamma_3} \!\!f_1 v_1 \,\mbox{d}S &=& 0, \\ \smallskip   \int_\Omega     \mu\dd{u_1}{x_2}\dd{v_2}{x_1} + \lambda\dd{u_1}{x_1}\dd{v_2}{x_2} +     (2\mu\!+\!\lambda)\dd{u_2}{x_2}\dd{v_2}{x_2} + \mu\dd{u_2}{x_1}\dd{v_2}{x_1} \,\mbox{d}\bfx -  \int_{\Gamma_3} \!\!f_2 v_2 \,\mbox{d}S + \int_{\Omega} \!\!\rho g v_2 \,\mbox{d}\bfx &=& 0. \end{eqnarray*}
 
 (the gravitational acceleration $g$ is considered negative).
 We see that the weak formulation can be written in the form :eq:`weaksystem`:
@@ -122,250 +123,108 @@ Here, $\mu$ and $\lambda$ are material constants (Lame coefficients) defined as
     \mu = \frac{E}{2(1+\nu)}, \ \ \ \ \  \lambda = \frac{E\nu}{(1+\nu)(1-2\nu)},
 
 where $E$ is the Young modulus and $\nu$ the Poisson ratio of the material. For
-steel, we have $E = 200$ GPa and $\nu = 0.3$. The load force is $f = (0, 8\cdot 10^4)^T$ N.
+steel it is $E = 200$ GPa and $\nu = 0.3$. The load force is $f = (0, 8\cdot 10^4)^T$ N.
 
 Definition of weak forms
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Hermes provides a generic class WeakFormLinearElasticity in the file 
-`src/weakform/sample_weak_forms.h <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/src/weakform/sample_weak_forms.h>`_.
-These are volumetric forms that can be used for problems with Dirichlet and/or zero Neumann
-boundary conditions::
+Hermes provides default Jacobian and residual forms for linear elasticity that can be found in the 
+file 
+`src/weakform_library/weakforms_elasticity.h <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/src/weakform_library/weakforms_elasticity.h>`_.
+These are volumetric forms that can be used for problems with Dirichlet and/or zero Neumann boundary conditions. Using those,
+the weak formulation for this problem is implemented as follows::
 
-    /* Linear elasticity (Lame equations)  
-       with Dirichlet and/or zero Neumann BC (just volumetric forms).
-
-       Nonzero Neumann and Newton boundary conditions can be enabled 
-       by creating a descendant and adding surface forms to it. 
-    */
-
-    class WeakFormLinearElasticity : public WeakForm
+    class CustomWeakFormLinearElasticity : public WeakForm
     {
     public:
-      WeakFormLinearElasticity(double E, double nu, double rho_g) : WeakForm(2)
-      {
-	double lambda = (E * nu) / ((1 + nu) * (1 - 2*nu));
-	double mu = E / (2*(1 + nu));
-
-	add_matrix_form(new MatrixFormVolLinearElasticity_0_0(lambda, mu));
-	add_matrix_form(new MatrixFormVolLinearElasticity_0_1(lambda, mu)); 
-	add_matrix_form(new MatrixFormVolLinearElasticity_1_1(lambda, mu));
-	add_vector_form(new VectorFormGravity(rho_g));                   // gravity loading
-      }
-
-    private:
-      class MatrixFormVolLinearElasticity_0_0 : public WeakForm::MatrixFormVol
-      {
-      public:
-	MatrixFormVolLinearElasticity_0_0(double lambda, double mu) 
-	  : WeakForm::MatrixFormVol(0, 0, HERMES_SYM), lambda(lambda), mu(mu) {}
-
-	template<typename Real, typename Scalar>
-	Scalar matrix_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, 
-			   Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-	{
-	  return (lambda + 2*mu) * int_dudx_dvdx<Real, Scalar>(n, wt, u, v) +
-			      mu * int_dudy_dvdy<Real, Scalar>(n, wt, u, v);
-	}
-
-	scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-		     Func<double> *v, Geom<double> *e, ExtData<scalar> *ext)
-	{
-	  return matrix_form<scalar, scalar>(n, wt, u_ext, u, v, e, ext);
-	}
-
-	Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, 
-		Geom<Ord> *e, ExtData<Ord> *ext)
-	{
-	   return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
-	}
-
-	// Members.
-	double lambda, mu;
-      };
-
-      class MatrixFormVolLinearElasticity_0_1 : public WeakForm::MatrixFormVol
-      {
-      public:
-	MatrixFormVolLinearElasticity_0_1(double lambda, double mu) 
-		: WeakForm::MatrixFormVol(0, 1, HERMES_SYM), lambda(lambda), mu(mu) {}
-
-	template<typename Real, typename Scalar>
-	Scalar matrix_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, 
-			   Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-	{
-	  return lambda * int_dudy_dvdx<Real, Scalar>(n, wt, u, v) +
-		     mu * int_dudx_dvdy<Real, Scalar>(n, wt, u, v);
-	}
-
-	scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-		     Func<double> *v, Geom<double> *e, ExtData<scalar> *ext)
-	{
-	  return matrix_form<scalar, scalar>(n, wt, u_ext, u, v, e, ext);
-	}
-
-	Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, 
-		Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
-	{
-	   return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
-	}
-
-	// Members.
-	double lambda, mu;
-      };
-
-      class MatrixFormVolLinearElasticity_1_1 : public WeakForm::MatrixFormVol
-      {
-      public:
-	MatrixFormVolLinearElasticity_1_1(double lambda, double mu) 
-		: WeakForm::MatrixFormVol(1, 1, HERMES_SYM), lambda(lambda), mu(mu) {}
-
-	template<typename Real, typename Scalar>
-	Scalar matrix_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, 
-			   Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-	{
-	  return              mu * int_dudx_dvdx<Real, Scalar>(n, wt, u, v) +
-		 (lambda + 2*mu) * int_dudy_dvdy<Real, Scalar>(n, wt, u, v);
-	}
-
-	scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-		     Func<double> *v, Geom<double> *e, ExtData<scalar> *ext)
-	{
-	  return matrix_form<scalar, scalar>(n, wt, u_ext, u, v, e, ext);
-	}
-
-	Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, 
-		Geom<Ord> *e, ExtData<Ord> *ext)
-	{
-	   return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
-	}
-
-	// Members.
-	double lambda, mu;
-      };
-
-      class VectorFormGravity : public WeakForm::VectorFormVol
-      {
-      public:
-	VectorFormGravity(double rho_g) : WeakForm::VectorFormVol(1), rho_g(rho_g) { }
-
-	template<typename Real, typename Scalar>
-	Scalar vector_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, 
-			   Geom<Real> *e, ExtData<Scalar> *ext) {
-	  return rho_g * int_v<Real, Scalar>(n, wt, v);
-	}
-
-	scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, 
-		     Geom<double> *e, ExtData<scalar> *ext) {
-	  return vector_form<scalar, scalar>(n, wt, u_ext, v, e, ext);
-	}
-
-	Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, 
-		ExtData<Ord> *ext) {
-	  return vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext);;
-	}
-
-	// Member.
-	double rho_g;
-      };
+      CustomWeakFormLinearElasticity(double E, double nu, double rho_g,
+                                     std::string surface_force_bdy, double f0, double f1);
     };
 
-In our example, we need to add nonzero Neumann conditions. This is done 
-by creating a descendant of the WeakFormLinearElasticity class and adding 
-surface forms there::
+where 
+::
 
-    class MyWeakForm : public WeakFormLinearElasticity
+    CustomWeakFormLinearElasticity::CustomWeakFormLinearElasticity(double E, double nu, double rho_g,
+								   std::string surface_force_bdy, double f0, 
+								   double f1) : WeakForm(2)
     {
-    public:
-      MyWeakForm(double E, double nu, double rho_g, std::string non_zero_neumann_bnd, double f0, double f1) 
-                : WeakFormLinearElasticity(E, nu, rho_g) {
-        double lambda = (E * nu) / ((1 + nu) * (1 - 2*nu));  // First Lame constant.
-        double mu = E / (2*(1 + nu));                        // Second Lame constant.
+      double lambda = (E * nu) / ((1 + nu) * (1 - 2*nu));
+      double mu = E / (2*(1 + nu));
 
-        add_vector_form_surf(new VectorFormSurfForce_0(non_zero_neumann_bnd, f0));
-        add_vector_form_surf(new VectorFormSurfForce_1(non_zero_neumann_bnd, f1));
-      };
+      // Jacobian.
+      add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_0_0(0, 0, lambda, mu));
+      add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_0_1(0, 1, lambda, mu));
+      add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_1_1(1, 1, lambda, mu));
 
-    private:
-      class VectorFormSurfForce_0 : public WeakForm::VectorFormSurf
-      {
-      public:
-        VectorFormSurfForce_0(std::string marker, double f0) : WeakForm::VectorFormSurf(0, marker), f0(f0) {}
+      // Residual - first equation.
+      add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_0_0(0, HERMES_ANY, lambda, mu));
+      add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_0_1(0, HERMES_ANY, lambda, mu));
+      // Surface force (first component).
+      add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(0, surface_force_bdy, -f0)); 
 
-        template<typename Real, typename Scalar>
-        Scalar vector_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) {
-          return f0 * int_v<Real, Scalar>(n, wt, v);
-        }
+      // Residual - second equation.
+      add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_0(1, HERMES_ANY, lambda, mu));
+      add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_1(1, HERMES_ANY, lambda, mu));
+      // Gravity loading in the second vector component.
+      add_vector_form(new WeakFormsH1::DefaultVectorFormVol(1, HERMES_ANY, -rho_g));
+      // Surface force (second component).
+      add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(1, surface_force_bdy, -f1)); 
+    }
 
-        scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) {
-          return vector_form<scalar, scalar>(n, wt, u_ext, v, e, ext);
-        }
-
-        Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) {
-          return vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext);
-        }
-
-        // Member.
-        double f0;
-      };
-
-      class VectorFormSurfForce_1 : public WeakForm::VectorFormSurf
-      {
-      public:
-        VectorFormSurfForce_1(std::string marker, double f1) : WeakForm::VectorFormSurf(1, marker), f1(f1) {}
-
-        template<typename Real, typename Scalar>
-        Scalar vector_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) {
-          return f1 * int_v<Real, Scalar>(n, wt, v);
-        }
-
-        scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) {
-          return vector_form<scalar, scalar>(n, wt, u_ext, v, e, ext);
-        }
-
-        Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) {
-          return vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext);
-        }
-
-        // Member.
-        double f1;
-      };
-    };
-
-Note that the block index 0, 0 means that bilinear_form_0_0() takes basis functions from 
-space 0 (x-displacement space) and test functions from space 0. The block index 
-0, 1 means that bilinear_form_0_1 takes basis functions from space 0 and test functions 
-from space 1 (y-displacement space), etc. This yields a 2x2 block structure in the 
-resulting matrix system.
+The block index $i$, $j$ means that the bilinear form takes basis functions from 
+space $i$ and test functions from space $j$. I.e., the block index 
+0, 1 means that the bilinear form takes basis functions from space 0 (x-displacement space) 
+and test functions from space 1 (y-displacement space), etc. In this particular case the 
+Jacobian matrix has a $2 \times 2$ block structure.
 
 Flags HERMES_SYM, HERMES_NONSYM, HERMES_ANTISYM
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If the reader looks at the definition of the class WeakFormLinearElasticity,
-he/she will see that not all four blocks are actually defined. Therefore, 
-an explanation of the extra parameter HERMES_SYM is in order.
 Since the two diagonal forms $a_{11}$ and $a_{22}$ are symmetric, i.e.,
-$a_{ii}(u,v) = a_{ii}(v,u)$, Hermes can be told to only evaluate them once for the
-two cases $a_{ii}(u,v)$ and $a_{ii}(v,u)$ to speed up assembly. In fact, we should have
-used the HERMES_SYM flag already in the previous sections, since the form
-$a(u,v) = \nabla u \cdot \nabla v$ was symmetric. Of course this is not the case
-for all forms and so the default value of the fourth parameter of add_matrix_form() 
-is HERMES_NONSYM.
+$a_{ii}(u,v) = a_{ii}(v,u)$, Hermes can be told to only evaluate half 
+of the integrals to speed up assembly. This is reflected by the parameter
+HERMES_SYM in the constructors of these forms::
+
+    DefaultJacobianElasticity_0_0::DefaultJacobianElasticity_0_0
+      (unsigned int i, unsigned int j, double lambda, double mu)
+      : WeakForm::MatrixFormVol(i, j, HERMES_ANY, HERMES_SYM), lambda(lambda), mu(mu) 
+    {
+    }
+
+and
+::
+
+    DefaultJacobianElasticity_1_1::DefaultJacobianElasticity_1_1
+      (unsigned int i, unsigned int j, double lambda, double mu)
+      : WeakForm::MatrixFormVol(i, j, HERMES_ANY, HERMES_SYM), lambda(lambda), mu(mu) 
+    {
+    }
 
 The off-diagonal forms $a_{12}(u_2, v_1)$ and $a_{21}(u_1, v_2)$ are not
 (and cannot) be symmetric, since their arguments come from different spaces in general.
 However, we can see that $a_{12}(u, v) = a_{21}(v, u)$, i.e., the corresponding blocks
 of the local stiffness matrix are transposes of each other. Here, the HERMES_SYM flag
-has a different effect: it tells Hermes to take the block of the local stiffness
+has a different effect: It tells Hermes to take the block of the local stiffness
 matrix corresponding to the form $a_{12}$, transpose it and copy it where a block
-corresponding to $a_{21}$ would belong, without evaluating $a_{21}$ at all (this is why
-we don't add bilinear_form_1_0). This again speeds up the matrix assembly.
-You can also use the flag HERMES_ANTISYM, which moreover inverts the sign of the block.
-This makes sense in the case where $a_{ij}(u, v) = -a_{ji}(v, u)$.
+corresponding to $a_{21}$ belongs, without evaluating $a_{21}$ at all. This again 
+speeds up the matrix assembly. In other words, the constructor of the form 
+DefaultJacobianElasticity_0_1 is 
+::
 
-It is recommended that you start with the default (and safe) HERMES_NONSYM flag for all
-forms when developing your project, and only optimize the evaluation of the forms when
-the code works well.
+    DefaultJacobianElasticity_0_1::DefaultJacobianElasticity_0_1
+      (unsigned int i, unsigned int j, double lambda, double mu)
+      : WeakForm::MatrixFormVol(i, j, HERMES_ANY, HERMES_SYM), lambda(lambda), mu(mu) 
+    {
+    }
+
+and the form DefaultJacobianElasticity_1_0 is not needed.
+
+Hermes also provides a flag HERMES_ANTISYM which is analogous to HERMES_SYM but the sign of the 
+copied block is changed. This flag is useful where $a_{ij}(u, v) = -a_{ji}(v, u)$.
+
+**IMPORTANT**: Even if your weak forms are symmetric, it is recommended to start with the 
+default (and safe) flag HERMES_NONSYM. Once the model works, it can be optimized using the
+flag HERMES_SYM.
 
 Assembling and solving the discrete problem
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -374,8 +233,7 @@ When the spaces and weak forms are ready, one can initialize the
 discrete problem::
 
     // Initialize the FE problem.
-    bool is_linear = true;
-    DiscreteProblem dp(&wf, Tuple<Space *>(&u1_space, &u2_space), is_linear);
+    DiscreteProblem dp(&wf, Hermes::vector<Space *>(&u1_space, &u2_space));
 
 Next we initialize the matrix solver::
 
@@ -384,29 +242,67 @@ Next we initialize the matrix solver::
     Vector* rhs = create_vector(matrix_solver);
     Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
 
-And assemble and solve the matrix problem::
+The length of the coefficient vector must be the sum of the dimensions 
+of both displacement spaces::
 
-    // Assemble the stiffness matrix and right-hand side vector.
-    info("Assembling the stiffness matrix and right-hand side vector.");
-    dp.assemble(matrix, rhs);
+    // Initial coefficient vector for the Newton's method.  
+    scalar* coeff_vec = new scalar[ndof];
+    memset(coeff_vec, 0, ndof*sizeof(scalar));
 
-    // Solve the linear system and if successful, obtain the solutions.
-    info("Solving the matrix problem.");
-    if(solver->solve()) Solution::vector_to_solutions(solver->get_solution(), Tuple<Space *>(&u1_space, &u2_space), 
-                                                      Tuple<Solution *>(&u_sln, &v_sln));
-    else error ("Matrix solver failed.\n");
+Next we perform the Newton's iteration::
 
-Visualizing Von Mises stress
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Perform Newton's iteration.
+    bool verbose = true;
+    bool jacobian_changed = true;
+    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs, jacobian_changed,
+        NEWTON_TOL, NEWTON_MAX_ITER, verbose)) error("Newton's iteration failed.");
 
-Von Mises stress can be visualized via the VonMises filter as follows::
+**Notice that two steps are taken although the problem is linear**::
+
+    I ndof = 3000
+    I ---- Newton initial residual norm: 64400
+    I ---- Newton iter 1, residual norm: 4.52624e-07
+    I ---- Newton iter 2, residual norm: 9.7264e-09
+    << close all views to continue >>
+
+This confirms that using Newton for linear problems is not a waste of time. 
+Last, the coefficient vector is translated into two displacement solutions::
+
+    // Translate the resulting coefficient vector into the Solution sln.
+    Solution u1_sln, u2_sln;
+    Solution::vector_to_solutions(coeff_vec, Hermes::vector<Space *>(&u1_space, &u2_space), 
+                                  Hermes::vector<Solution *>(&u1_sln, &u2_sln));
+
+
+Visualizing the Von Mises stress
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Hermes implements postprocessing through Filters. Filter is a special class
+which takes up to three Solutions, performs some computation and in the end acts
+as another Solution (which can be visualized, passed into another Filter,
+passed into a weak form, etc.). More advanced usage of Filters will be discussed 
+later. 
+
+In elasticity examples we typically use the predefined VonMisesFilter::
 
     // Visualize the solution.
-    WinGeom* sln_win_geom = new WinGeom(0, 0, 800, 400);
-    ScalarView view("Von Mises stress [Pa]", sln_win_geom);
-    VonMisesFilter stress(Tuple<MeshFunction*>(&u1_sln, &u2_sln), lambda, mu);
+    ScalarView view("Von Mises stress [Pa]", new WinGeom(590, 0, 700, 400));
+    double lambda = (E * nu) / ((1 + nu) * (1 - 2*nu));  // First Lame constant.
+    double mu = E / (2*(1 + nu));                        // Second Lame constant.
+    VonMisesFilter stress(Hermes::vector<MeshFunction *>(&u1_sln, &u2_sln), lambda, mu);
     view.show_mesh(false);
-    view.show(&stress, HERMES_EPS_HIGH, HERMES_FN_VAL_0, &u1_sln, &u2_sln, 1.5e5);
+    view.show(&stress, HERMES_EPS_HIGH, H2D_FN_VAL_0, &u1_sln, &u2_sln, 1.5e5);
 
-More about visualization and Filters will be said in the following section,
-where we will also show sample results for the present model problem.
+Here the fourth and fifth parameters are the displacement components used to 
+distort the domain geometry, and the sixth parameter is a scaling factor to multiply the 
+displacements. 
+
+.. image:: 08-system/mises.png
+   :align: center
+   :width: 600
+   :alt: Elastic stress plotted on deformed domain.
+
+
+
+
+
