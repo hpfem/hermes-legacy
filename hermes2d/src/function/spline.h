@@ -18,7 +18,7 @@
 #ifndef __H2D_SPLINE_H
 #define __H2D_SPLINE_H
 
-class HERMES_API CubicSpline : HermesFunction
+class HERMES_API CubicSpline : public HermesFunction
 {
 public:
   /// Constructor (general case).

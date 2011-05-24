@@ -1,8 +1,41 @@
 #include "weakform/weakform.h"
 #include "integrals/h1.h"
 #include "boundaryconditions/essential_bcs.h"
+#include "weakform_library/weakforms_h1.h"
 
-/* Weak forms */
+class CustomNonlinearity : public HermesFunction
+{
+public:
+  CustomNonlinearity(double alpha): HermesFunction()
+  {
+    this->alpha = alpha;
+  }
+
+  virtual scalar value(double x)
+  {
+    return pow(x, alpha);
+  }
+
+  virtual Ord value(Ord x)
+  {
+    return pow(x, alpha);
+  }
+
+  virtual scalar derivative(double x)
+  {
+    return alpha * pow(x, alpha-1);
+  }
+
+  virtual Ord derivative(Ord x)
+  {
+    return alpha * pow(x, alpha-1);
+  }
+
+  protected:
+    double alpha;
+};
+
+/*
 
 class CustomWeakFormHeatTransferNewton : public WeakForm
 {
@@ -10,6 +43,7 @@ public:
   CustomWeakFormHeatTransferNewton() : WeakForm(1) {
     // Jacobian.
     add_matrix_form(new MatrixFormVolHeatTransfer(0, 0));
+
     // Residual.
     add_vector_form(new VectorFormVolHeatTransfer(0));
   };
@@ -100,20 +134,22 @@ private:
   };
 };
 
-/* Initial consition for the Newton's method */
+*/
+
+/* Initial condition for the Newton's method */
 
 class CustomInitialSolutionHeatTransfer : public ExactSolutionScalar
 {
 public:
   CustomInitialSolutionHeatTransfer(Mesh* mesh) : ExactSolutionScalar(mesh) {};
 
+  virtual scalar value(double x, double y) const {
+    return (x+10)*(y+10)/100. + 2;
+  };
+
   virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const {
     dx = (y+10)/100.;
     dy = (x+10)/100.;
-  };
-
-  virtual scalar value (double x, double y) const {
-    return (x+10)*(y+10)/100. + 2;
   };
 
   virtual Ord ord(Ord x, Ord y) const {
@@ -126,9 +162,8 @@ public:
 class CustomEssentialBCNonConst : public EssentialBoundaryCondition {
 public:
   CustomEssentialBCNonConst(std::string marker) 
-           : EssentialBoundaryCondition(Hermes::vector<std::string>())
+           : EssentialBoundaryCondition(Hermes::vector<std::string>(marker))
   {
-    markers.push_back(marker);
   }
 
   ~CustomEssentialBCNonConst() {};

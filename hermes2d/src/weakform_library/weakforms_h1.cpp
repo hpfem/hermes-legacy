@@ -902,13 +902,13 @@ namespace WeakFormsH1
   };
   
   
-  DefaultWeakFormPoisson::DefaultWeakFormPoisson(HermesFunction* f,
-                                                 std::string area,
+  DefaultWeakFormPoisson::DefaultWeakFormPoisson(std::string area,
                                                  HermesFunction* coeff,
+                                                 HermesFunction* f,
                                                  GeomType gt) : WeakForm()
   {
     // Jacobian.
-    add_matrix_form(new DefaultJacobianDiffusion(0, 0, area, coeff, HERMES_NONSYM, gt));
+    add_matrix_form(new DefaultJacobianDiffusion(0, 0, area, coeff, HERMES_SYM, gt));
 
     // Residual.
     add_vector_form(new DefaultResidualDiffusion(0, area, coeff, gt));

@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
 
   // Visualize the solution.
   ScalarView view("Solution", new WinGeom(0, 0, 300, 400));
-  view.show(&sln, HERMES_EPS_HIGH);
+  view.show(&sln, HERMES_EPS_VERYHIGH);
   ScalarView gradview("Gradient", new WinGeom(310, 0, 300, 400));
   MagFilter grad(Hermes::vector<MeshFunction *>(&sln, &sln), 
                  Hermes::vector<int>(H2D_FN_DX, H2D_FN_DY));

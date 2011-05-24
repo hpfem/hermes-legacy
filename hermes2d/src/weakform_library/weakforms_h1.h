@@ -419,14 +419,14 @@ namespace WeakFormsH1
   };
 
 
-  /* Default weak form for the Poisson equation -div(coeff(u) grad u) + f = 0. */
+  /* Default weak form for the Poisson equation -div(coeff(u) grad u) + f(x, y) = 0. */
 
   class HERMES_API DefaultWeakFormPoisson : public WeakForm
   {
   public:
-  DefaultWeakFormPoisson(HermesFunction* f = HERMES_DEFAULT_FUNCTION,
-                         std::string area = HERMES_ANY, 
+  DefaultWeakFormPoisson(std::string area = HERMES_ANY, 
                          HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* f = HERMES_DEFAULT_FUNCTION,
                          GeomType gt = HERMES_PLANAR);
   };
 };

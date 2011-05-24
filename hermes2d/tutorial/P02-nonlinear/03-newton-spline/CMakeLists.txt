@@ -2,7 +2,7 @@ if(NOT H2D_REAL)
     return()
 endif(NOT H2D_REAL)
 
-project(P02-02-newton-1)
+project(P02-03-newton-spline)
 
 add_executable(${PROJECT_NAME} main.cpp)
 include (${hermes2d_SOURCE_DIR}/CMake.common)
