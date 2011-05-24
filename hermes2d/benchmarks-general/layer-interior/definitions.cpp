@@ -30,11 +30,11 @@ public:
 
 /* Right-hand side */
 
-class CustomRightHandSide: public HermesFunctionXY
+class CustomRightHandSide: public HermesFunction
 {
 public:
   CustomRightHandSide(double slope)
-    : HermesFunctionXY(), slope(slope) {};
+    : HermesFunction(), slope(slope) {};
 
   virtual double value(double x, double y) const {
     double t2 = sqr(y + 0.25) + sqr(x - 1.25);

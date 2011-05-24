@@ -51,10 +51,10 @@ public:
 
 /* Right-hand side */
 
-class CustomRightHandSide: public HermesFunctionXY
+class CustomRightHandSide: public HermesFunction
 {
 public:
-  CustomRightHandSide(double coeff1) : HermesFunctionXY(), coeff1(coeff1) {
+  CustomRightHandSide(double coeff1) : HermesFunction(), coeff1(coeff1) {
     cef = new CustomExactFunction(coeff1);
   };
 

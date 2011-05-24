@@ -25,10 +25,10 @@ public:
 
 /* Right-hand side */
 
-class CustomRightHandSide: public HermesFunctionXY
+class CustomRightHandSide: public HermesFunction
 {
 public:
-    CustomRightHandSide() : HermesFunctionXY() { }
+    CustomRightHandSide() : HermesFunction() { }
 
     virtual scalar value(double x, double y) const {
         return sin(x) + cos(x);

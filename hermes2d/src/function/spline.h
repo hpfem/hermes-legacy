@@ -18,7 +18,7 @@
 #ifndef __H2D_SPLINE_H
 #define __H2D_SPLINE_H
 
-class HERMES_API CubicSpline
+class HERMES_API CubicSpline : HermesFunction
 {
 public:
   /// Constructor (general case).
@@ -27,11 +27,15 @@ public:
               bool first_der_left = true, bool first_der_right = true,
               bool extend_der_left = true, bool extend_der_right = true);
   /// Constructor (trivial constant case).
-  CubicSpline(double const_value) : is_constant(true), const_value(const_value) { };
+  CubicSpline(double const_value) : HermesFunction(const_value) 
+  { 
+  };
 
   /// Destructor.
-  ~CubicSpline() { 
-    if (is_constant == false) {
+  ~CubicSpline() 
+  { 
+    if (is_constant() == false) 
+    {
       if (coeffs != NULL) delete [] coeffs;
       points.clear();
       values.clear();
@@ -42,30 +46,70 @@ public:
   bool calculate_coeffs();
 
   /// Get the value at a given point.
-  double get_value(double x_in);
+  virtual double value(double x) const;
 #ifdef H2D_COMPLEX
   // This is a hack for Hermes to build in complex mode.
-  double get_value(scalar x_in_scalar) {
-    double x_in = std::real(x_in_scalar); 
-    return get_value(x_in);
+  virtual scalar value(scalar x) const 
+  {
+    error("Cubic splines should not be used in complex mode.");
+  };
+#endif
+  virtual double value(double x, double y) const;
+#ifdef H2D_COMPLEX
+  // This is a hack for Hermes to build in complex mode.
+  virtual scalar value(scalar x, scalar y) const
+  {
+    error("Cubic splines should not be called with two parameters.");
+    return 0;
   };
 #endif
 
   /// For order calculation in Hermes.
-  Ord get_value(Ord x_in) {return Ord(3);};
+  virtual Ord value(Ord x) const 
+  {
+    return Ord(3);
+  };
+
+  virtual Ord value(Ord x, Ord y) const 
+  {
+    error("Cubic splines should not be called with two parameters.");
+    return 0;
+  };
 
   /// Get first derivative at a given point.
-  double get_derivative(double x_in);
+  virtual double derivative(double x) const;
 #ifdef H2D_COMPLEX
   // This is a hack for Hermes to build in complex mode.
-  double get_derivative(scalar x_in_scalar) {
-    double x_in = std::real(x_in_scalar); 
-    return get_derivative(x_in);
+  virtual scalar derivative(scalar x) const
+  {
+    error("Cubic splines should not be used in complex mode.");
+  };
+#endif
+  virtual double derivative(double x, double y) const
+  {
+    error("Cubic splines should not be called with two parameters.");
+    return 0;
+  };
+#ifdef H2D_COMPLEX
+  // This is a hack for Hermes to build in complex mode.
+  virtual scalar derivative(scalar x, scalar y) const
+  {
+    error("Cubic splines should not be called with two parameters.");
+    return 0;
   };
 #endif
 
   /// For order calculation in Hermes.
-  Ord get_derivative(Ord x_in) {return Ord(2);};
+  virtual Ord derivative(Ord x) const 
+  {
+    return Ord(2);
+  };
+
+  virtual Ord derivative(Ord x, Ord y) const
+  {
+    error("Cubic splines should not be called with two parameters.");
+    return 0;
+  };
 
   /// Plots the spline in format for Pylab (just pairs 
   /// x-coordinate and value per line). The interval of definition 
@@ -76,18 +120,12 @@ public:
   void plot(const char* filename, double extension, bool plot_derivative = false, int subdiv = 50);
 
 protected:
-  /// Flag indicating whether the spline is constant (simplified evaluation).
-  bool is_constant;
-
-  /// Value for constant spline.
-  double const_value;
-
   /// Uses a bisection method to locale interval where a given point lies.
   /// Returns false if point lies outside.
-  bool find_interval(double x_in, int& m);
+  bool find_interval(double x_in, int& m) const;
 
   /// Extrapolate the value of the spline outside of its interval of definition.
-  double extrapolate_value(double point_end, double value_end, double derivative_end, double x_in);
+  double extrapolate_value(double point_end, double value_end, double derivative_end, double x_in) const;
 
   /// Grid points, ordered.
   std::vector<double> points;
@@ -119,10 +157,10 @@ protected:
   SplineCoeff* coeffs;
 
   /// Gets derivative at a point that lies in interval 'm'.
-  double get_derivative_from_interval(double x_in, int m);
+  double get_derivative_from_interval(double x_in, int m) const;
 
   /// Gets value at a point that lies in interval 'm'.
-  double get_value_from_interval(double x_in, int m);
+  double get_value_from_interval(double x_in, int m) const;
 };
 
 #endif

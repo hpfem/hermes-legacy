@@ -2,11 +2,11 @@
 
 /* Right-hand side */
 
-class CustomRightHandSide : public HermesFunctionXY
+class CustomRightHandSide : public HermesFunction
 {
 public:
   CustomRightHandSide(double poly_deg)
-    : HermesFunctionXY(), poly_deg(poly_deg) {};
+    : HermesFunction(), poly_deg(poly_deg) {};
 
   virtual double value(double x, double y) const;
 

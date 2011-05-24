@@ -20,20 +20,19 @@
 
 namespace WeakFormsHcurl 
 {
-  /* Default volumetric matrix form \int_{area} const_coeff * function_coeff(x, y) * E \cdot F d\bfx
-     const_coeff... constant number
-     function_coeff... (generally nonconstant) function of x, y
+  /* Default volumetric matrix form \int_{area} coeff(x, y) * E \cdot F d\bfx
+     coeff... (generally nonconstant) function of x, y
   */
 
   class HERMES_API DefaultMatrixFormVol : public WeakForm::MatrixFormVol
   {
   public:
     DefaultMatrixFormVol(int i, int j, std::string area = HERMES_ANY,
-                         scalar const_coeff = 1.0, HermesFunctionXY* f_coeff = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                          SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
     DefaultMatrixFormVol(int i, int j, Hermes::vector<std::string> areas,
-                         scalar const_coeff = 1.0, HermesFunctionXY* f_coeff = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                          SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
     ~DefaultMatrixFormVol();
@@ -47,25 +46,24 @@ namespace WeakFormsHcurl
     virtual WeakForm::MatrixFormVol* clone();
 
     private:
-        scalar const_coeff;
-        HermesFunctionXY* function_coeff;
+        HermesFunction* coeff;
         GeomType gt;
   };
 
   /* FIXME
-     Default volumetric matrix form \int_{area} const_coeff \curl E \curl F d\bfx
-     coeff... constant number
+     Default volumetric matrix form \int_{area} coeff(x, y) \curl E \curl F d\bfx
+     coeff... so far only constant number possible
   */
 
   class HERMES_API DefaultJacobianCurlCurl : public WeakForm::MatrixFormVol
   {
   public:
-    DefaultJacobianCurlCurl(int i, int j, std::string area = HERMES_ANY, scalar const_coeff = 1.0,
-                            CubicSpline* c_spline = HERMES_DEFAULT_SPLINE,
+    DefaultJacobianCurlCurl(int i, int j, std::string area = HERMES_ANY,
+                            HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                             SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
-    DefaultJacobianCurlCurl(int i, int j, Hermes::vector<std::string> areas, scalar const_coeff = 1.0,
-                            CubicSpline* c_spline = HERMES_DEFAULT_SPLINE,
+    DefaultJacobianCurlCurl(int i, int j, Hermes::vector<std::string> areas,
+                            HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                             SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
     ~DefaultJacobianCurlCurl();
@@ -80,8 +78,7 @@ namespace WeakFormsHcurl
 
   private:
       int idx_j;
-      scalar const_coeff;
-      CubicSpline* spline_coeff;
+      HermesFunction* coeff;
       GeomType gt;
   };
 
@@ -94,15 +91,13 @@ namespace WeakFormsHcurl
   {
   public:
     DefaultVectorFormVol(int i, std::string area = HERMES_ANY, 
-                         scalar const_coeff0 = 1.0, scalar const_coeff1 = 1.0,
-                         HermesFunctionXY* f_coeff0 = HERMES_DEFAULT_FUNCTION,
-                         HermesFunctionXY* f_coeff1 = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* coeff0 = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* coeff1 = HERMES_DEFAULT_FUNCTION,
                          GeomType gt = HERMES_PLANAR);
 
     DefaultVectorFormVol(int i, Hermes::vector<std::string> areas, 
-                         scalar const_coeff0 = 1.0, scalar const_coeff1 = 1.0,
-                         HermesFunctionXY* f_coeff0 = HERMES_DEFAULT_FUNCTION,
-                         HermesFunctionXY* f_coeff1 = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* coeff0 = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* coeff1 = HERMES_DEFAULT_FUNCTION,
                          GeomType gt = HERMES_PLANAR);
 
     ~DefaultVectorFormVol();
@@ -116,25 +111,23 @@ namespace WeakFormsHcurl
     virtual WeakForm::VectorFormVol* clone();
 
   private:
-    scalar const_coeff0, const_coeff1;
-    HermesFunctionXY* function_coeff0, *function_coeff1;
+    HermesFunction* coeff0, *coeff1;
     GeomType gt;
   };
 
-  /* Default volumetric vector form \int_{area} const_coeff * function_coeff(x, y) * u_ext[0] * v d\bfx
-     const_coeff... constant number
-     function_coeff... (generally nonconstant) function of x, y
+  /* Default volumetric vector form \int_{area} coeff(x, y) * u_ext[0] * v d\bfx
+     coeff... (generally nonconstant) function of x, y
   */
 
   class HERMES_API DefaultResidualVol : public WeakForm::VectorFormVol
   {
   public:
-    DefaultResidualVol(int i, std::string area = HERMES_ANY, scalar const_coeff = 1.0,
-                       HermesFunctionXY* f_coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultResidualVol(int i, std::string area = HERMES_ANY,
+                       HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                        GeomType gt = HERMES_PLANAR);
 
-    DefaultResidualVol(int i, Hermes::vector<std::string> areas, scalar const_coeff = 1.0,
-                       HermesFunctionXY* f_coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultResidualVol(int i, Hermes::vector<std::string> areas,
+                       HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                        GeomType gt = HERMES_PLANAR);
 
     ~DefaultResidualVol();
@@ -149,27 +142,25 @@ namespace WeakFormsHcurl
 
     private:
       int idx_i;
-      scalar const_coeff;
-      HermesFunctionXY* function_coeff;
+      HermesFunction* coeff;
       GeomType gt;
   };
 
-  /* FIXME
-     Default volumetric vector form \int_{area} const_coeff * spline_coeff(u_ext[0]) *
+  /*
+     Default volumetric vector form \int_{area} coeff(u_ext[0]) *
      \nabla u_ext[0] \cdot \nabla v d\bfx
-     const_coeff... constant number
-     spline_coeff... non-constant parameter given by a cubic spline
+     coeff... (generally nonconstant) function of the solution
   */
 
   class HERMES_API DefaultResidualCurlCurl : public WeakForm::VectorFormVol
   {
   public:
-    DefaultResidualCurlCurl(int i, std::string area = HERMES_ANY, scalar const_coeff = 1.0,
-                            CubicSpline* c_spline = HERMES_DEFAULT_SPLINE,
+    DefaultResidualCurlCurl(int i, std::string area = HERMES_ANY,
+                            HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                             GeomType gt = HERMES_PLANAR);
 
-    DefaultResidualCurlCurl(int i, Hermes::vector<std::string> areas, scalar const_coeff = 1.0,
-                            CubicSpline* c_spline = HERMES_DEFAULT_SPLINE, 
+    DefaultResidualCurlCurl(int i, Hermes::vector<std::string> areas,
+                            HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                             GeomType gt = HERMES_PLANAR);
 
     ~DefaultResidualCurlCurl();
@@ -184,8 +175,7 @@ namespace WeakFormsHcurl
 
     private:
       int idx_i;
-      scalar const_coeff;
-      CubicSpline* spline_coeff;
+      HermesFunction* coeff;
       GeomType gt;
   };
 
@@ -198,11 +188,11 @@ namespace WeakFormsHcurl
   {
   public:
     DefaultMatrixFormSurf(int i, int j, std::string area = HERMES_ANY,
-                          scalar const_coeff = 1.0, HermesFunctionXY* f_coeff = HERMES_DEFAULT_FUNCTION,
+                          HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                           GeomType gt = HERMES_PLANAR);
 
     DefaultMatrixFormSurf(int i, int j, Hermes::vector<std::string> areas,
-                          scalar const_coeff = 1.0, HermesFunctionXY* f_coeff = HERMES_DEFAULT_FUNCTION,
+                          HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                           GeomType gt = HERMES_PLANAR);
 
     ~DefaultMatrixFormSurf();
@@ -216,26 +206,24 @@ namespace WeakFormsHcurl
     virtual WeakForm::MatrixFormSurf* clone();
 
   private:
-      scalar const_coeff;
-      HermesFunctionXY* function_coeff;
+      HermesFunction* coeff;
       GeomType gt;
   };
 
   /* FIXME
-     Default surface vector form \int_{area} const_coeff * function_coeff(x, y) * v dS
-     const_coeff... constant number
-     function_coeff... (generally nonconstant) function of x, y
+     Default surface vector form \int_{area} coeff(x, y) * v dS
+     coeff... (generally nonconstant) function of x, y
   */
 
   class HERMES_API DefaultVectorFormSurf : public WeakForm::VectorFormSurf
   {
   public:
-    DefaultVectorFormSurf(int i, std::string area = HERMES_ANY, scalar const_coeff = 1.0,
-                          HermesFunctionXY* f_coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultVectorFormSurf(int i, std::string area = HERMES_ANY,
+                          HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                           GeomType gt = HERMES_PLANAR);
 
-    DefaultVectorFormSurf(int i, Hermes::vector<std::string> areas, scalar const_coeff = 1.0,
-                          HermesFunctionXY* f_coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultVectorFormSurf(int i, Hermes::vector<std::string> areas,
+                          HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                           GeomType gt = HERMES_PLANAR);
 
     ~DefaultVectorFormSurf();
@@ -249,8 +237,7 @@ namespace WeakFormsHcurl
     virtual WeakForm::VectorFormSurf* clone();
 
     private:
-      scalar const_coeff;
-      HermesFunctionXY* function_coeff;
+      HermesFunction* coeff;
       GeomType gt;
   };
 
@@ -263,11 +250,11 @@ namespace WeakFormsHcurl
   {
   public:
     DefaultResidualSurf(int i, std::string area = HERMES_ANY,
-                        scalar const_coeff = 1.0, HermesFunctionXY* f_coeff = HERMES_DEFAULT_FUNCTION,
+                        HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                         GeomType gt = HERMES_PLANAR);
 
     DefaultResidualSurf(int i, Hermes::vector<std::string> areas,
-                        scalar const_coeff = 1.0, HermesFunctionXY* f_coeff = HERMES_DEFAULT_FUNCTION,
+                        HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
                         GeomType gt = HERMES_PLANAR);
 
     ~DefaultResidualSurf();
@@ -281,8 +268,7 @@ namespace WeakFormsHcurl
     virtual WeakForm::VectorFormSurf* clone();
 
   private:
-      scalar const_coeff;
-      HermesFunctionXY* function_coeff;
+      HermesFunction* coeff;
       GeomType gt;
   };
 }

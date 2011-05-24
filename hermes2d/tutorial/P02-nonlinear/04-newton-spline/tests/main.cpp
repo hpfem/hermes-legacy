@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
   int ndof = space.get_num_dofs();
 
   // Initialize the weak formulation
-  ConstFunctionXY heat_src(HEAT_SRC);
+  HermesFunction heat_src(HEAT_SRC);
   double const_coeff = 1.0;
   DefaultWeakFormPoisson wf(&heat_src, HERMES_ANY, const_coeff, &spline_coeff);
 

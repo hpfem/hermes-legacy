@@ -2,11 +2,11 @@
 
 /* Right-hand side */
 
-class CustomRightHandSide : public HermesFunctionXY
+class CustomRightHandSide : public HermesFunction
 {
 public:
   CustomRightHandSide(double alpha)
-    : HermesFunctionXY(), alpha(alpha) 
+    : HermesFunction(), alpha(alpha) 
   {
   };
 

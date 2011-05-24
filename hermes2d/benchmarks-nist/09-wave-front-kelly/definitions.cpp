@@ -6,11 +6,11 @@ using namespace WeakFormsH1;
 
 /* Right-hand side */
 
-class CustomRightHandSide: public HermesFunctionXY
+class CustomRightHandSide: public HermesFunction
 {
 public:
   CustomRightHandSide(double alpha, double x_loc, double y_loc, double r_zero)
-    : HermesFunctionXY(), alpha(alpha), x_loc(x_loc), y_loc(y_loc), r_zero(r_zero) { };
+    : HermesFunction(), alpha(alpha), x_loc(x_loc), y_loc(y_loc), r_zero(r_zero) { };
 
   virtual double value(double x, double y) const {
     double a = pow(x - x_loc, 2);
