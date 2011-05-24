@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
   info("ndof = %d", ndof);
 
   // Initialize the weak formulation.
-  CustomWeakFormGeneral wf("Boundary horizontal");
+  CustomWeakFormGeneral wf("Horizontal");
 
   // Initialize the FE problem.
   DiscreteProblem dp(&wf, &space);

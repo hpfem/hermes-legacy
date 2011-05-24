@@ -65,6 +65,12 @@ double CubicSpline::value(double x_in) const
   return get_value_from_interval(x_in, m); 
 }
 
+double CubicSpline::value(double x_in, double y_in) const 
+{  
+  error("Cubic splines should not be used with two parameters.");
+  return 0;
+}
+
 double CubicSpline::extrapolate_value(double point_end, double value_end, 
                                       double derivative_end, double x_in) const
 {

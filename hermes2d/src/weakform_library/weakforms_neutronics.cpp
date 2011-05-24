@@ -20,19 +20,19 @@ namespace WeakFormsNeutronics
         {
           /* Jacobian */
           // Diffusion.
-          add_matrix_form(new DefaultJacobianDiffusion(0, 0, regions[i], D_map[i], 
-                                                       HERMES_DEFAULT_SPLINE, HERMES_SYM));
+          add_matrix_form(new DefaultJacobianDiffusion(0, 0, regions[i], new HermesFunction(D_map[i]), 
+                                                       HERMES_SYM));
           // Absorption.
-          add_matrix_form(new DefaultMatrixFormVol(0, 0, regions[i], Sigma_a_map[i], 
-                                                   HERMES_DEFAULT_FUNCTION, HERMES_SYM));
+          add_matrix_form(new DefaultMatrixFormVol(0, 0, regions[i], new HermesFunction(Sigma_a_map[i]), 
+                                                   HERMES_SYM));
           
           /* Residual */
           // Diffusion.
-          add_vector_form(new DefaultResidualDiffusion(0, regions[i], D_map[i]));
+          add_vector_form(new DefaultResidualDiffusion(0, regions[i], new HermesFunction(D_map[i])));
           // Absorption.
-          add_vector_form(new DefaultResidualVol(0, regions[i], Sigma_a_map[i]));
+	  add_vector_form(new DefaultResidualVol(0, regions[i], new HermesFunction(Sigma_a_map[i])));
           // Sources.
-          add_vector_form(new DefaultVectorFormVol(0, regions[i], -Q_map[i]));
+	  add_vector_form(new DefaultVectorFormVol(0, regions[i], new HermesFunction(-Q_map[i])));
         }
       }
     }
@@ -772,48 +772,48 @@ namespace WeakFormsNeutronics
         }
         
         DefaultWeakFormFixedSource::DefaultWeakFormFixedSource( const MaterialPropertyMaps& matprop, 
-                                                                HermesFunction *f_src, std::string src_area,
+                                                                HermesFunction *minus_f_src, std::string src_area,
                                                                 GeomType geom_type  ) : WeakForm(matprop.get_G())
         {
           lhs_init(matprop.get_G(), matprop, geom_type);
           for (unsigned int gto = 0; gto < matprop.get_G(); gto++)
-            add_vector_form(new WeakFormsH1::DefaultVectorFormVol(gto, src_area, -1.0, f_src, geom_type));
+            add_vector_form(new WeakFormsH1::DefaultVectorFormVol(gto, src_area, minus_f_src, geom_type));
         }
         
         DefaultWeakFormFixedSource::DefaultWeakFormFixedSource( const MaterialPropertyMaps& matprop, 
-                                                                HermesFunction *f_src,
+                                                                HermesFunction *minus_f_src,
                                                                 Hermes::vector<std::string> src_areas,
                                                                 GeomType geom_type  ) : WeakForm(matprop.get_G())
         {
           lhs_init(matprop.get_G(), matprop, geom_type);
           for (unsigned int gto = 0; gto < matprop.get_G(); gto++)
-            add_vector_form(new WeakFormsH1::DefaultVectorFormVol(gto, src_areas, -1.0, f_src, geom_type));
+            add_vector_form(new WeakFormsH1::DefaultVectorFormVol(gto, src_areas, minus_f_src, geom_type));
         }
         
         DefaultWeakFormFixedSource::DefaultWeakFormFixedSource( const MaterialPropertyMaps& matprop, 
-                                                                const std::vector<HermesFunction*>& f_src,
+                                                                const std::vector<HermesFunction*>& minus_f_src,
                                                                 std::string src_area, 
                                                                 GeomType geom_type ) : WeakForm(matprop.get_G())
         {
-          if (f_src.size() != matprop.get_G())
+          if (minus_f_src.size() != matprop.get_G())
             error(E_INVALID_SIZE);
           
           lhs_init(matprop.get_G(), matprop, geom_type);
           for (unsigned int gto = 0; gto < matprop.get_G(); gto++)
-            add_vector_form(new WeakFormsH1::DefaultVectorFormVol(gto, src_area, -1.0, f_src[gto], geom_type));
+            add_vector_form(new WeakFormsH1::DefaultVectorFormVol(gto, src_area, minus_f_src[gto], geom_type));
         }
         
         DefaultWeakFormFixedSource::DefaultWeakFormFixedSource( const MaterialPropertyMaps& matprop, 
-                                                                const std::vector<HermesFunction*>& f_src,
+                                                                const std::vector<HermesFunction*>& minus_f_src,
                                                                 Hermes::vector<std::string> src_areas,
                                                                 GeomType geom_type ) : WeakForm(matprop.get_G())
         {
-          if (f_src.size() != matprop.get_G())
+          if (minus_f_src.size() != matprop.get_G())
             error(E_INVALID_SIZE);
           
           lhs_init(matprop.get_G(), matprop, geom_type);
           for (unsigned int gto = 0; gto < matprop.get_G(); gto++)
-            add_vector_form(new WeakFormsH1::DefaultVectorFormVol(gto, src_areas, -1.0, f_src[gto], geom_type));
+            add_vector_form(new WeakFormsH1::DefaultVectorFormVol(gto, src_areas, minus_f_src[gto], geom_type));
         }
         
         DefaultWeakFormSourceIteration::DefaultWeakFormSourceIteration( const MaterialPropertyMaps& matprop,

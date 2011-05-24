@@ -20,18 +20,18 @@
 
 namespace WeakFormsMaxwell {
 
-  /* Default volumetric matrix form \int_{area} coeff_spline(u_ext[0]) \curl u \curl v d\bfx
-  spline_coeff... nonconstant parameter given by cubic spline
+  /* Default volumetric matrix form \int_{area} coeff(u_ext[0]) \curl u \curl v d\bfx
+  coeff... (generally nonconstant) function of the solution
   */
 
   class HERMES_API DefaultJacobianMagnetostatics : public WeakForm::MatrixFormVol
   {
   public:
-    DefaultJacobianMagnetostatics(int i, int j, std::string area = HERMES_ANY, scalar const_coeff = 1.0,
-      CubicSpline* c_spline = HERMES_DEFAULT_SPLINE, SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR,
+    DefaultJacobianMagnetostatics(int i, int j, std::string area = HERMES_ANY,
+      HermesFunction* coeff = HERMES_DEFAULT_FUNCTION, SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR,
       int order_increase = 3);
     DefaultJacobianMagnetostatics(int i, int j, Hermes::vector<std::string> areas,
-      scalar const_coeff,CubicSpline* c_spline = HERMES_DEFAULT_SPLINE,
+      HermesFunction* coeff = HERMES_DEFAULT_FUNCTION, 
       SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR, int order_increase = 3);
 
     virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
@@ -45,8 +45,7 @@ namespace WeakFormsMaxwell {
 
   private:
     int idx_j;
-    scalar const_coeff;
-    CubicSpline* spline_coeff;
+    HermesFunction* coeff;
     GeomType gt;
     int order_increase;
   };
@@ -54,27 +53,26 @@ namespace WeakFormsMaxwell {
   class HERMES_API DefaultResidualMagnetostatics : public WeakForm::VectorFormVol
   {
   public:
-    DefaultResidualMagnetostatics(int i, std::string area = HERMES_ANY, scalar const_coeff = 1.0,
-      CubicSpline* c_spline = HERMES_DEFAULT_SPLINE,
-      GeomType gt = HERMES_PLANAR,
-      int order_increase = 3);
-    DefaultResidualMagnetostatics(int i, Hermes::vector<std::string> areas, scalar const_coeff = 1.0, 
-      CubicSpline* c_spline = HERMES_DEFAULT_SPLINE,
-      GeomType gt = HERMES_PLANAR, int order_increase = 3);
+    DefaultResidualMagnetostatics(int i, std::string area = HERMES_ANY,
+				  HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                                  GeomType gt = HERMES_PLANAR,
+                                  int order_increase = 3);
+    DefaultResidualMagnetostatics(int i, Hermes::vector<std::string> areas,
+                                  HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                                  GeomType gt = HERMES_PLANAR, int order_increase = 3);
 
     virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
-      Geom<double> *e, ExtData<scalar> *ext) const;
+                         Geom<double> *e, ExtData<scalar> *ext) const;
 
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v,
-      Geom<Ord> *e, ExtData<Ord> *ext) const;
+                    Geom<Ord> *e, ExtData<Ord> *ext) const;
 
     // This is to make the form usable in rk_time_step().
     virtual WeakForm::VectorFormVol* clone();
 
   private:
     int idx_i;
-    scalar const_coeff;
-    CubicSpline* spline_coeff;
+    HermesFunction* coeff;
     GeomType gt;
     int order_increase;
   };

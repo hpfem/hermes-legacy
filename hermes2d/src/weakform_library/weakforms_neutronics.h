@@ -15,13 +15,13 @@ namespace WeakFormsNeutronics
         homogeneous region:
       
             \int_{region} D \nabla\phi \cdot \nabla\psi d\bfx + \int_{region} \Sigma_a \phi\psi d\bfx
-              = \int_{region} Q_{ext}\psi d\bfx
+              + \int_{region} Q_{ext}\psi d\bfx = 0
         
         where 
         
             D         ... diffusion coefficient, 
             \Sigma_a  ... absorption cross-section, 
-            Q_{ext}   ... external neutron sources 
+            Q_{ext}   ... external neutron sources (multiplied with -1)
           
         are region-wise constant physical parameters of the problem. Each region has one entry in vector
         'regions', which is the marker used for all elements it is composed of (usually specified in the
