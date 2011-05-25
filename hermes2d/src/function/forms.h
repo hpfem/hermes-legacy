@@ -452,7 +452,7 @@ public:
   HermesFunction()
   {
     this->is_const = true;
-    this->const_value = 0.0;
+    this->const_value = -9999.0;
   };
 
   HermesFunction(scalar value)

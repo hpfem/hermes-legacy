@@ -5,15 +5,17 @@
 
 using namespace RefinementSelectors;
 
-//  This example shows how to set an arbitrary initial guess for the
-//  Newton's method, and nonzero Dirichlet boundary conditions.
+//  This example shows how to use a nonlinearity that is given
+//  via an analytic expression (as a function). 
 //
 //  PDE: stationary heat transfer equation with nonlinear thermal
-//  conductivity, - div[lambda(u)grad u] = 0.
+//       conductivity, - div[lambda(u) grad u] + src(x, y) = 0,
+//
+//  Nonlinearity: lambda(u) = 1 + pow(u, alpha).
 //
 //  Domain: unit square (-10, 10)^2.
 //
-//  BC: Dirichlet, see function dir_lift() below.
+//  BC: Nonconstant Dirichlet, see function dir_lift() below.
 //
 //  The following parameters can be changed:
 
@@ -26,6 +28,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.
+double heat_src = 1.0;
 double alpha = 4.0;
 
 // Weak forms.
@@ -51,10 +54,13 @@ int main(int argc, char* argv[])
 
   // Create an H1 space with default shapeset.
   H1Space space(&mesh, &bcs, P_INIT);
+  int ndof = Space::get_num_dofs(&space);
+  info("ndof: %d", ndof);
 
   // Initialize the weak formulation
-  CustomNonlinearity* lambda = new CustomNonlinearity(alpha);
-  WeakFormsH1::DefaultWeakFormLaplace wf(HERMES_ANY, lambda);
+  CustomNonlinearity lambda(alpha);
+  HermesFunction src(-heat_src);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &src);
 
   // Initialize the FE problem.
   DiscreteProblem dp(&wf, &space);
@@ -70,7 +76,7 @@ int main(int argc, char* argv[])
   // coeff_vec to be a vector of ndof zeros (no projection is needed).
   info("Projecting to obtain initial vector for the Newton's method.");
   scalar* coeff_vec = new scalar[Space::get_num_dofs(&space)] ;
-  CustomInitialSolutionHeatTransfer init_sln(&mesh);
+  CustomInitialCondition init_sln(&mesh);
   OGProjection::project_global(&space, &init_sln, coeff_vec, matrix_solver); 
 
   // Perform Newton's iteration.
@@ -83,7 +89,7 @@ int main(int argc, char* argv[])
   Solution sln;
   Solution::vector_to_solution(coeff_vec, &space, &sln);
 
-  // Cleanup.
+  // Clean up.
   delete [] coeff_vec;
   delete matrix;
   delete rhs;

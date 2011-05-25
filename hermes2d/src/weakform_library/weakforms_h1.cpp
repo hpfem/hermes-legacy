@@ -84,8 +84,7 @@ namespace WeakFormsH1
   DefaultJacobianDiffusion::DefaultJacobianDiffusion(int i, int j, std::string area,
                                                      HermesFunction* coeff,
                                                      SymFlag sym, GeomType gt)
-    : WeakForm::MatrixFormVol(i, j, area, sym), 
-      idx_j(j), coeff(coeff), gt(gt)
+    : WeakForm::MatrixFormVol(i, j, area, sym), idx_j(j), coeff(coeff), gt(gt)
   {
     // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
     if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
@@ -93,8 +92,7 @@ namespace WeakFormsH1
 
   DefaultJacobianDiffusion::DefaultJacobianDiffusion(int i, int j, Hermes::vector<std::string> areas, 
                                                      HermesFunction* coeff, SymFlag sym, GeomType gt)
-    : WeakForm::MatrixFormVol(i, j, areas, sym),
-      idx_j(j), coeff(coeff), gt(gt)
+    : WeakForm::MatrixFormVol(i, j, areas, sym), idx_j(j), coeff(coeff), gt(gt)
   {
     // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
     if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
@@ -895,7 +893,7 @@ namespace WeakFormsH1
                                                  GeomType gt) : WeakForm()
   {
     // Jacobian.
-    add_matrix_form(new DefaultJacobianDiffusion(0, 0, area, coeff, HERMES_SYM, gt));
+    add_matrix_form(new DefaultJacobianDiffusion(0, 0, area, coeff, HERMES_NONSYM, gt));
 
     // Residual.
     add_vector_form(new DefaultResidualDiffusion(0, area, coeff, gt));
@@ -908,7 +906,8 @@ namespace WeakFormsH1
                                                  GeomType gt) : WeakForm()
   {
     // Jacobian.
-    add_matrix_form(new DefaultJacobianDiffusion(0, 0, area, coeff, HERMES_SYM, gt));
+    // NOTE: The flag HERMES_NONSYM is very important here.
+    add_matrix_form(new DefaultJacobianDiffusion(0, 0, area, coeff, HERMES_NONSYM, gt));
 
     // Residual.
     add_vector_form(new DefaultResidualDiffusion(0, area, coeff, gt));

@@ -19,6 +19,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 
 // Problem parameters.
 double alpha = 4.0;
+double heat_src = 1.0;
 
 // Weak forms.
 #include "../definitions.cpp"
@@ -35,7 +36,7 @@ int main(int argc, char* argv[])
 
   // Perform initial mesh refinements.
   for(int i = 0; i < INIT_GLOB_REF_NUM; i++) mesh.refine_all_elements();
-  mesh.refine_towards_boundary("Dby", INIT_BDY_REF_NUM);
+  mesh.refine_towards_boundary("Bdy", INIT_BDY_REF_NUM);
 
   // Initialize boundary conditions.
   CustomEssentialBCNonConst bc_essential("Bdy");
@@ -46,8 +47,9 @@ int main(int argc, char* argv[])
   int ndof = space.get_num_dofs();
 
   // Initialize the weak formulation
-  CustomNonlinearity* lambda = new CustomNonlinearity(alpha);
-  WeakFormsH1::DefaultWeakFormLaplace wf(HERMES_ANY, lambda);
+  CustomNonlinearity lambda(alpha);
+  HermesFunction src(-heat_src);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &src);
 
   // Initialize the FE problem.
   DiscreteProblem dp(&wf, &space);
@@ -64,7 +66,7 @@ int main(int argc, char* argv[])
   // coefficient vector for the Newton's method.
   info("Projecting to obtain initial vector for the Newton's method.");
   scalar* coeff_vec = new scalar[Space::get_num_dofs(&space)] ;
-  CustomInitialSolutionHeatTransfer init_sln(&mesh);
+  CustomInitialCondition init_sln(&mesh);
   OGProjection::project_global(&space, &init_sln, coeff_vec, matrix_solver);
 
   // Perform Newton's iteration.
