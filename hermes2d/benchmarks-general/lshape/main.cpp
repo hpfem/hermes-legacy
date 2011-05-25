@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
   CustomExactSolution exact_sln(&mesh);
 
   // Initialize the weak formulation.
-  DefaultWeakFormLaplace wf;
+  WeakFormsH1::DefaultWeakFormLaplace wf;
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc_essential("Bdy", &exact_sln);

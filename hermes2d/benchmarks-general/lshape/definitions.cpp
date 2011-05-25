@@ -1,7 +1,5 @@
 #include "hermes2d.h"
 
-using namespace WeakFormsH1;
-
 /*  Exact solution */
 
 class CustomExactSolution : public ExactSolutionScalar

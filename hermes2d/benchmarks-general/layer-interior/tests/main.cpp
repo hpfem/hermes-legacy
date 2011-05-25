@@ -59,10 +59,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.
-double SLOPE = 60;                                // Slope of the layer.
-
-// Boundary markers.
-const std::string BDY_DIRICHLET = "Bdy";
+double slope = 60;                                // Slope of the layer.
 
 // Right-hand side, exact solution, weak forms.
 #include "../definitions.cpp"
@@ -82,16 +79,17 @@ int main(int argc, char* argv[])
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
   
   // Define exact solution.
-  CustomExactSolution exact(&mesh, SLOPE);
+  CustomExactSolution exact(&mesh, slope);
 
-  // Define right-hand side.
-  CustomRightHandSide rhs(SLOPE);
+  // Define custom function f.
+  CustomFunction f(slope);
 
   // Initialize the weak formulation.
-  DefaultWeakFormPoisson wf(&rhs);
+  HermesFunction lambda(1.0);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
   
   // Initialize boundary conditions
-  DefaultEssentialBCNonConst bc_essential(BDY_DIRICHLET, &exact);
+  DefaultEssentialBCNonConst bc_essential("Bdy", &exact);
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.

@@ -10,9 +10,9 @@ using namespace RefinementSelectors;
 //  the parameter MESH_REGULARITY to see the influence of hanging nodes on the adaptive process.
 //  The problem is made harder for adaptive algorithms by increasing the parameter SLOPE.
 //
-//  PDE: -Laplace u - f = 0
+//  PDE: -Laplace u + f = 0
 //
-//  Known exact solution, see functions fn() and fndd().
+//  Known exact solution.
 //
 //  Domain: unit square (0, 1) x (0, 1), see the file square.mesh.
 //
@@ -53,7 +53,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.
-double SLOPE = 60;                                // Slope of the layer.
+double slope = 60;                                // Slope of the layer.
 
 // Right-hand side, exact solution, weak forms.
 #include "definitions.cpp"
@@ -66,20 +66,21 @@ int main(int argc, char* argv[])
   // Load the mesh.
   Mesh mesh;
   H2DReader mloader;
-  mloader.load("square_quad.mesh", &mesh);     // quadrilaterals
-  // mloader.load("square_tri.mesh", &mesh);   // triangles
+  mloader.load("square_quad.mesh", &mesh);     // Quadrilaterals.
+  // mloader.load("square_tri.mesh", &mesh);   // Triangles.
 
   // Perform initial mesh refinements.
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
   
   // Define exact solution.
-  CustomExactSolution exact(&mesh, SLOPE);
+  CustomExactSolution exact(&mesh, slope);
 
-  // Define right-hand side.
-  CustomRightHandSide rhs(SLOPE);
+  // Define custom function f.
+  CustomFunction f(slope);
 
   // Initialize the weak formulation.
-  DefaultWeakFormPoisson wf(&rhs);
+  HermesFunction lambda(1.0);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
   
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc_essential("Bdy", &exact);

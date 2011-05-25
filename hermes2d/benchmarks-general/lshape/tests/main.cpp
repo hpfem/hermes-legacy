@@ -1,6 +1,4 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
 #include "hermes2d.h"
 
@@ -79,7 +77,7 @@ int main(int argc, char* argv[])
   CustomExactSolution exact_sln(&mesh);
 
   // Initialize the weak formulation.
-  DefaultWeakFormLaplace wf;
+  WeakFormsH1::DefaultWeakFormLaplace wf;
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc_essential("Bdy", &exact_sln);
