@@ -268,12 +268,12 @@ public:
   WeakFormFitzHughNagumo(CustomRightHandSide1* g1, CustomRightHandSide2* g2) : WeakForm(2) 
   {
     // Jacobian.
-    add_matrix_form(new DefaultJacobianDiffusion(0, 0, HERMES_ANY, D_u * D_u));
-    add_matrix_form(new DefaultMatrixFormVol(0, 0, HERMES_ANY, -1.0));
-    add_matrix_form(new DefaultMatrixFormVol(0, 1, HERMES_ANY, g1->sigma, HERMES_DEFAULT_FUNCTION, HERMES_NONSYM));
-    add_matrix_form(new DefaultMatrixFormVol(1, 0, HERMES_ANY, -1.0, HERMES_DEFAULT_FUNCTION, HERMES_NONSYM));
-    add_matrix_form(new DefaultJacobianDiffusion(1, 1, HERMES_ANY, D_v * D_v));
-    add_matrix_form(new DefaultMatrixFormVol(1, 1, HERMES_ANY, 1.0));
+    add_matrix_form(new DefaultJacobianDiffusion(0, 0, HERMES_ANY, new HermesFunction(D_u * D_u)));
+    add_matrix_form(new DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(-1.0)));
+    add_matrix_form(new DefaultMatrixFormVol(0, 1, HERMES_ANY, new HermesFunction(g1->sigma), HERMES_NONSYM));
+    add_matrix_form(new DefaultMatrixFormVol(1, 0, HERMES_ANY, new HermesFunction(-1.0), HERMES_NONSYM));
+    add_matrix_form(new DefaultJacobianDiffusion(1, 1, HERMES_ANY, new HermesFunction(D_v * D_v)));
+    add_matrix_form(new DefaultMatrixFormVol(1, 1, HERMES_ANY, new HermesFunction(1.0)));
 
     // Residual.
     add_vector_form(new CustomResidual1(D_u, g1->sigma, g1));

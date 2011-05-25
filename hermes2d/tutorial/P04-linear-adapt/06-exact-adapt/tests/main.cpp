@@ -39,7 +39,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Exact solution can be modified.
-#include "exact_solution.cpp"
+#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {

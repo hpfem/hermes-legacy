@@ -105,14 +105,14 @@ public:
     cplx ii = cplx(0.0, 1.0);
 
     // Jacobian.
-    add_matrix_form(new WeakFormsHcurl::DefaultJacobianCurlCurl(0, 0, HERMES_ANY, 1.0/mu_r));
-    add_matrix_form(new WeakFormsHcurl::DefaultMatrixFormVol(0, 0, HERMES_ANY, -sqr(kappa)));
-    add_matrix_form_surf(new WeakFormsHcurl::DefaultMatrixFormSurf(0, 0, HERMES_ANY, -kappa*ii));
+    add_matrix_form(new WeakFormsHcurl::DefaultJacobianCurlCurl(0, 0, HERMES_ANY, new HermesFunction(1.0/mu_r)));
+    add_matrix_form(new WeakFormsHcurl::DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(-sqr(kappa))));
+    add_matrix_form_surf(new WeakFormsHcurl::DefaultMatrixFormSurf(0, 0, HERMES_ANY, new HermesFunction(-kappa*ii)));
 
     // Residual.
-    add_vector_form(new WeakFormsHcurl::DefaultResidualCurlCurl(0, HERMES_ANY, 1.0/mu_r));
-    add_vector_form(new WeakFormsHcurl::DefaultResidualVol(0, HERMES_ANY, -sqr(kappa)));
-    add_vector_form_surf(new WeakFormsHcurl::DefaultResidualSurf(0, HERMES_ANY, -kappa*ii));
+    add_vector_form(new WeakFormsHcurl::DefaultResidualCurlCurl(0, HERMES_ANY, new HermesFunction(1.0/mu_r)));
+    add_vector_form(new WeakFormsHcurl::DefaultResidualVol(0, HERMES_ANY, new HermesFunction(-sqr(kappa))));
+    add_vector_form_surf(new WeakFormsHcurl::DefaultResidualSurf(0, HERMES_ANY, new HermesFunction(-kappa*ii)));
     add_vector_form_surf(new CustomVectorFormSurf());
   };
 
