@@ -17,12 +17,15 @@ using namespace RefinementSelectors;
 //  the beginning of file src/runge-kutta.H.
 //
 //  PDE: time-dependent heat transfer equation with nonlinear thermal
-//  conductivity, du/dt - div[lambda(u)grad u] = f.
+//  conductivity, du/dt = div[lambda(u) grad u] + f.
 //
-//  Domain: square (-10,10)^2.
+//  Nonlinearity: lambda(u) = 1 + pow(u, alpha).
 //
-//  BC: Dirichlet, given by the function dir_lift() below.
-//  IC: Same function dir_lift().
+//  Domain: square (-10, 10)^2.
+//
+//  BC: Nonconstant Dirichlet.
+//
+//  IC: Custom initial condition matching the BC.
 //
 //  The following parameters can be changed:
 
@@ -53,9 +56,9 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;   // Possibilities: SOLVER_AMES
 //   Implicit_DIRK_ISMAIL_7_45_embedded.
 ButcherTableType butcher_table_type = Implicit_RK_1;
 
-const double ALPHA = 4.0;                         // For the nonlinear thermal conductivity.
-
-const std::string BDY_DIRICHLET = "1";
+// Problem parameters.
+const double alpha = 4.0;                         // For the nonlinear thermal conductivity.
+const double heat_src = 1.0;
 
 // Weak forms.
 #include "definitions.cpp"
@@ -76,10 +79,10 @@ int main(int argc, char* argv[])
 
   // Initial mesh refinements.
   for(int i = 0; i < INIT_GLOB_REF_NUM; i++) mesh.refine_all_elements();
-  mesh.refine_towards_boundary(BDY_DIRICHLET, INIT_BDY_REF_NUM);
+  mesh.refine_towards_boundary("Bdy", INIT_BDY_REF_NUM);
 
   // Initialize boundary conditions.
-  EssentialBCNonConst bc_essential(BDY_DIRICHLET);
+  EssentialBCNonConst bc_essential("Bdy");
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.
@@ -88,10 +91,12 @@ int main(int argc, char* argv[])
   info("ndof = %d.", ndof);
 
   // Previous time level solution (initialized by the initial condition).
-  InitialSolutionHeatTransfer sln_time_prev(&mesh);
+  CustomInitialCondition sln_time_prev(&mesh);
 
   // Initialize the weak formulation
-  WeakFormHeatTransferRungeKuttaTimedep wf(ALPHA, &sln_time_prev);
+  CustomNonlinearity lambda(alpha);
+  HermesFunction f(heat_src);
+  CustomWeakForm wf(&lambda, &f);
 
   // Previous and next time level solutions.
   Solution sln_time_new(&mesh);
