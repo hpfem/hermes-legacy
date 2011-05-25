@@ -79,10 +79,6 @@ public:
   {
   }
 
-  ~CustomEssentialBCNonConst() 
-  {
-  };
-
   inline EssentialBCValueType get_value_type() const 
   { 
     return EssentialBoundaryCondition::BC_FUNCTION; 

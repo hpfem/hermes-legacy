@@ -89,3 +89,24 @@ private:
     double heat_src;
   };
 };
+
+/* Essential boundary conditions */
+
+class CustomEssentialBCNonConst : public EssentialBoundaryCondition {
+public:
+  CustomEssentialBCNonConst(std::string marker) 
+           : EssentialBoundaryCondition(Hermes::vector<std::string>(marker))
+  {
+  }
+
+  inline EssentialBCValueType get_value_type() const 
+  { 
+    return EssentialBoundaryCondition::BC_FUNCTION; 
+  }
+
+  virtual scalar value(double x, double y, double n_x, double n_y, 
+                       double t_x, double t_y) const
+  {
+    return (x+10) * (y+10) / 100.;
+  }
+};

@@ -9,13 +9,13 @@ using namespace RefinementSelectors;
 //  via an analytic expression (as a function). 
 //
 //  PDE: stationary heat transfer equation with nonlinear thermal
-//       conductivity, - div[lambda(u) grad u] + src(x, y) = 0,
+//       conductivity, - div[lambda(u) grad u] + src(x, y) = 0.
 //
 //  Nonlinearity: lambda(u) = 1 + pow(u, alpha).
 //
-//  Domain: unit square (-10, 10)^2.
+//  Domain: square (-10, 10)^2.
 //
-//  BC: Nonconstant Dirichlet, see function dir_lift() below.
+//  BC: Nonconstant Dirichlet.
 //
 //  The following parameters can be changed:
 
