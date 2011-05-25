@@ -116,7 +116,7 @@ static void init_transforms(Transformable* fn, Rect* cr, Rect* er)
   {
     uint64_t hmid = (r.l + r.r) >> 1;
     uint64_t vmid = (r.t + r.b) >> 1;
-    int son;
+    int son = 0;
 
     if (cr->r <= hmid && cr->t <= vmid) son = 0;
     else if (cr->l >= hmid && cr->t <= vmid) son = 1;

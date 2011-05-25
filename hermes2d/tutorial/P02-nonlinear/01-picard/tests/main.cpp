@@ -18,6 +18,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 
 // Problem parameters.
 double heat_src = 1.0;
+double alpha = 4.0;
 
 // Weak forms.
 #include "../definitions.cpp"
@@ -48,7 +49,9 @@ int main(int argc, char* argv[])
   Solution sln_prev_iter(&mesh, INIT_COND_CONST);
 
   // Initialize the weak formulation.
-  CustomWeakFormPicard wf(&sln_prev_iter, heat_src);
+  CustomNonlinearity lambda(alpha);
+  HermesFunction src(-heat_src);
+  CustomWeakFormPicard wf(&sln_prev_iter, &lambda, &src);
 
   // Perform the Picard's iteration.
   bool verbose = true;
