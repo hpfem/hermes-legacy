@@ -11,28 +11,31 @@ using namespace RefinementSelectors;
 //  Euler method.
 //
 //  PDE: time-dependent heat transfer equation with nonlinear
-//  thermal conductivity:
+//  thermal conductivity, du/dt - div[lambda(u) grad u] + f = 0.
 //
-//  du/dt - div[lambda(u)grad u] = f.
+//  Nonlinearity: lambda(u) = 1 + pow(u, alpha).
 //
-//  Domain: square (-10,10)^2.
+//  Domain: square (-10, 10)^2.
 //
-//  BC: Dirichlet, given by the function dir_lift() below.
-//  IC: Same function dir_lift().
+//  BC: Nonhomogeneous Dirichlet.
+//
+//  IC: Custom initial condition matching the BC.
 //
 //  The following parameters can be changed:
 
 const int INIT_GLOB_REF_NUM = 3;                  // Number of initial uniform mesh refinements.
 const int INIT_BDY_REF_NUM = 4;                   // Number of initial refinements towards boundary.
 const int P_INIT = 2;                             // Initial polynomial degree.
-const double time_step = 0.2;                           // Time step.
+const double time_step = 0.2;                     // Time step.
 const double T_FINAL = 5.0;                       // Time interval length.
 const double NEWTON_TOL = 1e-5;                   // Stopping criterion for the Newton's method.
 const int NEWTON_MAX_ITER = 200;                  // Maximum allowed number of Newton iterations.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
-const double ALPHA = 4.0;                         // For the nonlinear thermal conductivity.
+// Problem parameters.
+const double alpha = 4.0;                         // For the nonlinear thermal conductivity.
+const double heat_src = 1.0;
 
 // Weak forms.
 #include "definitions.cpp"
@@ -64,7 +67,9 @@ int main(int argc, char* argv[])
   CustomInitialCondition u_prev_time(&mesh);
 
   // Initialize the weak formulation
-  CustomWeakFormHeatTransferNonlinear wf(ALPHA, time_step, &u_prev_time);
+  CustomNonlinearity lambda(alpha);
+  HermesFunction f(-heat_src);
+  CustomWeakForm wf(&lambda, &f, time_step, &u_prev_time);
 
   // Project the initial condition on the FE space to obtain initial
   // coefficient vector for the Newton's method.
@@ -90,7 +95,7 @@ int main(int argc, char* argv[])
   bool jacobian_changed = true;
   do
   {
-    info("---- Time step %d, t = %g s.", ts, current_time);
+    info("Time step %d, t = %g s.", ts, current_time);
 
     // Perform Newton's iteration.
     bool verbose = true;
@@ -113,7 +118,7 @@ int main(int argc, char* argv[])
   }
   while (current_time < T_FINAL);
 
-  // Cleanup.
+  // Clean up.
   delete [] coeff_vec;
   delete matrix;
   delete rhs;

@@ -2,107 +2,99 @@
 #include "integrals/h1.h"
 #include "boundaryconditions/essential_bcs.h"
 
-class CustomWeakFormHeatTransferNonlinear : public WeakForm
+/* Nonlinearity lambda(u) = pow(u, alpha) */
+
+class CustomNonlinearity : public HermesFunction
 {
 public:
-  CustomWeakFormHeatTransferNonlinear(double alpha, double tau, Solution* sln_prev_time) : WeakForm(1) {
-    add_matrix_form(new CustomMatrixFormVolHeatTransferNonlinear(0, 0, alpha, tau));
+  CustomNonlinearity(double alpha): HermesFunction()
+  {
+    this->is_const = false;
+    this->alpha = alpha;
+  }
 
-    VectorFormVolHeatTransfer* vector_form = new VectorFormVolHeatTransfer(0, alpha, tau);
+  virtual scalar value(double u) const
+  {
+    return 1 + pow(u, alpha);
+  }
+
+  virtual Ord value(Ord u) const
+  {
+    // If alpha is not an integer, then the function
+    // is non-polynomial. 
+    // NOTE: Setting Ord to 10 is safe but costly,
+    // one could save here by looking at special cases 
+    // of alpha. 
+    return Ord(10);
+  }
+
+  virtual scalar derivative(double u) const
+  {
+    return alpha * pow(u, alpha - 1.0);
+  }
+
+  virtual Ord derivative(Ord u) const
+  {
+    // Same comment as above applies.
+    return Ord(10);
+  }
+
+  protected:
+    double alpha;
+};
+
+/* Weak forms */
+
+class CustomWeakForm : public WeakForm
+{
+public:
+  CustomWeakForm(HermesFunction* lambda, HermesFunction* f, double tau, Solution* sln_prev_time) 
+    : WeakForm(1) 
+  {
+    // Jacobian.
+    add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(1. / tau)));
+    add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, HERMES_ANY, lambda));
+
+    // Residual.
+    add_vector_form(new WeakFormsH1::DefaultResidualVol(0, HERMES_ANY, new HermesFunction(1. / tau)));
+    add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, HERMES_ANY, lambda));
+    add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, f));
+    CustomVectorFormVol* vector_form = new CustomVectorFormVol(0, tau);
     vector_form->ext.push_back(sln_prev_time);
     add_vector_form(vector_form);
   };
 
 private:
-  class CustomMatrixFormVolHeatTransferNonlinear : public WeakForm::MatrixFormVol
+  // This form (residual) is custom since it contains previous time level solution.
+  class CustomVectorFormVol : public WeakForm::VectorFormVol
   {
   public:
-    // This weak form is custom since it contains a nonlinearity in the diffusion term.
-    CustomMatrixFormVolHeatTransferNonlinear(int i, int j, double alpha, double tau) 
-      : WeakForm::MatrixFormVol(i, j, HERMES_ANY, HERMES_NONSYM), alpha(alpha), tau(tau) { }
+    CustomVectorFormVol(int i, double tau) : WeakForm::VectorFormVol(i), tau(tau) 
+    { 
+    }
 
-    template<typename Real, typename Scalar>
-    Scalar matrix_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, 
-                       Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
-      Scalar result = 0;
-      Func<Scalar>* u_prev_newton = u_ext[0];
+    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
+                         Geom<double> *e, ExtData<scalar> *ext) const 
+    {
+      scalar result = 0;
+      Func<scalar>* u_prev_time = ext->fn[0];
       for (int i = 0; i < n; i++)
-        result += wt[i] * (u->val[i] * v->val[i] / tau + dlam_du<Real>(u_prev_newton->val[i]) * u->val[i] *
-                           (u_prev_newton->dx[i] * v->dx[i] + u_prev_newton->dy[i] * v->dy[i])
-                           + lam<Real>(u_prev_newton->val[i]) * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]));
+        result -= wt[i] * u_prev_time->val[i] * v->val[i] / tau;
       return result;
     }
 
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-                 Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
-      return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, 
-            Geom<Ord> *e, ExtData<Ord> *ext) const {
-      return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
-    }
-
-    // Thermal conductivity (temperature-dependent)
-    // Note: for any u, this function has to be positive.
-    template<typename Real>
-    Real lam(Real u) const { 
-      return 1 + pow(u, alpha); 
-    }
-
-    // Derivative of the thermal conductivity with respect to 'u'.
-    template<typename Real>
-    Real dlam_du(Real u) const { 
-      return alpha*pow(u, alpha - 1); 
-    }
-    
-    // Members.
-    double alpha;
-    double tau;
-  };
-
-  // This form (residual) is custom since it contains a nonlinear term.
-  class VectorFormVolHeatTransfer : public WeakForm::VectorFormVol
-  {
-  public:
-    VectorFormVolHeatTransfer(int i, double alpha, double tau) : WeakForm::VectorFormVol(i), alpha(alpha), tau(tau) { }
-
-    template<typename Real, typename Scalar>
-    Scalar vector_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
-      Scalar result = 0;
-      Func<Scalar>* u_prev_newton = u_ext[0];
-      Func<Scalar>* u_prev_time = ext->fn[0];
+    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
+                    Geom<Ord> *e, ExtData<Ord> *ext) const 
+    {
+      Ord result = 0;
+      Func<Ord>* u_prev_time = ext->fn[0];
       for (int i = 0; i < n; i++)
-        result += wt[i] * ((u_prev_newton->val[i] - u_prev_time->val[i]) * v->val[i] / tau +
-                          lam<Real>(u_prev_newton->val[i]) * (u_prev_newton->dx[i] * v->dx[i] + u_prev_newton->dy[i] * v->dy[i])
-		           - heat_src<Real>(e->x[i], e->y[i]) * v->val[i]);
+        result -= wt[i] * u_prev_time->val[i] * v->val[i] / tau;
       return result;
     }
 
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
-      return vector_form<double, scalar>(n, wt, u_ext, v, e, ext);
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
-      return vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext);
-    }
-
-    // Heat sources (can be a general function of 'x' and 'y').
-    template<typename Real>
-    Real heat_src(Real x, Real y) const {
-      return 1.0;
-    }
-
-    // Thermal conductivity (temperature-dependent)
-    // Note: for any u, this function has to be positive.
-    template<typename Real>
-    Real lam(Real u) const { 
-      return 1 + pow(u, alpha); 
-    }
-
-    // Members.
-    double alpha;
-    double tau;
+    protected:
+      double tau;
   };
 };
 

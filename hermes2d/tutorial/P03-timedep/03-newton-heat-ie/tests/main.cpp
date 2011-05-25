@@ -19,7 +19,9 @@ const int NEWTON_MAX_ITER = 100;                  // Maximum allowed number of N
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
-const double ALPHA = 4.0;                         // For the nonlinear thermal conductivity.
+// Problem parameters.
+const double alpha = 4.0;                         // For the nonlinear thermal conductivity.
+const double heat_src = 1.0;
 
 // Weak forms.
 #include "../definitions.cpp"
@@ -51,7 +53,9 @@ int main(int argc, char* argv[])
   CustomInitialCondition u_prev_time(&mesh);
 
   // Initialize the weak formulation
-  CustomWeakFormHeatTransferNonlinear wf(ALPHA, time_step, &u_prev_time);
+  CustomNonlinearity lambda(alpha);
+  HermesFunction f(-heat_src);
+  CustomWeakForm wf(&lambda, &f, time_step, &u_prev_time);
 
   // Project the initial condition on the FE space to obtain initial
   // coefficient vector for the Newton's method.
@@ -72,7 +76,7 @@ int main(int argc, char* argv[])
   bool jacobian_changed = true;
   do
   {
-    info("---- Time step %d, t = %g s.", ts, current_time); ts++;
+    info("Time step %d, t = %g s.", ts, current_time); ts++;
 
     // Perform Newton's iteration.
     info("Solving on coarse mesh:");
@@ -92,7 +96,7 @@ int main(int argc, char* argv[])
   }
   while (current_time < T_FINAL);
 
-  // Cleanup.
+  // Clean up.
   delete [] coeff_vec;
   delete matrix;
   delete rhs;

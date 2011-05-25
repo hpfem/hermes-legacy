@@ -23,10 +23,10 @@ public:
   {
     // If alpha is not an integer, then the function
     // is non-polynomial. 
-    // NOTE: Setting Ord to 20 is safe but costly,
+    // NOTE: Setting Ord to 10 is safe but costly,
     // one could save here by looking at special cases 
     // of alpha. 
-    return Ord(20);
+    return Ord(10);
   }
 
   virtual scalar derivative(double u) const
@@ -37,7 +37,7 @@ public:
   virtual Ord derivative(Ord u) const
   {
     // Same comment as above applies.
-    return Ord(20);
+    return Ord(10);
   }
 
   protected:

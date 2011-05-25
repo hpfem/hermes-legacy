@@ -11,22 +11,22 @@ public:
   {
     /* Jacobian */
     // Contribution of the time derivative term.
-    add_matrix_form(new DefaultMatrixFormVol(0, 0, HERMES_ANY, 1.0 / time_step));
+    add_matrix_form(new DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(1.0 / time_step)));
     // Contribution of the diffusion term.
-    add_matrix_form(new DefaultJacobianDiffusion(0, 0, HERMES_ANY, lambda / (rho * heatcap)));
+    add_matrix_form(new DefaultJacobianDiffusion(0, 0, HERMES_ANY, new HermesFunction(lambda / (rho * heatcap))));
     // Contribution of the Newton boundary condition.
-    add_matrix_form_surf(new DefaultMatrixFormSurf(0, 0, bdy_air, alpha / (rho * heatcap)));
+    add_matrix_form_surf(new DefaultMatrixFormSurf(0, 0, bdy_air, new HermesFunction(alpha / (rho * heatcap))));
 
     // Residual.
     // Contribution of the time derivative term.
-    add_vector_form(new DefaultResidualVol(0, HERMES_ANY, 1.0 / time_step));
+    add_vector_form(new DefaultResidualVol(0, HERMES_ANY, new HermesFunction(1.0 / time_step)));
     // Contribution of the diffusion term.
-    add_vector_form(new DefaultResidualDiffusion(0, HERMES_ANY, lambda / (rho * heatcap)));
+    add_vector_form(new DefaultResidualDiffusion(0, HERMES_ANY, new HermesFunction(lambda / (rho * heatcap))));
     CustomVectorFormVol* vec_form_vol = new CustomVectorFormVol(0, time_step);
     vec_form_vol->ext.push_back(prev_time_sln);
     add_vector_form(vec_form_vol);
     // Contribution of the Newton boundary condition.
-    add_vector_form_surf(new DefaultResidualSurf(0, bdy_air, alpha / (rho * heatcap)));
+    add_vector_form_surf(new DefaultResidualSurf(0, bdy_air, new HermesFunction(alpha / (rho * heatcap))));
     // Contribution of the Newton boundary condition.
     add_vector_form_surf(new CustomVectorFormSurf(0, bdy_air, alpha, rho, heatcap,
                          current_time_ptr, temp_init, t_final));
