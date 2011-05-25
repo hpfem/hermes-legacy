@@ -28,8 +28,9 @@ CustomWeakFormPoissonNewton::CustomWeakFormPoissonNewton(std::string mat_al, dou
 
 CustomDirichletCondition::CustomDirichletCondition(Hermes::vector<std::string> markers, 
                                                    double A, double B, double C)
-    : EssentialBoundaryCondition(markers), A(A), B(B), C(C) { }
-
+    : EssentialBoundaryCondition(markers), A(A), B(B), C(C) 
+{ 
+}
 
 EssentialBoundaryCondition::EssentialBCValueType CustomDirichletCondition::get_value_type() const
 { 

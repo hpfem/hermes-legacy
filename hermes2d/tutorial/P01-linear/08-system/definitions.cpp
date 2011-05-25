@@ -28,7 +28,7 @@ CustomWeakFormLinearElasticity::CustomWeakFormLinearElasticity(double E, double 
                                       Hermes::vector<unsigned int>(0, 1), surface_force_bdy, 
                                       Hermes::vector<double>(-f0, -f1)));
 #else 
-  // SINGLE-COMPONENT FORMS (WORKING). USEFUL FOR MULTIMESH, DO NOT REMOVE.
+  // SINGLE-COMPONENT FORMS. USEFUL FOR MULTIMESH, DO NOT REMOVE.
   // Jacobian.
   add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_0_0(0, 0, lambda, mu));
   add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_0_1(0, 1, lambda, mu));

@@ -2,7 +2,8 @@
 
 /* Essential boundary conditions */
 
-class CustomEssentialBCNonConst : public EssentialBoundaryCondition {
+class CustomEssentialBCNonConst : public EssentialBoundaryCondition 
+{
 public:
   CustomEssentialBCNonConst(std::string marker);
 
