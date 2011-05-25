@@ -85,7 +85,8 @@ int main(int argc, char* argv[])
   CustomRightHandSide rhs(EXACT_SOL_P);
 
   // Initialize the weak formulation.
-  WeakFormsH1::DefaultWeakFormPoisson wf(&rhs);
+  HermesFunction lambda(-1.0);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &rhs);
   
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc_essential("Bdy", &exact);
