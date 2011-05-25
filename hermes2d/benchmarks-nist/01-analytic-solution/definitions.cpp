@@ -1,6 +1,6 @@
 #include "definitions.h"
 
-double CustomRightHandSide::value(double x, double y) const 
+double CustomFunction::value(double x, double y) const 
 {
   double a = pow(2.0, 4.0*poly_deg);
   double b = pow(x-1.0, 8.0);
@@ -10,11 +10,11 @@ double CustomRightHandSide::value(double x, double y) const
   double f = (38.0*pow(y, 2.0) - 38.0*y + 9.0);
   double g = pow(x-1.0, poly_deg);
 
-  return -(poly_deg*a*pow(x, 8.0)*b*c*pow(y, poly_deg)*d
-         + poly_deg*a*pow(y, 8.0)*e*f*pow(x, poly_deg)*g);
+  return (poly_deg*a*pow(x, 8.0)*b*c*pow(y, poly_deg)*d
+	   + poly_deg*a*pow(y, 8.0)*e*f*pow(x, poly_deg)*g);
 }
 
-Ord CustomRightHandSide::ord(Ord x, Ord y) const 
+Ord CustomFunction::ord(Ord x, Ord y) const 
 {
     return Ord(std::max(8, (int)(poly_deg + 0.51)));
 }

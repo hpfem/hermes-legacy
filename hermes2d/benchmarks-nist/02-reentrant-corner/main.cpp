@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
   Mesh mesh;
   H2DReader mloader;
 
-  double alpha, omega;
+  double alpha = 0, omega = 0;
   switch (PARAM) 
   {
     case 0: 
@@ -102,7 +102,8 @@ int main(int argc, char* argv[])
   CustomExactSolution exact(&mesh, alpha);
 
   // Initialize the weak formulation.
-  WeakFormsH1::DefaultWeakFormLaplace wf;
+  HermesFunction lambda(1.0);
+  WeakFormsH1::DefaultWeakFormLaplace wf(HERMES_ANY, &lambda);
   
   // Initialize boundary conditions:
   DefaultEssentialBCNonConst bc_essential("Bdy", &exact);

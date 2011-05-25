@@ -2,10 +2,10 @@
 
 /* Right-hand side */
 
-class CustomRightHandSide : public HermesFunction
+class CustomFunction : public HermesFunction
 {
 public:
-  CustomRightHandSide(double poly_deg)
+  CustomFunction(double poly_deg)
     : HermesFunction(), poly_deg(poly_deg) {};
 
   virtual double value(double x, double y) const;
@@ -25,7 +25,7 @@ public:
 
   double value(double x, double y) const;
 
-  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const;
+  virtual void derivatives(double x, double y, scalar& dx, scalar& dy) const;
 
   virtual Ord ord(Ord x, Ord y) const;
 

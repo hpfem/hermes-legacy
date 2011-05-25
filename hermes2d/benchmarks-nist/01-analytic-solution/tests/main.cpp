@@ -81,12 +81,12 @@ int main(int argc, char* argv[])
   // Set exact solution.
   CustomExactSolution exact(&mesh, EXACT_SOL_P);
 
-  // Define right-hand side.
-  CustomRightHandSide rhs(EXACT_SOL_P);
+  // Define function f.
+  CustomFunction f(EXACT_SOL_P);
 
   // Initialize the weak formulation.
   HermesFunction lambda(-1.0);
-  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &rhs);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
   
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc_essential("Bdy", &exact);
