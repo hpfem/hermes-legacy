@@ -1,7 +1,7 @@
 #include "definitions.h"
 
 
-double CustomRightHandSide::value(double x, double y) const
+double CustomFunction::value(double x, double y) const
 {
   double a = pow(x - x_loc, 2);
   double b = pow(y - y_loc, 2);
@@ -11,17 +11,16 @@ double CustomRightHandSide::value(double x, double y) const
   double f = (pow(alpha * c - (alpha * r_zero), 2) + 1.0);
   double g = (alpha * c - (alpha * r_zero));
 
-  return -(((alpha/(c * f)) - (d/(2 * pow(a + b, 1.5) * f))
+  return (((alpha/(c * f)) - (d/(2 * pow(a + b, 1.5) * f))
          - ((alpha * d * g)/((a + b) * pow(f, 2))) +
          (alpha/(c * f)) - (e/(2 * pow(a + b, 1.5) * f))
-         - ((alpha * e * g)/((a + b) * pow(f, 2)))));
+	    - ((alpha * e * g)/((a + b) * pow(f, 2)))));
 }
 
-Ord CustomRightHandSide::ord(Ord x, Ord y) const 
+Ord CustomFunction::value(Ord x, Ord y) const 
 {
   return Ord(8);
 }
-
 
 
 double CustomExactSolution::value(double x, double y) const

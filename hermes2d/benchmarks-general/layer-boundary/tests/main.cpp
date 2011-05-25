@@ -63,9 +63,6 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 // Problem parameters.
 const double K = 1e2;
 
-// Boundary markers.
-const std::string BDY_DIRICHLET = "1";
-
 // Right-hand side, exact solution, weak forms.
 #include "../definitions.cpp"
 
@@ -81,19 +78,19 @@ int main(int argc, char* argv[])
 
   // Perform initial mesh refinement.
   for (int i=0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
-  mesh.refine_towards_boundary(BDY_DIRICHLET, INIT_REF_NUM_BDY);
+  mesh.refine_towards_boundary("Bdy", INIT_REF_NUM_BDY);
 
   // Define exact solution.
   CustomExactSolution exact_sln(&mesh, K);
 
-  // Define right-hand side.
-  CustomRightHandSide rhs(K);
+  // Define right side vector.
+  CustomFunction f(K);
 
   // Initialize the weak formulation.
-  CustomWeakFormPerturbedPoisson wf(&rhs);
-  
+  CustomWeakForm wf(&f);
+   
   // Initialize boundary conditions.
-  DefaultEssentialBCConst bc_essential(BDY_DIRICHLET, 0.0);
+  DefaultEssentialBCConst bc_essential("Bdy", 0.0);
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.

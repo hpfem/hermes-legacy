@@ -59,7 +59,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 
 // Equation parameters.
 const double K = M_PI/2;
-const double ALPHA = 2.01;
+const double alpha = 2.01;
 
 // Weak forms.
 #include "../definitions.cpp"
@@ -78,10 +78,10 @@ int main(int argc, char* argv[])
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Set exact solution.
-  CustomExactSolution exact(&mesh, K, ALPHA);
+  CustomExactSolution exact(&mesh, K, alpha);
 
-  // Define right-hand side.
-  CustomRightHandSide rhs(K, ALPHA);
+  // Define custom function f.
+  CustomFunction f(K, alpha);
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc_essential("Bdy_dirichlet_rest", &exact);
@@ -91,7 +91,8 @@ int main(int argc, char* argv[])
   H1Space space(&mesh, &bcs, P_INIT);
 
   // Initialize the weak formulation.
-  DefaultWeakFormPoisson wf(&rhs);
+  HermesFunction lambda(1.0);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
 
   // Initialize refinement selector.
   H1ProjBasedSelector selector(CAND_LIST, CONV_EXP, H2DRS_DEFAULT_ORDER);

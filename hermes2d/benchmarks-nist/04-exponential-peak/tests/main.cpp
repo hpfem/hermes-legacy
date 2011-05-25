@@ -86,10 +86,11 @@ int main(int argc, char* argv[])
   CustomExactSolution exact(&mesh, alpha, x_loc, y_loc);
 
   // Define right-hand side.
-  CustomRightHandSide rhs(alpha, x_loc, y_loc);
+  CustomFunction f(alpha, x_loc, y_loc);
 
   // Initialize the weak formulation.
-  WeakFormsH1::DefaultWeakFormPoisson wf(&rhs);
+  HermesFunction lambda(1.0);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
   
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc("Bdy", &exact);

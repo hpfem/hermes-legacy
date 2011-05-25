@@ -9,7 +9,7 @@ using namespace RefinementSelectors;
 //  Reference: W. Mitchell, A Collection of 2D Elliptic Problems for Testing Adaptive Algorithms, 
 //                          NIST Report 7668, February 2010.
 //
-//  PDE: -Laplace u - f = 0.
+//  PDE: -Laplace u + f = 0.
 //
 //  Known exact solution: exp(-alpha * (pow(x - x_loc, 2) + pow(y - y_loc, 2))).
 //  See functions CustomExactSolution::value and CustomExactSolution::derivatives in "exact_solution.cpp".
@@ -57,7 +57,6 @@ double alpha = 1000;        // This problem has and exponential peak in the inte
 double x_loc = 0.5;         // (x_loc, y_loc) is the location of the peak, and alpha determines the strenghth of the peak.
 double y_loc = 0.5;
 
-
 int main(int argc, char* argv[])
 {
   // Instantiate a class with global functions.
@@ -75,11 +74,12 @@ int main(int argc, char* argv[])
   // Set exact solution.
   CustomExactSolution exact(&mesh, alpha, x_loc, y_loc);
 
-  // Define right-hand side.
-  CustomRightHandSide rhs(alpha, x_loc, y_loc);
+  // Define custom function.
+  CustomFunction f(alpha, x_loc, y_loc);
 
   // Initialize the weak formulation.
-  WeakFormsH1::DefaultWeakFormPoisson wf(&rhs);
+  HermesFunction lambda(1.0);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
   
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc("Bdy", &exact);

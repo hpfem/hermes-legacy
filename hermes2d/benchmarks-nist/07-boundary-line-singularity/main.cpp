@@ -9,12 +9,12 @@ using namespace RefinementSelectors;
 //  Reference: W. Mitchell, A Collection of 2D Elliptic Problems for Testing Adaptive Algorithms, 
 //                          NIST Report 7668, February 2010.
 //
-//  PDE: -Laplace u - f = 0.
+//  PDE: -Laplace u + f = 0.
 //
 //  Known exact solution: pow(x, alpha).
 //  See functions CustomExactSolution::value and CustomExactSolution::derivatives in "exact_solution.cpp".
 //
-//  Domain: unit square (0, 1)x(0, 1), see the file "square_tri" or "square_quad.mesh".
+//  Domain: unit square (0, 1) x (0, 1), see the file "square_tri" or "square_quad.mesh".
 //
 //  BC:  Dirichlet, given by exact solution.
 //
@@ -74,11 +74,12 @@ int main(int argc, char* argv[])
   // Set exact solution.
   CustomExactSolution exact(&mesh, alpha);
 
-  // Define right-hand side.
-  CustomRightHandSide rhs(alpha);
+  // Define custom function f.
+  CustomFunction f(alpha);
 
   // Initialize the weak formulation.
-  WeakFormsH1::DefaultWeakFormPoisson wf(&rhs);
+  HermesFunction lambda(1.0);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc_essential("Bdy", &exact);

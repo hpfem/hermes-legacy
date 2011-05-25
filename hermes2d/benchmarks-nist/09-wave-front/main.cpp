@@ -10,7 +10,7 @@ using namespace RefinementSelectors;
 //  Reference: W. Mitchell, A Collection of 2D Elliptic Problems for Testing Adaptive Algorithms, 
 //                          NIST Report 7668, February 2010.
 //
-//  PDE: -Laplace u - f = 0
+//  PDE: -Laplace u + f = 0
 //
 //  Known exact solution: atan(alpha * (sqrt(pow(x - x_loc, 2) + pow(y - y_loc, 2)) - r_zero))
 //  See the class CustomExactSolution::value in "definitions.cpp"
@@ -60,7 +60,6 @@ const int NDOF_STOP = 60000;                      // Adaptivity process stops wh
                                                   // over this limit. This is to prevent h-adaptivity to go on forever.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
-
 
 int main(int argc, char* argv[])
 {
@@ -117,11 +116,12 @@ int main(int argc, char* argv[])
   // Set exact solution.
   CustomExactSolution exact(&mesh, alpha, x_loc, y_loc, r_zero);
 
-  // Define right-hand side.
-  CustomRightHandSide rhs(alpha, x_loc, y_loc, r_zero);
+  // Define custom function f.
+  CustomFunction f(alpha, x_loc, y_loc, r_zero);
 
   // Initialize the weak formulation.
-  WeakFormsH1::DefaultWeakFormPoisson wf(&rhs);
+  HermesFunction lambda(1.0);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc("Bdy", &exact);

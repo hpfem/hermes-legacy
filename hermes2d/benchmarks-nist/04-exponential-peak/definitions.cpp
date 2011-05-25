@@ -1,14 +1,14 @@
 #include "definitions.h"
 
-double CustomRightHandSide::value(double x, double y) const
+double CustomFunction::value(double x, double y) const
 {
   double a_P = (-alpha * pow((x - x_loc), 2) - alpha * pow((y - y_loc), 2));
 
-  return -(4 * exp(a_P) * alpha * (alpha * (x - x_loc) * (x - x_loc)
+  return (4 * exp(a_P) * alpha * (alpha * (x - x_loc) * (x - x_loc)
          + alpha * (y - y_loc) * (y - y_loc) - 1));
 }
  
-Ord CustomRightHandSide::ord(Ord x, Ord y) const
+Ord CustomFunction::value(Ord x, Ord y) const
 {
   return Ord(8);
 }

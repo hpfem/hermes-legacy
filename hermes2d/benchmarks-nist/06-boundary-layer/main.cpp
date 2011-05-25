@@ -55,7 +55,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.
-const double EPSILON = 1e-1;
+const double epsilon = 1e-1;
 
 // Weak forms.
 #include "definitions.cpp"
@@ -74,10 +74,10 @@ int main(int argc, char* argv[])
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
   
   // Set exact solution.
-  CustomExactSolution exact(&mesh, EPSILON);
+  CustomExactSolution exact(&mesh, epsilon);
 
   // Define right-hand side.
-  CustomRightHandSide rhs(EPSILON);
+  CustomRightHandSide rhs(epsilon);
  
   // Initialize the weak formulation.
   CustomWeakForm wf(&rhs);

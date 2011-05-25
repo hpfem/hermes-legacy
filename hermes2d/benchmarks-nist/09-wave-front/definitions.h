@@ -1,24 +1,24 @@
 #include "hermes2d.h"
 
-/* Right-hand side */
+/* Custom function f */
 
-class CustomRightHandSide : public HermesFunction
+class CustomFunction : public HermesFunction
 {
 public:
-  CustomRightHandSide(double alpha, double x_loc, double y_loc, double r_zero)
+  CustomFunction(double alpha, double x_loc, double y_loc, double r_zero)
     : HermesFunction(), alpha(alpha), x_loc(x_loc), y_loc(y_loc), r_zero(r_zero) 
   {
   };
 
   virtual double value(double x, double y) const;
 
-  virtual Ord ord(Ord x, Ord y) const;
+  virtual Ord value(Ord x, Ord y) const;
 
   protected:
-  double alpha;
-  double x_loc;
-  double y_loc;
-  double r_zero;
+    double alpha;
+    double x_loc;
+    double y_loc;
+    double r_zero;
 };
 
 
@@ -39,8 +39,8 @@ public:
   virtual Ord ord(Ord x, Ord y) const;
 
   protected:
-  double alpha;
-  double x_loc;
-  double y_loc;
-  double r_zero;
+    double alpha;
+    double x_loc;
+    double y_loc;
+    double r_zero;
 };

@@ -8,10 +8,12 @@ class CustomExactSolution : public ExactSolutionScalar
 {
 public:
   CustomExactSolution(Mesh* mesh, double sigma, double tau, double rho) 
-          : ExactSolutionScalar(mesh), sigma(sigma), tau(tau), rho(rho) {
+          : ExactSolutionScalar(mesh), sigma(sigma), tau(tau), rho(rho) 
+  {
   };
 
-  virtual double value(double x, double y) const {
+  virtual double value(double x, double y) const 
+  {
     double theta = atan2(y,x);
     if (theta < 0) theta = theta + 2.*M_PI;
     double r = sqrt(x*x + y*y);
@@ -29,7 +31,8 @@ public:
     return pow(r, tau) * mu;
   };
 
-  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const {
+  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const 
+  {
     double theta = atan2(y,x);
     if (theta < 0) theta = theta + 2*M_PI;
     double r = sqrt(x*x + y*y);
@@ -64,7 +67,8 @@ public:
 
   };
 
-  virtual Ord ord(Ord x, Ord y) const {
+  virtual Ord ord(Ord x, Ord y) const 
+  {
     return Ord(6);
   }
 
@@ -79,11 +83,11 @@ public:
   CustomWeakFormPoisson(std::string area_1, double r, std::string area_2) : WeakForm(1)
   {
     // Jacobian.
-    add_matrix_form(new DefaultJacobianDiffusion(0, 0, area_1, r));
+    add_matrix_form(new DefaultJacobianDiffusion(0, 0, area_1, new HermesFunction(r)));
     add_matrix_form(new DefaultJacobianDiffusion(0, 0, area_2));
 
     // Residual.
-    add_vector_form(new DefaultResidualDiffusion(0, area_1, r));
+    add_vector_form(new DefaultResidualDiffusion(0, area_1, new HermesFunction(r)));
     add_vector_form(new DefaultResidualDiffusion(0, area_2));
   };
 };

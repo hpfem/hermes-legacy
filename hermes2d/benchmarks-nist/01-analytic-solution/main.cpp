@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
     Space* ref_space = Space::construct_refined_space(&space);
     int ndof_ref = Space::get_num_dofs(ref_space);
 
-    // Initialize matrix solver.
+    // Set up the solver, matrix, and rhs according to the solver selection.
     SparseMatrix* matrix = create_matrix(matrix_solver);
     Vector* rhs = create_vector(matrix_solver);
     Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);

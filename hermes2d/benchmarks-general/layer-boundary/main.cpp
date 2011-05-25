@@ -7,13 +7,13 @@ using namespace RefinementSelectors;
 //  This singularly perturbed problem exhibits a thin boundary layer. The
 //  exact solution facilitates convergence studies.
 //
-//  PDE: -Laplace u + K*K*u = K*K + g(x,y).
+//  PDE: -Laplace u + K*K*u - K*K + g(x,y) = 0.
 //
 //  Domain: Square (-1,1)^2.
 //
-//  BC:  Homogeneous Dirichlet.
+//  BC: Homogeneous Dirichlet.
 //
-//  Exact solution: v(x,y) = U(x)U(y) where U(t) = 1 - (exp(K*x)+exp(-K*x))/(exp(K) + exp(-K)) is
+//  Exact solution: v(x,y) = U(x)U(y) where U(t) = 1 - (exp(K*x) + exp(-K*x))/(exp(K) + exp(-K)) is
 //  the exact solution to the 1D singularly perturbed problem -u'' + K*K*u = K*K* in (-1,1)
 //  equipped with zero Dirichlet BC.
 //
@@ -55,9 +55,6 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 // Problem parameters.
 const double K = 1e2;
 
-// Boundary markers.
-const std::string BDY_DIRICHLET = "1";
-
 // Right-hand side, exact solutionm weak forms.
 #include "definitions.cpp"
 
@@ -73,19 +70,19 @@ int main(int argc, char* argv[])
 
   // Perform initial mesh refinement.
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
-  mesh.refine_towards_boundary(BDY_DIRICHLET, INIT_REF_NUM_BDY);
+  mesh.refine_towards_boundary("Bdy", INIT_REF_NUM_BDY);
 
   // Define exact solution.
   CustomExactSolution exact_sln(&mesh, K);
 
   // Define right side vector.
-  CustomRightHandSide rsv(K);
+  CustomFunction f(K);
 
   // Initialize the weak formulation.
-  CustomWeakFormPerturbedPoisson wf(&rsv);
+  CustomWeakForm wf(&f);
   
   // Initialize boundary conditions.
-  DefaultEssentialBCConst bc_essential(BDY_DIRICHLET, 0.0);
+  DefaultEssentialBCConst bc_essential("Bdy", 0.0);
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.
@@ -107,14 +104,14 @@ int main(int argc, char* argv[])
   cpu_time.tick();
 
   // Adaptivity loop:
-  int as = 1;
-  bool done = false;
+  int as = 1; bool done = false;
   do
   {
     info("---- Adaptivity step %d:", as);
 
     // Construct globally refined reference mesh and setup reference space.
     Space* ref_space = Space::construct_refined_space(&space);
+    int ndof_ref = Space::get_num_dofs(ref_space);
 
     // Set up the solver, matrix, and rhs according to the solver selection.
     SparseMatrix* matrix = create_matrix(matrix_solver);
@@ -123,19 +120,21 @@ int main(int argc, char* argv[])
 
     // Assemble the reference problem.
     info("Solving on reference mesh.");
-    DiscreteProblem* dp = new DiscreteProblem(&wf, ref_space);
-    dp->assemble(matrix, rhs);
+    DiscreteProblem dp(&wf, ref_space);
 
     // Time measurement.
     cpu_time.tick();
 
-    // Solve the linear system of the reference problem. If successful, obtain the solution.
+    // Initial coefficient vector for the Newton's method.  
+    scalar* coeff_vec = new scalar[ndof_ref];
+    memset(coeff_vec, 0, ndof_ref * sizeof(scalar));
+
+    // Perform Newton's iteration.
+    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs)) error("Newton's iteration failed.");
+
+    // Translate the resulting coefficient vector into the Solution sln.
     Solution ref_sln;
-    if(solver->solve()) Solution::vector_to_solution(solver->get_solution(), ref_space, &ref_sln);
-    else error ("Matrix solver failed.\n");
-
-    // Time measurement.
-    cpu_time.tick();
+    Solution::vector_to_solution(coeff_vec, ref_space, &ref_sln);
 
     // Project the fine mesh solution onto the coarse mesh.
     Solution sln;
@@ -190,8 +189,6 @@ int main(int argc, char* argv[])
     delete adaptivity;
     if(done == false) delete ref_space->get_mesh();
     delete ref_space;
-    delete dp;
-
   }
   while (done == false);
 

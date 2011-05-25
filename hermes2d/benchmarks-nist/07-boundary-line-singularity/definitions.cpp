@@ -1,16 +1,15 @@
 #include "definitions.h"
 
 
-double CustomRightHandSide::value(double x, double y) const
+double CustomFunction::value(double x, double y) const
 {
-  return - alpha * (alpha - 1.) * pow(x, alpha - 2.);
+  return alpha * (alpha - 1.) * pow(x, alpha - 2.);
 }
 
-Ord CustomRightHandSide::ord(Ord x, Ord y) const 
+Ord CustomFunction::value(Ord x, Ord y) const 
 {
   return Ord((int)(alpha + 3.1));
 }
-
 
 
 double CustomExactSolution::value(double x, double y) const

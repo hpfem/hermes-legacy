@@ -9,7 +9,7 @@ using namespace RefinementSelectors;
 //  Reference: W. Mitchell, A Collection of 2D Elliptic Problems for Testing Adaptive Algorithms, 
 //                          NIST Report 7668, February 2010.
 //
-//  PDE: -Laplace u - f = 0 
+//  PDE: -Laplace u + f = 0 
 //
 //  Known exact solution: 
 //  See the class CustomExactSolution::value in file "definitions.h"
@@ -79,11 +79,12 @@ int main(int argc, char* argv[])
   // Set exact solution.
   CustomExactSolution exact(&mesh, alpha_w, alpha_p, x_w, y_w, r_0, omega_c, epsilon, x_p, y_p);
 
-  // Define right-hand side.
-  CustomRightHandSide rhs(alpha_w, alpha_p, x_w, y_w, r_0, omega_c, epsilon, x_p, y_p);
+  // Define custom function f.
+  CustomFunction f(alpha_w, alpha_p, x_w, y_w, r_0, omega_c, epsilon, x_p, y_p);
 
   // Initialize the weak formulation.
-  WeakFormsH1::DefaultWeakFormPoisson wf(&rhs);
+  HermesFunction lambda(1.0);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc_essential("Bdy", &exact);

@@ -1,6 +1,4 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
 #include "hermes2d.h"
 
@@ -60,7 +58,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.
-const double ALPHA = 1/(10*M_PI);
+const double alpha = 1/(10*M_PI);
 
 // Weak forms.
 #include "../definitions.cpp"
@@ -80,13 +78,13 @@ int main(int argc, char* argv[])
 
 
   // Set exact solution.
-  CustomExactSolution exact(&mesh, ALPHA);
+  CustomExactSolution exact(&mesh, alpha);
 
-  // Define right-hand side.
-  CustomRightHandSide rhs(ALPHA);
+  // Define custom function f.
+  CustomFunction f(alpha);
 
   // Initialize the weak formulation.
-  CustomWeakForm wf(&rhs);
+  CustomWeakForm wf(&f);
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc("Bdy", &exact);

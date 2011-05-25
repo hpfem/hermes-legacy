@@ -1,7 +1,7 @@
 #include "definitions.h"
 
 
-double CustomRightHandSide::value(double x, double y) const
+double CustomFunction::value(double x, double y) const
 {
   //For more elegant form please execute file "generate_rhs.py"
 
@@ -15,13 +15,13 @@ double CustomRightHandSide::value(double x, double y) const
   double f_W = (pow(alpha_w * c_W - (alpha_w * r_0), 2) + 1.0);
   double g_W = (alpha_w * c_W - (alpha_w * r_0));
 
-  return -(4 * exp(a_P) * alpha_p * (alpha_p * (x - x_p) * (x - x_p) + alpha_p * (y - y_p) * (y - y_p) - 1)
+  return (4 * exp(a_P) * alpha_p * (alpha_p * (x - x_p) * (x - x_p) + alpha_p * (y - y_p) * (y - y_p) - 1)
            + ((alpha_w/(c_W * f_W)) - (d_W/(2 * pow(a_W + b_W, 1.5) * f_W)) - ((alpha_w * d_W * g_W)/((a_W + b_W) * pow(f_W, 2)))
            + (alpha_w/(c_W * f_W)) - (e_W/(2 * pow(a_W + b_W, 1.5) * f_W)) - ((alpha_w * e_W * g_W)/((a_W + b_W) * pow(f_W, 2))))
            + (1.0 / epsilon) * (1.0 / epsilon) * exp(-(1 + y) / epsilon));
 }
 
-Ord CustomRightHandSide::ord(Ord x, Ord y) const 
+Ord CustomFunction::value(Ord x, Ord y) const 
 {
   return Ord(10);
 }

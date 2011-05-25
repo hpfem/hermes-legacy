@@ -2,20 +2,19 @@
 
 /* Right-hand side */
 
-class CustomRightHandSide : public HermesFunction
+class CustomFunction : public HermesFunction
 {
 public:
-  CustomRightHandSide(double alpha)
-    : HermesFunction(), alpha(alpha) 
+  CustomFunction(double alpha) : HermesFunction(), alpha(alpha) 
   {
   };
 
   virtual double value(double x, double y) const;
 
-  virtual Ord ord(Ord x, Ord y) const;
+  virtual Ord value(Ord x, Ord y) const;
 
   protected:
-  double alpha;
+    double alpha;
 };
 
 
@@ -36,5 +35,5 @@ public:
   virtual Ord ord(Ord x, Ord y) const;
 
   protected:
-  double alpha;
+    double alpha;
 };

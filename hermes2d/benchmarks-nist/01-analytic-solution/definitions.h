@@ -10,7 +10,7 @@ public:
 
   virtual double value(double x, double y) const;
 
-  virtual Ord ord(Ord x, Ord y) const;
+  virtual Ord value(Ord x, Ord y) const;
 
   double poly_deg;
 };

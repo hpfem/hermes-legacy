@@ -12,7 +12,7 @@ using namespace RefinementSelectors;
 //
 //  The problem is made harder for adaptive algorithms by decreasing the parameter ALPHA.
 //
-//  PDE: -Laplace u - u/(ALPHA + r(x, y)) - f = 0 where r(x, y) = sqrt(x*x + y*y)
+//  PDE: -Laplace u - u/(ALPHA + r(x, y)) + f = 0 where r(x, y) = sqrt(x*x + y*y)
 //
 //  Known exact solution, see functions fn() and fndd().
 //
@@ -55,7 +55,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.
-const double ALPHA = 1/(10*M_PI);
+const double alpha = 1/(10*M_PI);
 
 // Weak forms.
 #include "definitions.cpp"
@@ -74,13 +74,13 @@ int main(int argc, char* argv[])
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Set exact solution.
-  CustomExactSolution exact(&mesh, ALPHA);
+  CustomExactSolution exact(&mesh, alpha);
 
-  // Define right-hand side.
-  CustomRightHandSide rhs(ALPHA);
+  // Define custom function f.
+  CustomFunction f(alpha);
 
   // Initialize the weak formulation.
-  CustomWeakForm wf(&rhs);
+  CustomWeakForm wf(&f);
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc("Bdy", &exact);

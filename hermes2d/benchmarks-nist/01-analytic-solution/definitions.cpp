@@ -14,7 +14,7 @@ double CustomFunction::value(double x, double y) const
 	   + poly_deg*a*pow(y, 8.0)*e*f*pow(x, poly_deg)*g);
 }
 
-Ord CustomFunction::ord(Ord x, Ord y) const 
+Ord CustomFunction::value(Ord x, Ord y) const 
 {
     return Ord(std::max(8, (int)(poly_deg + 0.51)));
 }
