@@ -14,8 +14,8 @@ using namespace RefinementSelectors;
 //
 // EQUATION:
 //
-//    L_1 = Q_1
-//    L_2 = Q_2
+//    L_1 - Q_1 = 0,
+//    L_2 - Q_2 = 0.
 //
 // where
 //

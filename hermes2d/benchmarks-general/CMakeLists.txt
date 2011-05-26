@@ -14,7 +14,6 @@ endif((NOT NMAKE) AND (NOT MSVC))
 
 #add_subdirectory(stabilized-advection-diffusion) TODO: Convert to new forms.
 #add_subdirectory(stabilized-advection-reaction) TODO: Convert to new forms.
-#add_subdirectory(sdirk-22) TODO: Convert to new forms.
 add_subdirectory(nonsym-check)
 
 #if(NOT WITH_TRILINOS)

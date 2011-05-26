@@ -1,7 +1,7 @@
 #include "definitions.h"
    
 CustomWeakForm::CustomWeakForm( const MaterialPropertyMaps& matprop, std::string bdy_gamma,
-                                const std::vector<HermesFunction*>& f_src )
+                                const std::vector<HermesFunction*>& f_src)
   : DefaultWeakFormFixedSource(matprop, f_src)
 {
   for (unsigned int g = 0; g < matprop.get_G(); g++)
@@ -84,7 +84,7 @@ inline double CustomExactSolution_g1::value(double x, double y) const
   return exp(-4*sqr(x))*(y/2.-sqr(y/2.));
 }
 
-void CustomExactSolution_g1::derivatives (double x, double y, scalar& dx, scalar& dy) const 
+void CustomExactSolution_g1::derivatives(double x, double y, scalar& dx, scalar& dy) const 
 {
   double em4x2 = exp(-4*sqr(x));
   dx =  2.0*em4x2*x*y*(y-2);
@@ -101,7 +101,7 @@ double CustomExactSolution_g2::value(double x, double y) const
   return em4x2*(y/2.-sqr(y/2.)) * (1 + s4px2 * s4py2) / 10.0;
 }
 
-void CustomExactSolution_g2::derivatives (double x, double y, scalar& dx, scalar& dy) const 
+void CustomExactSolution_g2::derivatives(double x, double y, scalar& dx, scalar& dy) const 
 {
   double yym2 = (y-2)*y;
   double x2 = sqr(x), px = M_PI*x, py = M_PI*y;

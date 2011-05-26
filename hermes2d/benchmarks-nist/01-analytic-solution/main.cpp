@@ -56,7 +56,6 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 double EXACT_SOL_P = 10;                          // The exact solution is a polynomial of degree 2*EXACT_SOL_P in the x-direction
                                                   // as well as in the y-direction. 
 
-
 int main(int argc, char* argv[])
 {
   // Instantiate a class with global functions.
