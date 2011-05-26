@@ -46,15 +46,16 @@ public:
   bool calculate_coeffs();
 
   /// Get the value at a given point.
-  virtual double value(double x) const;
+  virtual scalar value(double x) const;
 #ifdef H2D_COMPLEX
   // This is a hack for Hermes to build in complex mode.
   virtual scalar value(scalar x) const 
   {
     error("Cubic splines should not be used in complex mode.");
+    return 0;
   };
 #endif
-  virtual double value(double x, double y) const;
+  virtual scalar value(double x, double y) const;
 #ifdef H2D_COMPLEX
   // This is a hack for Hermes to build in complex mode.
   virtual scalar value(scalar x, scalar y) const
@@ -63,7 +64,6 @@ public:
     return 0;
   };
 #endif
-
   /// For order calculation in Hermes.
   virtual Ord value(Ord x) const 
   {
@@ -77,15 +77,16 @@ public:
   };
 
   /// Get first derivative at a given point.
-  virtual double derivative(double x) const;
+  virtual scalar derivative(double x) const;
 #ifdef H2D_COMPLEX
   // This is a hack for Hermes to build in complex mode.
   virtual scalar derivative(scalar x) const
   {
     error("Cubic splines should not be used in complex mode.");
+    return 0;
   };
 #endif
-  virtual double derivative(double x, double y) const
+  virtual scalar derivative(double x, double y) const
   {
     error("Cubic splines should not be called with two parameters.");
     return 0;

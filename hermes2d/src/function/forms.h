@@ -476,15 +476,39 @@ public:
     return const_value;
   };
 
+// This is a hack for Hermes to build in complex mode.
+#ifdef H2D_COMPLEX
+  virtual scalar value(scalar x) const
+  {
+    return cplx(0.0, 0.0);
+  };
+#endif
+
   virtual Ord value(Ord x, Ord y) const
   {
     return Ord(1);
   };
 
+// This is a hack for Hermes to build in complex mode.
+#ifdef H2D_COMPLEX
+  virtual scalar value(scalar x, scalar y) const
+  {
+    return cplx(0.0, 0.0);
+  };
+#endif
+
   virtual scalar derivative(double x) const
   {
     return 0.0;
   };
+
+// This is a hack for Hermes to build in complex mode.
+#ifdef H2D_COMPLEX
+  virtual scalar derivative(scalar x) const
+  {
+    return cplx(0.0, 0.0);
+  };
+#endif
 
   virtual Ord derivative(Ord x) const
   {
@@ -495,6 +519,14 @@ public:
   {
     return 0.0;
   };
+
+// This is a hack for Hermes to build in complex mode.
+#ifdef H2D_COMPLEX
+  virtual scalar derivative(scalar x, scalar y) const
+  {
+    return cplx(0.0, 0.0);
+  };
+#endif
 
   virtual Ord derivative(Ord x, Ord y) const
   {

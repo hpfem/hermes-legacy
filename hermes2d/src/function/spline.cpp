@@ -31,7 +31,7 @@ CubicSpline::CubicSpline(std::vector<double> points, std::vector<double> values,
       if (!success) error("There was a problem constructing a cubic spline.");
     }
 
-double CubicSpline::value(double x_in) const 
+scalar CubicSpline::value(double x_in) const 
 {  
   // For constant case.
   if (this->is_constant()) {
@@ -65,7 +65,7 @@ double CubicSpline::value(double x_in) const
   return get_value_from_interval(x_in, m); 
 }
 
-double CubicSpline::value(double x_in, double y_in) const 
+scalar CubicSpline::value(double x_in, double y_in) const 
 {  
   error("Cubic splines should not be used with two parameters.");
   return 0;
@@ -85,7 +85,7 @@ double CubicSpline::get_value_from_interval(double x_in, int m) const
          + this->coeffs[m].d * x3;
 }
 
-double CubicSpline::derivative(double x_in) const 
+scalar CubicSpline::derivative(double x_in) const 
 {
   // For constant case.
   if (this->is_constant()) return 0.0;
@@ -152,49 +152,61 @@ void CubicSpline::plot(const char* filename, double extension, bool plot_derivat
   double h = extension / subdiv;
   for (int j = 0; j < subdiv; j++) {
     double x = x_left + j * h;
-    double val;
+    scalar val;
     if (!plot_derivative) val = value(x);
     else val = derivative(x); 
+#ifndef H2D_COMPLEX
     fprintf(f, "%g %g\n", x, val);
+#endif
   }
   double x_last = point_left;
-  double val_last;
+  scalar val_last;
   if (!plot_derivative) val_last = value(x_last);
   else val_last = derivative(x_last); 
+#ifndef H2D_COMPLEX
   fprintf(f, "%g %g\n", x_last, val_last);
+#endif
 
   // Plotting inside the interval of definition.
   for (unsigned int i = 0; i < points.size() - 1; i++) {
     double h = (points[i+1] - points[i]) / subdiv;
     for (int j = 0; j < subdiv; j++) {
       double x = points[i] + j * h;
-      double val;
+      scalar val;
       // Do not use get_value_from_interval() here.
       if (!plot_derivative) val = this->value(x); 
       else val = derivative(x); 
+#ifndef H2D_COMPLEX
       fprintf(f, "%g %g\n", x, val);
+#endif
     }
   }
   x_last = points[points.size() - 1];
   // Do not use get_value_from_interval() here.
   if (!plot_derivative) val_last = value(x_last); 
   else val_last = derivative(x_last);
+#ifndef H2D_COMPLEX
   fprintf(f, "%g %g\n", x_last, val_last);
+#endif
 
   // Plotting on the right of the area of definition.
   double x_right = point_right + extension;
   h = extension / subdiv;
   for (int j = 0; j < subdiv; j++) {
     double x = point_right + j * h;
-    double val;
+    scalar val;
     if (!plot_derivative) val = value(x); 
     else val = derivative(x); 
+#ifndef H2D_COMPLEX
     fprintf(f, "%g %g\n", x, val);
+#endif
   }
   x_last = x_right;
   if (!plot_derivative) val_last = value(x_last);
   else val_last = derivative(x_last);
+#ifndef H2D_COMPLEX
   fprintf(f, "%g %g\n", x_last, val_last);
+#endif
 
   fclose(f);
 }

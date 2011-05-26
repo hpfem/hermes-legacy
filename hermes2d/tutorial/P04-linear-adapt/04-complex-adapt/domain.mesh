@@ -36,7 +36,6 @@ elements = [
   [ 13, 14, 19, 18, "Air" ]
 ]
 
-
 boundaries = [
   [ 0, 1, "Neumann" ],
   [ 1, 2, "Neumann" ],

@@ -9,7 +9,7 @@ using namespace RefinementSelectors;
 //  a 2D domain comprising a wire carrying electrical current, air, and
 //  an iron which is not under voltage.
 //
-//  PDE: -Laplace A + ii*omega*gamma*mu*A = mu *J_ext.
+//  PDE: -(1/mu)Laplace A + ii*omega*gamma*A - J_ext = 0.
 //
 //  Domain: Rectangle of height 0.003 and width 0.004. Different
 //  materials for the wire, air, and iron (see mesh file domain2.mesh).
@@ -57,7 +57,6 @@ const char* preconditioner = "least-squares";     // Name of the preconditioner 
                                                   //  preconditioner from IFPACK (see solver/aztecoo.h)
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
-
 
 // Problem parameters.
 const double MU_0 = 4.0*M_PI*1e-7;
