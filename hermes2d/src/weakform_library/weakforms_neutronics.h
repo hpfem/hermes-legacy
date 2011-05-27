@@ -180,6 +180,11 @@ namespace WeakFormsNeutronics
             return ret;
           }
           
+          template <typename NDArrayType>
+          static rank0 subtract_nowarn(rank0 x, rank0 y) {
+            return x - y;
+          }
+          
           public: 
             
             #define for_each_element_in_dimension \
@@ -228,6 +233,17 @@ namespace WeakFormsNeutronics
               
               for_each_element_in_dimension
                 res.push_back( subtract<dim_type>(*dim_iterator_x, *dim_iterator_y) );
+              
+              return res;
+            }
+            
+            template <typename NDArrayType>
+            static NDArrayType subtract_nowarn(const NDArrayType& x, const NDArrayType& y)
+            { 
+              NDArrayType res; res.reserve(x.size());
+              
+              for_each_element_in_dimension
+                res.push_back( subtract_nowarn<dim_type>(*dim_iterator_x, *dim_iterator_y) );
               
               return res;
             }
@@ -287,6 +303,18 @@ namespace WeakFormsNeutronics
               
               return ret;
             }                                                     
+            
+            template <typename T>
+            static std::map<std::string, T> subtract_nowarn(const std::map<std::string, T>& x, 
+                                                            const std::map<std::string, T>& y)
+            {
+              std::map<std::string, T> ret = x;
+              
+              for_each_element_in_map
+                iterator_ret->second = subtract_nowarn<T>(iterator_x->second, iterator_y->second);
+              
+              return ret;
+            }        
                                                      
             #undef for_each_element_in_map                                                     
         };
