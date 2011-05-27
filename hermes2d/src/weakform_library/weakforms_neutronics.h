@@ -832,14 +832,14 @@ namespace WeakFormsNeutronics
             public:            
               Jacobian(unsigned int g, 
                        const MaterialPropertyMaps& matprop, GeomType geom_type = HERMES_PLANAR) 
-                : WeakForm::MatrixFormVol(g, g, HERMES_ANY),
+                : WeakForm::MatrixFormVol(g, g, HERMES_ANY, HERMES_SYM),
                   GenericForm(matprop, geom_type),
                   g(g)
               {};
                   
               Jacobian(unsigned int g, std::string area,
                        const MaterialPropertyMaps& matprop, GeomType geom_type = HERMES_PLANAR)
-                : WeakForm::MatrixFormVol(g, g, area),
+                : WeakForm::MatrixFormVol(g, g, area, HERMES_SYM),
                   GenericForm(matprop, geom_type),
                   g(g)
               {};

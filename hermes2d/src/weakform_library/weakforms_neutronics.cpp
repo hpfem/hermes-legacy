@@ -775,19 +775,19 @@ namespace WeakFormsNeutronics
           if (geom_type == HERMES_PLANAR) 
           {
             result = D_elem[g] * int_grad_u_ext_grad_v<Real, Scalar>(n, wt, u_ext[g], v) +
-                      Sigma_r_elem[g] * int_u_ext_v<Real, Scalar>(n, wt, u_ext[g], v);
+                     Sigma_r_elem[g] * int_u_ext_v<Real, Scalar>(n, wt, u_ext[g], v);
           }
           else 
           {
             if (geom_type == HERMES_AXISYM_X) 
             {
               result = D_elem[g] * int_y_grad_u_ext_grad_v<Real, Scalar>(n, wt, u_ext[g], v, e) + 
-                        Sigma_r_elem[g] * int_y_u_ext_v<Real, Scalar>(n, wt, u_ext[g], v, e);
+                       Sigma_r_elem[g] * int_y_u_ext_v<Real, Scalar>(n, wt, u_ext[g], v, e);
             }
             else 
             {
               result = D_elem[g] * int_x_grad_u_ext_grad_v<Real, Scalar>(n, wt, u_ext[g], v, e) + 
-                        Sigma_r_elem[g] * int_x_u_ext_v<Real, Scalar>(n, wt, u_ext[g], v, e);
+                       Sigma_r_elem[g] * int_x_u_ext_v<Real, Scalar>(n, wt, u_ext[g], v, e);
             }
           }
           return result;
@@ -927,8 +927,8 @@ namespace WeakFormsNeutronics
     {             
       namespace Diffusion
       {   
-        void DefaultWeakFormFixedSource::lhs_init(unsigned int G, const MaterialPropertyMaps& matprop, 
-                                                  GeomType geom_type)
+        void DefaultWeakFormFixedSource::lhs_init(unsigned int G, 
+                                                  const MaterialPropertyMaps& matprop, GeomType geom_type)
         {
           bool2 Ss_nnz = matprop.get_scattering_nonzero_structure();
           bool1 chi_nnz = matprop.get_fission_nonzero_structure();
