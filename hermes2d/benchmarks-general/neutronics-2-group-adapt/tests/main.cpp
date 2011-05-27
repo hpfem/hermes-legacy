@@ -26,9 +26,9 @@ using namespace RefinementSelectors;
  *  - ERROR_WEIGHTS=default values
  *
  *  \section s_res Expected results
- *  - DOFs: 127, 945    (for the two solution components)
- *  - Iterations: 8     (the last iteration at which ERR_STOP is fulfilled)
- *  - Error:  0.964023% (H1 norm of error with respect to the exact solution)
+ *  - DOFs: 149, 1287   (for the two solution components)
+ *  - Iterations: 9     (the last iteration at which ERR_STOP is fulfilled)
+ *  - Error:  0.890504% (H1 norm of error with respect to the exact solution)
  *  - Negatives: 0      (number of negative values) 
  */
  
@@ -336,8 +336,8 @@ int main(int argc, char* argv[])
 
   int n_dof_1 = Space::get_num_dofs(&space1), 
       n_dof_2 = Space::get_num_dofs(&space2);
-  int n_dof_1_allowed = 150, 
-      n_dof_2_allowed = 1000;
+  int n_dof_1_allowed = 160, 
+      n_dof_2_allowed = 1300;
       
   int n_neg = get_num_of_neg(&sln1) + get_num_of_neg(&sln2);
   int n_neg_allowed = 0;
@@ -346,7 +346,7 @@ int main(int argc, char* argv[])
   int n_iter_allowed = 10;
 
   double error = error_h1;
-  double error_allowed = 1.1;
+  double error_allowed = 1.0;
   
   printf("n_dof_actual  = %d,%d\n", n_dof_1, n_dof_2);
   printf("n_dof_allowed = %d,%d\n", n_dof_1_allowed, n_dof_2_allowed);

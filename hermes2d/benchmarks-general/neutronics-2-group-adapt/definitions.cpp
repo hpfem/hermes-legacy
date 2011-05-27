@@ -34,14 +34,14 @@ double CustomRightHandSide_g1::value(double x, double y) const
   rank1 D = matprop.get_D(mat);
   rank1 Sr = matprop.get_Sigma_r(mat);
 
-  double L =  1./40.*exp(-4*sqr(x)) * ( 
-                20*( 1+4*(8*sqr(x)-1)*y*(y-2) ) * D[0] + 1./8.*y*(y-2) * (
-                  80*nSf[0] + (
-                    10-2*cos(8*M_PI*x) + cos(8*M_PI*(x-y)) - 2*cos(8*M_PI*y) + cos(8*M_PI*(x+y))
-                  )*nSf[1] - 80*Sr[0] 
-                )
-              );
-  return L;
+  double Q1 =  1./40.*exp(-4*sqr(x)) * ( 
+                 20*( 1+4*(8*sqr(x)-1)*y*(y-2) ) * D[0] + 1./8.*y*(y-2) * (
+                   80*nSf[0] + (
+                     10-2*cos(8*M_PI*x) + cos(8*M_PI*(x-y)) - 2*cos(8*M_PI*y) + cos(8*M_PI*(x+y))
+                   )*nSf[1] - 80*Sr[0] 
+                 )
+               );
+  return -Q1;
 }
 
 
@@ -62,18 +62,18 @@ double CustomRightHandSide_g2::value(double x, double y) const
   double s4px2 = sqr(sin(4*px));
   double s4py2 = sqr(sin(4*py));
 
-  double L =  1./40.*exp(-4*x2) * (
-                10*yym2*Ss[1][0] - yym2*Sr[1]*( 1+s4px2*s4py2 ) + 0.5*D[1]*(
-                  5 + 20*(8*x2-1)*yym2 + (
-                    -1 + 4*(1+8*p2-8*x2)*yym2
-                  )*c8py + c8px*( 
-                    -1 + 4*(1+8*p2-8*x2)*yym2 + ( 1 - 4*(1+16*p2-8*x2)*yym2 )*c8py
-                  ) + 32*M_PI*(
-                    -4*x*yym2*s8px*s4py2 + (y-1)*s4px2*s8py
-                  )
-                )
-              );  
-  return L; 
+  double Q2 =  1./40.*exp(-4*x2) * (
+                 10*yym2*Ss[1][0] - yym2*Sr[1]*( 1+s4px2*s4py2 ) + 0.5*D[1]*(
+                   5 + 20*(8*x2-1)*yym2 + (
+                     -1 + 4*(1+8*p2-8*x2)*yym2
+                   )*c8py + c8px*( 
+                     -1 + 4*(1+8*p2-8*x2)*yym2 + ( 1 - 4*(1+16*p2-8*x2)*yym2 )*c8py
+                   ) + 32*M_PI*(
+                     -4*x*yym2*s8px*s4py2 + (y-1)*s4px2*s8py
+                   )
+                 )
+               );  
+  return -Q2; 
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
