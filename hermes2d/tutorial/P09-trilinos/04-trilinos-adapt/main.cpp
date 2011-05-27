@@ -66,7 +66,7 @@ double rel_resid = 1.0e-2;                        // Tolerance for relative valu
 int max_iters = 100;                              // Max number of iterations.
 
 // Problem parameters.
-double SLOPE = 60;                                // Slope of the layer inside the domain.
+double slope = 60;                                // Slope of the layer inside the domain.
 
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
@@ -86,13 +86,13 @@ int main(int argc, char* argv[])
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
   
   // Define exact solution.
-  CustomExactSolution exact(&mesh, SLOPE);
+  CustomExactSolution exact(&mesh, slope);
 
   // Define right-hand side.
-  CustomRightHandSide rhs(SLOPE);
+  CustomFunction f(slope);
 
   // Initialize the weak formulation.
-  DefaultWeakFormPoisson wf(&rhs);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, new HermesFunction(1.0), &f);
   
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc_essential("Bdy", &exact);

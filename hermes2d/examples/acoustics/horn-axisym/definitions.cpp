@@ -1,5 +1,4 @@
 #include "hermes2d.h"
-using namespace WeakFormsH1;
 
 /* Weak forms */
 
@@ -12,13 +11,13 @@ public:
     scalar ii =  cplx(0.0, 1.0);
 
     // Jacobian.
-    add_matrix_form(new DefaultJacobianDiffusion(0, 0, HERMES_ANY, 1.0/rho, HERMES_DEFAULT_FUNCTION, HERMES_SYM));
-    add_matrix_form(new DefaultMatrixFormVol(0, 0, HERMES_ANY, - sqr(omega) / rho / sqr(sound_speed), HERMES_DEFAULT_FUNCTION, HERMES_SYM));
-    add_matrix_form_surf(new DefaultMatrixFormSurf(0, 0, bdy_newton, -ii * omega / rho / sound_speed));
+    add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, HERMES_ANY, new HermesFunction(1.0/rho), HERMES_SYM));
+    add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(-sqr(omega) / rho / sqr(sound_speed)), HERMES_SYM));
+    add_matrix_form_surf(new WeakFormsH1::DefaultMatrixFormSurf(0, 0, bdy_newton, new HermesFunction(-ii * omega / rho / sound_speed)));
 
     // Residual.
-    add_vector_form(new DefaultResidualDiffusion(0, HERMES_ANY, 1.0/rho));
-    add_vector_form(new DefaultResidualVol(0, HERMES_ANY, - sqr(omega) / rho / sqr(sound_speed)));
-    add_vector_form_surf(new DefaultResidualSurf(0, bdy_newton, -ii * omega / rho / sound_speed));
+    add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, HERMES_ANY, new HermesFunction(1.0/rho)));
+    add_vector_form(new WeakFormsH1::DefaultResidualVol(0, HERMES_ANY, new HermesFunction(-sqr(omega) / rho / sqr(sound_speed))));
+    add_vector_form_surf(new WeakFormsH1::DefaultResidualSurf(0, bdy_newton, new HermesFunction(-ii * omega / rho / sound_speed)));
   };
 };

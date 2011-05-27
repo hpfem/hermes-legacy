@@ -1,7 +1,5 @@
 #include "hermes2d.h"
 
-using namespace WeakFormsH1;
-
 /* Initial condition */
 
 class InitialSolutionHeatTransfer : public ExactSolutionScalar
@@ -10,16 +8,16 @@ public:
   InitialSolutionHeatTransfer(Mesh* mesh) : ExactSolutionScalar(mesh) {};
 
   virtual scalar value (double x, double y) const {
-    return (x+10)*(y+10)/100. + 2.;
+    return (x + 10) * (y + 10) / 100. + 2.;
   }
 
   virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const {
-    dx = (y+10)/10.;
-    dy = (x+10)/10.;
+    dx = (y + 10) / 10.;
+    dy = (x + 10) / 10.;
   }
 
   virtual Ord ord(Ord x, Ord y) const {
-    return (x+10)*(y+10)/100. + 2.;
+    return (x + 10) * (y + 10) / 100. + 2.;
   }
 };
 
@@ -36,6 +34,6 @@ public:
   }
 
   virtual scalar value(double x, double y, double n_x, double n_y, double t_x, double t_y) const {
-    return (x+10)*(y+10)/100.;
+    return (x + 10) * (y + 10) / 100.;
   }
 };

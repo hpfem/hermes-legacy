@@ -13,7 +13,7 @@ using namespace RefinementSelectors;
 //
 //  Domain: unit square (-10,10)^2.
 //
-//  BC: Dirichlet, see function dir_lift() below.
+//  BC: Dirichlet.
 //
 //  The following parameters can be changed:
 
@@ -55,7 +55,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.
-double HEAT_SRC = 1.0;
+double heat_src = 1.0;
 
 // Initial and boundary conditions.
 #include "definitions.cpp"
@@ -66,11 +66,11 @@ int main(int argc, char* argv[])
   Hermes2D hermes2d;
 
   // Define nonlinear thermal conductivity lambda(u) via a cubic spline.
-  // Step 1: Fill the x values and use lambda(u) = 1 + u^4 for the y values.
-  #define lambda(x) (1 + pow(x, 4))
+  // Step 1: Fill the x values and use lambda_macro(u) = 1 + u^4 for the y values.
+  #define lambda_macro(x) (1 + pow(x, 4))
   Hermes::vector<double> lambda_pts(-2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0);
   Hermes::vector<double> lambda_val;
-  for (unsigned int i = 0; i < lambda_pts.size(); i++) lambda_val.push_back(lambda(lambda_pts[i]));
+  for (unsigned int i = 0; i < lambda_pts.size(); i++) lambda_val.push_back(lambda_macro(lambda_pts[i]));
   // Step 2: Create the cubic spline (and plot it for visual control). 
   double bc_left = 0.0;
   double bc_right = 0.0;
@@ -78,12 +78,12 @@ int main(int argc, char* argv[])
   bool first_der_right = false;
   bool extrapolate_der_left = true;
   bool extrapolate_der_right = true;
-  CubicSpline spline_coeff(lambda_pts, lambda_val, bc_left, bc_right, first_der_left, first_der_right,
-                           extrapolate_der_left, extrapolate_der_right);
+  CubicSpline lambda(lambda_pts, lambda_val, bc_left, bc_right, first_der_left, first_der_right,
+                     extrapolate_der_left, extrapolate_der_right);
   info("Saving cubic spline into a Pylab file spline.dat.");
   double interval_extension = 3.0; // The interval of definition of the spline will be 
                                    // extended by "interval_extension" on both sides.
-  spline_coeff.plot("spline.dat", interval_extension);
+  lambda.plot("spline.dat", interval_extension);
 
   // Load the mesh.
   Mesh mesh;
@@ -102,9 +102,8 @@ int main(int argc, char* argv[])
   H1Space space(&mesh, &bcs, P_INIT);
 
   // Initialize the weak formulation
-  HermesFunction heat_src(HEAT_SRC);
-  double const_coeff = 1.0;
-  DefaultWeakFormPoisson wf(&heat_src, HERMES_ANY, const_coeff, &spline_coeff);
+  HermesFunction f(-heat_src);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
 
   // Initialize the FE problem.
   DiscreteProblem dp_coarse(&wf, &space);

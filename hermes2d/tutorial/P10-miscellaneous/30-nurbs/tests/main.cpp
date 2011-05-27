@@ -15,10 +15,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.
-const double CONST_F = 1.0;  
-
-// Weak forms.
-#include "../definitions.cpp"
+const double const_f = 1.0;  
 
 int main(int argc, char* argv[])
 {
@@ -53,7 +50,7 @@ int main(int argc, char* argv[])
   info("ndof = %d", ndof);
 
   // Initialize the weak formulation.
-  WeakFormPoisson wf(CONST_F);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, new HermesFunction(1.0), new HermesFunction(-const_f));
 
   // Initialize the FE problem.
   DiscreteProblem dp(&wf, &space);

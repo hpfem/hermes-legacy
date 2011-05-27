@@ -2,7 +2,6 @@
 #define HERMES_REPORT_FILE "application.log"
 #include "hermes2d.h"
 #include "function/function.h"
-using namespace WeakFormsH1;
 
 // This example makes sure that normal and tangential vectors to circular
 // arcs nurbs are calculated correctly.
@@ -105,10 +104,10 @@ public:
   CustomWeakFormPoisson(double rhs_const) : WeakForm(1)
   {
     // Jacobian.
-    add_matrix_form(new DefaultJacobianDiffusion(0, 0));
+    add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0));
     // Residual.
-    add_vector_form(new DefaultResidualDiffusion(0));
-    add_vector_form(new DefaultVectorFormVol(0, HERMES_ANY, -rhs_const));
+    add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0));
+    add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, new HermesFunction(-rhs_const)));
   };
 };
 

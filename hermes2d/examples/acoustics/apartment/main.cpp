@@ -11,11 +11,10 @@ using namespace RefinementSelectors;
 //
 //  PDE: -div(1/rho grad p) - omega**2 / (rho c**2) * p = 0.
 //
-//  Domain: Axisymmetric geometry of a horn, see mesh file domain.mesh.
+//  Domain: Floor plan of an existing apartment.
 //
-//  BC: Prescribed pressure on the bottom edge,
-//      zero Neumann on the walls and on the axis of symmetry,
-//      Newton matched boundary at outlet 1/rho dp/dn = j omega p / (rho c)
+//  BC: Prescribed pressure at the source.
+//      Newton matched boundary on the walls.
 //
 //  The following parameters can be changed:
 

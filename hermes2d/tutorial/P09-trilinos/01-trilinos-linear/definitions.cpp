@@ -1,7 +1,5 @@
 #include "hermes2d.h"
 
-using namespace WeakFormsH1;
-
 /* Exact solution */
 
 class CustomExactSolution : public ExactSolutionScalar
@@ -32,11 +30,11 @@ public:
     this->is_matfree = is_matfree;
 
     // Jacobian.
-    add_matrix_form(new DefaultJacobianDiffusion(0, 0));
+    add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0));
 
     // Residual.
-    add_vector_form(new DefaultResidualDiffusion(0));
-    add_vector_form(new DefaultVectorFormVol(0, HERMES_ANY, 4.0));
+    add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0));
+    add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, new HermesFunction(4.0)));
   };
 };
 

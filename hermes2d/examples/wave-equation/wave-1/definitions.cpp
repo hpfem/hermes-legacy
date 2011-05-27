@@ -1,7 +1,5 @@
 #include "hermes2d.h"
 
-using namespace WeakFormsH1;
-
 /* Initial condition */
 
 class CustomInitialConditionWave : public ExactSolutionScalar
@@ -32,8 +30,8 @@ public:
   CustomWeakFormWave(double tau, double c_squared, Solution* u_prev_sln,
                      Solution* v_prev_sln) : WeakForm(2) {
     // Volumetric matrix forms.
-    add_matrix_form(new DefaultMatrixFormVol(0, 1, HERMES_ANY, 1.0, HERMES_DEFAULT_FUNCTION, HERMES_NONSYM));
-    add_matrix_form(new DefaultJacobianDiffusion(1, 0, HERMES_ANY, -c_squared, HERMES_DEFAULT_SPLINE, HERMES_NONSYM));
+    add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 1, HERMES_ANY, new HermesFunction(1.0), HERMES_NONSYM));
+    add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(1, 0, HERMES_ANY, new HermesFunction(-c_squared), HERMES_NONSYM));
 
     // Volumetric surface forms.
     add_vector_form(new VectorFormVolWave_0());
