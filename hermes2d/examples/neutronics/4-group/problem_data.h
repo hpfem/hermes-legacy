@@ -92,22 +92,3 @@ const MaterialPropertyMap2 Ss = material_property_map<rank2>
     row(0.0)(0.0)(2.28)(0.0)
   )
 );
-
-const bool2 Ss_nnz = bool2
-(
-  bool_matrix
-  (
-    bool_row(0)(0)(0)(0)
-  )(
-    bool_row(1)(0)(0)(0)
-  )(
-    bool_row(0)(1)(0)(0)
-  )(
-    bool_row(0)(0)(1)(0)
-  )
-);
-
-const bool1 chi_nnz = bool1
-(
-  bool_row(1)(1)(0)(0)
-);

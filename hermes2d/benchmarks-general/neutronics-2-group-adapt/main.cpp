@@ -165,11 +165,9 @@ int main(int argc, char* argv[])
   matprop.set_nuSigma_f(nSf);
   matprop.set_nu(nu);
   matprop.set_chi(chi);
-  matprop.set_scattering_nonzero_structure(scattering_mg_structure);
-  matprop.set_fission_nonzero_structure(fission_mg_structure);
   matprop.validate();
   
-  //std::cout << std::endl << matprop << std::endl;
+  std::cout << std::endl << matprop << std::endl;
   
   // Initialize the weak formulation.  
   const double a = 0., b = 1.;

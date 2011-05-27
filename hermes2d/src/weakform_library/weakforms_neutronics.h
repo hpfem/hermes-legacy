@@ -350,11 +350,7 @@ namespace WeakFormsNeutronics
             virtual void set_chi(const rank1& chi) {
               extend_to_multiregion(chi, &this->chi);
             }
-            
-            virtual void set_fission_nonzero_structure(const bool1& chi_nnz)  {
-              this->fission_nonzero_structure = chi_nnz;
-            }
-            
+                        
             virtual void set_Sigma_a(const MaterialPropertyMap1& Sa) {
               this->Sigma_a = Sa;
             }
@@ -461,11 +457,7 @@ namespace WeakFormsNeutronics
             virtual void set_Sigma_s(const MaterialPropertyMap2& Ss) {
               this->Sigma_s = Ss;
             }
-                       
-            virtual void set_scattering_nonzero_structure(const bool2& Ss_nnz) {
-              this->scattering_nonzero_structure = Ss_nnz;
-            }
-            
+                         
             const MaterialPropertyMap2& get_Sigma_s() const {
               return this->Sigma_s;
             }

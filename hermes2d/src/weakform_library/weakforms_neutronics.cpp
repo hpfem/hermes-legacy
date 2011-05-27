@@ -171,13 +171,12 @@ namespace WeakFormsNeutronics
           
           return map2;
         }
-        
+                
         void MaterialPropertyMaps::validate()
         {       
           using namespace ValidationFunctors;
           
-          if (fission_nonzero_structure.empty())
-            fission_nonzero_structure = bool1(G, true);
+          fission_nonzero_structure = bool1(G, false);
           
           if (chi.empty())
           {
@@ -185,8 +184,22 @@ namespace WeakFormsNeutronics
             MaterialPropertyMap1::iterator it = chi.begin();
             for ( ; it != chi.end(); ++it)
               it->second[0] = 1.0;
-            fission_nonzero_structure = bool1(G, false);
             fission_nonzero_structure[0] = true;
+          }
+          else
+          {
+            for (unsigned int g = 0; g < G; g++)
+            {
+              MaterialPropertyMap1::const_iterator it = chi.begin();
+              for ( ; it != chi.end(); ++it)
+              {
+                if (fabs(it->second[g]) > 1e-14)
+                {
+                  fission_nonzero_structure[g] = true;
+                  break;
+                }
+              }
+            }
           }
           
           if (nu.empty() && !nuSigma_f.empty() && !Sigma_f.empty())
@@ -207,6 +220,7 @@ namespace WeakFormsNeutronics
             fill_with(0.0, &nu);
             fill_with(0.0, &chi);
             fill_with(0.0, &Sigma_f);
+            fission_nonzero_structure = bool1(G, false);
           }
           
           if ((nu.size() != Sigma_f.size()) || (nu.size() != chi.size()))
@@ -301,8 +315,13 @@ namespace WeakFormsNeutronics
             }
           }
           
-          os << endl;
-          return os;
+          os << setw(80) << setfill('-') << ' ' << endl << setfill(' ');
+          os << "All-region fission spectrum: ";
+          
+          for (unsigned int g = 0; g < matprop.G; g++)
+            os << matprop.get_fission_nonzero_structure()[g] << ' ';
+          
+          return os << endl;
         }
       }
       
@@ -375,8 +394,7 @@ namespace WeakFormsNeutronics
           
           // Now, we surely have Sigma_r ...
           
-          if (scattering_nonzero_structure.empty())
-            scattering_nonzero_structure = bool2(G, std::vector<bool>(G, true));
+          scattering_nonzero_structure = bool2(G, std::vector<bool>(G, false));
           
           if (!Sigma_s_given)
           {
@@ -387,19 +405,30 @@ namespace WeakFormsNeutronics
             if (Sigma_t_given)
             {
               Sigma_s = create_map2_by_diagonals(Common::NDArrayMapOp::subtract<rank1>(Sigma_t, Sigma_r));
-              
-              scattering_nonzero_structure = bool2(G, std::vector<bool>(G, false));
-              for (unsigned int gto = 0; gto < G; gto++)
-                scattering_nonzero_structure[gto][gto] = true;
             }
             else
             {
               warning(W_NO_SCATTERING);
               fill_with(0.0, &Sigma_s);
-              scattering_nonzero_structure = bool2(G, std::vector<bool>(G, false));
             }
             
             Sigma_s_given = true;
+          }
+          
+          for (unsigned int gto = 0; gto < G; gto++)
+          {
+            for (unsigned int gfrom = 0; gfrom < G; gfrom++)
+            {
+              MaterialPropertyMap2::const_iterator Ss_it = Sigma_s.begin();
+              for ( ; Ss_it != Sigma_s.end(); ++Ss_it)
+              {
+                if (fabs(Ss_it->second[gto][gfrom]) > 1e-14)
+                {
+                  scattering_nonzero_structure[gto][gfrom] = true;
+                  break;
+                }
+              }
+            }
           }
           
           // Now, we surely have Sigma_s and Sigma_r, one parameter to go ...
@@ -504,6 +533,15 @@ namespace WeakFormsNeutronics
               
               os << endl;
             }
+          }
+          
+          os << setw(80) << setfill('-') << ' ' << endl << setfill(' ');
+          os << "All-region scattering spectrum: " << endl;
+          for (unsigned int gto = 0; gto < matprop.G; gto++)
+          {
+            for (unsigned int gfrom = 0; gfrom < matprop.G; gfrom++)
+              os << setw(10) << matprop.get_scattering_nonzero_structure()[gto][gfrom];
+            os << endl;
           }
           
           return os << endl;

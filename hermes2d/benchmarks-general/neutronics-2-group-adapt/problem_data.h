@@ -98,17 +98,3 @@ const MaterialPropertyMap2 Ss = material_property_map<rank2>
     row(0.014)(0.0)
   )
 );
-
-const bool2 scattering_mg_structure = bool2
-(
-  bool_matrix
-  (
-    bool_row(false)(false)
-  )(
-    bool_row(true)(false)
-  )
-);
-const bool1 fission_mg_structure = bool1
-(
-  bool_row(true)(false)
-);
