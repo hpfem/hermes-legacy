@@ -214,7 +214,7 @@ int main(int argc, char* argv[])
   // Adaptivity loop:
   int as = 1; 
   bool done = false;
-  double error_h1;
+  double error_h1 = 0;
   do
   {
     int ndof = Space::get_num_dofs(Hermes::vector<Space *>(&space1, &space2));
