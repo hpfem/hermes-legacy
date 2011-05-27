@@ -3,6 +3,7 @@
 
 #include "weakforms_h1.h"
 #include "../function/forms.h"
+#include "../function/filter.h"
 
 namespace WeakFormsNeutronics
 {
@@ -655,6 +656,40 @@ namespace WeakFormsNeutronics
         typedef MultiArray<bool> bool_row;
         typedef MultiArray< std::vector<bool> > bool_matrix;
         typedef MultiArray< std::vector< std::vector<bool> > > bool_page;
+      }
+    }
+    
+    namespace SupportClasses
+    {
+      namespace Common
+      {
+        using MaterialProperties::Common::MaterialPropertyMaps;
+        using namespace MaterialProperties::Definitions;
+        
+        class SourceFilter : public SimpleFilter
+        {
+          public: 
+            SourceFilter(Hermes::vector<MeshFunction*> solutions, const MaterialPropertyMaps* matprop,
+                         const std::string& source_area)
+              : SimpleFilter(solutions, Hermes::vector<int>())
+            {
+              nu = matprop->get_nu().at(source_area);
+              Sigma_f = matprop->get_Sigma_f().at(source_area);
+            }
+            SourceFilter(Hermes::vector<Solution*> solutions, const MaterialPropertyMaps* matprop,
+                        const std::string& source_area)
+            : SimpleFilter(solutions, Hermes::vector<int>())
+            {
+              nu = matprop->get_nu().at(source_area);
+              Sigma_f = matprop->get_Sigma_f().at(source_area);
+            }
+            
+          private:
+            rank1 nu;
+            rank1 Sigma_f;
+            
+            void filter_fn(int n, Hermes::vector<scalar*> values, scalar* result);
+        };
       }
     }
                                  

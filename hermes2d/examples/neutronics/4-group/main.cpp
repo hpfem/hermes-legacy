@@ -175,8 +175,9 @@ int main(int argc, char* argv[])
     
     // Compute eigenvalue.
     
-    SourceFilter source(solutions, matprop, core);
-    SourceFilter source_prev(iterates, matprop, core);
+    using WeakFormsNeutronics::Multigroup::SupportClasses::Common::SourceFilter;
+    SourceFilter source(solutions, &matprop, core);
+    SourceFilter source_prev(iterates, &matprop, core);
     
     double k_new = k_eff * (integrate(&source, core) / integrate(&source_prev, core));
     info("Largest eigenvalue: %.8g, rel. difference from previous it.: %g", k_new, fabs((k_eff - k_new) / k_new));
