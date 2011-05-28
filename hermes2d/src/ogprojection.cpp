@@ -155,32 +155,52 @@ void OGProjection::project_global(Space * space,
 }
 
 void OGProjection::project_global(Hermes::vector<Space *> spaces,
-                                  Hermes::vector<WeakForm::MatrixFormVol *> mfvol,
-                                  Hermes::vector<WeakForm::VectorFormVol *> vfvol,
-                                  Hermes::vector<MeshFunction*> source_meshfns,
+                                  Hermes::vector<WeakForm::MatrixFormVol *> custom_projection_jacobian,
+                                  Hermes::vector<WeakForm::VectorFormVol *> custom_projection_residual,
                                   scalar* target_vec, MatrixSolverType matrix_solver)
 {
   _F_
   unsigned int n = spaces.size();
-  unsigned int n_biforms = mfvol.size();
+  unsigned int n_biforms = custom_projection_jacobian.size();
   if (n_biforms == 0)
     error("Please use the simpler version of project_global with the argument Hermes::vector<ProjNormType> proj_norms if you do not provide your own projection norm.");
-  if (n_biforms != vfvol.size())
+  if (n_biforms != custom_projection_residual.size())
     error("Mismatched numbers of projection forms in project_global().");
   if (n != n_biforms)
     error("Mismatched numbers of projected functions and projection forms in project_global().");
 
-  // This is needed since spaces may have their DOFs enumerated only locally
-  // when they come here.
-  int ndof = Space::assign_dofs(spaces);
-
-  // Define projection weak form.
+  // Define local projection weak form.
   WeakForm* proj_wf = new WeakForm(n);
   for (unsigned int i = 0; i < n; i++) {
-    proj_wf->add_matrix_form(mfvol[i]);
-    // FIXME
-    // proj_wf->add_vector_form(i, proj_liforms[i].first, proj_liforms[i].second, HERMES_ANY, source_meshfns[i]);
+    proj_wf->add_matrix_form(custom_projection_jacobian[i]);
+    proj_wf->add_vector_form(custom_projection_residual[i]);
   }
 
   project_internal(spaces, proj_wf, target_vec, matrix_solver);
+  
+  delete proj_wf;
+}
+
+void OGProjection::project_global(Hermes::vector<Space *> spaces,
+                                  Hermes::vector<WeakForm::MatrixFormVol *> custom_projection_jacobian,
+                                  Hermes::vector<WeakForm::VectorFormVol *> custom_projection_residual,
+                                  Hermes::vector<Solution *> sols_dest, MatrixSolverType matrix_solver)
+{
+  _F_
+  scalar* target_vec = new scalar[Space::get_num_dofs(spaces)];
+  OGProjection::project_global(spaces, custom_projection_jacobian, custom_projection_residual, target_vec, matrix_solver);
+  Solution::vector_to_solutions(target_vec, spaces, sols_dest);
+  delete [] target_vec;
+}
+
+void OGProjection::project_global(Space* space,
+                                  WeakForm::MatrixFormVol* custom_projection_jacobian,
+                                  WeakForm::VectorFormVol* custom_projection_residual,
+                                  Solution* sol_dest, MatrixSolverType matrix_solver)
+{
+  _F_
+  project_global(Hermes::vector<Space*>(space),
+                 Hermes::vector<WeakForm::MatrixFormVol*>(custom_projection_jacobian),
+                 Hermes::vector<WeakForm::VectorFormVol*>(custom_projection_residual),
+                 Hermes::vector<Solution*>(sol_dest), matrix_solver);
 }
