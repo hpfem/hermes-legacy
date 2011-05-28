@@ -631,56 +631,7 @@ namespace WeakFormsNeutronics
             for (unsigned int g = 0; g < G; g++)
               D[Str_elem->first][g] = 1./(3.*Str_elem->second[g]);
         }
-      }
-      
-      namespace SPN
-      {
-        void MaterialPropertyMaps::extend_to_rank3(const MaterialPropertyMap2& src, MaterialPropertyMap3* dest)
-        {
-
-        }
-        
-        void MaterialPropertyMaps::extend_to_rank3(const MaterialPropertyMap1& src, MaterialPropertyMap3* dest)
-        {
-
-        }
-        
-        void MaterialPropertyMaps::fill_with(double c, MaterialPropertyMap3* mrmg_map)
-        {
-
-        }        
-        
-        void MaterialPropertyMaps::invert_Sigma_rn()
-        {
-
-        }
-        
-        void MaterialPropertyMaps::validate()
-        {
-          Common::MaterialPropertyMaps::validate();
-        }
-
-
-        const rank3& MaterialPropertyMaps::get_Sigma_rn(std::string material) const
-        {
-
-        }
-        
-        const rank3& MaterialPropertyMaps::get_Sigma_rn_inv(std::string material) const
-        {
-          
-        }
-        
-        const rank1& MaterialPropertyMaps::get_src0(std::string material) const
-        {
-          
-        }
-        
-        std::ostream& operator<<(std::ostream& os, const MaterialPropertyMaps& matprop)
-        {
-
-        }
-      }
+      }      
     }
     
     namespace ElementaryForms
