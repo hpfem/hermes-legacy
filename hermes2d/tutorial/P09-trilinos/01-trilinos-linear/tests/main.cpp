@@ -132,10 +132,10 @@ int main(int argc, char **argv)
   cpu_time.tick(HERMES_SKIP);
 
   // Set initial vector for NOX.
+  // NOTE: Using zero vector was causing convergence problems.
   info("Projecting to obtain initial vector for the Newton's method.");
-  Solution* init_sln = new Solution(&mesh, 0.0);
-  OGProjection::project_global(&space, init_sln, coeff_vec);
-  delete init_sln;
+  Solution init_sln(&mesh, 0.0);
+  OGProjection::project_global(&space, &init_sln, coeff_vec);
   
   // Measure the projection time.
   double proj_time = cpu_time.tick().last();

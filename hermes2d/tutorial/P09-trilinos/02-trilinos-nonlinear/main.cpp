@@ -139,16 +139,22 @@ int main(int argc, char* argv[])
   // Time measurement.
   cpu_time.tick(HERMES_SKIP);
  
+  // Show UMFPACK solution.
+  ScalarView view1("Solution 1", new WinGeom(0, 0, 500, 400));
+  view1.show(&sln1);
+
+  // Calculate error.
+  CustomExactSolution ex(&mesh);
+  double rel_err_1 = hermes2d.calc_rel_error(&sln1, &ex, HERMES_H1_NORM) * 100;
+  info("Solution 1 (%s):  exact H1 error: %g%% (time %g s)", MatrixSolverNames[matrix_solver].c_str(), rel_err_1, time1);
+
   // TRILINOS PART:
 
-  // Project the initial condition on the FE space.
-  // We can start with a zero vector.
-  memset(coeff_vec, 0, ndof * sizeof(double));
-  // Or we can project the initial condition to obtain the initial
+  // Project the initial condition to obtain the initial
   // coefficient vector.
-  //info("Projecting to obtain initial vector for the Newton's method.");
-  //CustomInitialSolution sln_tmp(&mesh);
-  //OGProjection::project_global(&space, &sln_tmp, coeff_vec, matrix_solver);
+  info("Projecting to obtain initial vector for the Newton's method.");
+  CustomInitialSolution sln_tmp(&mesh);
+  OGProjection::project_global(&space, &sln_tmp, coeff_vec, matrix_solver);
 
   // Measure the projection time.
   double proj_time = cpu_time.tick().last();
@@ -190,16 +196,11 @@ int main(int argc, char* argv[])
   // CPU time needed by NOX.
   double time2 = cpu_time.tick().last();
 
-  // Calculate errors.
-  CustomExactSolution ex(&mesh);
-  double rel_err_1 = hermes2d.calc_rel_error(&sln1, &ex, HERMES_H1_NORM) * 100;
-  info("Solution 1 (%s):  exact H1 error: %g%% (time %g s)", MatrixSolverNames[matrix_solver].c_str(), rel_err_1, time1);
+  // Calculate error.
   double rel_err_2 = hermes2d.calc_rel_error(&sln2, &ex, HERMES_H1_NORM) * 100;
   info("Solution 2 (NOX): exact H1 error: %g%% (time %g + %g = %g [s])", rel_err_2, proj_time, time2, proj_time+time2);
 
-  // Show both solutions.
-  ScalarView view1("Solution 1", new WinGeom(0, 0, 500, 400));
-  view1.show(&sln1);
+  // Show NOX solution.
   ScalarView view2("Solution 2", new WinGeom(510, 0, 500, 400));
   view2.show(&sln2);
 

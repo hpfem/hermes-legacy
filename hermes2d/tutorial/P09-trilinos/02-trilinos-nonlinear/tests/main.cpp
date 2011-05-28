@@ -125,14 +125,11 @@ int main(int argc, char* argv[])
  
   // TRILINOS PART:
 
-  // Project the initial condition on the FE space.
-  // We can start with a zero vector.
-  memset(coeff_vec, 0, ndof * sizeof(double));
-  // Or we can project the initial condition to obtain the initial
+  // Project the initial condition to obtain the initial
   // coefficient vector.
-  //info("Projecting to obtain initial vector for the Newton's method.");
-  //CustomInitialSolution sln_tmp(&mesh);
-  //OGProjection::project_global(&space, &sln_tmp, coeff_vec, matrix_solver);
+  info("Projecting to obtain initial vector for the Newton's method.");
+  CustomInitialSolution sln_tmp(&mesh);
+  OGProjection::project_global(&space, &sln_tmp, coeff_vec, matrix_solver);
 
   // Measure the projection time.
   double proj_time = cpu_time.tick().last();

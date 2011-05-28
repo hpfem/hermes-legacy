@@ -20,7 +20,7 @@ using namespace Teuchos;
 //
 //  The following parameters can be changed:
 
-const int INIT_REF_NUM = 4;                       // Number of initial uniform mesh refinements.
+const int INIT_REF_NUM = 6;                       // Number of initial uniform mesh refinements.
 const int P_INIT = 3;                             // Initial polynomial degree of all mesh elements.
 const bool TRILINOS_JFNK = true;                  // true = Jacobian-free method (for NOX),
                                                   // false = Newton (for NOX).
@@ -146,8 +146,11 @@ int main(int argc, char **argv)
   cpu_time.tick(HERMES_SKIP);
 
   // Set initial vector for NOX.
-  memset(coeff_vec, 0, ndof*sizeof(scalar));
-  
+  // NOTE: Using zero vector was causing convergence problems.
+  info("Projecting to obtain initial vector for the Newton's method.");
+  Solution init_sln(&mesh, 0.0);
+  OGProjection::project_global(&space, &init_sln, coeff_vec);
+
   // Initialize the NOX solver with the vector "coeff_vec".
   info("Initializing NOX.");
   // "" stands for preconditioning that is set later.
