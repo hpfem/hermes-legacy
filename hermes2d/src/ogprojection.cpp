@@ -85,6 +85,8 @@ void OGProjection::project_global(Hermes::vector<Space *> spaces, Hermes::vector
   }
 
   project_internal(spaces, proj_wf, target_vec, matrix_solver);
+  
+  delete proj_wf;
 }
 
 void OGProjection::project_global(Hermes::vector<Space *> spaces, Hermes::vector<Solution*> source_sols,
