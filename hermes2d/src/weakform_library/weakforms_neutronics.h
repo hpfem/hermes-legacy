@@ -1208,22 +1208,22 @@ namespace WeakFormsNeutronics
                                        GeomType geom_type = HERMES_PLANAR);
             
             DefaultWeakFormFixedSource(const MaterialPropertyMaps& matprop, 
-                                       HermesFunction *f_src,
+                                       HermesFunction *minus_f_src,
                                        std::string src_area = HERMES_ANY,
                                        GeomType geom_type = HERMES_PLANAR);
             
             DefaultWeakFormFixedSource(const MaterialPropertyMaps& matprop, 
-                                       HermesFunction *f_src,
+                                       HermesFunction *minus_f_src,
                                        Hermes::vector<std::string> src_areas,
                                        GeomType geom_type = HERMES_PLANAR);
             
             DefaultWeakFormFixedSource(const MaterialPropertyMaps& matprop, 
-                                       const std::vector<HermesFunction*>& f_src,
+                                       const std::vector<HermesFunction*>& minus_f_src,
                                        std::string src_area = HERMES_ANY,
                                        GeomType geom_type = HERMES_PLANAR);
             
             DefaultWeakFormFixedSource(const MaterialPropertyMaps& matprop, 
-                                       const std::vector<HermesFunction*>& f_src,
+                                       const std::vector<HermesFunction*>& minus_f_src,
                                        Hermes::vector<std::string> src_areas,
                                        GeomType geom_type = HERMES_PLANAR);
         };

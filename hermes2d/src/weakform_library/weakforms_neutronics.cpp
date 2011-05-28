@@ -30,9 +30,9 @@ namespace WeakFormsNeutronics
           // Diffusion.
           add_vector_form(new DefaultResidualDiffusion(0, regions[i], new HermesFunction(D_map[i])));
           // Absorption.
-	  add_vector_form(new DefaultResidualVol(0, regions[i], new HermesFunction(Sigma_a_map[i])));
+          add_vector_form(new DefaultResidualVol(0, regions[i], new HermesFunction(Sigma_a_map[i])));
           // Sources.
-	  add_vector_form(new DefaultVectorFormVol(0, regions[i], new HermesFunction(-Q_map[i])));
+          add_vector_form(new DefaultVectorFormVol(0, regions[i], new HermesFunction(-Q_map[i])));
         }
       }
     }
