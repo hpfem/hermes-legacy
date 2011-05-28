@@ -964,7 +964,28 @@ namespace WeakFormsNeutronics
                                                                         double initial_keff_guess, 
                                                                         GeomType geom_type ) : WeakForm(matprop.get_G())
         {      
+          init(matprop, iterates, initial_keff_guess, geom_type);
+        }
+        
+        DefaultWeakFormSourceIteration::DefaultWeakFormSourceIteration( const MaterialPropertyMaps& matprop,
+                                                                        Hermes::vector<Solution*>& iterates,
+                                                                        double initial_keff_guess, 
+                                                                        GeomType geom_type ) : WeakForm(matprop.get_G())
+        {      
+          Hermes::vector<MeshFunction *> iterates_mf;
+          for (unsigned int i = 0; i < iterates.size(); i++)
+            iterates_mf.push_back(static_cast<MeshFunction*>(iterates[i]));
+          
+          init(matprop, iterates_mf, initial_keff_guess, geom_type);
+        }
+        
+        void DefaultWeakFormSourceIteration::init(const MaterialPropertyMaps& matprop,
+                                                  Hermes::vector<MeshFunction*>& iterates, double initial_keff_guess, 
+                                                  GeomType geom_type)
+        {
           bool2 Ss_nnz = matprop.get_scattering_nonzero_structure();
+          
+          keff = initial_keff_guess;
           
           for (unsigned int gto = 0; gto < matprop.get_G(); gto++)
           {
@@ -989,6 +1010,8 @@ namespace WeakFormsNeutronics
         
         void DefaultWeakFormSourceIteration::update_keff(double new_keff) 
         { 
+          keff = new_keff;
+          
           std::vector<FissionYield::OuterIterationForm*>::iterator it = keff_iteration_forms.begin();
           for ( ; it != keff_iteration_forms.end(); ++it)
             (*it)->update_keff(new_keff); 

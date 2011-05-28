@@ -1137,15 +1137,27 @@ namespace WeakFormsNeutronics
         class DefaultWeakFormSourceIteration : public WeakForm
         {
           protected:
+            double keff;
+            
             std::vector<FissionYield::OuterIterationForm*> keff_iteration_forms;
+            
+            void init(const MaterialPropertyMaps& matprop,
+                      Hermes::vector<MeshFunction*>& iterates, double initial_keff_guess, 
+                      GeomType geom_type);
             
           public:
             DefaultWeakFormSourceIteration( const MaterialPropertyMaps& matprop,
                                             Hermes::vector<MeshFunction*>& iterates,
                                             double initial_keff_guess,
                                             GeomType geom_type = HERMES_PLANAR );
+                                            
+            DefaultWeakFormSourceIteration( const MaterialPropertyMaps& matprop,
+                                            Hermes::vector<Solution*>& iterates,
+                                            double initial_keff_guess,
+                                            GeomType geom_type = HERMES_PLANAR );                                            
             
             void update_keff(double new_keff);
+            double get_keff() const { return keff; }
         };
         
       }
