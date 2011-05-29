@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -63,9 +63,6 @@ const double TAU = 0.1;
 const double RHO = M_PI/4.;              
 const double SIGMA = -14.92256510455152; 
 
-// Weak forms.
-#include "definitions.cpp"
-
 int main(int argc, char* argv[])
 {
   // Instantiate a class with global functions.
@@ -83,7 +80,7 @@ int main(int argc, char* argv[])
   CustomExactSolution exact(&mesh, SIGMA, TAU, RHO);
 
   // Initialize the weak formulation.
-  CustomWeakFormPoisson wf("0", R, "1");
+  CustomWeakFormPoisson wf("Mat_0", R, "Mat_1");
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc("Bdy", &exact);

@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -63,9 +63,6 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 // Problem parameters.
 const double K = 1e2;
 
-// Right-hand side, exact solution, weak forms.
-#include "../definitions.cpp"
-
 int main(int argc, char* argv[])
 {
   // Instantiate a class with global functions.
@@ -77,7 +74,7 @@ int main(int argc, char* argv[])
   mloader.load("../square.mesh", &mesh);
 
   // Perform initial mesh refinement.
-  for (int i=0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
+  for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
   mesh.refine_towards_boundary("Bdy", INIT_REF_NUM_BDY);
 
   // Define exact solution.
@@ -88,52 +85,56 @@ int main(int argc, char* argv[])
 
   // Initialize the weak formulation.
   CustomWeakForm wf(&f);
-   
+  
   // Initialize boundary conditions.
   DefaultEssentialBCConst bc_essential("Bdy", 0.0);
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.
   H1Space space(&mesh, &bcs, P_INIT);
-
+  
   // Initialize refinement selector.
   H1ProjBasedSelector selector(CAND_LIST, CONV_EXP, H2DRS_DEFAULT_ORDER);
 
   // DOF and CPU convergence graphs.
-  SimpleGraph graph_dof, graph_cpu, graph_dof_exact, graph_cpu_exact;
+  SimpleGraph graph_dof_est, graph_cpu_est, graph_dof_exact, graph_cpu_exact;
 
   // Time measurement.
   TimePeriod cpu_time;
   cpu_time.tick();
 
   // Adaptivity loop:
-  int as = 1;
-  bool done = false;
+  int as = 1; bool done = false;
   do
   {
     info("---- Adaptivity step %d:", as);
 
     // Construct globally refined reference mesh and setup reference space.
     Space* ref_space = Space::construct_refined_space(&space);
+    int ndof_ref = Space::get_num_dofs(ref_space);
 
-    // Assemble the reference problem.
-    info("Solving on reference mesh.");
-    DiscreteProblem* dp = new DiscreteProblem(&wf, ref_space);
+    // Set up the solver, matrix, and rhs according to the solver selection.
     SparseMatrix* matrix = create_matrix(matrix_solver);
     Vector* rhs = create_vector(matrix_solver);
     Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
-    dp->assemble(matrix, rhs);
+
+    // Assemble the reference problem.
+    info("Solving on reference mesh.");
+    DiscreteProblem dp(&wf, ref_space);
 
     // Time measurement.
     cpu_time.tick();
 
-    // Solve the linear system of the reference problem. If successful, obtain the solution.
+    // Initial coefficient vector for the Newton's method.  
+    scalar* coeff_vec = new scalar[ndof_ref];
+    memset(coeff_vec, 0, ndof_ref * sizeof(scalar));
+
+    // Perform Newton's iteration.
+    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs)) error("Newton's iteration failed.");
+
+    // Translate the resulting coefficient vector into the Solution sln.
     Solution ref_sln;
-    if(solver->solve()) Solution::vector_to_solution(solver->get_solution(), ref_space, &ref_sln);
-    else error ("Matrix solver failed.\n");
-
-    // Time measurement.
-    cpu_time.tick();
+    Solution::vector_to_solution(coeff_vec, ref_space, &ref_sln);
 
     // Project the fine mesh solution onto the coarse mesh.
     Solution sln;
@@ -155,17 +156,17 @@ int main(int argc, char* argv[])
     // Time measurement.
     cpu_time.tick();
 
-    // Add entry to DOF and CPU convergence graphs.
-    graph_dof.add_values(Space::get_num_dofs(&space), err_est_rel);
-    graph_dof.save("conv_dof_est.dat");
-    graph_cpu.add_values(cpu_time.accumulated(), err_est_rel);
-    graph_cpu.save("conv_cpu_est.dat");
+    // Add entries to DOF and CPU convergence graphs.
+    graph_dof_est.add_values(Space::get_num_dofs(&space), err_est_rel);
+    graph_dof_est.save("conv_dof_est.dat");
+    graph_cpu_est.add_values(cpu_time.accumulated(), err_est_rel);
+    graph_cpu_est.save("conv_cpu_est.dat");
     graph_dof_exact.add_values(Space::get_num_dofs(&space), err_exact_rel);
     graph_dof_exact.save("conv_dof_exact.dat");
     graph_cpu_exact.add_values(cpu_time.accumulated(), err_exact_rel);
     graph_cpu_exact.save("conv_cpu_exact.dat");
 
-    // If err_est too large, adapt the mesh.
+    // If err_est_rel too large, adapt the mesh.
     if (err_est_rel < ERR_STOP) done = true;
     else
     {
@@ -173,7 +174,7 @@ int main(int argc, char* argv[])
       done = adaptivity->adapt(&selector, THRESHOLD, STRATEGY, MESH_REGULARITY);
 
       // Increase the counter of performed adaptivity steps.
-      if (done == false)  as++;
+      if (done == false) as++;
     }
     if (Space::get_num_dofs(&space) >= NDOF_STOP) done = true;
 
@@ -184,8 +185,6 @@ int main(int argc, char* argv[])
     delete adaptivity;
     if(done == false) delete ref_space->get_mesh();
     delete ref_space;
-    delete dp;
-
   }
   while (done == false);
 

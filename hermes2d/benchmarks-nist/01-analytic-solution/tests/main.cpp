@@ -1,5 +1,6 @@
 #define HERMES_REPORT_ALL
-#include "hermes2d.h"
+#define HERMES_REPORT_FILE "application.log"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -61,9 +62,6 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 double EXACT_SOL_P = 10;                     // The exact solution is a polynomial of degree 2*EXACT_SOL_P in the x-direction
                                              // as well as in the y-direction. 
 
-// Weak forms.
-#include "../definitions.cpp"
-
 int main(int argc, char* argv[])
 {
   // Instantiate a class with global functions.
@@ -85,7 +83,7 @@ int main(int argc, char* argv[])
   CustomFunction f(EXACT_SOL_P);
 
   // Initialize the weak formulation.
-  HermesFunction lambda(-1.0);
+  HermesFunction lambda(1.0);
   WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
   
   // Initialize boundary conditions

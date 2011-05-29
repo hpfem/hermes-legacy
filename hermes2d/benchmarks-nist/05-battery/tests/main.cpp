@@ -1,6 +1,6 @@
-#define HERMES_REPORT_INFO
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -55,10 +55,6 @@ const int NDOF_STOP = 60000;                      // Adaptivity process stops wh
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
-// Weak forms.
-// In this example, some parameters are part of the weak formulation, 
-// see the file definitions.cpp, class CustomWeakFormPoisson.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
