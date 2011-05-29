@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
   CustomFunction f(EXACT_SOL_P);
 
   // Initialize the weak formulation.
-  HermesFunction lambda(-1.0);
+  HermesFunction lambda(1.0);
   WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
   
   // Initialize boundary conditions
