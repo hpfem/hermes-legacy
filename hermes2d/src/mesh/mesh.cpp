@@ -1230,6 +1230,9 @@ void Mesh::copy_base(Mesh* mesh)
       enew->cm = new CurvMap(e->cm);
   }
 
+  this->boundary_markers_conversion = mesh->boundary_markers_conversion;
+  this->element_markers_conversion = mesh->element_markers_conversion;
+
   nbase = nactive = ninitial = mesh->nbase;
   ntopvert = mesh->ntopvert;
   seq = g_mesh_seq++;

@@ -49,17 +49,17 @@ Ord ErrorForm::ord(int n, double *wt, Func<Ord> *u_ext[],
 }
 
 // Integral over the active core.
-double integrate(MeshFunction* sln, Mesh* mesh, std::string area)
+double integrate(MeshFunction* sln, std::string area)
 {
   Quad2D* quad = &g_quad_2d_std;
   sln->set_quad_2d(quad);
   
   double integral = 0.0;
   Element* e;
+  Mesh *mesh = sln->get_mesh();
   int marker = mesh->get_element_markers_conversion().get_internal_marker(area);
-  Mesh *traverse_mesh = sln->get_mesh();
   
-  for_all_active_elements(e, traverse_mesh)
+  for_all_active_elements(e, mesh)
   {
     if (e->marker == marker)
     {
@@ -165,8 +165,7 @@ int power_iteration(const Hermes2D& hermes2d, const MaterialPropertyMaps& matpro
     SourceFilter old_source(solutions, &matprop, fission_region);
 
     // Compute the eigenvalue for current iteration.
-    double k_new = wf->get_keff() * (integrate(&new_source, spaces[0]->get_mesh(), fission_region) / 
-                                     integrate(&old_source, spaces[0]->get_mesh(), fission_region));
+    double k_new = wf->get_keff() * (integrate(&new_source, fission_region) / integrate(&old_source, fission_region));
 
     info("      dominant eigenvalue (est): %g, rel. difference: %g", k_new, fabs((wf->get_keff() - k_new) / k_new));
 
