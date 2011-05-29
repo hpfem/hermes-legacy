@@ -1,5 +1,6 @@
 #define HERMES_REPORT_ALL
-#include "hermes2d.h"
+#define HERMES_REPORT_FILE "application.log"
+#include "definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -61,9 +62,6 @@ const double R = 161.4476387975881;
 const double TAU = 0.1;                  
 const double RHO = M_PI/4.;              
 const double SIGMA = -14.92256510455152; 
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
