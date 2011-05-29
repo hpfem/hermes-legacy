@@ -1,4 +1,4 @@
 rm *~  
-./horn-axisym
+./acoustics-horn-axisym
 python plot_graph.py &
 

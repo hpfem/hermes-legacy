@@ -480,7 +480,7 @@ public:
 #ifdef H2D_COMPLEX
   virtual scalar value(scalar x) const
   {
-    return cplx(0.0, 0.0);
+    return const_value;
   };
 #endif
 
@@ -493,7 +493,7 @@ public:
 #ifdef H2D_COMPLEX
   virtual scalar value(scalar x, scalar y) const
   {
-    return cplx(0.0, 0.0);
+    return const_value;
   };
 #endif
 
