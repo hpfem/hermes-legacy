@@ -8,8 +8,8 @@ namespace WeakFormsHcurl
     GeomType gt)
     : WeakForm::MatrixFormVol(i, j, area, sym), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
  
@@ -18,15 +18,15 @@ namespace WeakFormsHcurl
     HermesFunction* coeff, SymFlag sym, GeomType gt)
     : WeakForm::MatrixFormVol(i, j, areas, sym), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
 
   DefaultMatrixFormVol::~DefaultMatrixFormVol() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultMatrixFormVol::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
@@ -72,8 +72,8 @@ namespace WeakFormsHcurl
                                                    SymFlag sym, GeomType gt)
     : WeakForm::MatrixFormVol(i, j, area, sym), idx_j(j), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   };
 
@@ -83,15 +83,15 @@ namespace WeakFormsHcurl
     : WeakForm::MatrixFormVol(i, j, areas, sym),
       idx_j(j), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
 
   DefaultJacobianCurlCurl::~DefaultJacobianCurlCurl() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultJacobianCurlCurl::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
@@ -135,11 +135,11 @@ namespace WeakFormsHcurl
                                              GeomType gt)
     : WeakForm::VectorFormVol(i, area), coeff0(coeff0), coeff1(coeff1), gt(gt)
   { 
-    // If coeff0 is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff0 == HERMES_DEFAULT_FUNCTION) this->coeff0 = new HermesFunction(1.0);
+    // If coeff0 is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff0 == HERMES_ONE) this->coeff0 = new HermesFunction(1.0);
     else if(!coeff0->is_constant()) error("Nonconstant coefficients in Hcurl forms not implemented yet.");
-    // If coeff1 is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff1 == HERMES_DEFAULT_FUNCTION) this->coeff1 = new HermesFunction(1.0);
+    // If coeff1 is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff1 == HERMES_ONE) this->coeff1 = new HermesFunction(1.0);
     else if(!coeff1->is_constant()) error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
 
@@ -148,19 +148,19 @@ namespace WeakFormsHcurl
                                              GeomType gt)
     : WeakForm::VectorFormVol(i, areas), coeff0(coeff0), coeff1(coeff1), gt(gt)
   { 
-    // If coeff0 is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff0 == HERMES_DEFAULT_FUNCTION) this->coeff0 = new HermesFunction(1.0);
+    // If coeff0 is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff0 == HERMES_ONE) this->coeff0 = new HermesFunction(1.0);
     else if(!coeff0->is_constant()) error("Nonconstant coefficients in Hcurl forms not implemented yet.");
-    // If coeff1 is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff1 == HERMES_DEFAULT_FUNCTION) this->coeff1 = new HermesFunction(1.0);
+    // If coeff1 is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff1 == HERMES_ONE) this->coeff1 = new HermesFunction(1.0);
     else if(!coeff1->is_constant()) error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
 
   DefaultVectorFormVol::~DefaultVectorFormVol() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff0 != HERMES_DEFAULT_FUNCTION) delete coeff0;
-    //if (coeff1 != HERMES_DEFAULT_FUNCTION) delete coeff1;
+    //if (coeff0 != HERMES_ONE) delete coeff0;
+    //if (coeff1 != HERMES_ONE) delete coeff1;
   };
 
   scalar DefaultVectorFormVol::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
@@ -192,8 +192,8 @@ namespace WeakFormsHcurl
                                          GeomType gt)
     : WeakForm::VectorFormVol(i, area), idx_i(i), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant functions in Hcurl forms not implemented yet.");
   }
 
@@ -202,15 +202,15 @@ namespace WeakFormsHcurl
                                          GeomType gt)
     : WeakForm::VectorFormVol(i, areas), idx_i(i), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant functions in Hcurl forms not implemented yet.");
   }
 
   DefaultResidualVol::~DefaultResidualVol() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultResidualVol::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
@@ -253,8 +253,8 @@ namespace WeakFormsHcurl
                                                    GeomType gt)
     : WeakForm::VectorFormVol(i, area), idx_i(i), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   };
 
@@ -264,15 +264,15 @@ namespace WeakFormsHcurl
     : WeakForm::VectorFormVol(i, areas),
       idx_i(i), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
 
   DefaultResidualCurlCurl::~DefaultResidualCurlCurl() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultResidualCurlCurl::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
@@ -324,8 +324,8 @@ namespace WeakFormsHcurl
                                                GeomType gt)
     : WeakForm::MatrixFormSurf(i, j, area), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant functions in Hcurl forms not implemented yet.");
   }
   
@@ -334,15 +334,15 @@ namespace WeakFormsHcurl
                                                GeomType gt)
     : WeakForm::MatrixFormSurf(i, j, areas), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant functions in Hcurl forms not implemented yet.");
   }
 
   DefaultMatrixFormSurf::~DefaultMatrixFormSurf() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultMatrixFormSurf::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v,
@@ -386,8 +386,8 @@ namespace WeakFormsHcurl
                                            GeomType gt)
     : WeakForm::VectorFormSurf(i, area), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant functions in Hcurl forms not implemented yet.");
   }
 
@@ -396,15 +396,15 @@ namespace WeakFormsHcurl
                                            GeomType gt)
     : WeakForm::VectorFormSurf(i, areas), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant functions in Hcurl forms not implemented yet.");
   }
 
   DefaultResidualSurf::~DefaultResidualSurf()
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultResidualSurf::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
@@ -448,8 +448,8 @@ namespace WeakFormsHcurl
                                                GeomType gt)
     : WeakForm::VectorFormSurf(i, area), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
   
@@ -458,15 +458,15 @@ namespace WeakFormsHcurl
                                                GeomType gt)
     : WeakForm::VectorFormSurf(i, areas), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
     else if(!coeff->is_constant()) error("Nonconstant coefficients in Hcurl forms not implemented yet.");
   }
 
   DefaultVectorFormSurf::~DefaultVectorFormSurf() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultVectorFormSurf::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,

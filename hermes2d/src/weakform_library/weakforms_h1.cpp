@@ -6,8 +6,8 @@ namespace WeakFormsH1
     (int i, int j, std::string area, HermesFunction* coeff, SymFlag sym, GeomType gt)
     : WeakForm::MatrixFormVol(i, j, area, sym), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   DefaultMatrixFormVol::DefaultMatrixFormVol
@@ -15,14 +15,14 @@ namespace WeakFormsH1
     HermesFunction* coeff, SymFlag sym, GeomType gt)
     : WeakForm::MatrixFormVol(i, j, areas, sym), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   DefaultMatrixFormVol::~DefaultMatrixFormVol() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultMatrixFormVol::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v,
@@ -86,22 +86,22 @@ namespace WeakFormsH1
                                                      SymFlag sym, GeomType gt)
     : WeakForm::MatrixFormVol(i, j, area, sym), idx_j(j), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   };
 
   DefaultJacobianDiffusion::DefaultJacobianDiffusion(int i, int j, Hermes::vector<std::string> areas, 
                                                      HermesFunction* coeff, SymFlag sym, GeomType gt)
     : WeakForm::MatrixFormVol(i, j, areas, sym), idx_j(j), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   DefaultJacobianDiffusion::~DefaultJacobianDiffusion() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultJacobianDiffusion::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
@@ -187,9 +187,9 @@ namespace WeakFormsH1
   {
     if (gt != HERMES_PLANAR) error("Axisymmetric advection forms not implemented yet.");
 
-    // If coeff1 == HERMES_DEFAULT_FUNCTION or coeff22 == HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff1 == HERMES_DEFAULT_FUNCTION) this->coeff1 = new HermesFunction(1.0);
-    if (coeff2 == HERMES_DEFAULT_FUNCTION) this->coeff2 = new HermesFunction(1.0);
+    // If coeff1 == HERMES_ONE or coeff22 == HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff1 == HERMES_ONE) this->coeff1 = new HermesFunction(1.0);
+    if (coeff2 == HERMES_ONE) this->coeff2 = new HermesFunction(1.0);
   }
 
   DefaultJacobianAdvection::DefaultJacobianAdvection(int i, int j, Hermes::vector<std::string> areas, 
@@ -201,16 +201,16 @@ namespace WeakFormsH1
   {
     if (gt != HERMES_PLANAR) error("Axisymmetric advection forms not implemented yet.");
 
-    // If coeff1 == HERMES_DEFAULT_FUNCTION or coeff22 == HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff1 == HERMES_DEFAULT_FUNCTION) this->coeff1 = new HermesFunction(1.0);
-    if (coeff2 == HERMES_DEFAULT_FUNCTION) this->coeff2 = new HermesFunction(1.0);
+    // If coeff1 == HERMES_ONE or coeff22 == HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff1 == HERMES_ONE) this->coeff1 = new HermesFunction(1.0);
+    if (coeff2 == HERMES_ONE) this->coeff2 = new HermesFunction(1.0);
   }
 
   DefaultJacobianAdvection::~DefaultJacobianAdvection() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff1 != HERMES_DEFAULT_FUNCTION) delete coeff1;
-    //if (coeff2 != HERMES_DEFAULT_FUNCTION) delete coeff2;
+    //if (coeff1 != HERMES_ONE) delete coeff1;
+    //if (coeff2 != HERMES_ONE) delete coeff2;
   };
 
   template<typename Real, typename Scalar>
@@ -251,8 +251,8 @@ namespace WeakFormsH1
                                              GeomType gt)
     : WeakForm::VectorFormVol(i, area), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   DefaultVectorFormVol::DefaultVectorFormVol(int i, Hermes::vector<std::string> areas,
@@ -260,14 +260,14 @@ namespace WeakFormsH1
                                              GeomType gt)
     : WeakForm::VectorFormVol(i, areas), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   DefaultVectorFormVol::~DefaultVectorFormVol() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultVectorFormVol::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
@@ -330,8 +330,8 @@ namespace WeakFormsH1
                                          GeomType gt)
     : WeakForm::VectorFormVol(i, area), idx_i(i), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   DefaultResidualVol::DefaultResidualVol(int i, Hermes::vector<std::string> areas,
@@ -339,14 +339,14 @@ namespace WeakFormsH1
                                          GeomType gt)
     : WeakForm::VectorFormVol(i, areas), idx_i(i), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   DefaultResidualVol::~DefaultResidualVol() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultResidualVol::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
@@ -408,22 +408,22 @@ namespace WeakFormsH1
                                                      HermesFunction* coeff, GeomType gt)
     : WeakForm::VectorFormVol(i, area), idx_i(i), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   };
 
   DefaultResidualDiffusion::DefaultResidualDiffusion(int i, Hermes::vector<std::string> areas,
                                                      HermesFunction* coeff, GeomType gt)
     : WeakForm::VectorFormVol(i, areas), idx_i(i), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   DefaultResidualDiffusion::~DefaultResidualDiffusion() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultResidualDiffusion::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
@@ -482,9 +482,9 @@ namespace WeakFormsH1
   {
     if (gt != HERMES_PLANAR) error("Axisymmetric advection forms not implemented yet.");
 
-    // If coeff1 == HERMES_DEFAULT_FUNCTION or coeff22 == HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff1 == HERMES_DEFAULT_FUNCTION) this->coeff1 = new HermesFunction(1.0);
-    if (coeff2 == HERMES_DEFAULT_FUNCTION) this->coeff2 = new HermesFunction(1.0);
+    // If coeff1 == HERMES_ONE or coeff22 == HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff1 == HERMES_ONE) this->coeff1 = new HermesFunction(1.0);
+    if (coeff2 == HERMES_ONE) this->coeff2 = new HermesFunction(1.0);
   }
   
   DefaultResidualAdvection::DefaultResidualAdvection(int i, Hermes::vector<std::string> areas,\
@@ -496,16 +496,16 @@ namespace WeakFormsH1
   {
     if (gt != HERMES_PLANAR) error("Axisymmetric advection forms not implemented yet.");
 
-    // If coeff1 == HERMES_DEFAULT_FUNCTION or coeff22 == HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff1 == HERMES_DEFAULT_FUNCTION) this->coeff1 = new HermesFunction(1.0);
-    if (coeff2 == HERMES_DEFAULT_FUNCTION) this->coeff2 = new HermesFunction(1.0);
+    // If coeff1 == HERMES_ONE or coeff22 == HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff1 == HERMES_ONE) this->coeff1 = new HermesFunction(1.0);
+    if (coeff2 == HERMES_ONE) this->coeff2 = new HermesFunction(1.0);
   }
 
   DefaultResidualAdvection::~DefaultResidualAdvection() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff1 != HERMES_DEFAULT_FUNCTION) delete coeff1;
-    //if (coeff2 != HERMES_DEFAULT_FUNCTION) delete coeff2;
+    //if (coeff1 != HERMES_ONE) delete coeff1;
+    //if (coeff2 != HERMES_ONE) delete coeff2;
   };
 
   template<typename Real, typename Scalar>
@@ -544,8 +544,8 @@ namespace WeakFormsH1
                                                GeomType gt)
     : WeakForm::MatrixFormSurf(i, j, area), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
   
   DefaultMatrixFormSurf::DefaultMatrixFormSurf(int i, int j, Hermes::vector<std::string> areas,
@@ -553,14 +553,14 @@ namespace WeakFormsH1
                                                GeomType gt)
     : WeakForm::MatrixFormSurf(i, j, areas), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   DefaultMatrixFormSurf::~DefaultMatrixFormSurf() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultMatrixFormSurf::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v,
@@ -626,8 +626,8 @@ namespace WeakFormsH1
     : WeakForm::MatrixFormSurf(i, j, area),
       idx_j(j), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
   
   DefaultJacobianFormSurf::DefaultJacobianFormSurf(int i, int j, Hermes::vector<std::string> areas,
@@ -635,14 +635,14 @@ namespace WeakFormsH1
                                                    GeomType gt)
     : WeakForm::MatrixFormSurf(i, j, areas), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   DefaultJacobianFormSurf::~DefaultJacobianFormSurf() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   template<typename Real, typename Scalar>
@@ -682,8 +682,8 @@ namespace WeakFormsH1
                                                GeomType gt)
     : WeakForm::VectorFormSurf(i, area), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
   
   DefaultVectorFormSurf::DefaultVectorFormSurf(int i, Hermes::vector<std::string> areas,
@@ -691,14 +691,14 @@ namespace WeakFormsH1
                                                GeomType gt)
     : WeakForm::VectorFormSurf(i, areas), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   DefaultVectorFormSurf::~DefaultVectorFormSurf() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultVectorFormSurf::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
@@ -812,8 +812,8 @@ namespace WeakFormsH1
                                            GeomType gt)
     : WeakForm::VectorFormSurf(i, area), idx_i(i), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
   
   DefaultResidualSurf::DefaultResidualSurf(int i, Hermes::vector<std::string> areas,
@@ -821,14 +821,14 @@ namespace WeakFormsH1
                                            GeomType gt)
     : WeakForm::VectorFormSurf(i, areas), idx_i(i), coeff(coeff), gt(gt)
   {
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   DefaultResidualSurf::~DefaultResidualSurf() 
   {
     // FIXME: Should be deleted here only if it was created here.
-    //if (coeff != HERMES_DEFAULT_FUNCTION) delete coeff;
+    //if (coeff != HERMES_ONE) delete coeff;
   };
 
   scalar DefaultResidualSurf::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,

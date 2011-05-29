@@ -28,11 +28,11 @@ namespace WeakFormsHcurl
   {
   public:
     DefaultMatrixFormVol(int i, int j, std::string area = HERMES_ANY,
-                         HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* coeff = HERMES_ONE,
                          SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
     DefaultMatrixFormVol(int i, int j, Hermes::vector<std::string> areas,
-                         HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* coeff = HERMES_ONE,
                          SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
     ~DefaultMatrixFormVol();
@@ -59,11 +59,11 @@ namespace WeakFormsHcurl
   {
   public:
     DefaultJacobianCurlCurl(int i, int j, std::string area = HERMES_ANY,
-                            HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                            HermesFunction* coeff = HERMES_ONE,
                             SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
     DefaultJacobianCurlCurl(int i, int j, Hermes::vector<std::string> areas,
-                            HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                            HermesFunction* coeff = HERMES_ONE,
                             SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
     ~DefaultJacobianCurlCurl();
@@ -91,13 +91,13 @@ namespace WeakFormsHcurl
   {
   public:
     DefaultVectorFormVol(int i, std::string area = HERMES_ANY, 
-                         HermesFunction* coeff0 = HERMES_DEFAULT_FUNCTION,
-                         HermesFunction* coeff1 = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* coeff0 = HERMES_ONE,
+                         HermesFunction* coeff1 = HERMES_ONE,
                          GeomType gt = HERMES_PLANAR);
 
     DefaultVectorFormVol(int i, Hermes::vector<std::string> areas, 
-                         HermesFunction* coeff0 = HERMES_DEFAULT_FUNCTION,
-                         HermesFunction* coeff1 = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* coeff0 = HERMES_ONE,
+                         HermesFunction* coeff1 = HERMES_ONE,
                          GeomType gt = HERMES_PLANAR);
 
     ~DefaultVectorFormVol();
@@ -123,11 +123,11 @@ namespace WeakFormsHcurl
   {
   public:
     DefaultResidualVol(int i, std::string area = HERMES_ANY,
-                       HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                       HermesFunction* coeff = HERMES_ONE,
                        GeomType gt = HERMES_PLANAR);
 
     DefaultResidualVol(int i, Hermes::vector<std::string> areas,
-                       HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                       HermesFunction* coeff = HERMES_ONE,
                        GeomType gt = HERMES_PLANAR);
 
     ~DefaultResidualVol();
@@ -156,11 +156,11 @@ namespace WeakFormsHcurl
   {
   public:
     DefaultResidualCurlCurl(int i, std::string area = HERMES_ANY,
-                            HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                            HermesFunction* coeff = HERMES_ONE,
                             GeomType gt = HERMES_PLANAR);
 
     DefaultResidualCurlCurl(int i, Hermes::vector<std::string> areas,
-                            HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                            HermesFunction* coeff = HERMES_ONE,
                             GeomType gt = HERMES_PLANAR);
 
     ~DefaultResidualCurlCurl();
@@ -188,11 +188,11 @@ namespace WeakFormsHcurl
   {
   public:
     DefaultMatrixFormSurf(int i, int j, std::string area = HERMES_ANY,
-                          HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                          HermesFunction* coeff = HERMES_ONE,
                           GeomType gt = HERMES_PLANAR);
 
     DefaultMatrixFormSurf(int i, int j, Hermes::vector<std::string> areas,
-                          HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                          HermesFunction* coeff = HERMES_ONE,
                           GeomType gt = HERMES_PLANAR);
 
     ~DefaultMatrixFormSurf();
@@ -219,11 +219,11 @@ namespace WeakFormsHcurl
   {
   public:
     DefaultVectorFormSurf(int i, std::string area = HERMES_ANY,
-                          HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                          HermesFunction* coeff = HERMES_ONE,
                           GeomType gt = HERMES_PLANAR);
 
     DefaultVectorFormSurf(int i, Hermes::vector<std::string> areas,
-                          HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                          HermesFunction* coeff = HERMES_ONE,
                           GeomType gt = HERMES_PLANAR);
 
     ~DefaultVectorFormSurf();
@@ -250,11 +250,11 @@ namespace WeakFormsHcurl
   {
   public:
     DefaultResidualSurf(int i, std::string area = HERMES_ANY,
-                        HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                        HermesFunction* coeff = HERMES_ONE,
                         GeomType gt = HERMES_PLANAR);
 
     DefaultResidualSurf(int i, Hermes::vector<std::string> areas,
-                        HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                        HermesFunction* coeff = HERMES_ONE,
                         GeomType gt = HERMES_PLANAR);
 
     ~DefaultResidualSurf();

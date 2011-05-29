@@ -2,22 +2,22 @@
 
 /* Weak forms */
 
-CustomWeakFormPoissonNewton::CustomWeakFormPoissonNewton(std::string mat_al, double lambda_al,
-                                                         std::string mat_cu, double lambda_cu,
-                                                         double vol_heat_src, std::string bdy_heat_flux,
+CustomWeakFormPoissonNewton::CustomWeakFormPoissonNewton(std::string mat_al, HermesFunction* lambda_al,
+                                                         std::string mat_cu, HermesFunction* lambda_cu,
+                                                         HermesFunction* vol_src_term, std::string bdy_heat_flux,
                                                          double alpha, double t_exterior) : WeakForm(1)
 {
   // Jacobian forms - volumetric.
-  add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_al, new HermesFunction(lambda_al)));
-  add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_cu, new HermesFunction(lambda_cu)));
+  add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_al, lambda_al));
+  add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_cu, lambda_cu));
 
   // Jacobian forms - surface.
   add_matrix_form_surf(new WeakFormsH1::DefaultMatrixFormSurf(0, 0, bdy_heat_flux, new HermesFunction(alpha)));
 
   // Residual forms - volumetric.
-  add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_al, new HermesFunction(lambda_al)));
-  add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_cu, new HermesFunction(lambda_cu)));
-  add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, new HermesFunction(-vol_heat_src)));
+  add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_al, lambda_al));
+  add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_cu, lambda_cu));
+  add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, vol_src_term));
 
   // Residual forms - surface.
   add_vector_form_surf(new WeakFormsH1::DefaultResidualSurf(0, bdy_heat_flux, new HermesFunction(alpha)));

@@ -27,12 +27,12 @@ namespace WeakFormsH1
   class HERMES_API DefaultMatrixFormVol : public WeakForm::MatrixFormVol
   {
   public:
-    DefaultMatrixFormVol(int i, int j, std::string area = HERMES_ANY,
-                         HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultMatrixFormVol(int i = 0, int j = 0, std::string area = HERMES_ANY,
+                         HermesFunction* coeff = HERMES_ONE,
                          SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
     DefaultMatrixFormVol(int i, int j, Hermes::vector<std::string> areas,
-                         HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* coeff = HERMES_ONE,
                          SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
     ~DefaultMatrixFormVol();
@@ -58,12 +58,12 @@ namespace WeakFormsH1
   class HERMES_API DefaultJacobianDiffusion : public WeakForm::MatrixFormVol
   {
   public:
-    DefaultJacobianDiffusion(int i, int j, std::string area = HERMES_ANY, 
-                             HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultJacobianDiffusion(int i = 0, int j = 0, std::string area = HERMES_ANY, 
+                             HermesFunction* coeff = HERMES_ONE,
                              SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
-    DefaultJacobianDiffusion(int i, int j, Hermes::vector<std::string> areas, 
-                             HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultJacobianDiffusion(int i, int j, Hermes::vector<std::string> areas,
+                             HermesFunction* coeff = HERMES_ONE,
                              SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
     ~DefaultJacobianDiffusion();
@@ -93,14 +93,14 @@ namespace WeakFormsH1
   class HERMES_API DefaultJacobianAdvection : public WeakForm::MatrixFormVol
   {
   public:
-    DefaultJacobianAdvection(int i, int j, std::string area = HERMES_ANY, 
-                             HermesFunction* coeff1 = HERMES_DEFAULT_FUNCTION,
-                             HermesFunction* coeff2 = HERMES_DEFAULT_FUNCTION,
+    DefaultJacobianAdvection(int i = 0, int j = 0, std::string area = HERMES_ANY, 
+                             HermesFunction* coeff1 = HERMES_ONE,
+                             HermesFunction* coeff2 = HERMES_ONE,
                              GeomType gt = HERMES_PLANAR);
 
-    DefaultJacobianAdvection(int i, int j, Hermes::vector<std::string> areas, 
-                             HermesFunction* coeff1 = HERMES_DEFAULT_FUNCTION,
-                             HermesFunction* coeff2 = HERMES_DEFAULT_FUNCTION,
+    DefaultJacobianAdvection(int i, int j, Hermes::vector<std::string> areas,
+                             HermesFunction* coeff1 = HERMES_ONE,
+                             HermesFunction* coeff2 = HERMES_ONE,
                              GeomType gt = HERMES_PLANAR);
 
    ~DefaultJacobianAdvection();
@@ -130,12 +130,12 @@ namespace WeakFormsH1
   class HERMES_API DefaultVectorFormVol : public WeakForm::VectorFormVol
   {
   public:
-    DefaultVectorFormVol(int i, std::string area = HERMES_ANY,
-                         HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultVectorFormVol(int i = 0, std::string area = HERMES_ANY,
+                         HermesFunction* coeff = HERMES_ONE,
                          GeomType gt = HERMES_PLANAR);
 
     DefaultVectorFormVol(int i, Hermes::vector<std::string> areas,
-                         HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* coeff = HERMES_ONE,
                          GeomType gt = HERMES_PLANAR);
 
     ~DefaultVectorFormVol();
@@ -160,11 +160,11 @@ namespace WeakFormsH1
   class HERMES_API DefaultResidualVol : public WeakForm::VectorFormVol
   {
   public:
-    DefaultResidualVol(int i, std::string area = HERMES_ANY,
-                       HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultResidualVol(int i = 0, std::string area = HERMES_ANY,
+                       HermesFunction* coeff = HERMES_ONE,
                        GeomType gt = HERMES_PLANAR);
     DefaultResidualVol(int i, Hermes::vector<std::string> areas,
-                       HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                       HermesFunction* coeff = HERMES_ONE,
                        GeomType gt = HERMES_PLANAR);
 
     ~DefaultResidualVol();
@@ -191,12 +191,12 @@ namespace WeakFormsH1
   class HERMES_API DefaultResidualDiffusion : public WeakForm::VectorFormVol
   {
   public:
-    DefaultResidualDiffusion(int i, std::string area = HERMES_ANY,
-                             HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultResidualDiffusion(int i = 0, std::string area = HERMES_ANY,
+                             HermesFunction* coeff = HERMES_ONE,
                              GeomType gt = HERMES_PLANAR);
 
     DefaultResidualDiffusion(int i, Hermes::vector<std::string> areas,
-                             HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                             HermesFunction* coeff = HERMES_ONE,
                              GeomType gt = HERMES_PLANAR);
 
     ~DefaultResidualDiffusion();
@@ -227,13 +227,13 @@ namespace WeakFormsH1
   class HERMES_API DefaultResidualAdvection : public WeakForm::VectorFormVol
   {
   public:
-    DefaultResidualAdvection(int i, std::string area = HERMES_ANY, 
-                             HermesFunction* coeff1 = HERMES_DEFAULT_FUNCTION,
-                             HermesFunction* coeff2 = HERMES_DEFAULT_FUNCTION,
+    DefaultResidualAdvection(int i = 0, std::string area = HERMES_ANY, 
+                             HermesFunction* coeff1 = HERMES_ONE,
+                             HermesFunction* coeff2 = HERMES_ONE,
                              GeomType gt = HERMES_PLANAR);
     DefaultResidualAdvection(int i, Hermes::vector<std::string> areas,
-                             HermesFunction* coeff1 = HERMES_DEFAULT_FUNCTION,
-                             HermesFunction* coeff2 = HERMES_DEFAULT_FUNCTION,
+                             HermesFunction* coeff1 = HERMES_ONE,
+                             HermesFunction* coeff2 = HERMES_ONE,
                              GeomType gt = HERMES_PLANAR);
 
     ~DefaultResidualAdvection();
@@ -263,12 +263,12 @@ namespace WeakFormsH1
   class HERMES_API DefaultMatrixFormSurf : public WeakForm::MatrixFormSurf
   {
   public:
-    DefaultMatrixFormSurf(int i, int j, std::string area = HERMES_ANY,
-                          HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultMatrixFormSurf(int i = 0, int j = 0, std::string area = HERMES_ANY,
+                          HermesFunction* coeff = HERMES_ONE,
                           GeomType gt = HERMES_PLANAR);
 
     DefaultMatrixFormSurf(int i, int j, Hermes::vector<std::string> areas,
-                          HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                          HermesFunction* coeff = HERMES_ONE,
                           GeomType gt = HERMES_PLANAR);
 
     ~DefaultMatrixFormSurf();
@@ -294,11 +294,11 @@ namespace WeakFormsH1
   class HERMES_API DefaultJacobianFormSurf : public WeakForm::MatrixFormSurf
   {
   public:
-    DefaultJacobianFormSurf(int i, int j, std::string area = HERMES_ANY,
-                            HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultJacobianFormSurf(int i = 0, int j = 0, std::string area = HERMES_ANY,
+                            HermesFunction* coeff = HERMES_ONE,
                             GeomType gt = HERMES_PLANAR);
     DefaultJacobianFormSurf(int i, int j, Hermes::vector<std::string> areas,
-                            HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                            HermesFunction* coeff = HERMES_ONE,
                             GeomType gt = HERMES_PLANAR);
 
     ~DefaultJacobianFormSurf();
@@ -328,11 +328,11 @@ namespace WeakFormsH1
   class HERMES_API DefaultVectorFormSurf : public WeakForm::VectorFormSurf
   {
   public:
-    DefaultVectorFormSurf(int i, std::string area = HERMES_ANY,
-                          HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultVectorFormSurf(int i = 0, std::string area = HERMES_ANY,
+                          HermesFunction* coeff = HERMES_ONE,
                           GeomType gt = HERMES_PLANAR);
     DefaultVectorFormSurf(int i, Hermes::vector<std::string> areas,
-                          HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                          HermesFunction* coeff = HERMES_ONE,
                           GeomType gt = HERMES_PLANAR);
 
     ~DefaultVectorFormSurf();
@@ -385,11 +385,11 @@ namespace WeakFormsH1
   class HERMES_API DefaultResidualSurf : public WeakForm::VectorFormSurf
   {
   public:
-    DefaultResidualSurf(int i, std::string area = HERMES_ANY,
-                        HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+    DefaultResidualSurf(int i = 0, std::string area = HERMES_ANY,
+                        HermesFunction* coeff = HERMES_ONE,
                         GeomType gt = HERMES_PLANAR);
     DefaultResidualSurf(int i, Hermes::vector<std::string> areas,
-                        HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                        HermesFunction* coeff = HERMES_ONE,
                         GeomType gt = HERMES_PLANAR);
 
     ~DefaultResidualSurf();
@@ -414,7 +414,7 @@ namespace WeakFormsH1
   {
   public:
     DefaultWeakFormLaplace(std::string area = HERMES_ANY, 
-                           HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                           HermesFunction* coeff = HERMES_ONE,
                            GeomType gt = HERMES_PLANAR);
   };
 
@@ -425,8 +425,8 @@ namespace WeakFormsH1
   {
   public:
   DefaultWeakFormPoisson(std::string area = HERMES_ANY, 
-                         HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
-                         HermesFunction* f = HERMES_DEFAULT_FUNCTION,
+                         HermesFunction* coeff = HERMES_ONE,
+                         HermesFunction* f = HERMES_ONE,
                          GeomType gt = HERMES_PLANAR);
   };
 };

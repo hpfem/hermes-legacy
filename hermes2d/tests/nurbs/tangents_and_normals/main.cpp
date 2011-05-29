@@ -104,9 +104,10 @@ public:
   CustomWeakFormPoisson(double rhs_const) : WeakForm(1)
   {
     // Jacobian.
-    add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0));
+    add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion());
+
     // Residual.
-    add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0));
+    add_vector_form(new WeakFormsH1::DefaultResidualDiffusion());
     add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, new HermesFunction(-rhs_const)));
   };
 };

@@ -4,10 +4,9 @@ Poisson Equation (03-poisson)
 **Git reference:** Tutorial example `03-poisson <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/03-poisson>`_. 
 
 This example shows how to solve a simple PDE that describes stationary 
-heat transfer in an object consisting of two material subdomains $\Omega_{al}$
-(aluminum) and $\Omega_{cu}$ (copper). The object is heated by constant volumetric 
-heat sources generated, for example, by a DC electric current. The temperature 
-on the boundary is fixed. We will learn how to:
+heat transfer in an object that is heated by constant volumetric 
+heat sources (such as with a DC current). The temperature equals 
+to a prescribed constant on the boundary. We will learn how to:
 
  * Define a weak formulation.
  * Initialize matrix solver.
@@ -41,7 +40,7 @@ of the material.
 The weak formulation is derived as usual, first by multiplying equation :eq:`poisson1` 
 with a test function $v$, then integrating over the domain $\Omega$, and then applying 
 the Green's theorem (integration by parts) to the second derivatives.
-Because of the homogeneous Dirichlet condition :eq:`poisson2`,
+Because of the Dirichlet condition :eq:`poisson2`,
 there are no surface integrals. Since the product of the two gradients 
 in the volumetric weak form needs to be integrable for all $u$ and $v$ in $V$, 
 the proper space for the solution is $V = H^1_0(\Omega)$. The weak formulation 
@@ -69,34 +68,41 @@ Newton's method to solve it. Other methods for the solution of nonlinear problem
 are available as well (to be discussed later). 
 
 For linear problems, the Newton's
-method converges in one step. Well, at least in theory. In practice, it 
-may take more than one step if the matrix solver has problems. This happens 
-quite often, in particular with iterative solvers. By checking the residual of the 
-equation, the Newton's method always makes sure that the problem is solved correctly. 
-This is the reason No. 1 to use the Newton's method even for problems 
-that are linear. 
+method converges in one step. Well, at least that's what the theory says. 
+
+In practice the Newton's method 
+may take more than one step for a linear problem 
+if the matrix solver does not do a good job. This is not 
+unusual at all, in particular when an iterative solver is used. By checking the residual of the 
+equation, *the Newton's method always makes sure that the problem is solved correctly,
+or it fails in a clearly visible way*. This is the reason No. 1 why the Newton's 
+method should be used even for problems that are linear. 
 
 Another reason is that a consistent approach to linear and nonlinear problems allows 
 Hermes' users to first formulate and solve a simplified linear version of the problem, 
-and then extend it to a nonlinear version easily, with almost no changes in the code. 
-This is more handy than it sounds.
+and then extend it to a nonlinear version effortlessly. Let's explain how this works.
 
-Let's assume that $\lambda = \lambda_{al}$ in $\Omega_{al}$ and 
+Consistent approach to linear and nonlinear problems
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+First assume that $\lambda = \lambda_{al}$ in $\Omega_{al}$ and 
 $\lambda = \lambda_{cu}$ in $\Omega_{cu}$ where both $\lambda_{al}$ and $\lambda_{cu}$
-are constants. Then the weak form for the Jacobian is 
+are constants. Then the problem is linear and the weak form for the Jacobian is 
 
 .. math ::
 
     \int_{\Omega_{al}} \lambda_{al} \nabla u \cdot \nabla v \, \mbox{d}x \mbox{d}y
-    + \int_{\Omega_{cu}} \lambda_{cu} \nabla u \cdot \nabla v \, \mbox{d}x \mbox{d}y.
+    + \int_{\Omega_{cu}} \lambda_{cu} \nabla u \cdot \nabla v \, \mbox{d}x \mbox{d}y,
 
+where $u$ stands for a basis function and $v$ for a test function.
 The reader does not have to worry about the word "Jacobian" since for linear 
 problems this is the same as "stiffness matrix". Simply forget from the left-hand side
 of the weak formulation :eq:`poissonweak01b` all expressions that do not contain $u$. 
 A detailed explanation of the Newton's method for nonlinear problems will be provided 
 at the beginning of the tutorial part P02.
 
-The residual weak form is the entire left-hand side of :eq:`poissonweak01b`:
+The residual weak form is the entire left-hand side of :eq:`poissonweak01b` where 
+$u$ is now the approximate solution (not a basis function as above):
 
 .. math ::
 
@@ -104,56 +110,70 @@ The residual weak form is the entire left-hand side of :eq:`poissonweak01b`:
     + \int_{\Omega_{cu}} \lambda_{cu} \nabla u \cdot \nabla v \, \mbox{d}x \mbox{d}y
     - \int_{\Omega} C_{src} v \, \mbox{d}x \mbox{d}y.
 
-The corresponding code looks as follows::
+This is the constructor of the corresponding weak formulation in Hermes::
 
-    CustomWeakFormPoisson::CustomWeakFormPoisson(std::string marker_al, double lambda_al,
-    			                         std::string marker_cu, double lambda_cu,
-			                         double vol_heat_src) : WeakForm(1)
+    CustomWeakFormPoisson::CustomWeakFormPoisson(std::string marker_al, HermesFunction* lambda_al,
+    			                         std::string marker_cu, HermesFunction* lambda_cu,
+			                         HermesFunction* src_term) : WeakForm(1)
     {
-      // Jacobian forms - volumetric.
+      // Jacobian forms.
       add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, marker_al, lambda_al));
       add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, marker_cu, lambda_cu));
 
-      // Residual forms - volumetric.
+      // Residual forms.
       add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, marker_al, lambda_al));
       add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, marker_cu, lambda_cu));
-      add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, -vol_heat_src));
+      add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, src_term));
     };
 
-Here, vol_heat_src stands for $C_{src}$. 
+Here HERMES_ANY means that the volumetric vector form will be assigned to all material
+markers.
 
-Only minor changes are needed to extend the constants 
-$\lambda_{al}$ and $\lambda_{cu}$ to general cubic splines::
+For constant LAMBDA_AL and LAMBDA_CU, the form is instantiated as follows::
 
-    CustomWeakFormPoisson::CustomWeakFormPoisson(std::string marker_al, CubicSpline* lambda_al,
-    			                         std::string marker_cu, CubicSpline* lambda_cu,
-			                         double vol_heat_src) : WeakForm(1)
-    {
-      // Jacobian forms - volumetric.
-      add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, marker_al, 1.0, lambda_al));
-      add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, marker_cu, 1.0, lambda_cu));
+    CustomWeakFormPoisson wf("Aluminum", new HermesFunction(LAMBDA_AL), "Copper", 
+                             new HermesFunction(LAMBDA_CU), new HermesFunction(-VOLUME_HEAT_SRC));
 
-      // Residual forms - volumetric.
-      add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, marker_al, 1.0, lambda_al));
-      add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, marker_cu, 1.0, lambda_cu));
-      add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, -vol_heat_src));
-    };
+To replace the constants with cubic splines, one just needs to do
 
-The constant 1.0 is a scaling factor for the spline - a useful thing 
-in a number of practical applications. Hermes provides 
-cubic splines as part of default forms due to their frequent use in 
-engineering applications. Arbitrary nonlinearities can be defined
-via custom forms. The treatment of nonlinearities will be discussed 
-in tutorial part P02.
+::
+
+    CubicSpline lambda_al(...);
+    CubicSpline lambda_cu(...);
+    CustomWeakFormPoisson wf("Aluminum", &lambda_al, "Copper", 
+                             &lambda_cu, new HermesFunction(-VOLUME_HEAT_SRC));
+
+If the reader guesses that CubicSpline is a descendant of HermesFunction, then this is a good guess::
+
+    class CubicSpline : public HermesFunction
+    ...
+
+The constant VOLUME_HEAT_SRC can be replaced with an arbitrary function of $x$ and $y$ by
+subclassing HermesFunction::
+
+    class CustomNonConstSrc : public HermesFunction
+    ...
+
+If cubic splines are not enough, then one can subclass HermesFunction to define 
+arbitrary nonlinearities::
+
+    class CustomLanbdaAl : public HermesFunction
+    ...
+    class CustomLanbdaCu : public HermesFunction
+    ...
+
+*Note that we are able to extend a linear problem to a nonlinear one
+without touching the CustomWeakFormPoisson class.* This is also 
+how all default weak forms in Hermes work.
 
 In the rest of part P01 we will focus on linear problems.
 
 Default Jacobian for the diffusion operator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Weak forms in Hermes have a clean object-oriented hierarchy. For many problems they 
-are readily available, and for the rest they can be extended easily. The above 
-default forms can be found in the file `weakforms_h1.h 
+Hermes provides default weak forms for many common PDE operators. The above 
+default weak forms DefaultJacobianDiffusion, DefaultResidualDiffusion and 
+DefaultVectorFormVol can be found in the file `weakforms_h1.h 
 <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/src/weakform_library/weakforms_h1.h>`_.
 To begin with, the line 
 
@@ -165,31 +185,47 @@ adds to the Jacobian weak form the integral
 
 .. math ::
 
-    \int_{\Omega_{al}} \lambda_{al} \nabla u \cdot \nabla v \, \mbox{d}x \mbox{d}y.
+    \int_{\Omega_{al}} \lambda_{al} \nabla u \cdot \nabla v \, \mbox{d}x \mbox{d}y
+
+where $u$ is a basis function and $v$ a test function.
 
 It has the following constructor::
 
-    DefaultJacobianDiffusion(int i, int j, std::string area = HERMES_ANY, scalar const_coeff = 1.0,
-                             CubicSpline* c_spline = HERMES_DEFAULT_SPLINE,
+    DefaultJacobianDiffusion(int i = 0, int j = 0, std::string area = HERMES_ANY, 
+                             HermesFunction* coeff = HERMES_ONE,
                              SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
 
 The pair of indices 'i' and 'j' identifies a block in the Jacobian matrix (for systems of 
-equations). For a single equation it is i = j = 0. The parameter 'area' identifies 
-the material marker of elements to which the weak form will be assigned. The 
-parameter 'const_coeff' scales the CubicSpline 'c_spline' whose default value 
-is HERMES_DEFAULT_SPLINE = 1.0. If the SymFlag sym == HERMES_NONSYM, then Hermes 
+equations). For a single equation it is i = j = 0. 
+
+The parameter 'area' identifies 
+the material marker of elements to which the weak form will be assigned. 
+HERMES_ANY means to any material marker.
+
+The parameter 'coeff' can be a constant, cubic spline, or a general nonlinear function 
+of the solution $u$. HERMES_ONE means constant 1.0.
+
+SymFlag is the symmetry flag. 
+If SymFlag sym == HERMES_NONSYM, then Hermes 
 evaluates the form at both symmetric positions r, s and s, r in the stiffness matrix. 
 If sym == HERMES_SYM, only the integral at the position r, s is evaluated, and its value 
 is copied to the symmetric position s, r. If sym == HERMES_ANTISYM, the value is copied
-with a minus sign. Finally, the GeomType parameter tells Hermes whether the form 
+with a minus sign. 
+
+The GeomType parameter tells Hermes whether the form 
 is planar (HERMES_PLANAR), axisymmetrix with respect to the x-axis (HERMES_AXISYM_X), 
 or axisymmetrix with respect to the y-axis (HERMES_AXISYM_Y).
 
-The form can be assigned to multiple material markers::
+The form can be linked to multiple material markers::
 
-    DefaultJacobianDiffusion(int i, int j, Hermes::vector<std::string> areas, scalar const_coeff = 1.0,
-                             CubicSpline* c_spline = HERMES_DEFAULT_SPLINE,
+    DefaultJacobianDiffusion(int i, int j, Hermes::vector<std::string> areas,
+                             HermesFunction* coeff = HERMES_ONE,
                              SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR);
+
+Here, Hermes::vector is just a std::vector equipped with additional constructors for
+comfort. Sample usage::
+
+    Hermes::vector<std::string> areas("marker_1", "marker_2", "marker_3");
 
 Default residual for the diffusion operator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -204,36 +240,54 @@ adds to the residual weak form the integral
 
 .. math ::
 
-    \int_{\Omega_{al}} \lambda_{al} \nabla u \cdot \nabla v \, \mbox{d}x \mbox{d}y.
+    \int_{\Omega_{al}} \lambda_{al} \nabla u \cdot \nabla v \, \mbox{d}x \mbox{d}y,
+
+where $u$ is the approximate solution and $v$ a test function.
 
 It has the following constructor::
 
-    DefaultResidualDiffusion(int i, std::string area = HERMES_ANY, scalar const_coeff = 1.0,
-                             CubicSpline* c_spline = HERMES_DEFAULT_SPLINE,
+    DefaultResidualDiffusion(int i = 0, std::string area = HERMES_ANY, 
+                             HermesFunction* coeff = HERMES_ONE,
                              GeomType gt = HERMES_PLANAR);
 
 The index 'i' identifies a block in the residual vector (for systems of 
 equations). For a single equation it is i = 0. Again the form can be assigned 
 to multiple material markers::
 
-    DefaultResidualDiffusion(int i, Hermes::vector<std::string> areas, scalar const_coeff = 1.0,
-                             CubicSpline* c_spline = HERMES_DEFAULT_SPLINE, 
+    DefaultResidualDiffusion(int i, Hermes::vector<std::string> areas,
+                             HermesFunction* coeff = HERMES_ONE,
                              GeomType gt = HERMES_PLANAR);
 
 Default volumetric vector form
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The last line that we did not cover is::
+The last default weak form used in the CustomWeakFormPoisson class above is
 
-    add_vector_form(new DefaultVectorFormVol(0, HERMES_ANY, -vol_heat_src));
+::
 
-which adds to the residual weak form the integral
+    add_vector_form(new DefaultVectorFormVol(0, HERMES_ANY, c));
+
+It adds to the residual weak form the integral
 
 .. math ::
 
-    - \int_{\Omega} C_{src} v \, \mbox{d}x \mbox{d}y
+    \int_{\Omega} c v \, \mbox{d}x \mbox{d}y
 
-and thus it completes :eq:`poissonweak01b`.
+and thus it completes :eq:`poissonweak01b`. The constructors of this class
+are::
+
+    DefaultVectorFormVol(int i = 0, std::string area = HERMES_ANY,
+                         HermesFunction* coeff = HERMES_ONE,
+                         GeomType gt = HERMES_PLANAR);
+
+and
+
+::
+
+    DefaultVectorFormVol(int i, Hermes::vector<std::string> areas,
+                         HermesFunction* coeff = HERMES_ONE,
+                         GeomType gt = HERMES_PLANAR);
+
 
 Loading the mesh
 ~~~~~~~~~~~~~~~~
@@ -261,7 +315,8 @@ Initializing the weak formulation
 Next, an instance of the corresponding weak form class is created::
 
     // Initialize the weak formulation.
-    CustomWeakFormPoisson wf("Aluminum", LAMBDA_AL, "Copper", LAMBDA_CU, VOLUME_HEAT_SRC);
+    CustomWeakFormPoisson wf("Aluminum", new HermesFunction(LAMBDA_AL), "Copper", 
+                             new HermesFunction(LAMBDA_CU), new HermesFunction(-VOLUME_HEAT_SRC));
 
 Setting constant Dirichlet boundary conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -436,6 +491,9 @@ where the approximation is continuous, try to move from HERMES_EPS_NORMAL to
 HERMES_EPS_HIGH. If the interval of solution values is very small compared to 
 the solution magnitude, such as if the solution values lie in the interval 
 $(50, 50.5)$, then you may need HERMES_EPS_VERYHIGH.
+
+Before pressing 's' to save the image, make sure to press 'h' to render 
+high-quality image.
 
 Visualization of derivatives
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

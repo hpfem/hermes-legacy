@@ -5,9 +5,9 @@
 class CustomWeakFormPoissonNewton : public WeakForm
 {
 public:
-  CustomWeakFormPoissonNewton(std::string mat_al, double lambda_al,
-                              std::string mat_cu, double lambda_cu,
-                              double vol_heat_src, std::string bdy_heat_flux,
+  CustomWeakFormPoissonNewton(std::string mat_al, HermesFunction* lambda_al,
+                              std::string mat_cu, HermesFunction* lambda_cu,
+                              HermesFunction* vol_src_term, std::string bdy_heat_flux,
                               double alpha, double t_exterior);
 };
 

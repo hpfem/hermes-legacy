@@ -145,7 +145,7 @@ enum ProjNormType
 
 // Functions.
 // (In weak forms, NULL function is translated into a constant function with value 1.0.)
-#define HERMES_DEFAULT_FUNCTION    NULL
+#define HERMES_ONE    NULL
 
 #ifdef HERMES_COMMON_COMPLEX
 

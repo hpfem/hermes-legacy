@@ -47,7 +47,9 @@ int main(int argc, char* argv[])
   for (int i=0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Initialize the weak formulation.
-  CustomWeakFormPoissonNewton wf("Aluminum", LAMBDA_AL, "Copper", LAMBDA_CU, VOLUME_HEAT_SRC,
+  CustomWeakFormPoissonNewton wf("Aluminum", new HermesFunction(LAMBDA_AL), 
+                                 "Copper", new HermesFunction(LAMBDA_CU), 
+                                 new HermesFunction(-VOLUME_HEAT_SRC),
                                   "Outer", ALPHA, T_EXTERIOR);
   
   // Initialize boundary conditions.

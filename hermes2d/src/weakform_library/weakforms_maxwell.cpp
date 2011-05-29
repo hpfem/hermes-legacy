@@ -8,8 +8,8 @@ namespace WeakFormsMaxwell {
     : WeakForm::MatrixFormVol(i, j, area, sym), idx_j(j), coeff(coeff), gt(gt),
     order_increase(order_increase) 
   { 
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
   DefaultJacobianMagnetostatics::DefaultJacobianMagnetostatics(int i, int j, Hermes::vector<std::string> areas,
 							       HermesFunction* coeff,
@@ -18,8 +18,8 @@ namespace WeakFormsMaxwell {
     : WeakForm::MatrixFormVol(i, j, areas, sym), idx_j(j), coeff(coeff), gt(gt),
     order_increase(order_increase) 
   { 
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   scalar DefaultJacobianMagnetostatics::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
@@ -87,8 +87,8 @@ namespace WeakFormsMaxwell {
     : WeakForm::VectorFormVol(i, area), idx_i(i), coeff(coeff),
     gt(gt), order_increase(order_increase) 
   { 
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   DefaultResidualMagnetostatics::DefaultResidualMagnetostatics(int i, Hermes::vector<std::string> areas,
@@ -97,8 +97,8 @@ namespace WeakFormsMaxwell {
     : WeakForm::VectorFormVol(i, areas), idx_i(i), coeff(coeff), gt(gt),
     order_increase(order_increase) 
   { 
-    // If coeff is HERMES_DEFAULT_FUNCTION, initialize it to be constant 1.0.
-    if (coeff == HERMES_DEFAULT_FUNCTION) this->coeff = new HermesFunction(1.0);
+    // If coeff is HERMES_ONE, initialize it to be constant 1.0.
+    if (coeff == HERMES_ONE) this->coeff = new HermesFunction(1.0);
   }
 
   scalar DefaultResidualMagnetostatics::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,

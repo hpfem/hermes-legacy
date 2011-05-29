@@ -66,11 +66,12 @@ has the constructors
 
 ::
 
-      DefaultVectorFormSurf(int i, std::string area = HERMES_ANY, scalar const_coeff = 1.0,
-                            DefaultFunction* f_coeff = HERMES_DEFAULT_FUNCTION,
+      DefaultVectorFormSurf(int i = 0, std::string area = HERMES_ANY,
+                            HermesFunction* coeff = HERMES_ONE,
                             GeomType gt = HERMES_PLANAR);
-      DefaultVectorFormSurf(int i, Hermes::vector<std::string> areas, scalar const_coeff = 1.0,
-                            DefaultFunction* f_coeff = HERMES_DEFAULT_FUNCTION,
+
+      DefaultVectorFormSurf(int i, Hermes::vector<std::string> areas,
+                            HermesFunction* coeff = HERMES_ONE,
                             GeomType gt = HERMES_PLANAR);
 
 The header of the custom form CustomWeakFormPoissonNeumann is defined in 
@@ -79,18 +80,18 @@ The header of the custom form CustomWeakFormPoissonNeumann is defined in
     class CustomWeakFormPoissonNeumann : public WeakForm
     {
     public:
-      CustomWeakFormPoissonNeumann(std::string mat_al, double lambda_al,
-                                   std::string mat_cu, double lambda_cu,
-                                   double vol_heat_src, std::string bdy_heat_flux,
-                                   double heat_flux);
+      CustomWeakFormPoissonNeumann(std::string mat_al, HermesFunction* lambda_al,
+                                   std::string mat_cu, HermesFunction* lambda_cu,
+                                   HermesFunction* vol_src_term, std::string bdy_heat_flux,
+                                   HermesFunction* surf_src_term);
     };
 
 and its constructor in `definitions.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P01-linear/05-bc-neumann/definitions.cpp>`_::
 
-    CustomWeakFormPoissonNeumann::CustomWeakFormPoissonNeumann(std::string mat_al, double lambda_al,
-                                                               std::string mat_cu, double lambda_cu,
-                                                               double vol_heat_src, std::string bdy_heat_flux,
-                                                               double heat_flux) : WeakForm(1)
+    CustomWeakFormPoissonNeumann::CustomWeakFormPoissonNeumann(std::string mat_al, HermesFunction* lambda_al,
+                                                               std::string mat_cu, HermesFunction* lambda_cu,
+                                                               HermesFunction* vol_src_term, std::string bdy_heat_flux,
+                                                               HermesFunction* surf_src_term) : WeakForm(1)
     {
       // Jacobian forms - volumetric.
       add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_al, lambda_al));
@@ -99,10 +100,10 @@ and its constructor in `definitions.cpp <http://git.hpfem.org/hermes.git/blob/HE
       // Residual forms - volumetric.
       add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_al, lambda_al));
       add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_cu, lambda_cu));
-      add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, -vol_heat_src));
+      add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, vol_src_term));
 
       // Residual forms - surface.
-      add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(0, bdy_heat_flux, -heat_flux));
+      add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(0, bdy_heat_flux, surf_src_term));
     };
 
 Sample results

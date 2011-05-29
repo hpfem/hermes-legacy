@@ -28,10 +28,10 @@ namespace WeakFormsMaxwell {
   {
   public:
     DefaultJacobianMagnetostatics(int i, int j, std::string area = HERMES_ANY,
-      HermesFunction* coeff = HERMES_DEFAULT_FUNCTION, SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR,
+      HermesFunction* coeff = HERMES_ONE, SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR,
       int order_increase = 3);
     DefaultJacobianMagnetostatics(int i, int j, Hermes::vector<std::string> areas,
-      HermesFunction* coeff = HERMES_DEFAULT_FUNCTION, 
+      HermesFunction* coeff = HERMES_ONE, 
       SymFlag sym = HERMES_NONSYM, GeomType gt = HERMES_PLANAR, int order_increase = 3);
 
     virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
@@ -54,11 +54,11 @@ namespace WeakFormsMaxwell {
   {
   public:
     DefaultResidualMagnetostatics(int i, std::string area = HERMES_ANY,
-				  HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+				  HermesFunction* coeff = HERMES_ONE,
                                   GeomType gt = HERMES_PLANAR,
                                   int order_increase = 3);
     DefaultResidualMagnetostatics(int i, Hermes::vector<std::string> areas,
-                                  HermesFunction* coeff = HERMES_DEFAULT_FUNCTION,
+                                  HermesFunction* coeff = HERMES_ONE,
                                   GeomType gt = HERMES_PLANAR, int order_increase = 3);
 
     virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,

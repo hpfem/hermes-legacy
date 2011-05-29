@@ -5,10 +5,10 @@
 class CustomWeakFormPoissonNeumann : public WeakForm
 {
 public:
-  CustomWeakFormPoissonNeumann(std::string mat_al, double lambda_al,
-                               std::string mat_cu, double lambda_cu,
-                               double vol_heat_src, std::string bdy_heat_flux,
-                               double heat_flux);
+  CustomWeakFormPoissonNeumann(std::string mat_al, HermesFunction* lambda_al,
+                               std::string mat_cu, HermesFunction* lambda_cu,
+                               HermesFunction* vol_src_term, std::string bdy_heat_flux,
+                               HermesFunction* surf_src_term);
 };
 
 /* Custom non-constant Dirichlet condition */
