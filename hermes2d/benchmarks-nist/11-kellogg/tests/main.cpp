@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
   CustomExactSolution exact(&mesh, SIGMA, TAU, RHO);
 
   // Initialize the weak formulation.
-  CustomWeakFormPoisson wf("0", R, "1");
+  CustomWeakFormPoisson wf("Mat_0", R, "Mat_1");
 
   // Initialize boundary conditions
   DefaultEssentialBCNonConst bc("Bdy", &exact);
