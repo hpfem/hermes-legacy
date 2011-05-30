@@ -5,10 +5,10 @@
 
 using namespace RefinementSelectors;
 
-//  This example shows how to use a nonlinearity that is given
-//  via an analytic expression (as a function). 
+//  This example solves the same nonlinear problem as the previous
+//  one but now using the Newton's method.
 //
-//  PDE: stationary heat transfer equation with nonlinear thermal
+//  PDE: Stationary heat transfer equation with nonlinear thermal
 //       conductivity, - div[lambda(u) grad u] + src(x, y) = 0.
 //
 //  Nonlinearity: lambda(u) = 1 + pow(u, alpha).

@@ -1,8 +1,8 @@
-General Initial Condition (03-newton-2)
----------------------------------------
+Newton's Method with Spline Nonlinearity (02-newton-spline)
+-----------------------------------------------------------
 
 **Git reference:** Tutorial example `03-newton-2 
-<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P02-nonlinear/03-newton-2>`_.
+<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P02-nonlinear/03-newton-spline>`_.
 
 Model problem
 ~~~~~~~~~~~~~
@@ -76,7 +76,7 @@ Sample results
 
 The following figure shows the $H^1$-projection of the initial condition init_cond():
 
-.. image:: 03-newton-2/proj-h1.png
+.. image:: 03-newton-spline/proj-h1.png
    :align: center
    :width: 600
    :height: 350
@@ -84,7 +84,7 @@ The following figure shows the $H^1$-projection of the initial condition init_co
 
 The converged solution looks as follows:
 
-.. image:: 03-newton-2/solution.png
+.. image:: 03-newton-spline/solution.png
    :align: center
    :width: 600
    :height: 350

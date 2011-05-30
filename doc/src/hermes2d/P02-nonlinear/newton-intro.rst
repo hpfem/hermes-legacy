@@ -1,5 +1,5 @@
-Newton's Method
----------------
+Introduction to Newton's Method
+-------------------------------
 
 The Newton's method is more powerful but also more 
 demanding than the Picard's method, and therefore 

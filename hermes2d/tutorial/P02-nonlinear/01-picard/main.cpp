@@ -7,8 +7,8 @@ using namespace RefinementSelectors;
 
 //  This example uses the Picard's method to solve a nonlinear problem.
 //
-//  PDE: stationary heat transfer equation with nonlinear thermal
-//  conductivity, -div[lambda(u)grad u] + src(x, y) = 0.
+//  PDE: Stationary heat transfer equation with nonlinear thermal
+//  conductivity, -div[lambda(u) grad u] + src(x, y) = 0.
 //
 //  Nonlinearity: lambda(u) = 1 + pow(u, 4).
 //

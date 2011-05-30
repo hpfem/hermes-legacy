@@ -32,9 +32,8 @@ public:
 
 /* Weak forms */
 
-// NOTE: The linear problem in the Picard's method is 
-//       solved using the Newton's method, but this is 
-//       not a Newton's method.
+// NOTE: The linear problem in each step of the Picard's 
+//       method is solved using the Newton's method.
 
 class CustomWeakFormPicard : public WeakForm
 {
@@ -42,12 +41,12 @@ public:
   CustomWeakFormPicard(Solution* prev_iter_sln, HermesFunction* lambda, HermesFunction* f) 
     : WeakForm(1)
   {
-    // Jacobian.
+    // Jacobian (custom because of the external function).
     CustomJacobian* matrix_form = new CustomJacobian(0, 0, lambda);
     matrix_form->ext.push_back(prev_iter_sln);
     add_matrix_form(matrix_form);
 
-    // Residual.
+    // Residual (custom because of the external function).
     CustomResidual* vector_form = new CustomResidual(0, lambda, f);
     vector_form->ext.push_back(prev_iter_sln);
     add_vector_form(vector_form);

@@ -1,8 +1,8 @@
-Constant Initial Condition (02-newton-1)
-----------------------------------------
+Newton's Method with Analytic Nonlinearity (02-newton-analytic)
+---------------------------------------------------------------
 
 **Git reference:** Tutorial example `02-newton-1 
-<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P02-nonlinear/02-newton-1>`_.
+<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P02-nonlinear/02-newton-analytic>`_.
 
 Model problem
 ~~~~~~~~~~~~~

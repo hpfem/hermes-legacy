@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
     Adapt* adaptivity = new Adapt(&space);
     double err_est_rel = adaptivity->calc_err_est(&sln, &ref_sln) * 100;
 
-    // Calculate exact error,
+    // Calculate exact error.
     bool solutions_for_adapt = false;
     double err_exact_rel = adaptivity->calc_err_exact(&sln, &sln_exact, solutions_for_adapt) * 100;
 
