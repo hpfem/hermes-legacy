@@ -209,11 +209,11 @@ public:
   CustomWeakFormScreen() : WeakForm(1) 
   {
     // Jacobian.
-    add_matrix_form(new WeakFormsHcurl::DefaultJacobianCurlCurl(0, 0, HERMES_ANY, new HermesFunction(1.0)));
+    add_matrix_form(new WeakFormsHcurl::DefaultJacobianCurlCurl(0, 0));
     add_matrix_form(new WeakFormsHcurl::DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(-1.0)));
 
     // Residual.
-    add_vector_form(new WeakFormsHcurl::DefaultResidualCurlCurl(0, HERMES_ANY, new HermesFunction(1.0)));
+    add_vector_form(new WeakFormsHcurl::DefaultResidualCurlCurl(0));
     add_vector_form(new WeakFormsHcurl::DefaultResidualVol(0, HERMES_ANY, new HermesFunction(-1.0)));
   };
 };

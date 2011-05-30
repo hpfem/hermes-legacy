@@ -67,8 +67,6 @@ const double k = 1.0;
 
 #include "definitions.cpp"
 
-const std::string BDY = "Perfect conductor";
-
 int main(int argc, char* argv[])
 {
   // Instantiate a class with global functions.
