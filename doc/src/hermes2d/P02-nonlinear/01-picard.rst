@@ -20,7 +20,13 @@ We solve a nonlinear equation
 
 .. math::
 
-    -\nabla \cdot (\lambda(u)\nabla u) = f(x,y), \ \ \ u = u_D \ \mbox{on}\ \partial \Omega.
+    -\nabla \cdot (\lambda(u)\nabla u) = f(x,y), \ \ \ u = u_D \ \mbox{on}\ \partial \Omega
+
+where 
+
+.. math::
+
+    u_D(x, y) = (x+10)(y+10)/100 \ \ \ \mbox{on } \partial \Omega.
 
 One possible interpretation of this equation is stationary heat transfer where the thermal
 conductivity $\lambda$ depends on the temperature $u$, and $f(x,y)$ are heat sources/losses.
@@ -28,8 +34,9 @@ Our domain is a square $\Omega = (-10,10)^2$, $f(x,y) = 1$, and the nonlinearity
 
 .. math::
 
-    \lambda(u) = 1 + u^\alpha, \ \ \ \alpha = 4.
+    \lambda(u) = 1 + u^\alpha
 
+where $\alpha$ is an even nonnegative integer. We will use $\alpha = 4$. 
 Recall that $\lambda$ must be entirely positive or entirely negative for the problem to be solvable
 according to the theory. The linearized equation has the form 
 
