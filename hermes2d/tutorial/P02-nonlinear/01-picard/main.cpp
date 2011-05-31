@@ -24,7 +24,7 @@ const int P_INIT = 2;                             // Initial polynomial degree.
 const int INIT_GLOB_REF_NUM = 3;                  // Number of initial uniform mesh refinements.
 const int INIT_BDY_REF_NUM = 5;                   // Number of initial refinements towards boundary.
 const double PICARD_TOL = 1e-6;                   // Stopping criterion for the Picard's method.
-const int PICARD_MAX_ITER = 1000;                 // Maximum allowed number of Picard iterations.
+const int PICARD_MAX_ITER = 1000;                 // Maximum allowed number of Picard's iterations.
 const double INIT_COND_CONST = 3.0;               // Constant initial condition.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
   H1Space space(&mesh, &bcs, P_INIT);
   int ndof = Space::get_num_dofs(&space);
 
-  // Initialize previous iteration solution for the Picard method.
+  // Initialize previous iteration solution for the Picard's method.
   Solution sln_prev_iter(&mesh, INIT_COND_CONST);
 
   // Initialize the weak formulation.
