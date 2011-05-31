@@ -1,7 +1,5 @@
 #include "definitions.h"
 
-/* Nonlinearity lambda(u) = pow(u, alpha) */
-
 CustomNonlinearity::CustomNonlinearity(double alpha): HermesFunction()
 {
   this->is_const = false;
@@ -15,15 +13,8 @@ double CustomNonlinearity::value(double u) const
 
 Ord CustomNonlinearity::value(Ord u) const
 {
-  // If alpha is not an integer, then the function
-  // is non-polynomial. 
-  // NOTE: Setting Ord to 10 is safe but costly,
-  // one could save here by looking at special cases 
-  // of alpha. 
   return Ord(10);
 }
-
-/* Weak forms */
 
 CustomWeakFormPicard::CustomWeakFormPicard(Solution* prev_iter_sln, HermesFunction* lambda, HermesFunction* f) 
                     : WeakForm(1)
@@ -39,7 +30,29 @@ CustomWeakFormPicard::CustomWeakFormPicard(Solution* prev_iter_sln, HermesFuncti
   add_vector_form(vector_form);
 }
 
-/* Essential boundary conditions */
+scalar CustomWeakFormPicard::CustomJacobian::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
+                                                   Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const
+{
+  scalar result = 0;
+  for (int i = 0; i < n; i++) 
+  {
+    result += wt[i] * lambda->value(ext->fn[0]->val[i]) 
+                    * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]);
+  }
+  return result;
+}
+
+Ord CustomWeakFormPicard::CustomJacobian::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v,
+                                              Geom<Ord> *e, ExtData<Ord> *ext) const 
+{
+  Ord result = 0;
+  for (int i = 0; i < n; i++) 
+  {
+    result += wt[i] * lambda->value(ext->fn[0]->val[i]) 
+                    * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]);
+  }
+  return result;
+}
 
 double CustomEssentialBCNonConst::value(double x, double y, double n_x, double n_y, 
                                         double t_x, double t_y) const

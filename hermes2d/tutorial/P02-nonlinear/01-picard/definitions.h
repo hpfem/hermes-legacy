@@ -34,28 +34,10 @@ private:
     }
 
     virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
-                         Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
-    {
-      scalar result = 0;
-      for (int i = 0; i < n; i++) 
-      {
-        result += wt[i] * lambda->value(ext->fn[0]->val[i]) 
-                        * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]);
-      }
-      return result;
-    }
+                         Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const;
 
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v,
-                    Geom<Ord> *e, ExtData<Ord> *ext) const 
-    {
-      Ord result = 0;
-      for (int i = 0; i < n; i++) 
-      {
-        result += wt[i] * lambda->value(ext->fn[0]->val[i]) 
-                        * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]);
-      }
-      return result;
-    }
+                    Geom<Ord> *e, ExtData<Ord> *ext) const;
     
     protected:
       HermesFunction* lambda;
