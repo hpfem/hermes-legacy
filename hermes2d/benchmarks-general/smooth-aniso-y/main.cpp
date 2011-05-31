@@ -1,10 +1,9 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 
 using namespace RefinementSelectors;
 
-//
 //  This example shows that it makes sense to use anisotropic polynomial
 //  degrees in quadrilateral elements. The exact solution to this Poisson
 //  problem is u(x,y) = sin(y), defined in the square (0, pi)x(0, pi).
@@ -49,9 +48,6 @@ const int NDOF_STOP = 60000;                      // Adaptivity process stops wh
                                                   // over this limit. This is to prevent h-adaptivity to go on forever.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
-
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {
