@@ -1,7 +1,5 @@
 #include "definitions.h"
 
-
-
 /* Exact solution */
 
 scalar Fn(double u)
