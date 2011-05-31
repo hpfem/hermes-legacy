@@ -1,8 +1,6 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -62,15 +60,6 @@ const int NDOF_STOP = 50000;                      // Adaptivity process stops wh
                                                   // over this limit. This is to prevent h-adaptivity to go on forever.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
-
-// Problem parameters.
-const double e_0  = 8.8541878176 * 1e-12;
-const double mu_0 = 1.256 * 1e-6;
-const double k = 1.0;
-
-#include "../definitions.cpp"
-
-const std::string BDY = "Perfect conductor";
 
 int main(int argc, char* argv[])
 {

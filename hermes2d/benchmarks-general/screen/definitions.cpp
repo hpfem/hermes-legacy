@@ -1,8 +1,6 @@
-#include "hermes2d.h"
+#include "definitions.h"
 
-/* Fresnel integral */
 
-extern "C" void fresnl( double xxa, double *ssa, double *cca );
 
 /* Exact solution */
 
@@ -163,20 +161,16 @@ scalar exact1(double x, double y, scalar& dx, scalar& dy)
 
 /* Exact solution */
 
-class CustomExactSolution : public ExactSolutionVector
+scalar2 CustomExactSolution::value(double x, double y) const 
 {
-public:
-  CustomExactSolution(Mesh* mesh) : ExactSolutionVector(mesh) {};
-  ~CustomExactSolution() {};
-
-  virtual scalar2 value(double x, double y) const {
     scalar dx, dy;
     scalar u0 = exact0(x, y, dx, dy);
     scalar u1 = exact1(x, y, dx, dy);
     return scalar2(u0, u1);
-  };
+}
 
-  virtual void derivatives (double x, double y, scalar2& dx, scalar2& dy) const {
+void CustomExactSolution::derivatives (double x, double y, scalar2& dx, scalar2& dy) const 
+{
     scalar Hr = der_Hr(x,y);
     scalar Ht = der_Ht(x,y);
     scalar Hrr = der_Hrr(x,y);
@@ -194,26 +188,22 @@ public:
     dx.val[0] = 0.0;
     dy.val[0] = -i * (( Hrr * y/r + Hrt *   x/(r*r))  * y/r     + Hr * (x*x)/(r*r*r) +
                      (Htr * y/r + Htt *   x/(r*r))  * x/(r*r) + Ht * (-2.0*x*y/(r*r*r*r))); 
-  };
+}
   
-  virtual Ord ord(Ord x, Ord y) const {
+Ord CustomExactSolution::ord(Ord x, Ord y) const 
+{
     return Ord(10);
-  } 
-};
+} 
 
 /* Weak forms */
 
-class CustomWeakFormScreen : public WeakForm
+CustomWeakFormScreen::CustomWeakFormScreen() : WeakForm(1) 
 {
-public:
-  CustomWeakFormScreen() : WeakForm(1) 
-  {
-    // Jacobian.
-    add_matrix_form(new WeakFormsHcurl::DefaultJacobianCurlCurl(0, 0, HERMES_ANY, new HermesFunction(1.0)));
-    add_matrix_form(new WeakFormsHcurl::DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(-1.0)));
+  // Jacobian.
+  add_matrix_form(new WeakFormsHcurl::DefaultJacobianCurlCurl(0, 0, HERMES_ANY, new HermesFunction(1.0)));
+  add_matrix_form(new WeakFormsHcurl::DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(-1.0)));
 
-    // Residual.
-    add_vector_form(new WeakFormsHcurl::DefaultResidualCurlCurl(0, HERMES_ANY, new HermesFunction(1.0)));
-    add_vector_form(new WeakFormsHcurl::DefaultResidualVol(0, HERMES_ANY, new HermesFunction(-1.0)));
-  };
-};
+  // Residual.
+  add_vector_form(new WeakFormsHcurl::DefaultResidualCurlCurl(0, HERMES_ANY, new HermesFunction(1.0)));
+  add_vector_form(new WeakFormsHcurl::DefaultResidualVol(0, HERMES_ANY, new HermesFunction(-1.0)));
+}
