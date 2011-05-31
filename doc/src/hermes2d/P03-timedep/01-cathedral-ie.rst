@@ -1,15 +1,14 @@
-Time-Dependent Problems (01-cathedral-ie)
------------------------------------------
+Using Implicit Euler Method (01-cathedral-ie)
+---------------------------------------------
 
 **Git reference:** Tutorial example `01-cathedral-ie <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P03-timedep/01-cathedral-ie>`_. 
 
 Model problem
 ~~~~~~~~~~~~~
 
-This section describes the implementation of a simple time-dependent
-heat transfer model that describes, in a naive approximation, how the St. Vitus 
-cathedral in Prague responds to changes in the surrounding air temperature
-during one 24-hour cycle. The geometry is shown below:
+This section describes the implementation of the implicit Euler method. As the underlying model 
+we use a naive approximation of how the St. Vitus cathedral in Prague responds to changes in 
+the surrounding air temperature during one 24-hour cycle. The geometry is shown below:
 
 .. image:: 01-cathedral-ie/vitus1.png
    :align: center
@@ -17,7 +16,7 @@ during one 24-hour cycle. The geometry is shown below:
    :height: 500
    :alt: Model geometry and temperature distribution after 24 hours.
 
-We will solve the standard heat transfer equation
+We assume the standard heat transfer equation
 
 .. math::
     :label: eqvit1
@@ -57,8 +56,8 @@ form
 
      T(x,y,0) = T_{init}(x,y) \ \ \ \mbox{in} \ \Omega.
 
-For simplicity we will use the implicit Euler method with a constant
-time step $\tau$, which transforms equation :eq:`eqvit1` into
+Replacing in :eq:`eqvit1` the temporal derivative with the backward time difference, 
+we obtain
 
 .. math::
 
@@ -67,157 +66,158 @@ time step $\tau$, which transforms equation :eq:`eqvit1` into
 Weak formulation
 ~~~~~~~~~~~~~~~~
 
-The corresponding weak formulation is
+The corresponding weak formulation reads
 
 .. math::
 
-     \int_{\Omega} c \varrho\frac{T^{n+1}}{\tau}v + \int_{\Omega} \lambda \nabla T^{n+1}\cdot \nabla v + \int_{\Gamma_{air}} \alpha \lambda T^{n+1}v = \int_{\Omega} c \varrho\frac{T^{n}}{\tau}v + \int_{\Gamma_{air}} \alpha \lambda T_{ext}(t^{n+1})v.
+     \int_{\Omega} c \varrho\frac{T^{n+1} - T^n}{\tau}v + \int_{\Omega} \lambda \nabla T^{n+1}\cdot \nabla v + \int_{\Gamma_{air}} \alpha \lambda T^{n+1}v - \int_{\Gamma_{air}} \alpha \lambda T_{ext}(t^{n+1})v = 0.
 
-In this example we use string boundary markers::
+Defining weak forms
+~~~~~~~~~~~~~~~~~~~
 
-    // Boundary markers.
-    const std::string BDY_GROUND = "Boundary ground";
-    const std::string BDY_AIR = "Boundary air";
+The weak formulation is a combination of default and custom weak forms::
 
-Boundary condition types are defined using the BCTypes class::
-
-    // Enter boundary markers.
-    BCTypes bc_types;
-    bc_types.add_bc_dirichlet(BDY_GROUND);
-    bc_types.add_bc_newton(BDY_AIR);
-
-Values for Dirichlet boundary conditions are set via the BCValues class::
-
-    // Enter Dirichlet boundary values.
-    BCValues bc_values;
-    bc_values.add_const(BDY_GROUND, TEMP_INIT);
-
-Then the space for the temperature $T$ is set up::
-
-    // Initialize an H1 space with default shepeset.
-    H1Space space(&mesh, bc_types, essential_bc_values, P_INIT);
-    int ndof = Space::get_num_dofs(&space);
-    info("ndof = %d.", ndof);
-
-Defining weak forms and accessing external functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Bilinear and linear forms are defined as follows::
-
-    template<typename Real, typename Scalar>
-    Scalar bilinear_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+    class CustomWeakFormHeatRK1 : public WeakForm
     {
-      return HEATCAP * RHO * int_u_v<Real, Scalar>(n, wt, u, v) / TAU +
-             LAMBDA * int_grad_u_grad_v<Real, Scalar>(n, wt, u, v);
-    }
-  
-    template<typename Real, typename Scalar>
-    Scalar linear_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      Func<Real> *temp_prev = ext->fn[0];
-      return HEATCAP * RHO * int_u_v<Real, Scalar>(n, wt, temp_prev, v) / TAU;
-    }
-  
-    template<typename Real, typename Scalar>
-    Scalar bilinear_form_surf(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      return LAMBDA * ALPHA * int_u_v<Real, Scalar>(n, wt, u, v);
-    }
-  
-    template<typename Real, typename Scalar>
-    Scalar linear_form_surf(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      return LAMBDA * ALPHA * temp_ext(TIME) * int_v<Real, Scalar>(n, wt, v);
-    }
+    public:
+      CustomWeakFormHeatRK1(std::string bdy_air, double alpha, double lambda, double heatcap, double rho,
+			    double time_step, double* current_time_ptr, double temp_init, double t_final,
+			    Solution* prev_time_sln) : WeakForm(1)
+      {
+	/* Jacobian */
+	// Contribution of the time derivative term.
+	add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(1.0 / time_step)));
+	// Contribution of the diffusion term.
+	add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, HERMES_ANY, new HermesFunction(lambda / (rho * heatcap))));
+	// Contribution of the Newton boundary condition.
+	add_matrix_form_surf(new WeakFormsH1::DefaultMatrixFormSurf(0, 0, bdy_air, new HermesFunction(alpha / (rho * heatcap))));
 
-Notice how the previous time level temperature is accessed:
+	/* Residual */
+	// Contribution of the time derivative term.
+	add_vector_form(new WeakFormsH1::DefaultResidualVol(0, HERMES_ANY, new HermesFunction(1.0 / time_step)));
+	// Contribution of the diffusion term.
+	add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, HERMES_ANY, new HermesFunction(lambda / (rho * heatcap))));
+	CustomVectorFormVol* vec_form_vol = new CustomVectorFormVol(0, time_step);
+	vec_form_vol->ext.push_back(prev_time_sln);
+	add_vector_form(vec_form_vol);
+	// Contribution of the Newton boundary condition.
+	add_vector_form_surf(new WeakFormsH1::DefaultResidualSurf(0, bdy_air, new HermesFunction(alpha / (rho * heatcap))));
+	// Contribution of the Newton boundary condition.
+	add_vector_form_surf(new CustomVectorFormSurf(0, bdy_air, alpha, rho, heatcap,
+			     current_time_ptr, temp_init, t_final));
+      };
 
-::
+    private:
+      // This form is custom since it contains previous time-level solution.
+      class CustomVectorFormVol : public WeakForm::VectorFormVol
+      {
+      public:
+	CustomVectorFormVol(int i, double time_step)
+	  : WeakForm::VectorFormVol(i), time_step(time_step) 
+	{ 
+	}
 
-      Func<Real> *temp_prev = ext->fn[0];
-    
-Setting initial condition
-~~~~~~~~~~~~~~~~~~~~~~~~~ 
+	virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+	{
+	  Func<double>* temp_prev_time = ext->fn[0];
+	  return -int_u_v<double, scalar>(n, wt, temp_prev_time, v) / time_step;
+	}
 
-Next we need to initialize the previous time level solution tsln with the initial condition $T_{init}$.
-Besides holding the finite element solution, the Solution class
-can be forced to return zero, to return a constant, or to return an arbitrary function
-using the methods set_zero(), set_const() and set_exact(), respectively.
-Here we simply call set_const() and supply the initial temperature::
+	virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
+	{
+	  Func<Ord>* temp_prev_time = ext->fn[0];
+	  return -int_u_v<Ord, Ord>(n, wt, temp_prev_time, v) / time_step;
 
-    // Set constant initial condition.
-    Solution tsln(&mesh, TEMP_INIT);
+	}
 
-Registering external functions in weak forms
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	double time_step;
+      };
 
-The weak forms are registered as follows::
+      // This form is custom since it contains time-dependent exterior temperature.
+      class CustomVectorFormSurf : public WeakForm::VectorFormSurf
+      {
+      public:
+	CustomVectorFormSurf(int i, std::string area, double alpha, double rho, double heatcap,
+				    double* current_time_ptr, double temp_init, double t_final)
+	  : WeakForm::VectorFormSurf(i, area), alpha(alpha), rho(rho), heatcap(heatcap), current_time_ptr(current_time_ptr),
+				     temp_init(temp_init), t_final(t_final) 
+	{ 
+	}
 
-    // Initialize weak formulation.
-    WeakForm wf;
-    wf.add_matrix_form(callback(bilinear_form));
-    wf.add_matrix_form_surf(callback(bilinear_form_surf), BDY_AIR);
-    wf.add_vector_form(callback(linear_form), HERMES_ANY, &tsln);
-    wf.add_vector_form_surf(callback(linear_form_surf), BDY_AIR);
+	virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+	{
+	    return -alpha / (rho * heatcap) * temp_ext(*current_time_ptr + time_step) * int_v<double>(n, wt, v);
+	}
 
-Notice how the previous time level solution 'tsln' is registered. A few lines above
-we saw how it is accessed from inside the weak form. 
+	virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
+	{
+	    return -alpha / (rho * heatcap) * temp_ext(*current_time_ptr + time_step) * int_v<Ord>(n, wt, v);
+	}
 
-Initializing the discrete problem
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	// Time-dependent exterior temperature.
+	template<typename Real>
+	Real temp_ext(Real t) const 
+	{
+	  return temp_init + 10. * sin(2*M_PI*t/t_final);
+	}
 
-Next, the DiscreteProblem class and the matrix solver structures are initialized::
+	double alpha, rho, heatcap, *current_time_ptr, temp_init, t_final;
+      };
+    };
 
-    // Initialize the FE problem.
-    bool is_linear = true;
-    DiscreteProblem dp(&wf, &space, is_linear);
+Passing and accessing previous time level solution
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Notice how previous time level solution is passed into the volumetric vector form::
+
+    vec_form_vol->ext.push_back(prev_time_sln);
+
+and how it is accessed from inside the weak form::
+
+    Func<double> *temp_prev = ext->fn[0];
+
+Reusing LU factorization
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+As this problem is linear, the Jacobian matrix just needs to be constructed once
+at the beginning, and it will not change during the computation. If a sparse
+direct solver is used, also the LU factorization can be reused. This can be 
+set using the method Solver::set_factorization_scheme() as shown below::
 
     // Set up the solver, matrix, and rhs according to the solver selection.
     SparseMatrix* matrix = create_matrix(matrix_solver);
     Vector* rhs = create_vector(matrix_solver);
     Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
+    solver->set_factorization_scheme(HERMES_REUSE_FACTORIZATION_COMPLETELY);
 
-Assembling and the 'rhs_only' flag
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Flag jacobian_changed
+~~~~~~~~~~~~~~~~~~~~~
 
-We are now ready to start the time stepping. Since the stiffness matrix does
-not depend on the solution, it only needs to be assembled once in the first time
-step. For all remaining time steps it will be the same, and we just need to
-re-construct the load vector. This is done via the Boolean variable rhsonly
-which is set to false before the time stepping begins. For completeness, we show 
-the entire time stepping loop below::
+The function solve_newton() contains a parameter jacobian_changed that 
+says whether the Jacobian matrix should be kept from the previous 
+iteration or recalculated. In this case, the Jacobian matrix only 
+needs to be calculated once at the beginning::
 
     // Time stepping:
     int ts = 1;
-    bool rhs_only = false;
+    bool jacobian_changed = true;
     do 
     {
-      info("---- Time step %d, time %3.5f, ext_temp %g", ts, current_time, temp_ext(current_time));
+      info("---- Time step %d, time %3.5f s", ts, current_time);
 
-      // First time assemble both the stiffness matrix and right-hand side vector,
-      // then just the right-hand side vector.
-      if (rhs_only == false) info("Assembling the stiffness matrix and right-hand side vector.");
-      else info("Assembling the right-hand side vector (only).");
-      dp.assemble(matrix, rhs, rhs_only);
-      rhs_only = true;
+      // Perform Newton's iteration.
+      if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs, 
+	  jacobian_changed)) error("Newton's iteration failed.");
+      jacobian_changed = false;
 
-      // Solve the linear system and if successful, obtain the solution.
-      info("Solving the matrix problem.");
-      if(solver->solve()) Solution::vector_to_solution(solver->get_solution(), &space, &tsln);
-      else error ("Matrix solver failed.\n");
+Sample results
+~~~~~~~~~~~~~~
 
-      // Visualize the solution.
-      char title[100];
-      sprintf(title, "Time %3.2f, exterior temperature %3.5f", current_time, temp_ext(current_time));
-      Tview.set_title(title);
-      Tview.show(&tsln);
+Sample temperature distribution is shown below: 
 
-      // Update global time.
-      current_time += time_step;
-
-      // Increase time step counter
-      ts++;
-    }
-    while (current_time < T_FINAL);
+.. image:: 01-cathedral-ie/vitus1.png
+   :align: center
+   :height: 500
+   :alt: sample result
 
 
