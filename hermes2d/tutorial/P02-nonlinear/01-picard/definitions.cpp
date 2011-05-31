@@ -42,7 +42,7 @@ CustomWeakFormPicard::CustomWeakFormPicard(Solution* prev_iter_sln, HermesFuncti
 /* Essential boundary conditions */
 
 double CustomEssentialBCNonConst::value(double x, double y, double n_x, double n_y, 
-                       double t_x, double t_y) const
+                                        double t_x, double t_y) const
 {
   return (x+10) * (y+10) / 100.;
 }
