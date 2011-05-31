@@ -18,8 +18,7 @@ public:
 /* Weak forms */
 
 // NOTE: The linear problem in the Picard's method is 
-//       solved using the Newton's method, but this is 
-//       not a Newton's method.
+//       solved using the Newton's method.
 
 class CustomWeakFormPicard : public WeakForm
 {
