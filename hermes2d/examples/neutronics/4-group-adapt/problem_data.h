@@ -24,6 +24,9 @@ const std::string bdy_symmetry = "symmetry plane";
 
 //////  Physical parameters.  /////////////////////////////////////////////////////////////////
 
+// Number of energy discretization intervals ('groups').
+const unsigned int N_GROUPS = 4;
+
 const MaterialPropertyMap1 D = material_property_map<rank1>
 (
   reflector, row(0.0164)(0.0085)(0.00832)(0.00821)

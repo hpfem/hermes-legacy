@@ -30,9 +30,9 @@ namespace WeakFormsNeutronics
           // Diffusion.
           add_vector_form(new DefaultResidualDiffusion(0, regions[i], new HermesFunction(D_map[i])));
           // Absorption.
-	  add_vector_form(new DefaultResidualVol(0, regions[i], new HermesFunction(Sigma_a_map[i])));
+          add_vector_form(new DefaultResidualVol(0, regions[i], new HermesFunction(Sigma_a_map[i])));
           // Sources.
-	  add_vector_form(new DefaultVectorFormVol(0, regions[i], new HermesFunction(-Q_map[i])));
+          add_vector_form(new DefaultVectorFormVol(0, regions[i], new HermesFunction(-Q_map[i])));
         }
       }
     }
@@ -90,12 +90,93 @@ namespace WeakFormsNeutronics
             (*mrmg_map)[*it].assign(G, c);
         }
         
+        void MaterialPropertyMaps::fill_with(double c, MaterialPropertyMap2 *mrmg_map)
+        {
+          std::set<std::string>::const_iterator it;
+          for (it = materials_list.begin(); it != materials_list.end(); ++it)
+            (*mrmg_map)[*it].assign(G, rank1(G, c));
+        }
+        
+        MaterialPropertyMap1 MaterialPropertyMaps::extract_map2_diagonals(const MaterialPropertyMap2& map2) const
+        {
+          MaterialPropertyMap1 diags;
+          
+          MaterialPropertyMap2::const_iterator map2_it = map2.begin();
+          for ( ; map2_it != map2.end(); ++map2_it)
+          {
+            diags[map2_it->first].reserve(G);
+            for (unsigned int g = 0; g < G; g++)
+              diags[map2_it->first].push_back(map2_it->second[g][g]);    
+          }
+          
+          return diags;
+        }
+        
+        MaterialPropertyMap1 MaterialPropertyMaps::sum_map2_columns(const MaterialPropertyMap2& map2) const
+        {
+          MaterialPropertyMap1 summed;
+          
+          MaterialPropertyMap2::const_iterator map2_it = map2.begin();
+          for ( ; map2_it != map2.end(); ++map2_it)
+          {
+            summed[map2_it->first].reserve(G);
+            for (unsigned int gfrom = 0; gfrom < G; gfrom++)
+            {
+              double sum = 0.0;
+              
+              for (unsigned int gto = 0; gto < G; gto++)
+                sum += map2_it->second[gto][gfrom];
+              
+              summed[map2_it->first].push_back(sum);    
+            }
+          }
+          
+          return summed;
+        }
+        
+        MaterialPropertyMap1 MaterialPropertyMaps::sum_map2_rows(const MaterialPropertyMap2& map2) const
+        {
+          MaterialPropertyMap1 summed;
+          
+          MaterialPropertyMap2::const_iterator map2_it = map2.begin();
+          for ( ; map2_it != map2.end(); ++map2_it)
+          {
+            summed[map2_it->first].reserve(G);
+            for (unsigned int gto = 0; gto < G; gto++)
+            {
+              double sum = 0.0;
+              
+              for (unsigned int gfrom = 0; gfrom < G; gfrom++)
+                sum += map2_it->second[gto][gfrom];
+              
+              summed[map2_it->first].push_back(sum);    
+            }
+          }
+          
+          return summed;
+        }
+        
+        MaterialPropertyMap2 MaterialPropertyMaps::create_map2_by_diagonals(const MaterialPropertyMap1& diags) const 
+        {
+          MaterialPropertyMap2 map2;
+          
+          MaterialPropertyMap1::const_iterator diags_it = diags.begin();
+          for ( ; diags_it != diags.end(); ++diags_it)
+          {
+            map2[diags_it->first].resize(G, rank1(G, 0.0));
+            
+            for (unsigned int g = 0; g < G; g++)
+              map2[diags_it->first][g][g] = diags_it->second[g];
+          }
+          
+          return map2;
+        }
+                
         void MaterialPropertyMaps::validate()
         {       
           using namespace ValidationFunctors;
           
-          if (fission_multigroup_structure.empty())
-            fission_multigroup_structure = bool1(G, true);
+          fission_nonzero_structure = bool1(G, false);
           
           if (chi.empty())
           {
@@ -103,8 +184,22 @@ namespace WeakFormsNeutronics
             MaterialPropertyMap1::iterator it = chi.begin();
             for ( ; it != chi.end(); ++it)
               it->second[0] = 1.0;
-            fission_multigroup_structure = bool1(G, false);
-            fission_multigroup_structure[0] = true;
+            fission_nonzero_structure[0] = true;
+          }
+          else
+          {
+            for (unsigned int g = 0; g < G; g++)
+            {
+              MaterialPropertyMap1::const_iterator it = chi.begin();
+              for ( ; it != chi.end(); ++it)
+              {
+                if (fabs(it->second[g]) > 1e-14)
+                {
+                  fission_nonzero_structure[g] = true;
+                  break;
+                }
+              }
+            }
           }
           
           if (nu.empty() && !nuSigma_f.empty() && !Sigma_f.empty())
@@ -125,6 +220,7 @@ namespace WeakFormsNeutronics
             fill_with(0.0, &nu);
             fill_with(0.0, &chi);
             fill_with(0.0, &Sigma_f);
+            fission_nonzero_structure = bool1(G, false);
           }
           
           if ((nu.size() != Sigma_f.size()) || (nu.size() != chi.size()))
@@ -219,73 +315,18 @@ namespace WeakFormsNeutronics
             }
           }
           
-          os << endl;
-          return os;
+          os << setw(80) << setfill('-') << ' ' << endl << setfill(' ');
+          os << "All-region fission spectrum: ";
+          
+          for (unsigned int g = 0; g < matprop.G; g++)
+            os << matprop.get_fission_nonzero_structure()[g] << ' ';
+          
+          return os << endl;
         }
       }
       
       namespace Diffusion
-      {
-        MaterialPropertyMap1 MaterialPropertyMaps::extract_map2_diagonals(const MaterialPropertyMap2& map2)
-        {
-          MaterialPropertyMap1 diags;
-          
-          MaterialPropertyMap2::const_iterator map2_it = map2.begin();
-          for ( ; map2_it != map2.end(); ++map2_it)
-          {
-            diags[map2_it->first].reserve(G);
-            for (unsigned int g = 0; g < G; g++)
-              diags[map2_it->first].push_back(map2_it->second[g][g]);    
-          }
-          
-          return diags;
-        }
-        
-        MaterialPropertyMap1 MaterialPropertyMaps::sum_map2_columns(const MaterialPropertyMap2& map2)
-        {
-          MaterialPropertyMap1 summed;
-          
-          MaterialPropertyMap2::const_iterator map2_it = map2.begin();
-          for ( ; map2_it != map2.end(); ++map2_it)
-          {
-            summed[map2_it->first].reserve(G);
-            for (unsigned int gfrom = 0; gfrom < G; gfrom++)
-            {
-              double sum = 0.0;
-              
-              for (unsigned int gto = 0; gto < G; gto++)
-                sum += map2_it->second[gto][gfrom];
-              
-              summed[map2_it->first].push_back(sum);    
-            }
-          }
-          
-          return summed;
-        }
-        
-        MaterialPropertyMap2 MaterialPropertyMaps::create_map2_by_diagonals(const MaterialPropertyMap1& diags)
-        {
-          MaterialPropertyMap2 map2;
-          
-          MaterialPropertyMap1::const_iterator diags_it = diags.begin();
-          for ( ; diags_it != diags.end(); ++diags_it)
-          {
-            map2[diags_it->first].resize(G, rank1(G, 0.0));
-            
-            for (unsigned int g = 0; g < G; g++)
-              map2[diags_it->first][g][g] = diags_it->second[g];
-          }
-          
-          return map2;
-        }
-        
-        void MaterialPropertyMaps::fill_with(double c, MaterialPropertyMap2 *mrmg_map)
-        {
-          std::set<std::string>::const_iterator it;
-          for (it = materials_list.begin(); it != materials_list.end(); ++it)
-            (*mrmg_map)[*it].assign(G, rank1(G, c));
-        }
-        
+      {        
         void MaterialPropertyMaps::validate()
         {
           Common::MaterialPropertyMaps::validate();
@@ -353,8 +394,7 @@ namespace WeakFormsNeutronics
           
           // Now, we surely have Sigma_r ...
           
-          if (scattering_multigroup_structure.empty())
-            scattering_multigroup_structure = bool2(G, std::vector<bool>(G, true));
+          scattering_nonzero_structure = bool2(G, std::vector<bool>(G, false));
           
           if (!Sigma_s_given)
           {
@@ -365,21 +405,30 @@ namespace WeakFormsNeutronics
             if (Sigma_t_given)
             {
               Sigma_s = create_map2_by_diagonals(Common::NDArrayMapOp::subtract<rank1>(Sigma_t, Sigma_r));
-              
-              scattering_multigroup_structure = bool2(G, std::vector<bool>(G, false));
-              for (unsigned int gto = 0; gto < G; gto++)
-                for (unsigned int gfrom = 0; gfrom < G; gfrom++)
-                  if (gto == gfrom) 
-                    scattering_multigroup_structure[gto][gfrom] = true;
             }
             else
             {
               warning(W_NO_SCATTERING);
               fill_with(0.0, &Sigma_s);
-              scattering_multigroup_structure = bool2(G, std::vector<bool>(G, false));
             }
             
             Sigma_s_given = true;
+          }
+          
+          for (unsigned int gto = 0; gto < G; gto++)
+          {
+            for (unsigned int gfrom = 0; gfrom < G; gfrom++)
+            {
+              MaterialPropertyMap2::const_iterator Ss_it = Sigma_s.begin();
+              for ( ; Ss_it != Sigma_s.end(); ++Ss_it)
+              {
+                if (fabs(Ss_it->second[gto][gfrom]) > 1e-14)
+                {
+                  scattering_nonzero_structure[gto][gfrom] = true;
+                  break;
+                }
+              }
+            }
           }
           
           // Now, we surely have Sigma_s and Sigma_r, one parameter to go ...
@@ -391,7 +440,7 @@ namespace WeakFormsNeutronics
               for (unsigned int g = 0; g < G; g++)
                 D[Sr_elem->first][g] = 1./(3.*Sr_elem->second[g]);
               
-              D_given = true;
+            D_given = true;
           }
           
           if ((D.size() != Sigma_r.size()) || (D.size() != Sigma_s.size()) || (src_given && D.size() != src.size()))
@@ -486,9 +535,103 @@ namespace WeakFormsNeutronics
             }
           }
           
+          os << setw(80) << setfill('-') << ' ' << endl << setfill(' ');
+          os << "All-region scattering spectrum: " << endl;
+          for (unsigned int gto = 0; gto < matprop.G; gto++)
+          {
+            for (unsigned int gfrom = 0; gfrom < matprop.G; gfrom++)
+              os << setw(10) << matprop.get_scattering_nonzero_structure()[gto][gfrom];
+            os << endl;
+          }
+          
           return os << endl;
         }
-      }
+        
+        TransportCorrectedMaterialPropertyMaps::TransportCorrectedMaterialPropertyMaps( unsigned int G, 
+                                                                                        const MaterialPropertyMap2& Ss_1 )
+          : MaterialPropertyMaps(G)
+        {
+          std::set<std::string> matlist;
+          MaterialPropertyMap2::const_iterator it = Ss_1.begin();
+          for( ; it != Ss_1.end(); ++it)
+            matlist.insert(it->first);
+          
+          set_materials_list(matlist);
+          
+          this->Sigma_s_1_out = sum_map2_columns(Ss_1);
+        }
+        
+        TransportCorrectedMaterialPropertyMaps::TransportCorrectedMaterialPropertyMaps( unsigned int G, 
+                                                                                        const MaterialPropertyMap1& mu_av )
+          : MaterialPropertyMaps(G)
+        {
+          std::set<std::string> matlist;
+          MaterialPropertyMap1::const_iterator it = mu_av.begin();
+          for( ; it != mu_av.end(); ++it)
+            matlist.insert(it->first);
+          
+          set_materials_list(matlist);
+          
+          this->mu_av = mu_av;
+        }
+        
+        TransportCorrectedMaterialPropertyMaps::TransportCorrectedMaterialPropertyMaps( unsigned int G, 
+                                                                                        const MaterialPropertyMap0& mu_av )
+          : MaterialPropertyMaps(G)
+        {
+          std::set<std::string> matlist;
+          MaterialPropertyMap0::const_iterator it = mu_av.begin();
+          for( ; it != mu_av.end(); ++it)
+            matlist.insert(it->first);
+          
+          set_materials_list(matlist);
+          
+          extend_to_multigroup(mu_av, &this->mu_av);
+        }
+
+        TransportCorrectedMaterialPropertyMaps::TransportCorrectedMaterialPropertyMaps( unsigned int G,
+                                                                                        std::set<std::string> mat_list,
+                                                                                        const rank1& mu_av )
+          : MaterialPropertyMaps(G, mat_list)
+        {
+          extend_to_multiregion(mu_av, &this->mu_av);
+        }
+        
+        TransportCorrectedMaterialPropertyMaps::TransportCorrectedMaterialPropertyMaps( unsigned int G,
+                                                                                        std::set<std::string> mat_list,
+                                                                                        const rank0& mu_av )
+          : MaterialPropertyMaps(G, mat_list)
+        {
+          extend_to_multiregion_multigroup(mu_av, &this->mu_av);
+        }
+        
+        void TransportCorrectedMaterialPropertyMaps::validate()
+        {          
+          bool mu_av_given = !mu_av.empty();
+          bool Sigma_s_1_out_given = !Sigma_s_1_out.empty();
+          
+          if (mu_av_given)
+            D = mu_av;
+          else if (Sigma_s_1_out_given)
+            D = Sigma_s_1_out;
+          else
+            error(E_INSUFFICIENT_DATA);
+          
+          MaterialPropertyMaps::validate();
+         
+          if (!Sigma_t.empty())
+            error(E_INSUFFICIENT_DATA);
+          
+          if (!Sigma_s_1_out_given)
+            Sigma_s_1_out = Common::NDArrayMapOp::multiply<rank1>(mu_av, sum_map2_columns(Sigma_s));
+            
+          MaterialPropertyMap1 Sigma_tr = Common::NDArrayMapOp::subtract<rank1>(Sigma_t, Sigma_s_1_out);
+          MaterialPropertyMap1::const_iterator Str_elem = Sigma_tr.begin();
+          for ( ; Str_elem != Sigma_tr.end(); ++Str_elem)
+            for (unsigned int g = 0; g < G; g++)
+              D[Str_elem->first][g] = 1./(3.*Str_elem->second[g]);
+        }
+      }      
     }
     
     namespace ElementaryForms
@@ -583,19 +726,19 @@ namespace WeakFormsNeutronics
           if (geom_type == HERMES_PLANAR) 
           {
             result = D_elem[g] * int_grad_u_ext_grad_v<Real, Scalar>(n, wt, u_ext[g], v) +
-                      Sigma_r_elem[g] * int_u_ext_v<Real, Scalar>(n, wt, u_ext[g], v);
+                     Sigma_r_elem[g] * int_u_ext_v<Real, Scalar>(n, wt, u_ext[g], v);
           }
           else 
           {
             if (geom_type == HERMES_AXISYM_X) 
             {
               result = D_elem[g] * int_y_grad_u_ext_grad_v<Real, Scalar>(n, wt, u_ext[g], v, e) + 
-                        Sigma_r_elem[g] * int_y_u_ext_v<Real, Scalar>(n, wt, u_ext[g], v, e);
+                       Sigma_r_elem[g] * int_y_u_ext_v<Real, Scalar>(n, wt, u_ext[g], v, e);
             }
             else 
             {
               result = D_elem[g] * int_x_grad_u_ext_grad_v<Real, Scalar>(n, wt, u_ext[g], v, e) + 
-                        Sigma_r_elem[g] * int_x_u_ext_v<Real, Scalar>(n, wt, u_ext[g], v, e);
+                       Sigma_r_elem[g] * int_x_u_ext_v<Real, Scalar>(n, wt, u_ext[g], v, e);
             }
           }
           return result;
@@ -605,7 +748,7 @@ namespace WeakFormsNeutronics
         Scalar FissionYield::Jacobian::matrix_form( int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u,
                                                     Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext  ) const 
         {
-          if (!matprop.get_fission_multigroup_structure()[gto])
+          if (!matprop.get_fission_nonzero_structure()[gto])
             return 0.0;
           
           Scalar result = 0;
@@ -628,7 +771,7 @@ namespace WeakFormsNeutronics
         Scalar FissionYield::OuterIterationForm::vector_form( int n, double *wt, Func<Scalar> *u_ext[],
                                                               Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext ) const 
         { 
-          if (!matprop.get_fission_multigroup_structure()[g])
+          if (!matprop.get_fission_nonzero_structure()[g])
             return 0.0;
             
           std::string mat = get_material(e->elem_marker, wf);
@@ -663,7 +806,7 @@ namespace WeakFormsNeutronics
         Scalar FissionYield::Residual::vector_form( int n, double *wt, Func<Scalar> *u_ext[],
                                                     Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext ) const 
         { 
-          if (!matprop.get_fission_multigroup_structure()[gto])
+          if (!matprop.get_fission_nonzero_structure()[gto])
             return 0.0;
           
           Scalar result = 0;
@@ -735,11 +878,11 @@ namespace WeakFormsNeutronics
     {             
       namespace Diffusion
       {   
-        void DefaultWeakFormFixedSource::lhs_init(unsigned int G, const MaterialPropertyMaps& matprop, 
-                                                  GeomType geom_type)
+        void DefaultWeakFormFixedSource::lhs_init(unsigned int G, 
+                                                  const MaterialPropertyMaps& matprop, GeomType geom_type)
         {
-          bool2 Ss_nnz = matprop.get_scattering_multigroup_structure();
-          bool1 chi_nnz = matprop.get_fission_multigroup_structure();
+          bool2 Ss_nnz = matprop.get_scattering_nonzero_structure();
+          bool1 chi_nnz = matprop.get_fission_nonzero_structure();
           
           for (unsigned int gto = 0; gto < G; gto++)
           {
@@ -748,7 +891,7 @@ namespace WeakFormsNeutronics
             
             for (unsigned int gfrom = 0; gfrom < G; gfrom++)
             {
-              if (Ss_nnz[gto][gfrom])
+              if (Ss_nnz[gto][gfrom] && gto != gfrom)
               {
                 add_matrix_form(new Scattering::Jacobian(gto, gfrom, matprop, geom_type));
                 add_vector_form(new Scattering::Residual(gto, gfrom, matprop, geom_type));
@@ -821,7 +964,28 @@ namespace WeakFormsNeutronics
                                                                         double initial_keff_guess, 
                                                                         GeomType geom_type ) : WeakForm(matprop.get_G())
         {      
-          bool2 Ss_nnz = matprop.get_scattering_multigroup_structure();
+          init(matprop, iterates, initial_keff_guess, geom_type);
+        }
+        
+        DefaultWeakFormSourceIteration::DefaultWeakFormSourceIteration( const MaterialPropertyMaps& matprop,
+                                                                        Hermes::vector<Solution*>& iterates,
+                                                                        double initial_keff_guess, 
+                                                                        GeomType geom_type ) : WeakForm(matprop.get_G())
+        {      
+          Hermes::vector<MeshFunction *> iterates_mf;
+          for (unsigned int i = 0; i < iterates.size(); i++)
+            iterates_mf.push_back(static_cast<MeshFunction*>(iterates[i]));
+          
+          init(matprop, iterates_mf, initial_keff_guess, geom_type);
+        }
+        
+        void DefaultWeakFormSourceIteration::init(const MaterialPropertyMaps& matprop,
+                                                  Hermes::vector<MeshFunction*>& iterates, double initial_keff_guess, 
+                                                  GeomType geom_type)
+        {
+          bool2 Ss_nnz = matprop.get_scattering_nonzero_structure();
+          
+          keff = initial_keff_guess;
           
           for (unsigned int gto = 0; gto < matprop.get_G(); gto++)
           {
@@ -830,7 +994,7 @@ namespace WeakFormsNeutronics
             
             for (unsigned int gfrom = 0; gfrom < matprop.get_G(); gfrom++)
             {
-              if (Ss_nnz[gto][gfrom])
+              if (Ss_nnz[gto][gfrom] && gto != gfrom)
               {
                 add_matrix_form(new Scattering::Jacobian(gto, gfrom, matprop, geom_type));
                 add_vector_form(new Scattering::Residual(gto, gfrom, matprop, geom_type));
@@ -846,10 +1010,28 @@ namespace WeakFormsNeutronics
         
         void DefaultWeakFormSourceIteration::update_keff(double new_keff) 
         { 
+          keff = new_keff;
+          
           std::vector<FissionYield::OuterIterationForm*>::iterator it = keff_iteration_forms.begin();
           for ( ; it != keff_iteration_forms.end(); ++it)
             (*it)->update_keff(new_keff); 
         }
+      }
+    }
+    
+    namespace SupportClasses
+    {
+      namespace Common
+      {
+        void SourceFilter::filter_fn(int n, Hermes::vector<scalar*> values, scalar* result)
+        {
+          for (int i = 0; i < n; i++) 
+          {
+            result[i] = 0;
+            for (unsigned int j = 0; j < values.size(); j++)
+              result[i] += nu[j] * Sigma_f[j] * values.at(j)[i];
+          }
+        } 
       }
     }
   }

@@ -3,6 +3,7 @@
 
 #include "weakforms_h1.h"
 #include "../function/forms.h"
+#include "../function/filter.h"
 
 namespace WeakFormsNeutronics
 {
@@ -60,6 +61,7 @@ namespace WeakFormsNeutronics
         
         typedef std::vector<bool > bool1;
         typedef std::vector<std::vector<bool > > bool2;
+        typedef std::vector<std::vector<std::vector<bool > > > bool3;
       }
       
       namespace Messages
@@ -178,6 +180,11 @@ namespace WeakFormsNeutronics
             return ret;
           }
           
+          template <typename NDArrayType>
+          static rank0 subtract_nowarn(rank0 x, rank0 y) {
+            return x - y;
+          }
+          
           public: 
             
             #define for_each_element_in_dimension \
@@ -226,6 +233,17 @@ namespace WeakFormsNeutronics
               
               for_each_element_in_dimension
                 res.push_back( subtract<dim_type>(*dim_iterator_x, *dim_iterator_y) );
+              
+              return res;
+            }
+            
+            template <typename NDArrayType>
+            static NDArrayType subtract_nowarn(const NDArrayType& x, const NDArrayType& y)
+            { 
+              NDArrayType res; res.reserve(x.size());
+              
+              for_each_element_in_dimension
+                res.push_back( subtract_nowarn<dim_type>(*dim_iterator_x, *dim_iterator_y) );
               
               return res;
             }
@@ -285,6 +303,18 @@ namespace WeakFormsNeutronics
               
               return ret;
             }                                                     
+            
+            template <typename T>
+            static std::map<std::string, T> subtract_nowarn(const std::map<std::string, T>& x, 
+                                                            const std::map<std::string, T>& y)
+            {
+              std::map<std::string, T> ret = x;
+              
+              for_each_element_in_map
+                iterator_ret->second = subtract_nowarn<T>(iterator_x->second, iterator_y->second);
+              
+              return ret;
+            }        
                                                      
             #undef for_each_element_in_map                                                     
         };
@@ -303,15 +333,21 @@ namespace WeakFormsNeutronics
             std::set<std::string> materials_list;
             unsigned int G;
             
-            bool1 fission_multigroup_structure;
+            bool1 fission_nonzero_structure;
                   
-            void extend_to_multigroup(const MaterialPropertyMap0& mrsg_map, MaterialPropertyMap1 *mrmg_map);
-            
+            void extend_to_multigroup(const MaterialPropertyMap0& mrsg_map, MaterialPropertyMap1 *mrmg_map);     
             void extend_to_multiregion(const rank1& srmg_array, MaterialPropertyMap1 *mrmg_map);
-            
             void extend_to_multiregion_multigroup(const rank0& srsg_value, MaterialPropertyMap1 *mrmg_map);
             
+            MaterialPropertyMap1 extract_map2_diagonals(const MaterialPropertyMap2& map2) const;
+            
+            MaterialPropertyMap1 sum_map2_columns(const MaterialPropertyMap2& map2) const;
+            MaterialPropertyMap1 sum_map2_rows(const MaterialPropertyMap2& map2) const;
+            
+            MaterialPropertyMap2 create_map2_by_diagonals(const MaterialPropertyMap1& diags) const;
+            
             void fill_with(double c, MaterialPropertyMap1 *mrmg_map);
+            void fill_with(double c, MaterialPropertyMap2 *mrmg_map);
                       
             MaterialPropertyMaps(unsigned int G, std::set<std::string> mat_list = std::set<std::string>()) 
               : materials_list(mat_list), G(G)  { };
@@ -320,44 +356,44 @@ namespace WeakFormsNeutronics
             
           public:
             
-            void set_nu(const MaterialPropertyMap1& nu) {
+            virtual void set_nu(const MaterialPropertyMap1& nu) {
               this->nu = nu;
             }
             
-            void set_nu(const MaterialPropertyMap0& nu) {
+            virtual void set_nu(const MaterialPropertyMap0& nu) {
               extend_to_multigroup(nu, &this->nu);      
             }
             
-            void set_nu(const rank1& nu) {
+            virtual void set_nu(const rank1& nu) {
               extend_to_multiregion(nu, &this->nu);
             }
             
-            void set_nu(const rank0& nu) {
+            virtual void set_nu(const rank0& nu) {
               extend_to_multiregion_multigroup(nu, &this->nu);
             }
                   
-            void set_chi(const MaterialPropertyMap1& chi) {
+            virtual void set_chi(const MaterialPropertyMap1& chi) {
               this->chi = chi;
             }
             
-            void set_chi(const rank1& chi) {
+            virtual void set_chi(const rank1& chi) {
               extend_to_multiregion(chi, &this->chi);
             }
-            
-            void set_fission_multigroup_structure(const bool1& chi_nnz)  {
-              this->fission_multigroup_structure = chi_nnz;
-            }
-            
-            void set_Sigma_a(const MaterialPropertyMap1& Sa) {
+                        
+            virtual void set_Sigma_a(const MaterialPropertyMap1& Sa) {
               this->Sigma_a = Sa;
             }
             
-            void set_Sigma_f(const MaterialPropertyMap1& Sf) {
+            virtual void set_Sigma_f(const MaterialPropertyMap1& Sf) {
               this->Sigma_f = Sf;
             }
             
-            void set_nuSigma_f(const MaterialPropertyMap1 nSf) {
+            virtual void set_nuSigma_f(const MaterialPropertyMap1 nSf) {
               this->nuSigma_f = nSf;
+            }
+            
+            virtual void set_materials_list(std::set<std::string> mat_list) {
+              this->materials_list = mat_list;
             }
             
             const MaterialPropertyMap1& get_Sigma_f() const {
@@ -369,8 +405,11 @@ namespace WeakFormsNeutronics
             const MaterialPropertyMap1& get_chi() const {
               return this->chi;
             }
-            const bool1& get_fission_multigroup_structure() const {
-              return this->fission_multigroup_structure;
+            const bool1& get_fission_nonzero_structure() const {
+              return this->fission_nonzero_structure;
+            }
+            const std::set<std::string>& get_materials_list() const {
+              return this->materials_list;
             }
             
             const rank1& get_Sigma_f(std::string material) const;
@@ -395,25 +434,18 @@ namespace WeakFormsNeutronics
             MaterialPropertyMap1 D;
             MaterialPropertyMap1 Sigma_r;
             MaterialPropertyMap2 Sigma_s;
+            
             MaterialPropertyMap1 src;
             
             MaterialPropertyMap1 Sigma_t;
             
-            bool2 scattering_multigroup_structure;
+            bool2 scattering_nonzero_structure;
             
           public:
             
             MaterialPropertyMaps(unsigned int G, std::set<std::string> mat_list = std::set<std::string>()) 
-              : Common::MaterialPropertyMaps(G, mat_list) { };
-              
-            MaterialPropertyMap1 extract_map2_diagonals(const MaterialPropertyMap2& map2);
-            
-            MaterialPropertyMap1 sum_map2_columns(const MaterialPropertyMap2& map2);
-            
-            MaterialPropertyMap2 create_map2_by_diagonals(const MaterialPropertyMap1& diags);
-            
-            void fill_with(double c, MaterialPropertyMap2 *mrmg_map);
-            
+            : Common::MaterialPropertyMaps(G, mat_list) { };
+                        
             // We always need to supply chi, nu, Sigma_f, Sigma_r, Sigma_s and D to our neutronics weak forms. 
             // These parameters are often defined in terms of the other ones, or not specified at all and assumed 
             // to be zero for a particular simplified situation. This method, together with its complement in the
@@ -423,42 +455,38 @@ namespace WeakFormsNeutronics
             // already included in them.
             virtual void validate();
             
-            void set_src(const MaterialPropertyMap1& src) {
+            virtual void set_src(const MaterialPropertyMap1& src) {
               this->src = src;
             }
             
-            void set_src(const MaterialPropertyMap0& src) {
+            virtual void set_src(const MaterialPropertyMap0& src) {
               extend_to_multigroup(src, &this->src);            
             }
             
-            void set_src(const rank1& src) {
+            virtual void set_src(const rank1& src) {
               extend_to_multiregion(src, &this->src);
             }
             
-            void set_src(const double& src) {
+            virtual void set_src(const double& src) {
               extend_to_multiregion_multigroup(src, &this->src);
             }
             
-            void set_D(const MaterialPropertyMap1& D) {
+            virtual void set_D(const MaterialPropertyMap1& D) {
               this->D = D;
             }
             
-            void set_Sigma_r(const MaterialPropertyMap1& Sr) {
+            virtual void set_Sigma_r(const MaterialPropertyMap1& Sr) {
               this->Sigma_r = Sr;
             }
             
-            void set_Sigma_t(const MaterialPropertyMap1& St) {
+            virtual void set_Sigma_t(const MaterialPropertyMap1& St) {
               this->Sigma_t = St;
             }
             
-            void set_Sigma_s(const MaterialPropertyMap2& Ss) {
+            virtual void set_Sigma_s(const MaterialPropertyMap2& Ss) {
               this->Sigma_s = Ss;
             }
-            
-            void set_scattering_multigroup_structure(const bool2& Ss_nnz) {
-              this->scattering_multigroup_structure = Ss_nnz;
-            }
-            
+                         
             const MaterialPropertyMap2& get_Sigma_s() const {
               return this->Sigma_s;
             }
@@ -471,8 +499,8 @@ namespace WeakFormsNeutronics
             const MaterialPropertyMap1& get_src() const {
               return this->src;
             }
-            const bool2& get_scattering_multigroup_structure() const {
-              return this->scattering_multigroup_structure;
+            const bool2& get_scattering_nonzero_structure() const {
+              return this->scattering_nonzero_structure;
             }
             
             const rank2& get_Sigma_s(std::string material) const;
@@ -482,8 +510,38 @@ namespace WeakFormsNeutronics
             
             friend std::ostream & operator<< (std::ostream& os, const MaterialPropertyMaps& matprop);
         };
+        
+        class TransportCorrectedMaterialPropertyMaps : public MaterialPropertyMaps
+        {
+          protected:
+            
+            MaterialPropertyMap1 Sigma_s_1_out;
+            MaterialPropertyMap1 mu_av;
+          
+          public:
+            
+            TransportCorrectedMaterialPropertyMaps(unsigned int G, 
+                                                   const MaterialPropertyMap2& Ss_1);                                            
+            TransportCorrectedMaterialPropertyMaps(unsigned int G,
+                                                   const MaterialPropertyMap1& mu_av);
+            TransportCorrectedMaterialPropertyMaps(unsigned int G,
+                                                   const MaterialPropertyMap0& mu_av);                                                                              
+            TransportCorrectedMaterialPropertyMaps(unsigned int G,
+                                                   std::set<std::string> mat_list,
+                                                   const rank1& mu_av);
+            TransportCorrectedMaterialPropertyMaps(unsigned int G,
+                                                   std::set<std::string> mat_list,
+                                                   const rank0& mu_av);
+                                                   
+            virtual void set_D(const MaterialPropertyMap1& D) {
+              warning("Diffusion coefficient is determined automatically according to the transport correction formula."
+                      " Ignoring user setting.");
+            }
+            
+            virtual void validate();
+        };
       }  
-    
+      
       template <typename NDArrayType>
       class material_property_map
       {
@@ -526,10 +584,46 @@ namespace WeakFormsNeutronics
       
       namespace Definitions
       {
-        typedef MultiArray<rank0> grow;
-        typedef MultiArray<rank1> gmat;
+        typedef MultiArray<rank0> row;
+        typedef MultiArray<rank1> matrix;
+        typedef MultiArray<rank2> page;
         typedef MultiArray<bool> bool_row;
-        typedef MultiArray< std::vector<bool> > bool_mat;
+        typedef MultiArray< std::vector<bool> > bool_matrix;
+        typedef MultiArray< std::vector< std::vector<bool> > > bool_page;
+      }
+    }
+    
+    namespace SupportClasses
+    {
+      namespace Common
+      {
+        using MaterialProperties::Common::MaterialPropertyMaps;
+        using namespace MaterialProperties::Definitions;
+        
+        class SourceFilter : public SimpleFilter
+        {
+          public: 
+            SourceFilter(Hermes::vector<MeshFunction*> solutions, const MaterialPropertyMaps* matprop,
+                         const std::string& source_area)
+              : SimpleFilter(solutions, Hermes::vector<int>())
+            {
+              nu = matprop->get_nu().at(source_area);
+              Sigma_f = matprop->get_Sigma_f().at(source_area);
+            }
+            SourceFilter(Hermes::vector<Solution*> solutions, const MaterialPropertyMaps* matprop,
+                        const std::string& source_area)
+            : SimpleFilter(solutions, Hermes::vector<int>())
+            {
+              nu = matprop->get_nu().at(source_area);
+              Sigma_f = matprop->get_Sigma_f().at(source_area);
+            }
+            
+          private:
+            rank1 nu;
+            rank1 Sigma_f;
+            
+            void filter_fn(int n, Hermes::vector<scalar*> values, scalar* result);
+        };
       }
     }
                                  
@@ -644,14 +738,14 @@ namespace WeakFormsNeutronics
             public:            
               Jacobian(unsigned int g, 
                        const MaterialPropertyMaps& matprop, GeomType geom_type = HERMES_PLANAR) 
-                : WeakForm::MatrixFormVol(g, g, HERMES_ANY),
+                : WeakForm::MatrixFormVol(g, g, HERMES_ANY, HERMES_SYM),
                   GenericForm(matprop, geom_type),
                   g(g)
               {};
                   
               Jacobian(unsigned int g, std::string area,
                        const MaterialPropertyMaps& matprop, GeomType geom_type = HERMES_PLANAR)
-                : WeakForm::MatrixFormVol(g, g, area),
+                : WeakForm::MatrixFormVol(g, g, area, HERMES_SYM),
                   GenericForm(matprop, geom_type),
                   g(g)
               {};
@@ -1020,22 +1114,22 @@ namespace WeakFormsNeutronics
                                        GeomType geom_type = HERMES_PLANAR);
             
             DefaultWeakFormFixedSource(const MaterialPropertyMaps& matprop, 
-                                       HermesFunction *f_src,
+                                       HermesFunction *minus_f_src,
                                        std::string src_area = HERMES_ANY,
                                        GeomType geom_type = HERMES_PLANAR);
             
             DefaultWeakFormFixedSource(const MaterialPropertyMaps& matprop, 
-                                       HermesFunction *f_src,
+                                       HermesFunction *minus_f_src,
                                        Hermes::vector<std::string> src_areas,
                                        GeomType geom_type = HERMES_PLANAR);
             
             DefaultWeakFormFixedSource(const MaterialPropertyMaps& matprop, 
-                                       const std::vector<HermesFunction*>& f_src,
+                                       const std::vector<HermesFunction*>& minus_f_src,
                                        std::string src_area = HERMES_ANY,
                                        GeomType geom_type = HERMES_PLANAR);
             
             DefaultWeakFormFixedSource(const MaterialPropertyMaps& matprop, 
-                                       const std::vector<HermesFunction*>& f_src,
+                                       const std::vector<HermesFunction*>& minus_f_src,
                                        Hermes::vector<std::string> src_areas,
                                        GeomType geom_type = HERMES_PLANAR);
         };
@@ -1043,15 +1137,27 @@ namespace WeakFormsNeutronics
         class DefaultWeakFormSourceIteration : public WeakForm
         {
           protected:
+            double keff;
+            
             std::vector<FissionYield::OuterIterationForm*> keff_iteration_forms;
+            
+            void init(const MaterialPropertyMaps& matprop,
+                      Hermes::vector<MeshFunction*>& iterates, double initial_keff_guess, 
+                      GeomType geom_type);
             
           public:
             DefaultWeakFormSourceIteration( const MaterialPropertyMaps& matprop,
                                             Hermes::vector<MeshFunction*>& iterates,
                                             double initial_keff_guess,
                                             GeomType geom_type = HERMES_PLANAR );
+                                            
+            DefaultWeakFormSourceIteration( const MaterialPropertyMaps& matprop,
+                                            Hermes::vector<Solution*>& iterates,
+                                            double initial_keff_guess,
+                                            GeomType geom_type = HERMES_PLANAR );                                            
             
             void update_keff(double new_keff);
+            double get_keff() const { return keff; }
         };
         
       }

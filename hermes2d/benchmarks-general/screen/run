@@ -1,4 +1,4 @@
 rm *~ 
-./example-screen
+./benchmark-screen
 python plot_graph.py &
 

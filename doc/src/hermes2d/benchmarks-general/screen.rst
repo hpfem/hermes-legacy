@@ -29,27 +29,33 @@ the midpoint of the left side. It is filled with air:
 Boundary conditions
 ~~~~~~~~~~~~~~~~~~~
 
-Tangential component of solution taken from known exact solution 
-(essential BC). See the 
-`main.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks/screen/main.cpp>`_ file.
+Tangential component of solution taken from known exact solution (essential BC). 
 
 Exact solution 
 ~~~~~~~~~~~~~~
 
-This is rather complicated in this case - please look into the 
-corresponding file 
-`exact_solution.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks/screen/exact_solution.cpp>`_.
+This is rather complicated in this case - see the file 
+`definitions.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks-general/screen/definitions.cpp>`_.
 
 Weak forms
 ~~~~~~~~~~
 
 ::
 
-    template<typename Real, typename Scalar>
-    Scalar bilinear_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+    class CustomWeakFormScreen : public WeakForm
     {
-      return int_curl_e_curl_f<Real, Scalar>(n, wt, u, v) - int_e_f<Real, Scalar>(n, wt, u, v);
-    }
+    public:
+      CustomWeakFormScreen() : WeakForm(1) 
+      {
+	// Jacobian.
+	add_matrix_form(new WeakFormsHcurl::DefaultJacobianCurlCurl(0, 0));
+	add_matrix_form(new WeakFormsHcurl::DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(-1.0)));
+
+	// Residual.
+	add_vector_form(new WeakFormsHcurl::DefaultResidualCurlCurl(0));
+	add_vector_form(new WeakFormsHcurl::DefaultResidualVol(0, HERMES_ANY, new HermesFunction(-1.0)));
+      };
+    };
 
 Sample solution
 ~~~~~~~~~~~~~~~

@@ -1,6 +1,6 @@
 IF(H2D_COMPLEX)
 
-project(example-screen)
+project(benchmark-screen)
 
 add_executable(${PROJECT_NAME} main.cpp definitions.cpp fresnl.c)
 include (${hermes2d_SOURCE_DIR}/CMake.common)

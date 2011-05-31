@@ -67,96 +67,116 @@ computer code, this reads:
 Here jv() is the Bessel function $\bfJ_{\alpha}$. For its source code see the 
 `forms.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P04-linear-adapt/05-hcurl-adapt/forms.cpp>`_ file.
 
+Weak forms
+~~~~~~~~~~
+
+The weak formulation is put together as a combination of default jacobian and 
+residual forms in the Hcurl space, and one custom form that defines the 
+integral of the tangential component of the exact solution along the boundary::
+
+    class CustomWeakForm : public WeakForm
+    {
+    public:
+      CustomWeakForm(double mu_r, double kappa) : WeakForm(1)
+      {
+	cplx ii = cplx(0.0, 1.0);
+
+	// Jacobian.
+	add_matrix_form(new WeakFormsHcurl::DefaultJacobianCurlCurl(0, 0, HERMES_ANY, new HermesFunction(1.0/mu_r)));
+	add_matrix_form(new WeakFormsHcurl::DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(-sqr(kappa))));
+	add_matrix_form_surf(new WeakFormsHcurl::DefaultMatrixFormSurf(0, 0, HERMES_ANY, new HermesFunction(-kappa*ii)));
+
+	// Residual.
+	add_vector_form(new WeakFormsHcurl::DefaultResidualCurlCurl(0, HERMES_ANY, new HermesFunction(1.0/mu_r)));
+	add_vector_form(new WeakFormsHcurl::DefaultResidualVol(0, HERMES_ANY, new HermesFunction(-sqr(kappa))));
+	add_vector_form_surf(new WeakFormsHcurl::DefaultResidualSurf(0, HERMES_ANY, new HermesFunction(-kappa*ii)));
+	add_vector_form_surf(new CustomVectorFormSurf());
+      };
+
+      class CustomVectorFormSurf : public WeakForm::VectorFormSurf
+      {
+      public:
+	CustomVectorFormSurf()
+		  : WeakForm::VectorFormSurf(0) 
+	{
+	}
+
+	virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], 
+			     Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+	{
+	  scalar result = 0;
+	  for (int i = 0; i < n; i++) {
+	    double r = sqrt(e->x[i] * e->x[i] + e->y[i] * e->y[i]);
+	    double theta = atan2(e->y[i], e->x[i]);
+	    if (theta < 0) theta += 2.0*M_PI;
+	    double j13    = jv(-1.0/3.0, r),    j23    = jv(+2.0/3.0, r);
+	    double cost   = cos(theta),         sint   = sin(theta);
+	    double cos23t = cos(2.0/3.0*theta), sin23t = sin(2.0/3.0*theta);
+
+	    double Etau = e->tx[i] * (cos23t*sint*j13 - 2.0/(3.0*r)*j23*(cos23t*sint + sin23t*cost)) +
+			  e->ty[i] * (-cos23t*cost*j13 + 2.0/(3.0*r)*j23*(cos23t*cost - sin23t*sint));
+
+	    result += wt[i] * cplx(cos23t*j23, -Etau) * ((v->val0[i] * e->tx[i] + v->val1[i] * e->ty[i]));
+	  }
+	  return -result;
+	}
+
+	virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v,
+			Geom<Ord> *e, ExtData<Ord> *ext) const 
+	{
+	  return Ord(10);
+	}
+      };
+    };
+
+
 Creating an Hcurl space
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-New in this example is the fact that we solve in the Hcurl space::
+In this example we use the Hcurl space::
 
     // Create an Hcurl space with default shapeset.
-    HcurlSpace space(&mesh, bc_types, essential_bc_values, P_INIT);
+    HcurlSpace space(&mesh, &bcs, P_INIT);
 
 Choosing refinement selector for the Hcurl space
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Therefore we need to use a refinement selector for the Hcurl space::
+Therefore we also need to use a refinement selector for the Hcurl space::
 
     // Initialize refinement selector.
     HcurlProjBasedSelector selector(CAND_LIST, CONV_EXP, H2DRS_DEFAULT_ORDER);
 
-Projecting in the Hcurl norm
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This is the last explicit occurence of the Hcurl space. The rest of the example 
+is the same as if the adaptivity was done in the H1 space.
 
-The H2D_HCURL_NORM needs to be used in the global projection::
+Choice of projection norm
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    // Project the fine mesh solution onto the coarse mesh.
-    info("Projecting reference solution on coarse mesh.");
-    OGProjection::project_global(&space, &ref_sln, &sln, matrix_solver, HERMES_HCURL_NORM); 
+The H2D_HCURL_NORM is used automatically for the projection, since 
+the projection takes place in an Hcurl space. The user does not have to 
+worry about this. If needed, the default norm can be overridden in 
+the function OGProjection::project_global().
 
-Initializing the Adapt class with the Hcurl norm
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Calculating element errors for adaptivity
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The H2D_HCURL_NORM is also used in the initialization of the Adapt class::
+Element errors and the total relative error in percent are calculated using 
 
-    // Calculate element errors and total error estimate.
-    info("Calculating error estimate and exact error."); 
-    Adapt* adaptivity = new Adapt(&space, HERMES_HCURL_NORM);
-    bool solutions_for_adapt = true;
-    double err_est_rel = adaptivity->calc_err_est(&sln, &ref_sln, solutions_for_adapt, HERMES_TOTAL_ERROR_REL | HERMES_ELEMENT_ERROR_REL) * 100;
+::
+
+    double err_est_rel = adaptivity->calc_err_est(&sln, &ref_sln) * 100;
+
+Again, the Hcurl norm is used by default. 
 
 Exact error calculation and the 'solutions_for_adapt' flag
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Above, solutions_for_adapt=true means that 'sln' and 'ref_sln' will be used to calculate element 
-errors to guide adaptivity. In the following call to calc_err_exact() we set solutions_for_adapt=false 
-so that just the total error is calculated::
+For the exact error calculation, we say that we do not want the exact error
+to guide automatic adaptivity::
 
-    // Calculate exact error,
-    solutions_for_adapt = false;
-    double err_exact_rel = adaptivity->calc_err_exact(&sln, &sln_exact, solutions_for_adapt, HERMES_TOTAL_ERROR_REL | HERMES_ELEMENT_ERROR_REL) * 100;
-
-Weak forms
-~~~~~~~~~~
-
-::
-
-    template<typename Real, typename Scalar>
-    Scalar bilinear_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-    return 1.0/mu_r * int_curl_e_curl_f<Real, Scalar>(n, wt, u, v) -
-           sqr(kappa) * int_e_f<Real, Scalar>(n, wt, u, v);
-    }
-   
-    template<typename Real, typename Scalar>
-    Scalar bilinear_form_surf(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      cplx ii = cplx(0.0, 1.0);
-      return ii * (-kappa) * int_e_tau_f_tau<Real, Scalar>(n, wt, u, v, e);
-    }
-   
-    scalar linear_form_surf(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e, ExtData<scalar> *ext)
-    {
-      scalar result = 0;
-      for (int i = 0; i < n; i++)
-      {
-        double r = sqrt(e->x[i] * e->x[i] + e->y[i] * e->y[i]);
-        double theta = atan2(e->y[i], e->x[i]);
-        if (theta < 0) theta += 2.0*M_PI;
-        double j13    = jv(-1.0/3.0, r),    j23    = jv(+2.0/3.0, r);
-        double cost   = cos(theta),         sint   = sin(theta);
-        double cos23t = cos(2.0/3.0*theta), sin23t = sin(2.0/3.0*theta);
-   
-        double Etau = e->tx[i] * (cos23t*sint*j13 - 2.0/(3.0*r)*j23*(cos23t*sint + sin23t*cost)) +
-                      e->ty[i] * (-cos23t*cost*j13 + 2.0/(3.0*r)*j23*(cos23t*cost - sin23t*sint));
-  
-        result += wt[i] * cplx(cos23t*j23, -Etau) * ((v->val0[i] * e->tx[i] + v->val1[i] * e->ty[i]));
-      }
-      return result;
-    }
-
-    // Maximal polynomial order to integrate surface linear form.
-    Ord linear_form_surf_ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
-    {  return Ord(v->val[0].get_max_order());  }
-
+    // Calculate exact error.
+    bool solutions_for_adapt = false;
+    double err_exact_rel = adaptivity->calc_err_exact(&sln, &sln_exact, solutions_for_adapt) * 100;
 
 Sample results
 ~~~~~~~~~~~~~~

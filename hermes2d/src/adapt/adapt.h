@@ -127,9 +127,10 @@ public:
       }
     }
 
-  private:
+  protected:
     ProjNormType projNormType;
 
+  private:
     template<typename Real, typename Scalar>
     static Scalar l2_error_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Scalar> *u,
                    Func<Scalar> *v, Geom<Real> *e, ExtData<Scalar> *ext)

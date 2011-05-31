@@ -213,10 +213,10 @@ int main(int argc, char* argv[])
 
 #define ERROR_SUCCESS                      0
 #define ERROR_FAILURE                     -1
-  int ndof_allowed = 460;
+  int ndof_allowed = 350;
   printf("ndof allowed = %d\n", ndof_allowed);
   printf("ndof actual = %d\n", ndof);
-  if (ndof < ndof_allowed) {      // ndof was 454 when this test was created (04-05-2011).
+  if (ndof < ndof_allowed) {      // ndof was 330 when this test was created (04-05-2011).
     printf("Success!\n");
     return ERROR_SUCCESS;
   }

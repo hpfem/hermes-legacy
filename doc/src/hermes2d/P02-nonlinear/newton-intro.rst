@@ -1,18 +1,17 @@
-Newton's Method
----------------
+Introduction to Newton's Method
+-------------------------------
 
-The Newton's method is more powerful but also more 
-demanding than the Picard's method, and therefore 
-we will begin at a slower pace. 
+The Newton's method is more powerful but also a bit more 
+demanding than the Picard's method. 
 
 We'll stay with the model problem from the previous section
 
 .. math::
     :label: newton0
 
-    -\nabla \cdot (\lambda(u)\nabla u) - f(\bfx) = 0, \ \ \ u = 0 \ \mbox{on}\ \partial \Omega.
+    -\nabla \cdot (\lambda(u)\nabla u) - f(\bfx) = 0, \ \ \ u = u_D \ \mbox{on}\ \partial \Omega.
 
-Note that when using the Newton's method, it is customary to have 
+As we said before, when using the Newton's method, it is customary to have 
 everything on the left-hand side. The corresponding discrete problem has the form 
 
 .. math::
@@ -20,14 +19,29 @@ everything on the left-hand side. The corresponding discrete problem has the for
     \int_{\Omega} \lambda(u)\nabla u(\bfx) \cdot \nabla v_i(\bfx)\, \mbox{d}\bfx 
     - \int_{\Omega} f(\bfx)v_i(\bfx) \, \mbox{d}\bfx = 0\ \ \ \mbox{for all} \ i = 1, 2, \ldots, N, 
 
-where $v_i$ are the test functions and
+where $v_i$ are the test functions. The unknown solution $u$ is sought in the form 
 
 .. math::
 
-    u(\bfY) = \sum_{j=1}^N y_j v_j.
+    u(\bfx) = U(\bfx) + G(\bfx)
 
-Here $\bfY = (y_1, y_2, \ldots, y_N)^T$ is the vector of unknown coefficients.
-The nonlinear discrete problem can be written in the compact form
+where $G(\bfx)$ is a Dirichlet lift (any sufficiently smooth function representing the
+Dirichlet boundary conditions $u_D$), and $U(\bfx)$ with zero values on the boundary is 
+a new unknown. The function $U$ is expressed as a linear combination of basis functions
+with unknown coefficients,
+
+.. math::
+
+    U(\bfx) = \sum_{j=1}^N y_j v_j(\bfx).
+
+However, in the Newton's method we look at the same function 
+as at a function of the unknown solution coefficient vector $\bfY = (y_1, y_2, \ldots, y_N)^T$,
+
+.. math::
+
+    U(\bfY) = \sum_{j=1}^N y_j v_j.
+
+The nonlinear discrete problem can be written in a compact form
 
 .. math::
 
@@ -54,6 +68,14 @@ The $N\times N$ Jacobian matrix $\bfJ(\bfY) = D\bfF/D\bfY$ has the components
     \int_{\Omega} \left[ \frac{\partial \lambda}{\partial u} \frac{\partial u}{\partial y_j} 
     \nabla u + \lambda(u)\frac{\partial \nabla u}{\partial y_j} \right] \cdot \nabla v_i \, \mbox{d}\bfx.
 
+Taking account the relation $u = U+G$, and the independence of $G$ on $\bfY$, this becomes
+
+.. math::
+
+    J_{ij}(\bfY) =  \frac{\partial F_i}{\partial y_j} = 
+    \int_{\Omega} \left[ \frac{\partial \lambda}{\partial u} \frac{\partial U}{\partial y_j} 
+    \nabla u + \lambda(u)\frac{\partial \nabla U}{\partial y_j} \right] \cdot \nabla v_i \, \mbox{d}\bfx.
+
 Using elementary relations shown below, we obtain
 
 .. math::
@@ -65,25 +87,25 @@ Using elementary relations shown below, we obtain
 It is worth noticing that $\bfJ(\bfY)$ has the same sparsity structure as the 
 standard stiffness matrix that we know from linear problems. In fact, when the 
 problem is linear then the Jacobian matrix and the stiffness matrix are the same 
-thing (see last paragraph in this section). 
+thing -- we have seen this before, and also see the last paragraph in this section. 
 
 How to differentiate weak forms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Chain rule is used all the time. If your equation contains parameters that depend on 
 the solution, you will need their derivatives with respect to the solution (such as we needed 
-the derivative of $\lambda$ above). In addition, the following elementary rules are useful 
+the derivative d$\lambda$/d$u$ above). In addition, the following elementary rules are useful 
 for the differentiation of the weak forms: 
 
 .. math::
 
-    \frac{\partial u}{\partial y_k} = \frac{\partial}{\partial y_k}\sum_{j=1}^N y_j v_j = v_k
+    \frac{\partial u}{\partial y_k} = \frac{\partial U}{\partial y_k} = \frac{\partial}{\partial y_k}\sum_{j=1}^N y_j v_j = v_k
 
 and 
 
 .. math::
 
-    \frac{\partial \nabla u}{\partial y_k} = \frac{\partial}{\partial y_k}\sum_{j=1}^N y_j \nabla v_j = \nabla v_k.
+    \frac{\partial \nabla u}{\partial y_k} = \frac{\partial \nabla U}{\partial y_k} = \frac{\partial}{\partial y_k}\sum_{j=1}^N y_j \nabla v_j = \nabla v_k.
 
 Practical formula
 ~~~~~~~~~~~~~~~~~
@@ -142,10 +164,4 @@ which is based on the distance of two consecutive
 solution vectors, then the Newton's method will do 
 two steps before stopping. In practice, using just 
 the residual criterion is dangerous.
-
-This explains that it makes sense to 
-use the knowledge that the problem is linear, and 
-stop the Newton's iteration after the first step 
-manually.
-
 

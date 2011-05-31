@@ -1,209 +1,191 @@
-//////  Bilinear and linear forms - axisymmetric arrangement  ////////////////////////////////////////////////
+#define HERMES_REPORT_ALL
 
-// NOTE: The global variable 'k_eff' from main.cpp is used in the linear forms.
+////// Weak formulation in axisymmetric coordinate system  ////////////////////////////////////
 
-template<typename Real, typename Scalar>
-Scalar int_x_u_v(int n, double *wt, Func<Real> *u, Func<Real> *v, Geom<Real> *e)
+#include "definitions.h"
+
+CustomWeakForm::CustomWeakForm( const MaterialPropertyMaps& matprop,
+                                Hermes::vector<Solution*>& iterates,
+                                double init_keff, std::string bdy_vacuum )
+  : DefaultWeakFormSourceIteration(matprop, iterates, init_keff, HERMES_AXISYM_Y)
 {
-  Scalar result = 0;
-  for (int i = 0; i < n; i++)
-    result += wt[i] * (e->x[i] * u->val[i] * v->val[i]);
-  return result;
+  for (unsigned int g = 0; g < matprop.get_G(); g++)
+  {
+    add_matrix_form_surf(new VacuumBoundaryCondition::Jacobian(g, bdy_vacuum, HERMES_AXISYM_Y));
+    add_vector_form_surf(new VacuumBoundaryCondition::Residual(g, bdy_vacuum, HERMES_AXISYM_Y));
+  }
 }
 
-template<typename Real, typename Scalar>
-Scalar int_x_grad_u_grad_v(int n, double *wt, Func<Real> *u, Func<Real> *v, Geom<Real> *e)
+scalar ErrorForm::value(int n, double *wt, Func<scalar> *u_ext[],
+                        Func<scalar> *u, Func<scalar> *v, Geom<double> *e,
+                        ExtData<scalar> *ext) const
 {
-  Scalar result = 0;
-  for (int i = 0; i < n; i++)
-    result += wt[i] * e->x[i] * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]);
-  return result;
+  switch (projNormType)
+  {
+    case HERMES_L2_NORM:
+      return l2_error_form_axisym<double, scalar>(n, wt, u_ext, u, v, e, ext);
+    case HERMES_H1_NORM:
+      return h1_error_form_axisym<double, scalar>(n, wt, u_ext, u, v, e, ext);
+    default:
+      error("Only the H1 and L2 norms are currently implemented.");
+      return 0.0;
+  }
 }
 
-template<typename Real, typename Scalar>
-Scalar projection_biform(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Ord ErrorForm::ord(int n, double *wt, Func<Ord> *u_ext[],
+                   Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e,
+                   ExtData<Ord> *ext) const
 {
-  return int_x_u_v<Real, Scalar>(n, wt, u, v, e) + int_x_grad_u_grad_v<Real, Scalar>(n, wt, u, v, e);
+  switch (projNormType)
+  {
+    case HERMES_L2_NORM:
+      return l2_error_form_axisym<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
+    case HERMES_H1_NORM:
+      return h1_error_form_axisym<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
+    default:
+      error("Only the H1 and L2 norms are currently implemented.");
+      return Ord();
+  }
 }
 
-template<typename Real, typename Scalar>
-Scalar projection_liform(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+// Integral over the active core.
+double integrate(MeshFunction* sln, std::string area)
 {
-  return int_x_u_v<Real, Scalar>(n, wt, ext->fn[0], v, e) + int_x_grad_u_grad_v<Real, Scalar>(n, wt, ext->fn[0], v, e);
-}
-
-//////////   Eq 1   /////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename Real, typename Scalar>
-Scalar biform_0_0(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return (D[e->elem_marker - 1][0]) * int_x_grad_u_grad_v<Real, Scalar>(n, wt, u, v, e) +
-         (Sr[e->elem_marker - 1][0]) * int_x_u_v<Real, Scalar>(n, wt, u, v, e);
-}
-
-template<typename Real, typename Scalar>
-Scalar biform_surf_0_0(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return (0.5) * int_x_u_v<Real, Scalar>(n, wt, u, v, e);
-}
-
-template<typename Real, typename Scalar>
-Scalar liform_0(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  Scalar result = 0;
-  for (int i = 0; i < n; i++)
-    result += wt[i] * (chi[e->elem_marker - 1][0] / k_eff) * (nu[e->elem_marker - 1][0] * Sf[e->elem_marker - 1][0] * ext->fn[0]->val[i] +
-                                                   nu[e->elem_marker - 1][1] * Sf[e->elem_marker - 1][1] * ext->fn[1]->val[i] +
-                                                   nu[e->elem_marker - 1][2] * Sf[e->elem_marker - 1][2] * ext->fn[2]->val[i] +
-                                                   nu[e->elem_marker - 1][3] * Sf[e->elem_marker - 1][3] * ext->fn[3]->val[i])
-                                      * e->x[i] * v->val[i];
-  return result;
-}
-
-//////////   Eq 2   /////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename Real, typename Scalar>
-Scalar biform_1_1(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return (D[e->elem_marker - 1][1]) * int_x_grad_u_grad_v<Real, Scalar>(n, wt, u, v, e) +
-         (Sr[e->elem_marker - 1][1]) * int_x_u_v<Real, Scalar>(n, wt, u, v, e);
-}
-
-template<typename Real, typename Scalar>
-Scalar biform_surf_1_1(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return (0.5) * int_x_u_v<Real, Scalar>(n, wt, u, v, e);
-}
-
-template<typename Real, typename Scalar>
-Scalar biform_1_0(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return (- Ss[e->elem_marker - 1][1][0]) * int_x_u_v<Real, Scalar>(n, wt, u, v, e);
-}
-
-template<typename Real, typename Scalar>
-Scalar liform_1(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  Scalar result = 0;
-  for (int i = 0; i < n; i++)
-    result += wt[i] * (chi[e->elem_marker - 1][1] / k_eff) * (nu[e->elem_marker - 1][0] * Sf[e->elem_marker - 1][0] * ext->fn[0]->val[i] +
-                                                   nu[e->elem_marker - 1][1] * Sf[e->elem_marker - 1][1] * ext->fn[1]->val[i] +
-                                                   nu[e->elem_marker - 1][2] * Sf[e->elem_marker - 1][2] * ext->fn[2]->val[i] +
-                                                   nu[e->elem_marker - 1][3] * Sf[e->elem_marker - 1][3] * ext->fn[3]->val[i])
-                                      * e->x[i] * v->val[i];
-  return result;
-}
-
-//////////   Eq 3   /////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename Real, typename Scalar>
-Scalar biform_2_2(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return (D[e->elem_marker - 1][2]) * int_x_grad_u_grad_v<Real, Scalar>(n, wt, u, v, e) +
-         (Sr[e->elem_marker - 1][2]) * int_x_u_v<Real, Scalar>(n, wt, u, v, e);
-}
-
-template<typename Real, typename Scalar>
-Scalar biform_surf_2_2(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return (0.5) * int_x_u_v<Real, Scalar>(n, wt, u, v, e);
-}
-
-template<typename Real, typename Scalar>
-Scalar biform_2_1(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return (- Ss[e->elem_marker - 1][2][1]) * int_x_u_v<Real, Scalar>(n, wt, u, v, e);
-}
-
-template<typename Real, typename Scalar>
-Scalar liform_2(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  Scalar result = 0;
-  for (int i = 0; i < n; i++)
-    result += wt[i] * (chi[e->elem_marker - 1][2] / k_eff) * (nu[e->elem_marker - 1][0] * Sf[e->elem_marker - 1][0] * ext->fn[0]->val[i] +
-                                                   nu[e->elem_marker - 1][1] * Sf[e->elem_marker - 1][1] * ext->fn[1]->val[i] +
-                                                   nu[e->elem_marker - 1][2] * Sf[e->elem_marker - 1][2] * ext->fn[2]->val[i] +
-                                                   nu[e->elem_marker - 1][3] * Sf[e->elem_marker - 1][3] * ext->fn[3]->val[i])
-                                      * e->x[i] * v->val[i];
-  return result;
-}
-
-//////////   Eq 4   /////////////////////////////////////////////////////////////////////////////////////////
-
-template<typename Real, typename Scalar>
-Scalar biform_3_3(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return (D[e->elem_marker - 1][3]) * int_x_grad_u_grad_v<Real, Scalar>(n, wt, u, v, e) +
-         (Sr[e->elem_marker - 1][3]) * int_x_u_v<Real, Scalar>(n, wt, u, v, e);
-}
-
-template<typename Real, typename Scalar>
-Scalar biform_surf_3_3(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return (0.5) * int_x_u_v<Real, Scalar>(n, wt, u, v, e);
-}
-
-template<typename Real, typename Scalar>
-Scalar biform_3_2(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return (- Ss[e->elem_marker - 1][3][2]) * int_x_u_v<Real, Scalar>(n, wt, u, v, e);
-}
-
-template<typename Real, typename Scalar>
-Scalar liform_3(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  Scalar result = 0;
-  for (int i = 0; i < n; i++)
-    result += wt[i] * (chi[e->elem_marker - 1][3] / k_eff) * (nu[e->elem_marker - 1][0] * Sf[e->elem_marker - 1][0] * ext->fn[0]->val[i] +
-                                                   nu[e->elem_marker - 1][1] * Sf[e->elem_marker - 1][1] * ext->fn[1]->val[i] +
-                                                   nu[e->elem_marker - 1][2] * Sf[e->elem_marker - 1][2] * ext->fn[2]->val[i] +
-                                                   nu[e->elem_marker - 1][3] * Sf[e->elem_marker - 1][3] * ext->fn[3]->val[i])
-                                      * e->x[i] * v->val[i];
-  return result;
-}
-
-//////  Determining the quadrature order used for integrating the respective forms.  ////////////////////////////////////////////////
-
-#define DIAG_BIFORM_VOL_ORD(i)\
-    template<>\
-    Ord biform_##i##_##i(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)\
-    {\
-      return int_grad_u_grad_v<Ord, Ord>(n, wt, u, v) * int_u_v<Ord, Ord>(n, wt, u, v);\
+  Quad2D* quad = &g_quad_2d_std;
+  sln->set_quad_2d(quad);
+  
+  double integral = 0.0;
+  Element* e;
+  Mesh *mesh = sln->get_mesh();
+  int marker = mesh->get_element_markers_conversion().get_internal_marker(area);
+  
+  for_all_active_elements(e, mesh)
+  {
+    if (e->marker == marker)
+    {
+      update_limit_table(e->get_mode());
+      sln->set_active_element(e);
+      RefMap* ru = sln->get_refmap();
+      int o = sln->get_fn_order() + ru->get_inv_ref_order();
+      limit_order(o);
+      sln->set_quad_order(o, H2D_FN_VAL);
+      scalar *uval = sln->get_fn_values();
+      double* x = ru->get_phys_x(o);
+      double result = 0.0;
+      h1_integrate_expression(x[i] * uval[i]);
+      integral += result;
     }
-#define DIAG_BIFORM_SURF_ORD(i)\
-    template<>\
-    Ord biform_surf_##i##_##i(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)\
-    {\
-      return int_u_v<Ord, Ord>(n, wt, u, v);\
-    }
-#define OFFDIAG_BIFORM_VOL_ORD(i,j)\
-    template<>\
-    Ord biform_##i##_##j(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)\
-    {\
-      return int_u_v<Ord, Ord>(n, wt, u, v);\
-    }
-#define LIFORM_VOL_ORD(i)\
-    template<>\
-    Ord liform_##i(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)\
-    {\
-      return (ext->fn[0]->val[0] + ext->fn[1]->val[0] + ext->fn[2]->val[0] + ext->fn[3]->val[0])*e->x[0]*v->val[0];\
-    }
+  }
+  
+  return 2.0 * M_PI * integral;
+}
+
+// Calculate number of negative solution values.
+int get_num_of_neg(MeshFunction *sln)
+{
+  Quad2D* quad = &g_quad_2d_std;
+  sln->set_quad_2d(quad);
+  Element* e;
+  Mesh* mesh = sln->get_mesh();
+  
+  int n = 0;
+  
+  for_all_active_elements(e, mesh)
+  {
+    update_limit_table(e->get_mode());
+    sln->set_active_element(e);
+    RefMap* ru = sln->get_refmap();
+    int o = sln->get_fn_order() + ru->get_inv_ref_order();
+    limit_order(o);
+    sln->set_quad_order(o, H2D_FN_VAL);
+    scalar *uval = sln->get_fn_values();
+    int np = quad->get_num_points(o);
     
-DIAG_BIFORM_VOL_ORD(0)
-DIAG_BIFORM_VOL_ORD(1)
-DIAG_BIFORM_VOL_ORD(2)
-DIAG_BIFORM_VOL_ORD(3)
+    for (int i = 0; i < np; i++)
+      if (uval[i] < -1e-12)
+        n++;
+  }
+  
+  return n;
+}
 
-DIAG_BIFORM_SURF_ORD(0)
-DIAG_BIFORM_SURF_ORD(1)
-DIAG_BIFORM_SURF_ORD(2)
-DIAG_BIFORM_SURF_ORD(3)
+int power_iteration(const Hermes2D& hermes2d, const MaterialPropertyMaps& matprop, 
+                    const Hermes::vector<Space *>& spaces, DefaultWeakFormSourceIteration* wf, 
+                    const Hermes::vector<Solution *>& solutions, const std::string& fission_region, 
+                    double tol, SparseMatrix *mat, Vector* rhs, Solver *solver)
+{
+  // Sanity checks.
+  if (spaces.size() != solutions.size()) 
+    error("Spaces and solutions supplied to power_iteration do not match."); 
+ 
+  // Number of energy groups.
+  int G = spaces.size();
+  
+  // Initialize the discrete problem.
+  DiscreteProblem dp(wf, spaces);
+  int ndof = Space::get_num_dofs(spaces);
+    
+  // The following variables will store pointers to solutions obtained at each iteration and will be needed for 
+  // updating the eigenvalue. 
+  Hermes::vector<Solution*> new_solutions;
+  for (int g = 0; g < G; g++) 
+    new_solutions.push_back(new Solution(solutions[g]->get_mesh()));
+  
+  // This power iteration will most probably run on a different mesh than the previous one and so will be different
+  // the corresponding algebraic system. We will need to factorize it anew (but then, the L and U factors may be 
+  // reused until the next adaptation changes the mesh again).
+  // TODO: This could be solved more elegantly by defining a function Solver::reinit().
+  solver->set_factorization_scheme(HERMES_FACTORIZE_FROM_SCRATCH);
+  
+  // Initial coefficient vector for the Newton's method.
+  scalar* coeff_vec = new scalar[ndof];
+  
+  // Force the Jacobian assembling in the first iteration.
+  bool Jacobian_changed = true;
+  
+  bool eigen_done = false; int it = 0;
+  do 
+  {
+    memset(coeff_vec, 0.0, ndof*sizeof(scalar));
 
-OFFDIAG_BIFORM_VOL_ORD(1,0)
-OFFDIAG_BIFORM_VOL_ORD(2,1)
-OFFDIAG_BIFORM_VOL_ORD(3,2)
+    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, mat, rhs, Jacobian_changed)) 
+      error("Newton's iteration failed.");
+    
+    // The matrix doesn't change within the power iteration loop, so it does not need to be reassembled again and 
+    // the first computed LU factorization may be completely reused in following iterations.
+    Jacobian_changed = false;
+    solver->set_factorization_scheme(HERMES_REUSE_FACTORIZATION_COMPLETELY);
+    
+    // Convert coefficients vector into a set of Solution pointers.
+    Solution::vector_to_solutions(solver->get_solution(), spaces, new_solutions);
 
-LIFORM_VOL_ORD(0)
-LIFORM_VOL_ORD(1)
-LIFORM_VOL_ORD(2)
-LIFORM_VOL_ORD(3)
+    // Update fission sources.
+    using WeakFormsNeutronics::Multigroup::SupportClasses::Common::SourceFilter;
+    SourceFilter new_source(new_solutions, &matprop, fission_region);
+    SourceFilter old_source(solutions, &matprop, fission_region);
+
+    // Compute the eigenvalue for current iteration.
+    double k_new = wf->get_keff() * (integrate(&new_source, fission_region) / integrate(&old_source, fission_region));
+
+    info("      dominant eigenvalue (est): %g, rel. difference: %g", k_new, fabs((wf->get_keff() - k_new) / k_new));
+
+    // Stopping criterion.
+    if (fabs((wf->get_keff() - k_new) / k_new) < tol) eigen_done = true;
+
+    // Update the final eigenvalue.
+    wf->update_keff(k_new);
+
+    it++;
+        
+    // Store the new eigenvector approximation in the result.
+    for (int g = 0; g < G; g++) 
+      solutions[g]->copy(new_solutions[g]); 
+  }
+  while (!eigen_done);
+  
+  // Free memory.
+  for (int g = 0; g < G; g++) 
+    delete new_solutions[g];
+  
+  return it;
+}

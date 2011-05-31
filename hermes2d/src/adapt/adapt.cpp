@@ -117,7 +117,8 @@ Adapt::~Adapt()
   // free error_form
   for (int i = 0; i < this->num; i++)
     for (int j = 0; j < this->num; j++)
-      delete error_form[i][j];
+      if (error_form[i][j] != NULL) 
+        delete error_form[i][j];
 }
 
 //// adapt /////////////////////////////////////////////////////////////////////////////////////////
@@ -546,12 +547,14 @@ void Adapt::set_error_form(int i, int j, Adapt::MatrixFormVolError* form)
   error_if(i < 0 || i >= this->num || j < 0 || j >= this->num,
            "invalid component number (%d, %d), max. supported components: %d", i, j, H2D_MAX_COMPONENTS);
 
+  if (error_form[i][j] != NULL) delete error_form[i][j];
   error_form[i][j] = form;
 }
 
 // case i = j = 0
 void Adapt::set_error_form(Adapt::MatrixFormVolError* form)
 {
+  if (error_form[0][0] != NULL) delete error_form[0][0];
   set_error_form(0, 0, form);
 }
 

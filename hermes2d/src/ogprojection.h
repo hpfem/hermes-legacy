@@ -47,10 +47,19 @@ public:
                              ProjNormType proj_norm = HERMES_UNSET_NORM);
 
   static void project_global(Hermes::vector<Space *> spaces,
-                             Hermes::vector<WeakForm::MatrixFormVol *> mfvol,
-                             Hermes::vector<WeakForm::VectorFormVol *> vfvol,
-                             Hermes::vector<MeshFunction*> source_meshfns,
+                             Hermes::vector<WeakForm::MatrixFormVol *> custom_projection_jacobian,
+                             Hermes::vector<WeakForm::VectorFormVol *> custom_projection_residual,
                              scalar* target_vec, MatrixSolverType matrix_solver = SOLVER_UMFPACK);
+  
+  static void project_global(Hermes::vector<Space *> spaces,
+                             Hermes::vector<WeakForm::MatrixFormVol *> custom_projection_jacobian,
+                             Hermes::vector<WeakForm::VectorFormVol *> custom_projection_residual,
+                             Hermes::vector<Solution *> sols_dest, MatrixSolverType matrix_solver = SOLVER_UMFPACK);
+                             
+  static void project_global(Space* space,
+                             WeakForm::MatrixFormVol* custom_projection_jacobian,
+                             WeakForm::VectorFormVol* custom_projection_residual,
+                             Solution* sol_dest, MatrixSolverType matrix_solver = SOLVER_UMFPACK);      
 
   // Underlying function for global orthogonal projection.
   // Not intended for the user. NOTE: the weak form here must be
