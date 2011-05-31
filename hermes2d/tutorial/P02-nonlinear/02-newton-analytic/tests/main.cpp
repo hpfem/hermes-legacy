@@ -1,8 +1,6 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 #include "function/function.h"
 
 using namespace RefinementSelectors;
@@ -20,9 +18,6 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 // Problem parameters.
 double alpha = 4.0;
 double heat_src = 1.0;
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
