@@ -1,47 +1,31 @@
-#include "hermes2d.h"
+#include "definitions.h"
 
 /*  Exact solution */
 
-class CustomExactSolution : public ExactSolutionScalar
+void CustomExactSolution::derivatives(double x, double y, scalar& dx, scalar& dy) const 
 {
-public:
-  CustomExactSolution(Mesh* mesh) : ExactSolutionScalar(mesh) 
-  { 
-  }
+  dx = cos(x)*sin(y);
+  dy = sin(x)*cos(y);
+}
 
-  virtual void derivatives(double x, double y, scalar& dx, scalar& dy) const 
-  {
-    dx = cos(x)*sin(y);
-    dy = sin(x)*cos(y);
-  };
+double CustomExactSolution::value(double x, double y) const 
+{
+  return sin(x)*sin(y);
+}
 
-  virtual double value(double x, double y) const 
-  {
-    return sin(x)*sin(y);
-  }
-
-  virtual Ord ord(Ord x, Ord y) const 
-  {
-    return Ord(7);
-  }
-};
+Ord CustomExactSolution::ord(Ord x, Ord y) const 
+{
+  return Ord(7);
+}
 
 /* Custom function f */
 
-class CustomFunction: public HermesFunction
+double CustomFunction::value(double x, double y) const 
 {
-public:
-  CustomFunction() : HermesFunction() 
-  { 
-  }
+  return -2*sin(x)*sin(y);
+}
 
-  virtual scalar value(double x, double y) const 
-  {
-    return -2*sin(x)*sin(y);
-  };
-
-  virtual Ord value(Ord x, Ord y) const 
-  {
-    return Ord(7);
-  }
-};
+Ord CustomFunction::value(Ord x, Ord y) const 
+{
+  return Ord(7);
+}
