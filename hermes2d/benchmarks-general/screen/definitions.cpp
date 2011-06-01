@@ -1,7 +1,5 @@
 #include "definitions.h"
 
-/* Exact solution */
-
 scalar Fn(double u)
 {
   double s, c;
@@ -157,7 +155,6 @@ scalar exact1(double x, double y, scalar& dx, scalar& dy)
   return  i * ( Hr * x/r - Ht * y/(r*r));
 }
 
-/* Exact solution */
 
 scalar2 CustomExactSolution::value(double x, double y) const 
 {
@@ -193,7 +190,6 @@ Ord CustomExactSolution::ord(Ord x, Ord y) const
     return Ord(10);
 } 
 
-/* Weak forms */
 
 CustomWeakFormScreen::CustomWeakFormScreen() : WeakForm(1) 
 {

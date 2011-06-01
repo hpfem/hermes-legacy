@@ -13,17 +13,14 @@ public:
 
   double dduhat_dxx(double x);
  
-  protected:
-    double K;
+protected:
+  double K;
 };
 
 class CustomExactSolution : public ExactSolutionScalar
 {
 public:
-  CustomExactSolution(Mesh* mesh, double K) : ExactSolutionScalar(mesh)
-  {
-    cef = new CustomExactFunction(K);
-  };
+  CustomExactSolution(Mesh* mesh, double K);
 
   virtual scalar value (double x, double y) const;
 
@@ -31,10 +28,7 @@ public:
 
   virtual Ord ord(Ord x, Ord y) const;
 
-  ~CustomExactSolution() 
-  { 
-    delete cef;
-  }
+  ~CustomExactSolution();
 
   CustomExactFunction* cef;
 };
@@ -44,19 +38,13 @@ public:
 class CustomFunction: public HermesFunction
 {
 public:
-  CustomFunction(double coeff1) : HermesFunction(), coeff1(coeff1) 
-  {
-    cef = new CustomExactFunction(coeff1);
-  };
+  CustomFunction(double coeff1);
 
   virtual scalar value(double x, double y) const;
 
   virtual Ord value(Ord x, Ord y) const;
 
-  ~CustomFunction() 
-  { 
-    delete cef;
-  }
+  ~CustomFunction();
 
   CustomExactFunction* cef;
   double coeff1;

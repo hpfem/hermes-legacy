@@ -1,7 +1,5 @@
 #include "definitions.h"
 
-/* Exact solution */
-
 double CustomExactFunction::uhat(double x) 
 {
   return 1. - (exp(K*x) + exp(-K*x)) / (exp(K) + exp(-K));
@@ -15,6 +13,16 @@ double CustomExactFunction::duhat_dx(double x)
 double CustomExactFunction::dduhat_dxx(double x) 
 {
   return -K*K * (exp(K*x) + exp(-K*x)) / (exp(K) + exp(-K));
+}
+
+CustomExactSolution::CustomExactSolution(Mesh* mesh, double K) : ExactSolutionScalar(mesh)
+{
+  cef = new CustomExactFunction(K);
+}
+
+CustomExactSolution::~CustomExactSolution() 
+{ 
+  delete cef;
 }
 
 double CustomExactSolution::value (double x, double y) const 
@@ -33,7 +41,16 @@ Ord CustomExactSolution::ord(Ord x, Ord y) const
   return Ord(20);
 }
 
-/* Custom function */
+
+CustomFunction::CustomFunction(double coeff1) : HermesFunction(), coeff1(coeff1) 
+{
+  cef = new CustomExactFunction(coeff1);
+}
+
+CustomFunction::~CustomFunction() 
+{ 
+  delete cef;
+}
 
 double CustomFunction::value(double x, double y) const 
 {
@@ -46,7 +63,6 @@ Ord CustomFunction::value(Ord x, Ord y) const
   return Ord(5);
 }
 
-/* Weak forms */
 
 CustomWeakForm::CustomWeakForm(CustomFunction* f) : WeakForm(1) 
 {

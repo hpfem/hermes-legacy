@@ -1,7 +1,5 @@
 #include "definitions.h"
 
-/*  Exact solution */
-
 double CustomExactSolution::value (double x, double y) const 
 {
   double r = sqrt(x*x + y*y);

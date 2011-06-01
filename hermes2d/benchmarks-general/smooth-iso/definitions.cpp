@@ -1,7 +1,5 @@
 #include "definitions.h"
 
-/*  Exact solution */
-
 void CustomExactSolution::derivatives(double x, double y, scalar& dx, scalar& dy) const 
 {
   dx = cos(x)*sin(y);
@@ -18,7 +16,6 @@ Ord CustomExactSolution::ord(Ord x, Ord y) const
   return Ord(7);
 }
 
-/* Custom function f */
 
 double CustomFunction::value(double x, double y) const 
 {

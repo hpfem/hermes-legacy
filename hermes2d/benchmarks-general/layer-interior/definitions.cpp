@@ -1,7 +1,5 @@
 #include "definitions.h"
 
-/* Exact solution */
-
 double CustomExactSolution::value (double x, double y) const 
 {
   return atan(slope * (sqrt(sqr(x-1.25) + sqr(y+0.25)) - M_PI/3));
@@ -20,7 +18,6 @@ Ord CustomExactSolution::ord(Ord x, Ord y) const
   return Ord(20);
 }
 
-/* Custom function f */
 
 double CustomFunction::value(double x, double y) const 
 {
@@ -39,4 +36,3 @@ Ord CustomFunction::value(Ord x, Ord y) const
 {
   return Ord(20);
 }
-

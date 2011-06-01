@@ -1,7 +1,5 @@
 #include "definitions.h"
 
-/* Exact solution */
-
 void CustomExactSolution::derivatives(double x, double y, scalar& dx, scalar& dy) const 
 {
   dx = cos(x);
@@ -18,7 +16,6 @@ Ord CustomExactSolution::ord(Ord x, Ord y) const
   return Ord(20);
 }
 
-/* Weak forms */
 
 double CustomJacobian::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
                              Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
