@@ -1,7 +1,8 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
-#include "runge_kutta.h"
+#include "../definitions.h"
+
+using namespace RefinementSelectors;
 
 // This test makes sure that example P03-timedep/02-cathedral-rk works correctly.
 
@@ -30,10 +31,6 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 //   Implicit_SDIRK_CASH_5_24_embedded, Implicit_SDIRK_CASH_5_34_embedded, Implicit_DIRK_7_45_embedded. 
 ButcherTableType butcher_table_type = Implicit_SDIRK_2_2;
 
-// Boundary markers.
-const std::string BDY_GROUND = "Boundary ground";
-const std::string BDY_AIR = "Boundary air";
-
 // Problem parameters.
 const double TEMP_INIT = 10;       // Temperature of the ground (also initial temperature).
 const double ALPHA = 10;           // Heat flux coefficient for Newton's boundary condition.
@@ -41,9 +38,6 @@ const double LAMBDA = 1e2;         // Thermal conductivity of the material.
 const double HEATCAP = 1e2;        // Heat capacity.
 const double RHO = 3000;           // Material density.
 const double T_FINAL = 5*time_step;
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
@@ -60,8 +54,8 @@ int main(int argc, char* argv[])
 
   // Perform initial mesh refinements.
   for(int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
-  mesh.refine_towards_boundary(BDY_AIR, INIT_REF_NUM_BDY);
-  mesh.refine_towards_boundary(BDY_GROUND, INIT_REF_NUM_BDY);
+  mesh.refine_towards_boundary("Boundary air", INIT_REF_NUM_BDY);
+  mesh.refine_towards_boundary("Boundary ground", INIT_REF_NUM_BDY);
 
   // Previous and next time level solutions.
   Solution* sln_time_prev = new Solution(&mesh, TEMP_INIT);
@@ -69,11 +63,11 @@ int main(int argc, char* argv[])
 
   // Initialize the weak formulation.
   double current_time = 0;
-  CustomWeakFormHeatRK wf(BDY_AIR, ALPHA, LAMBDA, HEATCAP, RHO,
+  CustomWeakFormHeatRK wf("Boundary air", ALPHA, LAMBDA, HEATCAP, RHO,
                           &current_time, TEMP_INIT, T_FINAL);
   
   // Initialize boundary conditions.
-  DefaultEssentialBCConst bc_essential(BDY_GROUND, TEMP_INIT);
+  DefaultEssentialBCConst bc_essential("Boundary ground", TEMP_INIT);
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.
