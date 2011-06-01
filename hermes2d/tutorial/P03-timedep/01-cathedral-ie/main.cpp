@@ -1,7 +1,8 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
-#include "runge_kutta.h"
+#include "definitions.h"
+
+using namespace RefinementSelectors;
 
 //  This example shows the simplest way to solve a linear time-dependent
 //  PDE in Hermes using the implicit Euler method in time. The model describes 
@@ -36,9 +37,6 @@ const double LAMBDA = 1e2;         // Thermal conductivity of the material.
 const double HEATCAP = 1e2;        // Heat capacity.
 const double RHO = 3000;           // Material density.
 const double T_FINAL = 86400;      // Length of time interval (24 hours) in seconds.
-
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {

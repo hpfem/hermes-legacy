@@ -1,6 +1,8 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
+
+using namespace RefinementSelectors;
 
 // This test makes sure that example 09-timedep-basic works correctly.
 
@@ -18,9 +20,6 @@ const double LAMBDA = 1e2;           // Thermal conductivity of the material.
 const double HEATCAP = 1e2;          // Heat capacity.
 const double RHO = 3000;             // Material density.
 const double T_FINAL = 5*time_step;
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
