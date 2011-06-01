@@ -1,8 +1,7 @@
 Tutorial Part III (Time-dependent Problems)
 ===========================================
 
-This chapter you will learn how to solve systems of equations and 
-time-dependent problems. 
+In this chapter we will learn how to solve time-dependent problems. 
 
 .. toctree::
    :maxdepth: 2

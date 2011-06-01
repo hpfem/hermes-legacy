@@ -117,6 +117,12 @@ int main(int argc, char* argv[])
   }
   while (current_time < T_FINAL);
 
+  // Cleaning up.
+  delete [] coeff_vec;
+  delete matrix;
+  delete rhs;
+  delete solver;
+
   // Wait for the view to be closed.
   View::wait();
   return 0;
