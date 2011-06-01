@@ -5,16 +5,10 @@
 
 using namespace RefinementSelectors;
 
-//  This example is the same as 03-newton-heat-ie and 03-newton-heat-sdirk22
-//  except that time discretization is performed using arbitrary (explicit
-//  or implicit, low-order or higher-order) Runge-Kutta methods entered via
-//  their Butcher's tables. As opposed to examples 03 and 04, approximation
-//  of the time derivative is not part of the weak formulation.
+//  This example solves a nonlinear time-dependent problem using arbitrary 
+//  Runge-Kutta methods.
 //
 //  For a list of available R-K methods see the file hermes_common/tables.h.
-//
-//  The function rk_time_step() needs more optimisation, see a todo list at
-//  the beginning of file src/runge-kutta.H.
 //
 //  PDE: time-dependent heat transfer equation with nonlinear thermal
 //  conductivity, du/dt = div[lambda(u) grad u] + f.
