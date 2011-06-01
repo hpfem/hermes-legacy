@@ -10,11 +10,10 @@ This section describes the implementation of the implicit Euler method. As the u
 we use a naive approximation of how the St. Vitus cathedral in Prague responds to changes in 
 the surrounding air temperature during one 24-hour cycle. The geometry is shown below:
 
-.. image:: 01-cathedral-ie/vitus1.png
+.. image:: 01-cathedral-ie/mesh.png
    :align: center
-   :width: 400
-   :height: 500
-   :alt: Model geometry and temperature distribution after 24 hours.
+   :width: 280
+   :alt: Model geometry.
 
 We assume the standard heat transfer equation
 
@@ -209,6 +208,7 @@ needs to be calculated once at the beginning::
       if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs, 
 	  jacobian_changed)) error("Newton's iteration failed.");
       jacobian_changed = false;
+      ...
 
 Sample results
 ~~~~~~~~~~~~~~

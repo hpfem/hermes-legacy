@@ -3,7 +3,7 @@ Time-Integration with Runge-Kutta Methods (02-cathedral-rk)
 
 **Git reference:** Tutorial example `02-cathedral-rk <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P03-timedep/02-cathedral-rk>`_. 
 
-This example solves the same model problem as example `01-cathedral-ie <http://hpfem.org/hermes/doc/src/hermes2d/timedep/cathedral-ie.html>`_ but it shows how various Runge-Kutta methods can be used for time stepping. Let us begin with a brief introduction 
+This example solves the same model problem as example `01-cathedral-ie <http://hpfem.org/hermes/doc/src/hermes2d/P03-timedep/01-cathedral-ie.html>`_ but it shows how various Runge-Kutta methods can be used for time stepping. Let us begin with a brief introduction 
 to the Runge-Kutta methods and Butcher's tables before we explain implementation details.
 
 Runge-Kutta methods and Butcher's tables
@@ -70,9 +70,7 @@ Plus, the user is free to define any Butcher's table of his own.
 Model problem
 ~~~~~~~~~~~~~
 
-The model problem is the same as in example
-`01-cathedral-ie <http://hpfem.org/hermes/doc/src/hermes2d/timedep/cathedral-ie.html>`_ 
-However, for the purpose of using Runge-Kutta methods, the equation has to be 
+For the purpose of using Runge-Kutta methods, the equation has to be 
 formulated in such a way that the time derivative stands solo on the left-hand side and 
 everything else is on the right
 
@@ -84,21 +82,20 @@ everything else is on the right
 Weak formulation
 ~~~~~~~~~~~~~~~~
 
-The weak formulation is only needed for the right-hand side
+The temporal derivative is skipped, and weak formulation is only done for the right-hand side
 
 .. math::
 
      F(T) = - \int_{\Omega} \frac{\lambda}{c \varrho} \nabla T\cdot \nabla v
             + \int_{\Gamma_{air}} \frac{\alpha \lambda}{c \varrho} (T_{ext}(t) - T)v.
 
-This is different from example `01-cathedral-ie <http://hpfem.org/hermes/doc/src/hermes2d/timedep/cathedral-ie.html>`_ 
-where the discretization of the time derivative term was part of the weak formulation. The approach presented
-here makes the method more modular.
+This is different from example `01-cathedral-ie <http://hpfem.org/hermes/doc/src/hermes2d/P03-timedep/01-cathedral-ie.html>`_
+where the discretization of the time derivative term was hardwired in the weak formulation. 
 
 The function $F$ above is the stationary residual of the equation (i.e., the weak form of the right-hand side).
-Since the Runge-Kutta equations are solved using the Newton's method, the reader may want to have a brief 
-look ahead to the `Newton's method section <http://hpfem.org/hermes/doc/src/hermes2d/nonlinear/newton.html>`_.
-Then it will be easy to see that the weak form of the Jacobian matrix of the stationary residual is
+Since the Runge-Kutta equations are solved using the Newton's method, the reader may want to look at 
+the `Newton's method section <http://hpfem.org/hermes/doc/src/hermes2d/P02-nonlinear/newton-intro.html>`_ before
+reading further. The weak form for the Jacobian matrix of the stationary residual is
 
 .. math::
 
@@ -108,73 +105,96 @@ Then it will be easy to see that the weak form of the Jacobian matrix of the sta
 Defining weak forms
 ~~~~~~~~~~~~~~~~~~~
 
-Bilinear and linear forms are defined as usual::
+The weak forms are very similar to the previous example, except that the terms 
+corresponding to the time derivative are missing, and the rest has an opposite sign::
 
-    template<typename Real, typename Scalar>
-    Scalar stac_jacobian_vol(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, 
-			     Geom<Real> *e, ExtData<Scalar> *ext)
+    class CustomWeakFormHeatRK1 : public WeakForm
     {
-      Scalar result = 0;
-      for (int i = 0; i < n; i++) {
-	result += -wt[i] * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]);
-      }
+    public:
+      CustomWeakFormHeatRK1(std::string bdy_air, double alpha, double lambda, double heatcap, double rho,
+			    double time_step, double* current_time_ptr, double temp_init, double t_final,
+			    Solution* prev_time_sln) : WeakForm(1)
+      {
+	/* Jacobian */
+	// Contribution of the time derivative term.
+	add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(1.0 / time_step)));
+	// Contribution of the diffusion term.
+	add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, HERMES_ANY, new HermesFunction(lambda / (rho * heatcap))));
+	// Contribution of the Newton boundary condition.
+	add_matrix_form_surf(new WeakFormsH1::DefaultMatrixFormSurf(0, 0, bdy_air, new HermesFunction(alpha / (rho * heatcap))));
 
-      return result * LAMBDA / HEATCAP / RHO;
-    }
+	/* Residual */
+	// Contribution of the time derivative term.
+	add_vector_form(new WeakFormsH1::DefaultResidualVol(0, HERMES_ANY, new HermesFunction(1.0 / time_step)));
+	// Contribution of the diffusion term.
+	add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, HERMES_ANY, new HermesFunction(lambda / (rho * heatcap))));
+	CustomVectorFormVol* vec_form_vol = new CustomVectorFormVol(0, time_step);
+	vec_form_vol->ext.push_back(prev_time_sln);
+	add_vector_form(vec_form_vol);
+	// Contribution of the Newton boundary condition.
+	add_vector_form_surf(new WeakFormsH1::DefaultResidualSurf(0, bdy_air, new HermesFunction(alpha / (rho * heatcap))));
+	// Contribution of the Newton boundary condition.
+	add_vector_form_surf(new CustomVectorFormSurf(0, bdy_air, alpha, rho, heatcap,
+			     current_time_ptr, temp_init, t_final));
+      };
 
-    template<typename Real, typename Scalar>
-    Scalar stac_residual_vol(int n, double *wt, Func<Real> *u_ext[], Func<Real> *v, 
-		             Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      Func<Scalar>* u_prev = u_ext[0];
+    private:
+      // This form is custom since it contains previous time-level solution.
+      class CustomVectorFormVol : public WeakForm::VectorFormVol
+      {
+      public:
+	CustomVectorFormVol(int i, double time_step)
+	  : WeakForm::VectorFormVol(i), time_step(time_step) 
+	{ 
+	}
 
-      Scalar result = 0;
-      for (int i = 0; i < n; i++) {
-	result += -wt[i] * (u_prev->dx[i] * v->dx[i] + u_prev->dy[i] * v->dy[i]);
-	result += wt[i] * heat_src(e->x[i], e->y[i]) * v->val[i];	       
-      }
+	virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+	{
+	  Func<double>* temp_prev_time = ext->fn[0];
+	  return -int_u_v<double, scalar>(n, wt, temp_prev_time, v) / time_step;
+	}
 
-      return result * LAMBDA / HEATCAP / RHO;
-    }
+	virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
+	{
+	  Func<Ord>* temp_prev_time = ext->fn[0];
+	  return -int_u_v<Ord, Ord>(n, wt, temp_prev_time, v) / time_step;
 
-    template<typename Real, typename Scalar>
-    Scalar stac_jacobian_surf(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, 
-			      Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      return - LAMBDA / HEATCAP / RHO * ALPHA * int_u_v<Real, Scalar>(n, wt, u, v);
-    }
+	}
 
-    template<typename Real, typename Scalar>
-    Scalar stac_residual_surf(int n, double *wt, Func<Real> *u_ext[], Func<Real> *v, 
-			      Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      Func<Scalar>* u_prev = u_ext[0];
+	double time_step;
+      };
 
-      // This is a temporary workaround. The stage time t_n + h * c_i
-      // can be accessed via u_stage_time->val[0];
-      Func<Scalar>* u_stage_time = ext->fn[0]; 
+      // This form is custom since it contains time-dependent exterior temperature.
+      class CustomVectorFormSurf : public WeakForm::VectorFormSurf
+      {
+      public:
+	CustomVectorFormSurf(int i, std::string area, double alpha, double rho, double heatcap,
+				    double* current_time_ptr, double temp_init, double t_final)
+	  : WeakForm::VectorFormSurf(i, area), alpha(alpha), rho(rho), heatcap(heatcap), current_time_ptr(current_time_ptr),
+				     temp_init(temp_init), t_final(t_final) 
+	{ 
+	}
 
-      Scalar stage_time = u_stage_time->val[0];
-      Real stage_ext_temp = temp_ext<Real>(stage_time);
+	virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+	{
+	    return -alpha / (rho * heatcap) * temp_ext(*current_time_ptr + time_step) * int_v<double>(n, wt, v);
+	}
 
-      Scalar result = 0;
-      for (int i = 0; i < n; i++) {
-	result += wt[i] * (stage_ext_temp - u_prev->val[i]) * v->val[i];		       
-      }
+	virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
+	{
+	    return -alpha / (rho * heatcap) * temp_ext(*current_time_ptr + time_step) * int_v<Ord>(n, wt, v);
+	}
 
-      return LAMBDA / HEATCAP / RHO * ALPHA * result;
-    }
- 
-The previous-level solution is accessed via::
+	// Time-dependent exterior temperature.
+	template<typename Real>
+	Real temp_ext(Real t) const 
+	{
+	  return temp_init + 10. * sin(2*M_PI*t/t_final);
+	}
 
-    Func<Scalar>* u_prev = u_ext[0];
-
-and the stage time as::
-
-  Scalar stage_time = u_stage_time->val[0];
-
-The latter is a temporary solution and it will be replaced in due course
-by passing a real number as it ought to be.
+	double alpha, rho, heatcap, *current_time_ptr, temp_init, t_final;
+      };
+    };
 
 Selecting a Butcher's table
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -189,73 +209,47 @@ This is followed in main.cpp by creating an instance of the table::
 
     ButcherTable bt(butcher_table_type);
 
-Registering weak forms
-~~~~~~~~~~~~~~~~~~~~~~
+Initializing Runge-Kutta time stepping
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The weak forms are registered as follows::
+This is done by instantiating the RungeKutta class. Passed are
+pointers to the discrete problem, Butcher's table, and 
+matrix solver::
 
-    // Initialize weak formulation.
-    WeakForm wf;
-    wf.add_matrix_form(callback(stac_jacobian_vol));
-    wf.add_vector_form(callback(stac_residual_vol));
-    wf.add_matrix_form_surf(callback(stac_jacobian_surf), BDY_AIR);
-    wf.add_vector_form_surf(callback(stac_residual_surf), BDY_AIR);
-
-Setting initial condition
-~~~~~~~~~~~~~~~~~~~~~~~~~ 
-
-Before time stepping, one needs to obtain the coefficient vector of the initial
-condition::
-
-    // Project the initial condition on the FE space to obtain initial solution coefficient vector.
-    info("Projecting initial condition to translate initial condition into a vector.");
-    scalar* coeff_vec = new scalar[ndof];
-    OGProjection::project_global(&space, &u_prev_time, coeff_vec, matrix_solver);
-
-Initializing the discrete problem
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The discrete problem is initialized with is_linear = false (the default value), 
-disregarding whether it is linear or not::
-
-    // Initialize the FE problem.
-    bool is_linear = false;
-    DiscreteProblem dp(&wf, &space, is_linear);
+    // Initialize Runge-Kutta time stepping.
+    RungeKutta runge_kutta(&dp, &bt, matrix_solver);
 
 Time-stepping loop
 ~~~~~~~~~~~~~~~~~~
 
-Finally, the time-stepping loop takes the form::
+The time-stepping loop has the form::
 
     // Time stepping loop:
-    double current_time = 0.0; int ts = 1;
+    int ts = 1;
     do 
     {
       // Perform one Runge-Kutta time step according to the selected Butcher's table.
-      info("Runge-Kutta time step (t = %g, tau = %g, stages: %d).", 
-           current_time, time_step, bt.get_size());
+      info("Runge-Kutta time step (t = %g s, tau = %g s, stages: %d).", 
+	   current_time, time_step, bt.get_size());
+      bool jacobian_changed = false;
       bool verbose = true;
-      bool is_linear = true;
-      if (!rk_time_step(current_time, time_step, &bt, coeff_vec, &dp, matrix_solver,
-	  	        verbose, is_linear)) {
-        error("Runge-Kutta time step failed, try to decrease time step size.");
+      if (!runge_kutta.rk_time_step(current_time, time_step, sln_time_prev, 
+				    sln_time_new, jacobian_changed, verbose)) {
+	error("Runge-Kutta time step failed, try to decrease time step size.");
       }
-
-      // Convert coeff_vec into a new time level solution.
-      Solution::vector_to_solution(coeff_vec, &space, &u_prev_time);
-
-      // Update time.
-      current_time += time_step;
 
       // Show the new time level solution.
       char title[100];
-      sprintf(title, "Time %3.2f, exterior temperature %3.5f", current_time, temp_ext(current_time));
+      sprintf(title, "Time %3.2f s", current_time);
       Tview.set_title(title);
-      Tview.show(&u_prev_time);
+      Tview.show(sln_time_new);
 
-      // Increase counter of time steps.
+      // Copy solution for the new time step.
+      sln_time_prev->copy(sln_time_new);
+
+      // Increase current time and time step counter.
+      current_time += time_step;
       ts++;
     } 
     while (current_time < T_FINAL);
-
 
