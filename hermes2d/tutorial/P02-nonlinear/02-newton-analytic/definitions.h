@@ -19,8 +19,8 @@ public:
 
   virtual Ord derivative(Ord u) const;
 
-  protected:
-    double alpha;
+protected:
+  double alpha;
 };
 
 /* Initial condition for the Newton's method */
@@ -45,10 +45,7 @@ public:
   CustomEssentialBCNonConst(std::string marker) 
            : EssentialBoundaryCondition(Hermes::vector<std::string>(marker)) {};
 
-  inline EssentialBCValueType get_value_type() const 
-  { 
-    return EssentialBoundaryCondition::BC_FUNCTION; 
-  }
+  virtual EssentialBCValueType get_value_type() const;
 
   virtual double value(double x, double y, double n_x, double n_y, 
                        double t_x, double t_y) const;

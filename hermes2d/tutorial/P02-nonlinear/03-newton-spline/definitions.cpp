@@ -1,7 +1,5 @@
 #include "definitions.h"
 
-/* Initial condition for the Newton's method */
-
 void CustomInitialCondition::derivatives (double x, double y, scalar& dx, scalar& dy) const 
 {
   dx = (y+10) / 100.;
@@ -18,7 +16,10 @@ Ord CustomInitialCondition::ord(Ord x, Ord y) const
   return x * y;
 }
 
-/* Essential boundary conditions */
+EssentialBoundaryCondition::EssentialBCValueType CustomEssentialBCNonConst::get_value_type() const 
+{ 
+  return EssentialBoundaryCondition::BC_FUNCTION; 
+}
 
 double CustomEssentialBCNonConst::value(double x, double y, double n_x, double n_y, 
                                         double t_x, double t_y) const

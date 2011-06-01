@@ -1,7 +1,5 @@
 #include "definitions.h"
 
-/* Nonlinearity lambda(u) = pow(u, alpha) */
-
 CustomNonlinearity::CustomNonlinearity(double alpha): HermesFunction()
 {
   this->is_const = false;
@@ -15,11 +13,6 @@ double CustomNonlinearity::value(double u) const
 
 Ord CustomNonlinearity::value(Ord u) const
 {
-  // If alpha is not an integer, then the function
-  // is non-polynomial. 
-  // NOTE: Setting Ord to 10 is safe but costly,
-  // one could save here by looking at special cases 
-  // of alpha. 
   return Ord(10);
 }
 
@@ -33,8 +26,6 @@ Ord CustomNonlinearity::derivative(Ord u) const
   // Same comment as above applies.
   return Ord(10);
 }
-
-/* Initial condition for the Newton's method */
 
 double CustomInitialCondition::value(double x, double y) const 
 {
@@ -52,7 +43,10 @@ Ord CustomInitialCondition::ord(Ord x, Ord y) const
   return x*y;
 }
 
-/* Essential boundary conditions */
+EssentialBoundaryCondition::EssentialBCValueType CustomEssentialBCNonConst::get_value_type() const 
+{ 
+  return EssentialBoundaryCondition::BC_FUNCTION; 
+}
 
 double CustomEssentialBCNonConst::value(double x, double y, double n_x, double n_y, 
                                         double t_x, double t_y) const

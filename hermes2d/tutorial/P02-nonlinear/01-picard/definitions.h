@@ -29,9 +29,7 @@ private:
   class CustomJacobian : public WeakForm::MatrixFormVol
   {
   public:
-    CustomJacobian(int i, int j, HermesFunction* lambda) : WeakForm::MatrixFormVol(i, j), lambda(lambda)
-    { 
-    }
+    CustomJacobian(int i, int j, HermesFunction* lambda) : WeakForm::MatrixFormVol(i, j), lambda(lambda) {};
 
     virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
                          Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const;
@@ -46,36 +44,13 @@ private:
   class CustomResidual : public WeakForm::VectorFormVol
   {
   public:
-    CustomResidual(int i, HermesFunction* lambda, HermesFunction* f) 
-      : WeakForm::VectorFormVol(i), lambda(lambda), f(f) 
-    { 
-    }
+    CustomResidual(int i, HermesFunction* lambda, HermesFunction* f) : WeakForm::VectorFormVol(i), lambda(lambda), f(f) {};
 
     virtual double value(int n, double *wt, Func<scalar> *u_ext[],
-                         Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
-    {
-      scalar result = 0;
-      for (int i = 0; i < n; i++) 
-      {
-        result += wt[i] * lambda->value(ext->fn[0]->val[i]) 
-                        * (u_ext[0]->dx[i] * v->dx[i] + u_ext[0]->dy[i] * v->dy[i]);
-        result += wt[i] * f->value(e->x[i], e->y[i]) * v->val[i];
-      }
-      return result;
-    }
+                         Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const;
 
     virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
-                    Geom<Ord> *e, ExtData<Ord> *ext) const 
-    {
-      Ord result = 0;
-      for (int i = 0; i < n; i++) 
-      {
-        result += wt[i] * lambda->value(ext->fn[0]->val[i]) * (u_ext[0]->dx[i] 
-                        * v->dx[i] + u_ext[0]->dy[i] * v->dy[i]);
-        result += wt[i] * f->value(e->x[i], e->y[i]) * v->val[i];
-      }
-      return result;
-    }
+                    Geom<Ord> *e, ExtData<Ord> *ext) const;
 
     private:
       HermesFunction* lambda;
@@ -90,10 +65,7 @@ public:
   CustomEssentialBCNonConst(std::string marker) 
            : EssentialBoundaryCondition(Hermes::vector<std::string>(marker)) {};
 
-  inline EssentialBCValueType get_value_type() const
-  {
-    return EssentialBoundaryCondition::BC_FUNCTION; 
-  }
+  virtual EssentialBoundaryCondition::EssentialBCValueType get_value_type() const;
 
   virtual double value(double x, double y, double n_x, double n_y, 
                        double t_x, double t_y) const;
