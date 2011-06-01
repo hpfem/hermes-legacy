@@ -144,21 +144,21 @@ Sample results
 
 Snapshot 1:
 
-.. image:: 08-gross-pitaevski/sol_1.png
+.. image:: gross-pitaevski/sol_1.png
    :align: center
    :width: 600
    :alt: solution
 
 Snapshot 2:
 
-.. image:: 08-gross-pitaevski/sol_2.png
+.. image:: gross-pitaevski/sol_2.png
    :align: center
    :width: 600
    :alt: solution
 
 Snapshot 3:
 
-.. image:: 08-gross-pitaevski/sol_3.png
+.. image:: gross-pitaevski/sol_3.png
    :align: center
    :width: 600
    :alt: solution

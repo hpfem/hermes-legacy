@@ -1,7 +1,7 @@
-Using Implicit Euler Method (01-cathedral-ie)
----------------------------------------------
+Using Implicit Euler Method (01-implicit-euler)
+-----------------------------------------------
 
-**Git reference:** Tutorial example `01-cathedral-ie <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P03-timedep/01-cathedral-ie>`_. 
+**Git reference:** Tutorial example `01-implicit-euler <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P03-timedep/01-implicit-euler>`_. 
 
 Model problem
 ~~~~~~~~~~~~~
@@ -10,7 +10,7 @@ This section describes the implementation of the implicit Euler method. As the u
 we use a naive approximation of how the St. Vitus cathedral in Prague responds to changes in 
 the surrounding air temperature during one 24-hour cycle. The geometry is shown below:
 
-.. image:: 01-cathedral-ie/mesh.png
+.. image:: 01-implicit-euler/mesh.png
    :align: center
    :width: 280
    :alt: Model geometry.
@@ -215,7 +215,7 @@ Sample results
 
 Sample temperature distribution is shown below: 
 
-.. image:: 01-cathedral-ie/vitus1.png
+.. image:: 01-implicit-euler/vitus1.png
    :align: center
    :height: 500
    :alt: sample result

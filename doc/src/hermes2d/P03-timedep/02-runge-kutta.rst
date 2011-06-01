@@ -1,9 +1,9 @@
-Time-Integration with Runge-Kutta Methods (02-cathedral-rk)
------------------------------------------------------------
+Time-Integration with Arbitrary Runge-Kutta Methods (02-runge-kutta)
+--------------------------------------------------------------------
 
-**Git reference:** Tutorial example `02-cathedral-rk <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P03-timedep/02-cathedral-rk>`_. 
+**Git reference:** Tutorial example `02-runge-kutta <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P03-timedep/02-runge-kutta>`_. 
 
-This example solves the same model problem as example `01-cathedral-ie <http://hpfem.org/hermes/doc/src/hermes2d/P03-timedep/01-cathedral-ie.html>`_ but it shows how various Runge-Kutta methods can be used for time stepping. Let us begin with a brief introduction 
+This example solves the same model problem as example `01-implicit-euler <http://hpfem.org/hermes/doc/src/hermes2d/P03-timedep/01-implicit-euler.html>`_ but it shows how various Runge-Kutta methods can be used for time stepping. Let us begin with a brief introduction 
 to the Runge-Kutta methods and Butcher's tables before we explain implementation details.
 
 Runge-Kutta methods and Butcher's tables
@@ -89,7 +89,7 @@ The temporal derivative is skipped, and weak formulation is only done for the ri
      F(T) = - \int_{\Omega} \frac{\lambda}{c \varrho} \nabla T\cdot \nabla v
             + \int_{\Gamma_{air}} \frac{\alpha \lambda}{c \varrho} (T_{ext}(t) - T)v.
 
-This is different from example `01-cathedral-ie <http://hpfem.org/hermes/doc/src/hermes2d/P03-timedep/01-cathedral-ie.html>`_
+This is different from example `01-implicit-euler <http://hpfem.org/hermes/doc/src/hermes2d/P03-timedep/01-implicit-euler.html>`_
 where the discretization of the time derivative term was hardwired in the weak formulation. 
 
 The function $F$ above is the stationary residual of the equation (i.e., the weak form of the right-hand side).

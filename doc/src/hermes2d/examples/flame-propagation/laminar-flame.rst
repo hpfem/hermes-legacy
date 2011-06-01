@@ -12,7 +12,7 @@ describing a very simple flame propagation model (laminar flame, no fluid mechan
 The computational domain shown below contains in the middle a narrow portion (cooling rods) 
 whose purpose is to slow down the chemical reaction:
 
-.. image:: 06-flame/domain.png
+.. image:: laminar-flame/domain.png
    :align: center
    :width: 760
    :alt: computational domain
@@ -115,7 +115,7 @@ via Filters::
 
 Details on the functions omega_fn, omega_dt_fn, omega_dy_fn and the weak 
 forms can be found in the file `forms.cpp 
-<http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P03-timedep/06-flame/forms.cpp>`_
+<http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P03-timedep/laminar-flame/forms.cpp>`_
 
 Registering weak forms
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -185,22 +185,22 @@ Sample results
 
 A few snapshots of the reaction rate $\omega$ at various times are shown below:
 
-.. image:: 06-flame/sol1.png
+.. image:: laminar-flame/sol1.png
    :align: center
    :width: 800
    :alt: solution
 
-.. image:: 06-flame/sol2.png
+.. image:: laminar-flame/sol2.png
    :align: center
    :width: 800
    :alt: solution
 
-.. image:: 06-flame/sol3.png
+.. image:: laminar-flame/sol3.png
    :align: center
    :width: 800
    :alt: solution
 
-.. image:: 06-flame/sol4.png
+.. image:: laminar-flame/sol4.png
    :align: center
    :width: 800
    :alt: solution

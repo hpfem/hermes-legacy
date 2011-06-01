@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
   // Initialize the weak formulation
   CustomNonlinearity lambda(alpha);
   HermesFunction f(heat_src);
-  CustomWeakForm wf(&lambda, &f);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
 
   // Previous and next time level solutions.
   Solution sln_time_new(&mesh);

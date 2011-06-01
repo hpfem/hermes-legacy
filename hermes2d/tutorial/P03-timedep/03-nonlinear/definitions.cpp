@@ -43,26 +43,10 @@ public:
     double alpha;
 };
 
-/* Weak forms */
-
-class CustomWeakForm : public WeakForm
-{
-public:
-  CustomWeakForm(HermesFunction* lambda, HermesFunction* f) 
-    : WeakForm(1) 
-  {
-    // Jacobian.
-    add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, HERMES_ANY, lambda));
-
-    // Residual.
-    add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, HERMES_ANY, lambda));
-    add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, f));
-  };
-};
-
 /* Essential boundary condition */
 
-class EssentialBCNonConst : public EssentialBoundaryCondition {
+class EssentialBCNonConst : public EssentialBoundaryCondition 
+{
 public:
   EssentialBCNonConst(std::string marker) : EssentialBoundaryCondition(Hermes::vector<std::string>())
   {
@@ -71,11 +55,14 @@ public:
 
   ~EssentialBCNonConst() {};
 
-  inline EssentialBCValueType get_value_type() const { return EssentialBoundaryCondition::BC_FUNCTION; }
+  inline EssentialBCValueType get_value_type() const 
+  { 
+    return EssentialBoundaryCondition::BC_FUNCTION; 
+  }
 
   virtual scalar value(double x, double y, double n_x, double n_y, double t_x, double t_y) const
   {
-    return (x+10)*(y+10)/100.;
+    return (x + 10) * (y + 10) / 100.;
   }
 };
 
@@ -84,18 +71,23 @@ public:
 class CustomInitialCondition : public ExactSolutionScalar
 {
 public:
-  CustomInitialCondition(Mesh* mesh) : ExactSolutionScalar(mesh) {};
+  CustomInitialCondition(Mesh* mesh) : ExactSolutionScalar(mesh) 
+  {
+  };
 
-  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const {
+  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const 
+  {
     dx = (y+10)/100.;
     dy = (x+10)/100.;
   };
 
-  virtual scalar value (double x, double y) const {
+  virtual scalar value (double x, double y) const 
+  {
     return (x+10)*(y+10)/100.;
   }
 
-  virtual Ord ord(Ord x, Ord y) const {
+  virtual Ord ord(Ord x, Ord y) const 
+  {
     return (x+10)*(y+10)/100.;
   }
 };
