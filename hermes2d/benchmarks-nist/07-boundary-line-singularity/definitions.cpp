@@ -1,6 +1,5 @@
 #include "definitions.h"
 
-
 double CustomFunction::value(double x, double y) const
 {
   return alpha * (alpha - 1.) * pow(x, alpha - 2.);

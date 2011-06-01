@@ -1,7 +1,5 @@
 #include "definitions.h"
 
-/* Exact solution */
-
 double CustomExactSolution::value(double x, double y) const 
 {
   double theta = atan2(y,x);
@@ -61,7 +59,6 @@ Ord CustomExactSolution::ord(Ord x, Ord y) const
   return Ord(6);
 }
 
-/* Weak forms */
 
 CustomWeakFormPoisson::CustomWeakFormPoisson(std::string area_1, double r, std::string area_2) : WeakForm(1)
 {

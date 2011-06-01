@@ -1,14 +1,21 @@
 #include "definitions.h"
 
-/* Right-hand side */
-
 double CustomExactFunction::fn(double x, double y) 
 {
   if (x <= 0) return cos(k * y);
   else return cos(k * y) + pow(x, alpha);
 }
 
-/* Custom function f */
+
+CustomFunction::CustomFunction(double k, double alpha) : HermesFunction(), k(k), alpha(alpha)
+{
+  cef = new CustomExactFunction(k, alpha);
+}
+
+CustomFunction::~CustomFunction()
+{
+  delete cef;
+}
 
 double CustomFunction::value(double x, double y) const 
 {
@@ -23,7 +30,16 @@ Ord CustomFunction::value(Ord x, Ord y) const
   return Ord(20);
 }
 
-/* Exact solution */
+
+CustomExactSolution::CustomExactSolution(Mesh* mesh, double k, double alpha) : ExactSolutionScalar(mesh), k(k), alpha(alpha)
+{
+  cef = new CustomExactFunction(k, alpha);
+}
+
+CustomExactSolution::~CustomExactSolution() 
+{ 
+  delete cef; 
+}
 
 double CustomExactSolution::value(double x, double y) const 
 {

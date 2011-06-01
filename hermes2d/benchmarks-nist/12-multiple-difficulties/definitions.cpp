@@ -27,7 +27,6 @@ Ord CustomFunction::value(Ord x, Ord y) const
 }
 
 
-
 double CustomExactSolution::value(double x, double y) const
 { 
   double alpha_c = (M_PI/ omega_c);
@@ -36,7 +35,7 @@ double CustomExactSolution::value(double x, double y) const
          + (pow(sqrt(x*x + y*y), alpha_c) * sin(alpha_c * get_angle(y, x)))
          + atan(alpha_w * (sqrt(pow(x - x_w, 2) + pow(y - y_w, 2)) - r_0))
          + exp(-(1 + y) / epsilon);
-};
+}
 
 void CustomExactSolution::derivatives (double x, double y, scalar& dx, scalar& dy) const 
 {
@@ -64,7 +63,7 @@ void CustomExactSolution::derivatives (double x, double y, scalar& dx, scalar& d
        + ((alpha_c* y* sin(alpha_c* get_angle(y, x)) *b_C)/a_C))
        + (e_W / (c_W * f_W))
        + (-1) * (1.0 / epsilon) * exp(-(1 + y) / epsilon);
-};
+}
 
 Ord CustomExactSolution::ord(Ord x, Ord y) const 
 {

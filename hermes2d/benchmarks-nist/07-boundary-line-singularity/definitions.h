@@ -5,16 +5,14 @@
 class CustomFunction : public HermesFunction
 {
 public:
-  CustomFunction(double alpha) : HermesFunction(), alpha(alpha) 
-  {
-  };
+  CustomFunction(double alpha) : HermesFunction(), alpha(alpha) {};
 
   virtual double value(double x, double y) const;
 
   virtual Ord value(Ord x, Ord y) const;
 
-  protected:
-    double alpha;
+protected:
+  double alpha;
 };
 
 
@@ -24,9 +22,7 @@ class CustomExactSolution : public ExactSolutionScalar
 {
 public:
   CustomExactSolution(Mesh* mesh, double alpha)
-            : ExactSolutionScalar(mesh), alpha(alpha) 
-  {
-  };
+        : ExactSolutionScalar(mesh), alpha(alpha) {};
 
   double value(double x, double y) const;
 
@@ -34,6 +30,6 @@ public:
 
   virtual Ord ord(Ord x, Ord y) const;
 
-  protected:
-    double alpha;
+protected:
+  double alpha;
 };

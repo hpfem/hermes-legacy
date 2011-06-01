@@ -6,7 +6,7 @@ class CustomExactSolution : public ExactSolutionScalar
 {
 public:
   CustomExactSolution(Mesh* mesh, double sigma, double tau, double rho) 
-          : ExactSolutionScalar(mesh), sigma(sigma), tau(tau), rho(rho) {};
+        : ExactSolutionScalar(mesh), sigma(sigma), tau(tau), rho(rho) {};
 
   virtual double value(double x, double y) const;
 

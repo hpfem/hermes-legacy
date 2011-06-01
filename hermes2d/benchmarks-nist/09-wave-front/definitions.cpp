@@ -1,6 +1,5 @@
 #include "definitions.h"
 
-
 double CustomFunction::value(double x, double y) const
 {
   double a = pow(x - x_loc, 2);
@@ -26,7 +25,7 @@ Ord CustomFunction::value(Ord x, Ord y) const
 double CustomExactSolution::value(double x, double y) const
 {
   return atan(alpha * (sqrt(pow(x - x_loc, 2) + pow(y - y_loc, 2)) - r_zero));
-};
+}
 
 void CustomExactSolution::derivatives (double x, double y, scalar& dx, scalar& dy) const 
 {
@@ -39,9 +38,9 @@ void CustomExactSolution::derivatives (double x, double y, scalar& dx, scalar& d
 
   dx = (d/(c * f));
   dy = (e/(c * f));
-};
+}
 
 Ord CustomExactSolution::ord(Ord x, Ord y) const 
 {
   return Ord(8);
-};
+}

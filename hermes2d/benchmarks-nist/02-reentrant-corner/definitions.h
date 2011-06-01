@@ -25,7 +25,7 @@ public:
     return theta;
   };
 
- protected:
+protected:
   double alpha;
 };
 

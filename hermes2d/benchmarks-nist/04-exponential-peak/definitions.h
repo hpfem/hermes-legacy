@@ -6,9 +6,7 @@ class CustomFunction : public HermesFunction
 {
 public:
   CustomFunction(double alpha, double x_loc, double y_loc)
-    : HermesFunction(), alpha(alpha), x_loc(x_loc), y_loc(y_loc) 
-  {
-  };
+    : HermesFunction(), alpha(alpha), x_loc(x_loc), y_loc(y_loc) {};
 
   virtual double value(double x, double y) const;
 
@@ -27,9 +25,7 @@ class CustomExactSolution : public ExactSolutionScalar
 {
 public:
   CustomExactSolution(Mesh* mesh, double alpha, double x_loc, double y_loc)
-            : ExactSolutionScalar(mesh), alpha(alpha), x_loc(x_loc), y_loc(y_loc) 
-  {
-  };
+            : ExactSolutionScalar(mesh), alpha(alpha), x_loc(x_loc), y_loc(y_loc) {};
 
   double value(double x, double y) const;
 
