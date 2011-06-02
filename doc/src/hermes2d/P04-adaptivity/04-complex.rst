@@ -1,7 +1,7 @@
-Complex-Valued Problem (04-complex-adapt)
------------------------------------------
+Complex-Valued Problem (04-complex)
+-----------------------------------
 
-**Git reference:** Tutorial example `04-complex-adapt <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-linear-adapt/04-complex-adapt>`_. 
+**Git reference:** Tutorial example `04-complex <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-adaptivity/04-complex>`_. 
 
 For this example we use the matrix solver AztecOO from the Trilinos package. 
 You need to have Trilinos installed on your system, and enabled in your CMake.vars 
@@ -22,7 +22,7 @@ This example solves a complex-valued vector potential problem
 in a two-dimensional cross-section containing a conductor and an iron object.
 Note: in 2D this is a scalar problem. A scheme is shown in the following picture:
 
-.. image:: 04-complex-adapt/domain.png
+.. image:: 04-complex/domain.png
    :align: center
    :height: 500
    :alt: Domain.
@@ -99,7 +99,7 @@ Sample results
 
 Solution:
 
-.. image:: 04-complex-adapt/solution.png
+.. image:: 04-complex/solution.png
    :align: center
    :height: 400
    :alt: Solution.
@@ -108,21 +108,21 @@ Let us compare adaptive $h$-FEM with linear and quadratic elements and the $hp$-
 
 Final mesh for $h$-FEM with linear elements: 18694 DOF, error = 1.02 \%
 
-.. image:: 04-complex-adapt/mesh-h1.png
+.. image:: 04-complex/mesh-h1.png
    :align: center
    :height: 400
    :alt: Mesh.
 
 Final mesh for $h$-FEM with quadratic elements: 46038 DOF, error = 0.018 \%
 
-.. image:: 04-complex-adapt/mesh-h2.png
+.. image:: 04-complex/mesh-h2.png
    :align: center
    :height: 400
    :alt: Mesh.
 
 Final mesh for $hp$-FEM: 4787 DOF, error = 0.00918 \%
 
-.. image:: 04-complex-adapt/mesh-hp.png
+.. image:: 04-complex/mesh-hp.png
    :align: center
    :height: 400
    :alt: Mesh.
@@ -130,9 +130,8 @@ Final mesh for $hp$-FEM: 4787 DOF, error = 0.00918 \%
 Convergence graphs of adaptive h-FEM with linear elements, h-FEM with quadratic elements
 and hp-FEM are shown below.
 
-.. image:: 04-complex-adapt/conv_compar_dof.png
+.. image:: 04-complex/conv_compar_dof.png
    :align: center
-   :width: 600
    :height: 400
    :alt: DOF convergence graph.
 

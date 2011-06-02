@@ -1,7 +1,7 @@
-Time-Harmonic Maxwell's Equations (05-hcurl-adapt)
---------------------------------------------------
+Time-Harmonic Maxwell's Equations (05-hcurl)
+--------------------------------------------
 
-**Git reference:** Tutorial example `05-hcurl-adapt <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-linear-adapt/05-hcurl-adapt>`_. 
+**Git reference:** Tutorial example `05-hcurl <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-adaptivity/05-hcurl>`_. 
 
 Model problem
 ~~~~~~~~~~~~~
@@ -20,14 +20,14 @@ Equation solved: Time-harmonic Maxwell's equations
 Domain of interest is the square $(-10, 10)^2$ missing the quarter lying in the 
 fourth quadrant. It is filled with air:
 
-.. image:: 05-hcurl-adapt/domain.png
+.. image:: 05-hcurl/domain.png
    :align: center
    :width: 490
    :height: 490
    :alt: Computational domain.
 
 Boundary conditions: Combined essential and natural, see the 
-`main.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P04-linear-adapt/05-hcurl-adapt/main.cpp>`_ file.
+`main.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P04-adaptivity/05-hcurl/main.cpp>`_ file.
 
 Exact solution
 ~~~~~~~~~~~~~~
@@ -65,7 +65,7 @@ computer code, this reads:
     }  
 
 Here jv() is the Bessel function $\bfJ_{\alpha}$. For its source code see the 
-`forms.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P04-linear-adapt/05-hcurl-adapt/forms.cpp>`_ file.
+`definitions.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P04-adaptivity/05-hcurl/definitions.cpp>`_ file.
 
 Weak forms
 ~~~~~~~~~~
@@ -183,17 +183,15 @@ Sample results
 
 Solution:
 
-.. image:: 05-hcurl-adapt/solution.png
+.. image:: 05-hcurl/solution.png
    :align: center
-   :width: 500
    :height: 420
    :alt: Solution.
 
 Final mesh (h-FEM with linear elements):
 
-.. image:: 05-hcurl-adapt/mesh-h1.png
+.. image:: 05-hcurl/mesh-h1.png
    :align: center
-   :width: 460
    :height: 390
    :alt: Final mesh (h-FEM with linear elements).
 
@@ -203,33 +201,29 @@ of approximation on element interfaces, not to polynomial degrees inside the ele
 
 Final mesh (h-FEM with quadratic elements):
 
-.. image:: 05-hcurl-adapt/mesh-h2.png
+.. image:: 05-hcurl/mesh-h2.png
    :align: center
-   :width: 460
    :height: 390
    :alt: Final mesh (h-FEM with quadratic elements).
 
 Final mesh (hp-FEM):
 
-.. image:: 05-hcurl-adapt/mesh-hp.png
+.. image:: 05-hcurl/mesh-hp.png
    :align: center
-   :width: 460
    :height: 390
    :alt: Final mesh (hp-FEM).
 
 DOF convergence graphs:
 
-.. image:: 05-hcurl-adapt/conv_dof.png
+.. image:: 05-hcurl/conv_dof.png
    :align: center
-   :width: 600
    :height: 400
    :alt: DOF convergence graph.
 
 CPU time convergence graphs:
 
-.. image:: 05-hcurl-adapt/conv_cpu.png
+.. image:: 05-hcurl/conv_cpu.png
    :align: center
-   :width: 600
    :height: 400
    :alt: CPU convergence graph.
 

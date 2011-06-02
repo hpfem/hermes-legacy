@@ -1,7 +1,7 @@
-Adaptivity for General 2nd-Order Linear Equation (03-general-adapt)
--------------------------------------------------------------------
+Adaptivity for General 2nd-Order Linear Equation (03-general)
+-------------------------------------------------------------
 
-**Git reference:** Tutorial example `03-general-adapt <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-linear-adapt/03-general-adapt>`_. 
+**Git reference:** Tutorial example `03-general <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-adaptivity/03-general>`_. 
 
 Model problem
 ~~~~~~~~~~~~~
@@ -16,7 +16,7 @@ Sample results
 
 Solution:
 
-.. image:: 03-general-adapt/12-solution.png
+.. image:: 03-general/12-solution.png
    :align: center
    :width: 465
    :height: 400
@@ -24,7 +24,7 @@ Solution:
 
 Final hp-mesh:
 
-.. image:: 03-general-adapt/12-mesh.png
+.. image:: 03-general/12-mesh.png
    :align: center
    :width: 450
    :height: 400
@@ -33,7 +33,7 @@ Final hp-mesh:
 Convergence graphs of adaptive h-FEM with linear elements, h-FEM with quadratic elements
 and hp-FEM.
 
-.. image:: 03-general-adapt/conv_dof.png
+.. image:: 03-general/conv_dof.png
    :align: center
    :width: 600
    :height: 400
@@ -41,7 +41,7 @@ and hp-FEM.
 
 Convergence comparison in terms of CPU time. 
 
-.. image:: 03-general-adapt/conv_cpu.png
+.. image:: 03-general/conv_cpu.png
    :align: center
    :width: 600
    :height: 400

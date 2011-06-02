@@ -1,8 +1,8 @@
-Newton's Method and Adaptivity (01-newton-adapt)
-------------------------------------------------
+Newton's Method and Adaptivity (07-nonlinear)
+---------------------------------------------
 
-**Git reference:** Tutorial example `01-newton-adapt 
-<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P05-nonlinear-adapt/01-newton-adapt>`_.
+**Git reference:** Tutorial example `07-nonlinear
+<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-adaptivity/07-nonlinear>`_.
 
 We still keep the simple model problem
 
@@ -156,17 +156,15 @@ following convergence comparison:
 
 Convergence in the number of DOF (with and without Newton solve on the new coarse mesh):
 
-.. image:: 01-newton-adapt/conv_dof_compar.png
+.. image:: 07-nonlinear/conv_dof_compar.png
    :align: center
-   :width: 600
    :height: 400
    :alt: DOF convergence graph for tutorial example 01-newton-adapt.
 
 Convergence in CPU time (with and without Newton solve on coarse mesh):
 
-.. image:: 01-newton-adapt/conv_cpu_compar.png
+.. image:: 07-nonlinear/conv_cpu_compar.png
    :align: center
-   :width: 600
    :height: 400
    :alt: CPU convergence graph for tutorial example 01-newton-adapt.
 

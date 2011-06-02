@@ -76,14 +76,12 @@ Tutorial
 
     src/hermes2d/P01-linear
     src/hermes2d/P02-nonlinear
-    src/hermes2d/P03-timedep
-    src/hermes2d/P04-linear-adapt
-    src/hermes2d/P05-nonlinear-adapt
-    src/hermes2d/P06-timedep-adapt
-    src/hermes2d/P07-eigen
-    src/hermes2d/P08-fvm-and-dg
-    src/hermes2d/P09-trilinos
-    src/hermes2d/P10-miscellaneous
+    src/hermes2d/P03-transient
+    src/hermes2d/P04-adaptivity
+    src/hermes2d/P05-eigenproblems
+    src/hermes2d/P06-fvm-and-dg
+    src/hermes2d/P07-trilinos
+    src/hermes2d/P08-miscellaneous
 
 Benchmarks
 ----------

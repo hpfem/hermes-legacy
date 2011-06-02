@@ -1,7 +1,7 @@
-Electrostatic Micromotor Problem (01-adapt)
+Electrostatic Micromotor Problem (01-intro)
 -------------------------------------------
 
-**Git reference:** Tutorial example `01-adapt <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-linear-adapt/01-adapt>`_. 
+**Git reference:** Tutorial example `01-intro <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-adaptivity/01-intro>`_. 
 
 Model problem
 ~~~~~~~~~~~~~
@@ -13,7 +13,7 @@ thus (as opposed to classical electromotors) resistive to strong electromagnetic
 The following figure shows a symmetric half of the domain $\Omega$
 (dimensions need to be scaled with $10^{-5}$ and they are in meters):
 
-.. image:: 01-adapt/micromotor.png
+.. image:: 01-intro/micromotor.png
    :align: center
    :width: 550
    :height: 400
@@ -88,7 +88,7 @@ where $e$ and $d$ are an estimated error and an estimated number of DOF of a can
 
 The first parameter ``CAND_LIST`` specifies which candidates are generated. In a case of quadrilaterals, all possible values and considered candidates are summarized in the following table:
 
-.. image:: 01-adapt/cand_list_quads.png
+.. image:: 01-intro/cand_list_quads.png
    :align: center
    :alt: Candidates generated for a given candidate list.
 
@@ -285,13 +285,13 @@ components, but specify that its derivatives should be used::
 
     gview.show(&sln, &sln, H2D_EPS_NORMAL, H2D_FN_DX_0, H2D_FN_DY_0);
 
-.. image:: 01-adapt/motor-sln.png
+.. image:: 01-intro/motor-sln.png
    :align: left
    :width: 300
    :height: 300
    :alt: Solution - electrostatic potential $\varphi$ (zoomed).
 
-.. image:: 01-adapt/motor-grad.png
+.. image:: 01-intro/motor-grad.png
    :align: right
    :width: 300
    :height: 300
@@ -301,7 +301,7 @@ components, but specify that its derivatives should be used::
 
    <hr style="clear: both; visibility: hidden;">
 
-.. image:: 01-adapt/motor-orders.png
+.. image:: 01-intro/motor-orders.png
    :align: center
    :width: 300
    :height: 300
@@ -310,17 +310,17 @@ components, but specify that its derivatives should be used::
 Convergence graphs of adaptive h-FEM with linear elements, h-FEM with quadratic elements
 and hp-FEM are shown below.
 
-.. image:: 01-adapt/conv_dof.png
+.. image:: 01-intro/conv_dof.png
    :align: center
    :width: 600
    :height: 400
-   :alt: DOF convergence graph for tutorial example 01-adapt.
+   :alt: DOF convergence graph for tutorial example 01-intro.
 
 The following graph shows convergence in terms of CPU time. 
 
-.. image:: 01-adapt/conv_cpu.png
+.. image:: 01-intro/conv_cpu.png
    :align: center
    :width: 600
    :height: 400
-   :alt: CPU convergence graph for tutorial example 01-adapt.
+   :alt: CPU convergence graph for tutorial example 01-intro.
 

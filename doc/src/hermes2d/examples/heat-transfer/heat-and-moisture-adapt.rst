@@ -1,8 +1,8 @@
-Heat and Moisture Transfer in Concrete (04-heat-and-moisture-adapt)
--------------------------------------------------------------------
+Heat and Moisture Transfer in Concrete (heat-and-moisture-adapt)
+----------------------------------------------------------------
 
 **Git reference:** Tutorial example `04-heat-and-moisture-adapt 
-<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P06-timedep-adapt/04-heat-and-moisture-adapt>`_.
+<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/heat-transfer/heat-and-moisture-adapt>`_.
 
 Model problem
 ~~~~~~~~~~~~~
@@ -236,21 +236,21 @@ does not have a significant influence on the overall accuracy in the energy norm
 
 Solution and mesh at t = 10 days:
 
-.. image:: 04-heat-and-moisture-adapt/1.png
+.. image:: heat-and-moisture-adapt/1.png
    :align: center
    :width: 800
    :alt: Sample screenshot
 
 Solution and mesh at t = 20 days:
 
-.. image:: 04-heat-and-moisture-adapt/2.png
+.. image:: heat-and-moisture-adapt/2.png
    :align: center
    :width: 800
    :alt: Sample screenshot
 
 Solution and mesh at t = 50 days:
 
-.. image:: 04-heat-and-moisture-adapt/3.png
+.. image:: heat-and-moisture-adapt/3.png
    :align: center
    :width: 800
    :alt: Sample screenshot

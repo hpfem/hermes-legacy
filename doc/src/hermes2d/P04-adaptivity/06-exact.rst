@@ -1,7 +1,7 @@
-Adapting Mesh to an Exact Function (06-exact-adapt)
----------------------------------------------------
+Adapting Mesh to an Exact Function (06-exact)
+---------------------------------------------
 
-**Git reference:** Tutorial example `06-exact-adapt <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-linear-adapt/06-exact-adapt>`_. 
+**Git reference:** Tutorial example `06-exact <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-adaptivity/06-exact>`_. 
 
 This technique can be useful, for example, when a time-dependent proces
 starts from a complicated initial condition that would not be represented
@@ -54,7 +54,7 @@ Mesh adaptation is standard as well::
 
 Sample solution and mesh are shown below:
 
-.. image:: 06-exact-adapt/img.png
+.. image:: 06-exact/img.png
    :align: center
    :width: 800
    :alt: Resulting solution and mesh

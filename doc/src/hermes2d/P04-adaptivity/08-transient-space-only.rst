@@ -1,8 +1,8 @@
-Nonlinear Parabolic Problem (01-timedep-adapt-space-only)
----------------------------------------------------------
+Nonlinear Parabolic Problem (08-transient-space-only)
+-----------------------------------------------------
 
-**Git reference:** Tutorial example `01-timedep-adapt-space-only 
-<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P06-timedep-adapt/01-timedep-adapt-space-only>`_.
+**Git reference:** Tutorial example `08-transient-space-only 
+<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-adaptivity/08-transient-space-only>`_.
 
 Model problem
 ~~~~~~~~~~~~~
@@ -301,35 +301,35 @@ Sample results
 
 Initial condition and initial mesh:
 
-.. image:: 01-timedep-adapt-space-only/1.png
+.. image:: 08-transient-space-only/1.png
    :align: center
    :width: 800
    :alt: Sample screenshot
 
 Solution and mesh at t = 0.5:
 
-.. image:: 01-timedep-adapt-space-only/2.png
+.. image:: 08-transient-space-only/2.png
    :align: center
    :width: 800
    :alt: Sample screenshot
 
 Solution and mesh at t = 1.0:
 
-.. image:: 01-timedep-adapt-space-only/3.png
+.. image:: 08-transient-space-only/3.png
    :align: center
    :width: 800
    :alt: Sample screenshot
 
 Solution and mesh at t = 1.5:
 
-.. image:: 01-timedep-adapt-space-only/4.png
+.. image:: 08-transient-space-only/4.png
    :align: center
    :width: 800
    :alt: Sample screenshot
 
 Solution and mesh at t = 2.0:
 
-.. image:: 01-timedep-adapt-space-only/5.png
+.. image:: 08-transient-space-only/5.png
    :align: center
    :width: 800
    :alt: Sample screenshot
