@@ -41,10 +41,10 @@ for the stationary residual (right-hand side) only:
 
     F(u, v) = \int_{\Omega} - \lambda(u)\nabla u\cdot \nabla v + fv\, \mbox{d}x\mbox{d}y.
 
-Weak formulation
-~~~~~~~~~~~~~~~~
+Weak forms
+~~~~~~~~~~
 
-After one little trick (inverting the sign of the custom nonlinearity), 
+After inverting the sign of the custom nonlinearity, 
 
 ::
 
