@@ -9,7 +9,7 @@ using Hermes::EigenSolver;
 
 //  This example shows how one can perform adaptivity to a selected eigenfunction
 //  without calling the eigensolver again in each adaptivity step. The eigensolver 
-//  is only called once at the beginning. 
+//  is only called once at the beginning.
 //
 //  PDE: -Laplace u + V*u = lambda_k u,
 //  where lambda_0, lambda_1, ... are the eigenvalues.
@@ -25,21 +25,13 @@ using Hermes::EigenSolver;
 //const char* mesh_file = "domain_square_quad_1_sym.mesh";     // Square domain with one single element (symmetric).
 //const char* mesh_file = "domain_square_quad_2_sym.mesh";     // Square domain with four quad elements (symmetric).
 //const char* mesh_file = "domain_lshape_quad_sym.mesh";       // L-Shape domain with quadrilateral mesh (symmetric). 
-//const char* mesh_file = "domain_square_quad_2_nonsym.mesh";  // Square domain with four quad elements (non-symmetric).
-const char* mesh_file = "domain_square_tria_nonsym.mesh";    // Square domain with triangular mesh    (non-symmetric).
+const char* mesh_file = "domain_square_quad_2_nonsym.mesh";  // Square domain with four quad elements (non-symmetric).
+//const char* mesh_file = "domain_square_tria_nonsym.mesh";    // Square domain with triangular mesh    (non-symmetric).
 //const char* mesh_file = "domain_lshape_tria_nonsym.mesh";    // L-Shape domain with triangular mesh   (non-symmetric).  
 
-int TARGET_EIGENFUNCTION = 2;                     // Desired eigenfunction: 1 for the first, 2 for the second, etc.
+int TARGET_EIGENFUNCTION = 3;                     // Desired eigenfunction: 1 for the first, 2 for the second, etc.
 
-int DIMENSION_SUBSPACE = 3;              	  // Dimension of the subspace to use, it should be greater or equal 
-                                                  // to TARGET_EIGENFUNCTION.
-int ITERATIVE_METHOD = 1;                         // 1 = Newton, 2 = Picard, 3 = Eigensolver.
-
-bool RECONSTRUCTION_ON = true;                    // Use eigenfunction reconstruction.
-
-int DIMENSION_TARGET_EIGENSPACE = 2;              // Dimension of the target eigenspace.
-
-int FIRST_INDEX_EIGENSPACE = 2;                   // Index of the first eigenfunction in the target eigenspace.
+int ITERATIVE_METHOD = 1;                         // 1 = Newton, 2 = Picard.
 
 int P_INIT = 2;                                   // Uniform polynomial degree of mesh elements.
 const int INIT_REF_NUM = 0;                       // Number of initial mesh refinements.
@@ -54,7 +46,7 @@ const int STRATEGY = 0;                           // Adaptive strategy:
                                                   // STRATEGY = 2 ... refine all elements whose error is larger
                                                   //   than THRESHOLD.
                                                   // More adaptive strategies can be created in adapt_ortho_h1.cpp.
-const CandList CAND_LIST = H2D_HP_ANISO;          // Predefined list of element refinement candidates. Possible values are
+const CandList CAND_LIST = H2D_HP_ISO;          // Predefined list of element refinement candidates. Possible values are
                                                   // H2D_P_ISO, H2D_P_ANISO, H2D_H_ISO, H2D_H_ANISO, H2D_HP_ISO, H2D_HP_ANISO_H
                                                   // H2D_HP_ANISO_P, H2D_HP_ANISO. See User Documentation for details.
 const int MESH_REGULARITY = -1;                   // Maximum allowed level of hanging nodes:
@@ -85,6 +77,33 @@ const int PICARD_MAX_ITER = 1000;
 const int USE_ORTHO = 1;
 const int USE_SHIFT = 0;
 
+// RECONSTRUCTION TECHNOLOGY:
+
+// The reconstruction technology makes possible to follow the target eigenfunction, no matter how the continuous
+// eigenspace is splitted by the discretization. This is possible by computing an approximation of all discrete
+// eigenfunctions, corresponding to a basis of eigenfunctions for the continuous eigenspace that contains 
+// the eigenfunction of index TARGET_EIGENFUNCTION, and thencomputing an linear interpolation of those.
+// So in practise if the continuous eigenspace has dimensions 2, then the eigenfunction of index TARGET_EIGENFUNCTION
+// and another eigenfunction are computed on each adapted mesh.
+bool RECONSTRUCTION_ON = true;                    // Use eigenfunction reconstruction.
+
+// Dimension of the continuous eigenspace that contains the eigenfunction of index TARGET_EIGENFUNCTION. 
+// If the actual number of dimensions of the continuous eigenspace is unknown, an upperbound of it is also enough.
+int DIMENSION_TARGET_EIGENSPACE = 2;  
+
+int FIRST_INDEX_EIGENSPACE = 2;                   // Index of the first eigenfunction in the continuous eigenspace 
+                                                  // that contains the eigenfunction of index TARGET_EIGENFUNCTION            
+
+
+// ORTHOGONALIZATION TECHNOLOGY:
+
+// The orthogonalization technology ensures that the iterative methods converge to the eigenfunction
+// of index TARGET_EIGENFUNCTION. This is possible by computing an approximation of all discrete
+// eigenfunctions of index less or equal to TARGET_EIGENFUNCTION. So in practise if TARGET_EIGENFUNCTION = 3, then
+// also the eigenfunctions of indeces 1 and 2 are computed on each adapted mesh.
+// The value of DIMENSION_SUBSPACE is set automatically in the code.
+int DIMENSION_SUBSPACE = 0;              	  
+
 // Weak forms and Extras.
 #include "definitions.cpp"
 
@@ -92,6 +111,19 @@ const int USE_SHIFT = 0;
 int main(int argc, char* argv[])
 {
   info("Desired eigenfunction to calculate: %d.", TARGET_EIGENFUNCTION);
+
+  // Check the parameters
+  if (FIRST_INDEX_EIGENSPACE > TARGET_EIGENFUNCTION) {
+    error("ERROR: FIRST_INDEX_EIGENSPACE should be less or equal to TARGET_EIGENFUNCTION");
+  }
+
+  // Set the value of DIMENSION_SUBSPACE
+  if (RECONSTRUCTION_ON) {
+    DIMENSION_SUBSPACE = FIRST_INDEX_EIGENSPACE + DIMENSION_TARGET_EIGENSPACE - 1;
+  }
+  else{
+    DIMENSION_SUBSPACE = TARGET_EIGENFUNCTION;
+  }
 
   // Load the mesh.
   Mesh mesh;
@@ -156,8 +188,7 @@ int main(int argc, char* argv[])
   // Read solution vectors from file and visualize it.
   double* eigenval =new double[DIMENSION_SUBSPACE];
   
-  int neig = es.get_n_eigs();
-  //if (neig != DIMENSION_SUBSPACE) error("Mismatched number of eigenvectors in the eigensolver output file.");  
+  int neig = es.get_n_eigs();  
   for (int ieig = 0; ieig < neig; ieig++) {
     // Get next eigenvalue from the file
     eigenval[ieig] = es.get_eigenvalue(ieig);         
@@ -168,8 +199,8 @@ int main(int argc, char* argv[])
     }
     // Normalize the eigenvector.
     normalize((UMFPackMatrix*)matrix_M, coeff_space[ieig], ndof);
+
   }
-  //fclose(file);
 
   // Retrieve desired eigenvalue.
   double lambda = eigenval[TARGET_EIGENFUNCTION-1];
@@ -294,108 +325,7 @@ int main(int argc, char* argv[])
       }
     }
     else {
-
-        RCP<SparseMatrix> matrix_ref_rcp_S = rcp(matrix_S_ref);
-        RCP<SparseMatrix> matrix_ref_rcp_M = rcp(matrix_M_ref);
-
-        EigenSolver es_ref(matrix_ref_rcp_S, matrix_ref_rcp_M);
-        info("Calling Pysparse...");
-        es_ref.solve(DIMENSION_SUBSPACE, PYSPARSE_TARGET_VALUE, PYSPARSE_TOL, PYSPARSE_MAX_ITER);
-        info("Pysparse finished.");
-        es_ref.print_eigenvalues();
-
-        // Read solution vectors from file and visualize it.
-        double* eigenval_ref =new double[DIMENSION_SUBSPACE];
-
-        int neig_ref = es_ref.get_n_eigs();
-        //if (neig != DIMENSION_SUBSPACE) error("Mismatched number of eigenvectors in the eigensolver output file.");
-        for (int ieig = 0; ieig < neig_ref; ieig++) {
-          // Get next eigenvalue from the file
-          eigenval_ref[ieig] = es_ref.get_eigenvalue(ieig);
-          int n_ref;
-
-          es_ref.get_eigenvector(ieig, &coeff_vec_ref, &n_ref);
-          for (int i = 0; i < ndof_ref; i++){
-            coeff_space_ref[ieig][i] = coeff_vec_ref[i];
-          }
-          // Normalize the eigenvector.
-          normalize((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[ieig], ndof_ref);
-        }
-        //fclose(file);
-
-        // Retrieve desired eigenvalue.
-        double lambda = eigenval_ref[TARGET_EIGENFUNCTION-1];
-        info("Eigenvalue on fine mesh: %g", lambda);
-
-
-        /*
-        // Initialize matrices.
-        RCP<SparseMatrix> matrix_ref_rcp_S = rcp(matrix_S_ref);
-        RCP<SparseMatrix> matrix_ref_rcp_M = rcp(matrix_M_ref);
-
-        EigenSolver es(matrix_ref_rcp_S, matrix_ref_rcp_M);
-        info("Calling Pysparse...");
-        es.solve(DIMENSION_SUBSPACE, PYSPARSE_TARGET_VALUE, PYSPARSE_TOL, PYSPARSE_MAX_ITER);
-        info("Pysparse finished.");
-        es.print_eigenvalues();
-
-        // Read solution vectors from file and visualize it.
-        double* coeff_vec_tmp = new double[ndof_ref];
-        double* eigenval_ref = new double[DIMENSION_SUBSPACE];
-        int neig = es.get_n_eigs(); 
-        for (int ieig = 0; ieig < neig; ieig++) {
-          info("ieig: %d", ieig);
-          // Get next eigenvalue from the file
-          eigenval_ref[ieig] = es.get_eigenvalue(ieig);  
-          int n;
-          es.get_eigenvector(ieig, &coeff_vec_tmp, &n);
-          for (int i = 0; i < ndof_ref; i++){
-            coeff_space_ref[ieig][i] = coeff_vec_tmp[i];
-          }
-          // Normalize the eigenvector.
-          normalize((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[ieig], ndof_ref);
-        }
-        delete [] coeff_vec_tmp;
-        
-        // Write matrix_S in MatrixMarket format.
-        write_matrix_mm("mat_S.mtx", matrix_S_ref);
-
-        // Write matrix_M in MatrixMarket format.
-        write_matrix_mm("mat_M.mtx", matrix_M_ref);
-
-        // Call Python eigensolver. Solution will be written to "eivecs.dat".
-        info("Calling Pysparse.");
-        char call_cmd[255];
-        // Compute the approximation of all discrete eigenfunctions corresponding to the eigenvlaue of the target eigenfunction
-        sprintf(call_cmd, "python solveGenEigenFromMtx.py mat_S.mtx mat_M.mtx %g %d %g %d", 
-	       PYSPARSE_TARGET_VALUE, DIMENSION_SUBSPACE, PYSPARSE_TOL, PYSPARSE_MAX_ITER);
-        system(call_cmd);
-        info("Pysparse finished.");
-
-        // Read solution vectors from file and visualize it.
-        eigenval_ref = new double[DIMENSION_SUBSPACE];
-        FILE *file = fopen("eivecs.dat", "r");
-        char line [64];                  // Maximum line size.
-        fgets(line, sizeof line, file);  // ndof
-        int n = atoi(line);            
-        if (n != ndof_ref) error("Mismatched ndof in the eigensolver output file.");  
-        fgets(line, sizeof line, file);  // Number of eigenvectors in the file.
-        neig = atoi(line); 
-        if (neig != DIMENSION_SUBSPACE) error("Mismatched number of eigenvectors in the eigensolver output file.");  
-        for (int ieig = 0; ieig < neig; ieig++) {
-          // Get next eigenvalue from the file
-          fgets(line, sizeof line, file);  // eigenval
-          eigenval_ref[ieig] = atof(line);            
-          // Get the corresponding eigenvector.
-          for (int i = 0; i < ndof_ref; i++) {  
-            fgets(line, sizeof line, file);
-            coeff_space_ref[ieig][i] = atof(line);
-          }
-        // Normalize the eigenvector.
-          normalize((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[ieig], ndof_ref);
-        }
-        fclose(file);
-    */
+         error("Solver unknown.");
     }
 
     for (int i = 0; i < DIMENSION_SUBSPACE; i++)
