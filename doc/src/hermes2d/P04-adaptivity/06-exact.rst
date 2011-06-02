@@ -14,6 +14,9 @@ refining the coarse mesh::
     // Construct globally refined reference mesh and setup reference space.
     Space* ref_space = construct_refined_space(&space);
 
+Setting an exact solution instead of a reference solution
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Instead of calculating a solution on the fine mesh, we set the exact 
 function::
 
@@ -21,6 +24,9 @@ function::
     info("Assigning f() to the reference mesh.");
     bool is_linear = true;
     ref_sln.set_exact(ref_space->get_mesh(), f);
+
+Extracting low-order part for error calculation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The coarse mesh solution is obtained by projecting 'sln_fine'::
 
@@ -51,6 +57,9 @@ Mesh adaptation is standard as well::
       if (done == false)  as++;
     }
     if (Space::get_num_dofs(&space) >= NDOF_STOP) done = true;
+
+Sample results
+~~~~~~~~~~~~~~
 
 Sample solution and mesh are shown below:
 

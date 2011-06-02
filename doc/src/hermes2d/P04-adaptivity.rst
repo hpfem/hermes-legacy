@@ -1,7 +1,7 @@
 Tutorial Part IV (Automatic Adaptivity)
 =======================================
 
-So far we have not paid any attention to the accuracy of results. In general, 
+So far we have not paid much attention to the accuracy of results. In general, 
 a computation on a fixed mesh is not likely to be very accurate. There is a need 
 for *adaptive mesh refinement (AMR)* that improves the quality of the approximation 
 by refining mesh elements or increases the polynomial degree where the approximation 
