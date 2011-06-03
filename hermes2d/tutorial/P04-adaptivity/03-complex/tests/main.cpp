@@ -83,8 +83,8 @@ int main(int argc, char* argv[])
   info("ndof = %d", ndof);
 
   // Initialize the weak formulation.
-  CustomWeakFormMagnetics wf("Air", MU_0, "Iron", MU_IRON, GAMMA_IRON, 
-                             "Wire", MU_0, scalar(J_EXT, 0.0), OMEGA);
+  CustomWeakForm wf("Air", MU_0, "Iron", MU_IRON, GAMMA_IRON, 
+                    "Wire", MU_0, scalar(J_EXT, 0.0), OMEGA);
 
   // Initialize coarse and reference mesh solution.
   Solution sln, ref_sln;

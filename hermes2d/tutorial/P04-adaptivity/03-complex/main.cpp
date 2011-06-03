@@ -48,7 +48,7 @@ const double ERR_STOP = 1.0;                      // Stopping criterion for adap
                                                   // reference mesh and coarse mesh solution in percent).
 const int NDOF_STOP = 60000;                      // Adaptivity process stops when the number of degrees of freedom grows
                                                   // over this limit. This is to prevent h-adaptivity to go on forever.
-const char* iterative_method = "bicgstab";        // Name of the iterative method employed by AztecOO (ignored
+const char* iterative_method = "gmres";           // Name of the iterative method employed by AztecOO (ignored
                                                   // by the other solvers). 
                                                   // Possibilities: gmres, cg, cgs, tfqmr, bicgstab.
 const char* preconditioner = "least-squares";     // Name of the preconditioner employed by AztecOO (ignored by
@@ -96,8 +96,8 @@ int main(int argc, char* argv[])
   info("ndof = %d", ndof);
 
   // Initialize the weak formulation.
-  CustomWeakFormMagnetics wf("Air", MU_0, "Iron", MU_IRON, GAMMA_IRON, 
-                             "Wire", MU_0, scalar(J_EXT, 0.0), OMEGA);
+  CustomWeakForm wf("Air", MU_0, "Iron", MU_IRON, GAMMA_IRON, 
+                    "Wire", MU_0, scalar(J_EXT, 0.0), OMEGA);
 
   // Initialize coarse and reference mesh solution.
   Solution sln, ref_sln;
@@ -113,6 +113,7 @@ int main(int argc, char* argv[])
   // DOF and CPU convergence graphs initialization.
   SimpleGraph graph_dof, graph_cpu;
 
+  // Initialize the matrix solver.
   SparseMatrix* matrix = create_matrix(matrix_solver);
   Vector* rhs = create_vector(matrix_solver);
   Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);

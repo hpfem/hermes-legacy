@@ -2,13 +2,14 @@
   
 /* Weak forms */
 
-class CustomWeakFormMagnetics : public WeakForm
+class CustomWeakForm : public WeakForm
 { 
 public:
-  CustomWeakFormMagnetics(std::string mat_air,  double mu_air,
-                          std::string mat_iron, double mu_iron, double gamma_iron,
-                          std::string mat_wire, double mu_wire, scalar j_ext, double omega)
-  : WeakForm(1) {
+  CustomWeakForm(std::string mat_air,  double mu_air,
+                 std::string mat_iron, double mu_iron, double gamma_iron,
+                 std::string mat_wire, double mu_wire, scalar j_ext, double omega)
+  : WeakForm(1) 
+  {
     scalar ii =  cplx(0.0, 1.0);
 
     // Jacobian.
