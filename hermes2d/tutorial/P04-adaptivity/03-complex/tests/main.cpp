@@ -1,6 +1,4 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
 #include "hermes2d.h"
 
@@ -8,7 +6,7 @@ using namespace RefinementSelectors;
 
 // This test makes sure that example 13-complex-adapt works correctly.
 
-const int INIT_REF_NUM = 1;                       // Number of initial uniform mesh refinements.
+const int INIT_REF_NUM = 0;                       // Number of initial uniform mesh refinements.
 const int P_INIT = 1;                             // Initial polynomial degree of all mesh elements.
 const double THRESHOLD = 0.3;                     // This is a quantitative parameter of the adapt(...) function and
                                                   // it has different meanings for various adaptive strategies (see below).
@@ -38,13 +36,13 @@ const double ERR_STOP = 1.0;                      // Stopping criterion for adap
 const int NDOF_STOP = 60000;                      // Adaptivity process stops when the number of degrees of freedom grows
                                                   // over this limit. This is to prevent h-adaptivity to go on forever.
 const char* iterative_method = "bicgstab";        // Name of the iterative method employed by AztecOO (ignored
-                                                  // by the other solvers).
+                                                  // by the other solvers). 
                                                   // Possibilities: gmres, cg, cgs, tfqmr, bicgstab.
 const char* preconditioner = "least-squares";     // Name of the preconditioner employed by AztecOO (ignored by
                                                   // the other solvers).
                                                   // Possibilities: none, jacobi, neumann, least-squares, or a
                                                   //  preconditioner from IFPACK (see solver/aztecoo.h)
-MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
+MatrixSolverType matrix_solver = SOLVER_AZTECOO;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.
@@ -54,15 +52,6 @@ const double GAMMA_IRON = 6e6;
 const double J_EXT = 1e6;
 const double FREQ = 5e3;
 const double OMEGA = 2 * M_PI * FREQ;
-
-// Boundary markers.
-const std::string BDY_NEUMANN = "Neumann";
-const std::string BDY_DIRICHLET = "Dirichlet";
-
-// Materials markers.
-const std::string MAT_AIR = "Air";
-const std::string MAT_IRON = "Iron";
-const std::string MAT_WIRE = "Wire";
 
 // Weak forms.
 #include "../definitions.cpp"
@@ -82,16 +71,11 @@ int main(int argc, char* argv[])
   mloader.load("../domain.mesh", &mesh);
 
   // Perform initial mesh refinements.
-  for (int i=0; i<INIT_REF_NUM; i++) mesh.refine_all_elements();
+  for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Initialize boundary conditions.
   DefaultEssentialBCConst bc_essential("Dirichlet", scalar(0.0, 0.0));
   EssentialBCs bcs(&bc_essential);
-  /*
-  BCTypes bc_types;
-  bc_types.add_bc_dirichlet(Hermes::vector<int>(BDY_RIGHT, BDY_TOP, BDY_LEFT));
-  bc_types.add_bc_neumann(BDY_BUTTOM);
-  */
 
   // Create an H1 space with default shapeset.
   H1Space space(&mesh, &bcs, P_INIT);
@@ -99,14 +83,9 @@ int main(int argc, char* argv[])
   info("ndof = %d", ndof);
 
   // Initialize the weak formulation.
-  CustomWeakFormMagnetics wf(MAT_AIR, MU_0, MAT_IRON, MU_IRON, GAMMA_IRON, MAT_WIRE, MU_0, scalar(J_EXT, 0.0), OMEGA);
-  /*
-  WeakForm wf;
-  wf.add_matrix_form(callback(bilinear_form_iron), HERMES_SYM, 3);
-  wf.add_matrix_form(callback(bilinear_form_wire), HERMES_SYM, 2);
-  wf.add_matrix_form(callback(bilinear_form_air), HERMES_SYM, 1);
-  wf.add_vector_form(callback(linear_form_wire), 2);
-  */
+  CustomWeakFormMagnetics wf("Air", MU_0, "Iron", MU_IRON, GAMMA_IRON, 
+                             "Wire", MU_0, scalar(J_EXT, 0.0), OMEGA);
+
   // Initialize coarse and reference mesh solution.
   Solution sln, ref_sln;
 
@@ -117,23 +96,22 @@ int main(int argc, char* argv[])
   //ScalarView sview("Solution", new WinGeom(0, 0, 600, 350));
   //sview.show_mesh(false);
   //OrderView  oview("Polynomial orders", new WinGeom(610, 0, 520, 350));
-
+  
   // DOF and CPU convergence graphs initialization.
   SimpleGraph graph_dof, graph_cpu;
 
   SparseMatrix* matrix = create_matrix(matrix_solver);
   Vector* rhs = create_vector(matrix_solver);
   Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
-
+  
   if (matrix_solver == SOLVER_AZTECOO) {
     ((AztecOOSolver*) solver)->set_solver(iterative_method);
     ((AztecOOSolver*) solver)->set_precond(preconditioner);
     // Using default iteration parameters (see solver/aztecoo.h).
   }
-
+  
   // Adaptivity loop:
-  int as = 1;
-  bool done = false;
+  int as = 1; bool done = false;
   do
   {
     info("---- Adaptivity step %d:", as);
@@ -142,37 +120,43 @@ int main(int argc, char* argv[])
     Space* ref_space = Space::construct_refined_space(&space);
     int ndof_ref = Space::get_num_dofs(ref_space);
 
-    // Assemble the reference problem.
+    // Initialize matrix solver.
+    SparseMatrix* matrix = create_matrix(matrix_solver);
+    Vector* rhs = create_vector(matrix_solver);
+    Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
+
+    // Initialize reference problem.
     info("Solving on reference mesh.");
-    DiscreteProblem* dp = new DiscreteProblem(&wf, ref_space);
+    DiscreteProblem dp(&wf, ref_space);
 
     // Time measurement.
     cpu_time.tick();
-    // Initial coefficient vector for the Newton's method.
+
+    // Initial coefficient vector for the Newton's method.  
     scalar* coeff_vec = new scalar[ndof_ref];
     memset(coeff_vec, 0, ndof_ref * sizeof(scalar));
 
     // Perform Newton's iteration.
-    if (!hermes2d.solve_newton(coeff_vec, dp, solver, matrix, rhs)) error("Newton's iteration failed.");
+    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs)) error("Newton's iteration failed.");
 
     // Translate the resulting coefficient vector into the Solution sln.
     Solution::vector_to_solution(coeff_vec, ref_space, &ref_sln);
-
+  
     // Project the fine mesh solution onto the coarse mesh.
     info("Projecting reference solution on coarse mesh.");
-    OGProjection::project_global(&space, &ref_sln, &sln, matrix_solver);
-
+    OGProjection::project_global(&space, &ref_sln, &sln, matrix_solver); 
+   
     // View the coarse mesh solution and polynomial orders.
     //sview.show(&sln);
     //oview.show(&space);
 
     // Calculate element errors and total error estimate.
-    info("Calculating error estimate.");
+    info("Calculating error estimate."); 
     Adapt* adaptivity = new Adapt(&space);
     double err_est_rel = adaptivity->calc_err_est(&sln, &ref_sln) * 100;
 
     // Report results.
-    info("ndof_coarse: %d, ndof_fine: %d, err_est_rel: %g%%",
+    info("ndof_coarse: %d, ndof_fine: %d, err_est_rel: %g%%", 
       Space::get_num_dofs(&space), Space::get_num_dofs(ref_space), err_est_rel);
 
     // Time measurement.
@@ -186,26 +170,27 @@ int main(int argc, char* argv[])
 
     // If err_est too large, adapt the mesh.
     if (err_est_rel < ERR_STOP) done = true;
-    else
+    else 
     {
       info("Adapting coarse mesh.");
       done = adaptivity->adapt(&selector, THRESHOLD, STRATEGY, MESH_REGULARITY);
     }
     if (Space::get_num_dofs(&space) >= NDOF_STOP) done = true;
 
+    // Clean up.
+    delete [] coeff_vec;
     delete adaptivity;
     if (done == false)
       delete ref_space->get_mesh();
     delete ref_space;
-    delete dp;
-
+    
     // Increase counter.
     as++;
   }
   while (done == false);
-
+  
   verbose("Total running time: %g s", cpu_time.accumulated());
-
+  
   // Clean up.
   delete solver;
   delete matrix;
@@ -215,9 +200,9 @@ int main(int argc, char* argv[])
 
 #define ERROR_SUCCESS                                0
 #define ERROR_FAILURE                               -1
-  printf("ndof allowed = %d\n", 650);
+  printf("ndof allowed = %d\n", 360);
   printf("ndof actual = %d\n", ndof);
-  if (ndof < 650) {      // ndofs was 625 atthe time this test was created
+  if (ndof < 650) {      // ndofs was 352 atthe time this test was created
     printf("Success!\n");
     return ERROR_SUCCESS;
   }
