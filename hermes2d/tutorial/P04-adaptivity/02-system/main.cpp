@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
   CustomRightHandSide2 g2(K, D_v);
 
   // Initialize the weak formulation.
-  WeakFormFitzHughNagumo wf(&g1, &g2);
+  CustomWeakForm wf(&g1, &g2);
   
   // Initialize boundary conditions
   DefaultEssentialBCConst bc_u("Bdy", 0.0);
@@ -168,7 +168,7 @@ int main(int argc, char* argv[])
 
     // Initialize reference problem.
     info("Solving on reference mesh.");
-    DiscreteProblem* dp = new DiscreteProblem(&wf, *ref_spaces);
+    DiscreteProblem dp(&wf, *ref_spaces);
 
     // Time measurement.
     cpu_time.tick();
@@ -180,7 +180,7 @@ int main(int argc, char* argv[])
     // Perform Newton's iteration.
     bool jacobian_changed = true;
     bool verbose = true;
-    if (!hermes2d.solve_newton(coeff_vec, dp, solver, matrix, rhs, jacobian_changed, 
+    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs, jacobian_changed, 
                                1e-8, 100, verbose)) error("Newton's iteration failed.");
 
     // Translate the resulting coefficient vector into the Solution sln.
@@ -278,7 +278,6 @@ int main(int argc, char* argv[])
     for(unsigned int i = 0; i < ref_spaces->size(); i++)
       delete (*ref_spaces)[i]->get_mesh();
     delete ref_spaces;
-    delete dp;
     
     // Increase counter.
     as++;

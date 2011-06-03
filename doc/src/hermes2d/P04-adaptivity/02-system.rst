@@ -13,8 +13,8 @@ is
 
 .. math::
 
-    -d^2_u \Delta u - f(u) + \sigma v = g_1,\\
-    -d^2_v \Delta v - u + v = g_2.
+    -d^2_u \Delta u - f(u) + \sigma v - g_1 = 0,\\
+    -d^2_v \Delta v - u + v - g_2 = 0.
 
 Here the unknowns $u, v$ are the voltage and $v$-gate, respectively.
 The nonlinear function 
@@ -64,14 +64,12 @@ $v$ has a thin boundary layer along the boundary:
 
 .. image:: 02-system/solution_u.png
    :align: center
-   :width: 465
-   :height: 400
+   :height: 350
    :alt: Solution
 
 .. image:: 02-system/solution_v.png
    :align: center
-   :width: 465
-   :height: 400
+   :height: 350
    :alt: Solution
 
 Manufactured right-hand side
@@ -81,52 +79,93 @@ The source functions $g_1$ and $g_2$ are obtained by inserting $u$ and $v$
 into the PDE system. These functions are not extremely pretty, but they 
 are not too bad either::
 
-    // Functions g_1 and g_2.
-    double g_1(double x, double y) 
+    class CustomExactFunction1
     {
-      return (-cos(M_PI*x/2.)*cos(M_PI*y/2.) + SIGMA*(1. - (exp(K*x) + exp(-K*x))/(exp(K) + exp(-K))) 
-             * (1. - (exp(K*y) + exp(-K*y))/(exp(K) + exp(-K))) + pow(M_PI,2.)*pow(D_u,2.)*cos(M_PI*x/2.)
-             *cos(M_PI*y/2.)/2.);
-    }
+    public:
+      CustomExactFunction1() 
+      { 
+      };
 
-    double g_2(double x, double y) 
+      double val(double x) 
+      {
+	return cos(M_PI*x/2);
+      }
+      
+      double dx(double x) 
+      {
+	return -sin(M_PI*x/2)*(M_PI/2.);
+      }
+      
+      double ddxx(double x) 
+      {
+	return -cos(M_PI*x/2)*(M_PI/2.)*(M_PI/2.);
+      }
+    };
+
+    class CustomExactFunction2
     {
-      return ((1. - (exp(K*x) + exp(-K*x))/(exp(K) + exp(-K)))*(1. - (exp(K*y) + exp(-K*y))/(exp(K) + exp(-K))) 
-             - pow(D_v,2.)*(-(1 - (exp(K*x) + exp(-K*x))/(exp(K) + exp(-K)))*(pow(K,2.)*exp(K*y) + pow(K,2.)*exp(-K*y))/(exp(K) + exp(-K)) 
-             - (1. - (exp(K*y) + exp(-K*y))/(exp(K) + exp(-K)))*(pow(K,2.)*exp(K*x) + pow(K,2.)*exp(-K*x))/(exp(K) + exp(-K))) - 
-             cos(M_PI*x/2.)*cos(M_PI*y/2.));
+    public:
+      CustomExactFunction2(double K) : K(K) 
+      {
+      };
 
-    }
+      double val(double x) 
+      {
+	return 1. - (exp(K*x) + exp(-K*x))/(exp(K) + exp(-K));
+      }
+      
+      double dx(double x) 
+      {
+	return -K*(exp(K*x) - exp(-K*x))/(exp(K) + exp(-K));
+      }
+      
+      double ddxx(double x) 
+      {
+	return -K*K*(exp(K*x) + exp(-K*x))/(exp(K) + exp(-K));
+      }
+
+      double K;
+    };
 
 The weak forms can be found in the 
-file `definitions.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P04-adaptivity/02-system/definitions.cpp>`_ and 
-they are registered as follows::
+file `definitions.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P04-adaptivity/02-system/definitions.cpp>`_ and they are registered as follows::
 
-Registering weak forms
-~~~~~~~~~~~~~~~~~~~~~~
+Weak forms
+~~~~~~~~~~
 
-Weak forms are registered as usual::
+Weak formulation comprises default and custom forms::
 
-    // Initialize the weak formulation.
-    WeakForm wf(2);
-    wf.add_matrix_form(0, 0, callback(bilinear_form_0_0));
-    wf.add_matrix_form(0, 1, callback(bilinear_form_0_1));
-    wf.add_matrix_form(1, 0, callback(bilinear_form_1_0));
-    wf.add_matrix_form(1, 1, callback(bilinear_form_1_1));
-    wf.add_vector_form(0, linear_form_0, linear_form_0_ord);
-    wf.add_vector_form(1, linear_form_1, linear_form_1_ord);
+    class CustomWeakForm : public WeakForm
+    {
+    public:
+      CustomWeakForm(CustomRightHandSide1* g1, CustomRightHandSide2* g2) : WeakForm(2) 
+      {
+	// Jacobian.
+	add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, HERMES_ANY, new HermesFunction(D_u * D_u)));
+	add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(-1.0)));
+	add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 1, HERMES_ANY, new HermesFunction(g1->sigma), HERMES_NONSYM));
+	add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(1, 0, HERMES_ANY, new HermesFunction(-1.0), HERMES_NONSYM));
+	add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(1, 1, HERMES_ANY, new HermesFunction(D_v * D_v)));
+	add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(1, 1, HERMES_ANY, new HermesFunction(1.0)));
 
-Beware that although each of the forms is actually symmetric, one cannot use the HERMES_SYM flag as in the 
-elasticity equations, since it has a slightly different 
-meaning (see example `P01-linear/08-system <http://hpfem.org/hermes/doc/src/hermes2d/linear/system.html>`_).
+	// Residual.
+	add_vector_form(new CustomResidual1(D_u, g1->sigma, g1));
+	add_vector_form(new CustomResidual2(D_v, g2));
+      }
+    };
 
-Computing multiple reference solutions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Beware that although each of the forms is actually symmetric, one cannot use the 
+HERMES_SYM flag as in the elasticity equations, since it has a slightly different 
+meaning (see example `P01-linear/08-system <http://hpfem.org/hermes/doc/src/hermes2d/P01-linear/08-system.html>`_).
 
-The adaptivity workflow is standard - the adaptivity loop starts with a global refinement of each mesh::
+Adaptivity loop
+~~~~~~~~~~~~~~~
+
+The adaptivity workflow is standard, first we construct the reference spaces::
 
     // Construct globally refined reference mesh and setup reference space.
-    Tuple<Space *>* ref_spaces = construct_refined_spaces(Tuple<Space *>(&u_space, &v_space));
+    Hermes::vector<Space *>* ref_spaces = 
+      Space::construct_refined_spaces(Hermes::vector<Space *>(&u_space, &v_space));
 
 Then we initialize matrix solver::
 
@@ -135,66 +174,43 @@ Then we initialize matrix solver::
     Vector* rhs = create_vector(matrix_solver);
     Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
 
-Assemble the global stiffness matrix and right-hand side vector::
+Solve the discrete problem using the Newton's method::
 
-    // Assemble the reference problem.
-    info("Solving on reference mesh.");
-    bool is_linear = true;
-    DiscreteProblem* dp = new DiscreteProblem(&wf, *ref_spaces, is_linear);
-    dp->assemble(matrix, rhs);
+    // Perform Newton's iteration.
+    bool jacobian_changed = true;
+    bool verbose = true;
+    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs, jacobian_changed, 
+                               1e-8, 100, verbose)) error("Newton's iteration failed.");
 
-Solve the reference problem::
+Translate the coefficient vector into the two Solutions::
 
-    // Solve the linear system of the reference problem. If successful, obtain the solutions.
-    if(solver->solve()) Solution::vector_to_solutions(solver->get_solution(), *ref_spaces, 
+    // Translate the resulting coefficient vector into Solutions.
+    Solution::vector_to_solutions(coeff_vec, *ref_spaces, Hermes::vector<Solution *>(&u_ref_sln, &v_ref_sln));
 
-Projecting multiple solutions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Project each reference solution on the corresponding coarse mesh in order to extract 
-its low-order part::
+Project reference solutions to the coarse meshes::
 
     // Project the fine mesh solution onto the coarse mesh.
     info("Projecting reference solution on coarse mesh.");
-    OGProjection::project_global(Tuple<Space *>(&u_space, &v_space), Tuple<Solution *>(&u_ref_sln, &v_ref_sln), 
-                   Tuple<Solution *>(&u_sln, &v_sln), matrix_solver); 
+    OGProjection::project_global(Hermes::vector<Space *>(&u_space, &v_space), 
+                                 Hermes::vector<Solution *>(&u_ref_sln, &v_ref_sln), 
+                                 Hermes::vector<Solution *>(&u_sln, &v_sln), matrix_solver); 
 
-Error estimation
-~~~~~~~~~~~~~~~~
-
-Error estimate for adaptivity is calculated as follows::
-
-    // Calculate element errors.
-    info("Calculating error estimate and exact error."); 
-    Adapt* adaptivity = new Adapt(Tuple<Space *>(&u_space, &v_space), Tuple<ProjNormType>(HERMES_H1_NORM, HERMES_H1_NORM));
+Calculate error estimates::
 
     // Calculate error estimate for each solution component and the total error estimate.
-    Tuple<double> err_est_rel;
-    bool solutions_for_adapt = true;
-    double err_est_rel_total = adaptivity->calc_err_est(Tuple<Solution *>(&u_sln, &v_sln), 
-                               Tuple<Solution *>(&u_ref_sln, &v_ref_sln), solutions_for_adapt, 
-                               HERMES_TOTAL_ERROR_REL | HERMES_ELEMENT_ERROR_ABS, &err_est_rel) * 100;
-
-Exact error calculation and the 'solutions_for_adapt' flag
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Above, solutions_for_adapt=true means that these solution pairs will be used to calculate 
-element errors to guide adaptivity. With solutions_for_adapt=false, just the total error 
-would be calculated (not the element errors). 
-
-We also calculate exact error for each solution component::
+    Hermes::vector<double> err_est_rel;
+    double err_est_rel_total = adaptivity->calc_err_est(Hermes::vector<Solution *>(&u_sln, &v_sln), 
+                                                        Hermes::vector<Solution *>(&u_ref_sln, &v_ref_sln), 
+                                                        &err_est_rel) * 100;
+Calculate exact errors (optional)::
 
     // Calculate exact error for each solution component and the total exact error.
-    Tuple<double> err_exact_rel;
-    solutions_for_adapt = false;
-    double err_exact_rel_total = adaptivity->calc_err_exact(Tuple<Solution *>(&u_sln, &v_sln), 
-                                 Tuple<Solution *>(&u_exact, &v_exact), solutions_for_adapt, 
-                                 HERMES_TOTAL_ERROR_REL, &err_exact_rel) * 100;
-
-Adapting multiple meshes
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-The mesh is adapted only if the error estimate exceeds the allowed tolerance ERR_STOP::
+    Hermes::vector<double> err_exact_rel;
+    bool solutions_for_adapt = false;
+    double err_exact_rel_total = adaptivity->calc_err_exact(Hermes::vector<Solution *>(&u_sln, &v_sln), 
+                                                            Hermes::vector<Solution *>(&exact_u, &exact_v), 
+                                                            &err_exact_rel, solutions_for_adapt) * 100;
+Adapt the coarse meshes::
 
     // If err_est too large, adapt the mesh.
     if (err_est_rel_total < ERR_STOP) 
@@ -202,15 +218,12 @@ The mesh is adapted only if the error estimate exceeds the allowed tolerance ERR
     else 
     {
       info("Adapting coarse mesh.");
-      done = adaptivity->adapt(Tuple<RefinementSelectors::Selector *>(&selector, &selector), 
+      done = adaptivity->adapt(Hermes::vector<RefinementSelectors::Selector *>(&selector, &selector), 
                                THRESHOLD, STRATEGY, MESH_REGULARITY);
     }
-    if (Space::get_num_dofs(Tuple<Space *>(&u_space, &v_space)) >= NDOF_STOP) done = true;
+    if (Space::get_num_dofs(Hermes::vector<Space *>(&u_space, &v_space)) >= NDOF_STOP) done = true;
 
-Cleaning up
-~~~~~~~~~~~
-
-At the end of the adaptivity loop we release memory and increase the counter of adaptivity steps::
+Clean up::
 
     // Clean up.
     delete solver;

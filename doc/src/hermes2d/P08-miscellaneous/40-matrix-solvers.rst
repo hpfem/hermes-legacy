@@ -1,7 +1,7 @@
 Using Matrix Solvers (40-matrix-solvers)
 ----------------------------------------
 
-**Git reference:** Tutorial example `40-matrix-solvers <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P10-miscellaneous/40-matrix-solvers>`_. 
+**Git reference:** Tutorial example `40-matrix-solvers <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P08-miscellaneous/40-matrix-solvers>`_. 
 
 This example shows how to solve a matrix problem Ax = b in Hermes using various solvers
 that Hermes supports. The matrix and the right-hand side vector are first read from a text 
