@@ -1,35 +1,53 @@
-#include <hermes2d.h>
+#include "definitions.h"
 #include <cstdlib>
 
-// Class that represents the semi-analytic solution on the rectangle [0,1]x[0,1].
-// Contains coordinates of the Gauss-Kronrod quadrature nodes and the corresponding
-// function values and quadrature weights, as read from the file supplied to the
-// constructor.
-class SemiAnalyticSolution
-{  
-  std::vector<long double> x; //  x coordinate.
-  std::vector<long double> y; //  y coordinate.
-  std::vector<long double> u; //  u(x,y).
-  std::vector<long double> w; //  Gauss-Kronrod quadrature weights.
+// Weighted integral over the specified boundary edge.
+double BoundaryIntegral::value(MeshFunction* sln) const
+{
+  Quad2D* quad = &g_quad_2d_std;
+  sln->set_quad_2d(quad);
+  RefMap rm;
   
-  unsigned long int n;  // Number of quadrature points (size of vectors x,y,u,w).
+  Mesh* mesh = sln->get_mesh();
   
-  bool NA;  // Indicates that the exact solution could not be read from the input file.
+  double integral = 0.0;
+  Element* el;
+  for_all_active_elements(el, mesh)
+  {
+    for (int e = 0; e < el->nvert; e++)
+    {
+      if (el->en[e]->bnd && 
+          el->en[e]->marker == mesh->get_boundary_markers_conversion().get_internal_marker(marker))
+      {
+        sln->set_active_element(el);
+        rm.set_active_element(el);
+        
+        // Set quadrature order.
+        int eo = quad->get_edge_points(e, g_safe_max_order);
+        sln->set_quad_order(eo, H2D_FN_VAL);
+        
+        // Obtain quadrature points, corresponding solution values and tangent vectors (for computing outward normal).
+        double* x = rm.get_phys_x(eo);
+        double* y = rm.get_phys_y(eo);
+        scalar* z = sln->get_fn_values();
+        double3* t = rm.get_tangent(e,eo);
+        
+        // Add contribution from current edge.
+        int np = quad->get_num_points(eo);
+        double3* pt = quad->get_points(eo);
+        
+        for (int i = 0; i < np; i++)
+        {
+          double beta_dot_n = beta.dot( x[i], y[i], t[i][1], -t[i][0] );
+          // Weights sum up to two on every edge, therefore the division by two must be present.
+          integral += 0.5 * pt[i][2] * t[i][2] * weight_fn(x[i],y[i]) * z[i] * beta_dot_n; 
+        } 
+      }
+    }
+  }
   
-  public:
-    SemiAnalyticSolution(std::string file);
-    
-    // The following two functions use the quadrature specified by the input file to
-    // calculate integrals over the rectangle [0,1]x[0,1].
-    //
-    // Calculates L2-norm of the exact solution.
-    double get_l2_norm();     
-    //
-    // Calculates L2-norm of the relative difference between
-    // the exact solution and the one computed by Hermes.  
-    double get_l2_rel_err(Solution *approx_sln);  
-};
-
+  return integral;
+}
 
 SemiAnalyticSolution::SemiAnalyticSolution(std::string file) : NA(false)
 {
@@ -89,7 +107,7 @@ double SemiAnalyticSolution::get_l2_norm()
 
 double SemiAnalyticSolution::get_l2_rel_err(Solution *approx_sln)
 {
-  if (NA) return -1;
+//   if (NA) return -1;
   
   long double res = 0.0, nrm = 0.0;
   
@@ -102,134 +120,107 @@ double SemiAnalyticSolution::get_l2_rel_err(Solution *approx_sln)
   return sqrt(res/nrm);
 }
 
-
-    
-
-
-
-
-
-
-
-// Inner product between two 2D vectors.
-template<typename Real>
-inline Real dot2(Real x1, Real y1, Real x2, Real y2)
-{
-  return x1*x2 + y1*y2;
-}
-
-// Weak form of the source term.
-template<typename Real, typename Scalar>
-Scalar source_liform(int n, double *wt, Func<Real> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return int_F_v<Real, Scalar>(n, wt, F<Real>, v, e);
-}
-
 //////////////////////////////////////////////////// CONTINUOUS APPROXIMATION ////////////////////////////////////////////////////
 
-// Weak forms:
+CustomWeakFormContinuousGalerkin::CustomWeakFormContinuousGalerkin(bool supg_stabilization) : WeakForm(1)
+{
+  DiscretizationMethod disc_method = supg_stabilization ? SUPG : CG;
+  
+  add_matrix_form(new VolumetricJacobian(disc_method));
+  add_vector_form(new VolumetricResidual(disc_method));
+  
+  add_matrix_form_surf(new InflowBoundaryJacobian("nonzero constant inflow", new HermesFunction(1.0)));
+  add_vector_form_surf(new InflowBoundaryResidual("nonzero constant inflow", new HermesFunction(1.0)));
+  add_matrix_form_surf(new InflowBoundaryJacobian("zero inflow", new HermesFunction(0.0)));
+  add_vector_form_surf(new InflowBoundaryResidual("zero inflow", new HermesFunction(0.0)));
+  add_matrix_form_surf(new InflowBoundaryJacobian("varying inflow", new InflowVariation));
+  add_vector_form_surf(new InflowBoundaryResidual("varying inflow", new InflowVariation));
+  
+  if (supg_stabilization)
+  {
+    add_matrix_form(new StabilizationJacobian);
+    add_vector_form(new StabilizationResidual);
+  }
+}
 
 template<typename Real, typename Scalar>
-Scalar cg_biform(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar CustomWeakFormContinuousGalerkin::InflowBoundaryJacobian::matrix_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* u, Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
+{
+  Scalar result = 0;
+  
+  for (int i=0; i < n; i++)
+    result += wt[i] * u->val[i] * v->val[i] * (-FlowField<Real>::dot_n(e,i)); // beta_dot_n < 0 for the inflow boundary
+  
+  return result;
+}
+template<typename Real, typename Scalar>
+Scalar CustomWeakFormContinuousGalerkin::InflowBoundaryResidual::vector_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
+{
+  Scalar result = 0;
+  
+  for (int i=0; i < n; i++)
+    result += wt[i] * v->val[i] * (-FlowField<Real>::dot_n(e,i)) * (u_ext[0]->val[i] - inflow->value(e->x[i], e->y[i]));
+  
+  return result;
+}
+
+template<typename Real, typename Scalar>
+Scalar CustomWeakFormContinuousGalerkin::VolumetricJacobian::matrix_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* u, Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
 {
   Scalar result = 0;
   for (int i=0; i < n; i++)
-  {
-    Real a = fn_a<Real>(e->x[i], e->y[i]);
-    Real b = fn_b<Real>(e->x[i], e->y[i]);
-    Real c = fn_c<Real>(e->x[i], e->y[i]);
-    result += wt[i] * v->val[i] * (dot2<Real>(a, b, u->dx[i], u->dy[i]) + c * u->val[i]);
-  }
+    result += wt[i] * v->val[i] * ( FlowField<Real>::dot_grad(u,e,i) + mu->value(e->x[i], e->y[i]) * u->val[i] );
+  
   return result;
 }
 
 template<typename Real, typename Scalar>
-Scalar cg_boundary_biform(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar CustomWeakFormContinuousGalerkin::VolumetricResidual::vector_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
 {
   Scalar result = 0;
   for (int i=0; i < n; i++)
-  {
-    Real a = fn_a<Real>(e->x[i], e->y[i]);
-    Real b = fn_b<Real>(e->x[i], e->y[i]);
-    Real beta_dot_n = dot2<Real>(a, b, e->nx[i], e->ny[i]);
-    
-    if (beta_dot_n < 0)
-      result += -wt[i] * u->val[i] * v->val[i] * beta_dot_n;
-  }
-  return result;
-}
-template<>
-Ord cg_boundary_biform(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
-{
-  Ord result = 0;
+    result += wt[i] * v->val[i] * ( FlowField<Real>::dot_grad(u_ext[0],e,i) + mu->value(e->x[i], e->y[i]) * u_ext[0]->val[i] );
   
-  for (int i = 0; i < n; i++) 
-  {
-    Ord a = fn_a<Ord>(e->x[i], e->y[i]);
-    Ord b = fn_b<Ord>(e->x[i], e->y[i]);
-    Ord beta_dot_n = dot2<Ord>(a, b, e->nx[i], e->ny[i]);
-    result += wt[i] * u->val[i] * beta_dot_n * v->val[i];
-  }
   return result;
 }
 
 template<typename Real, typename Scalar>
-Scalar cg_boundary_liform(int n, double *wt, Func<Real> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar CustomWeakFormContinuousGalerkin::StabilizationJacobian::matrix_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* u, Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
 {
-  Scalar result = 0;
-  
-  for (int i = 0; i < n; i++) 
-  {
-    Real x = e->x[i], y = e->y[i];
-    Real a = fn_a<Real>(x, y);
-    Real b = fn_b<Real>(x, y);
-    Real beta_dot_n = dot2<Real>(a, b, e->nx[i], e->ny[i]);
-    
-    if (beta_dot_n < 0)    // inflow
-    {
-      Scalar g = essential_bc_values<Real, Scalar>(e->edge_marker, x, y);
-      result += -wt[i] * beta_dot_n * g * v->val[i];
-    }
-  }
-  
-  return result;
-}
-template<>
-Ord cg_boundary_liform(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
-{
-  Ord x = e->x[0], y = e->y[0];
-  Ord a = fn_a<Ord>(x, y);
-  Ord b = fn_b<Ord>(x, y);
-  Ord beta_dot_n = dot2<Ord>(a, b, e->nx[0], e->ny[0]);
-  Ord g = essential_bc_values<Ord,Ord>(e->edge_marker, x, y);
-
-  return beta_dot_n * g * v->val[0];
-}
-
-// Empirical streamline upwind Petrov-Galerkin stabilization.
-template<typename Real, typename Scalar>
-Scalar stabilization_biform_supg(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  Real h_e = e->diam;
+  static FlowField<Real> beta;
+  static ReactionTerm mu(SUPG);
+ 
   Scalar result = 0;
   Real norm_a_sq = 0.;
   Real norm_b_sq = 0.;
   for (int i=0; i < n; i++) 
   {
-    Real a = fn_a<Real>(e->x[i], e->y[i]);
-    Real b = fn_b<Real>(e->x[i], e->y[i]);
-    Real c = fn_c<Real>(e->x[i], e->y[i]);
-    Real f = F<Real>(e->x[i], e->y[i]);
-    
-    Real R = dot2<Real>(a, b, u->dx[i], u->dy[i]) + c * u->val[i] - f;    
-    result += wt[i] * dot2<Real>(a, b, v->dx[i], v->dy[i]) * R;
-    norm_a_sq += 0.5 * wt[i] * sqr(a);
-    norm_b_sq += 0.5 * wt[i] * sqr(b);
+    result += wt[i] * beta.dot_grad(v,e,i) * ( beta.dot_grad(u,e,i) + mu.value(e->x[i], e->y[i]) * u->val[i] );
+    norm_a_sq += 0.5 * wt[i] * sqr(beta.fn_a(e->x[i], e->y[i]));
+    norm_b_sq += 0.5 * wt[i] * sqr(beta.fn_b(e->x[i], e->y[i]));
   }
   
-  return result * sqr(h_e)/(4*(norm_a_sq + norm_b_sq));
+  return result * sqr(e->diam)/(4*(norm_a_sq + norm_b_sq));
 }
 
+template<typename Real, typename Scalar>
+Scalar CustomWeakFormContinuousGalerkin::StabilizationResidual::vector_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
+{
+  static FlowField<Real> beta;
+  static ReactionTerm mu(SUPG);
+  
+  Scalar result = 0;
+  Real norm_a_sq = 0.;
+  Real norm_b_sq = 0.;
+  for (int i=0; i < n; i++) 
+  {
+    result += wt[i] * beta.dot_grad(v,e,i) * ( beta.dot_grad(u_ext[0],e,i) + mu.value(e->x[i], e->y[i]) * u_ext[0]->val[i] );
+    norm_a_sq += 0.5 * wt[i] * sqr(beta.fn_a(e->x[i], e->y[i]));
+    norm_b_sq += 0.5 * wt[i] * sqr(beta.fn_b(e->x[i], e->y[i]));
+  }
+  
+  return result * sqr(e->diam)/(4*(norm_a_sq + norm_b_sq));
+}
 
 //////////////////////////////////////////////////// DISCONTINUOUS APPROXIMATION ////////////////////////////////////////////////////
 
@@ -242,99 +233,108 @@ Scalar stabilization_biform_supg(int n, double *wt, Func<Scalar> *u_ext[], Func<
 
 // Weak forms:
 
-template<typename Real, typename Scalar>
-Scalar dg_volumetric_biform(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+CustomWeakFormDiscontinuousGalerkin::CustomWeakFormDiscontinuousGalerkin(double theta) : WeakForm(1)
 {
-  Scalar result = 0;
-  for (int i = 0; i < n; i++)
-  {
-    Real a = fn_a<Real>(e->x[i], e->y[i]);
-    Real b = fn_b<Real>(e->x[i], e->y[i]);
-    Real c = fn_c<Real>(e->x[i], e->y[i]);
-    result += wt[i] * u->val[i] * ( c * v->val[i] - dot2<Real>(a, b, v->dx[i], v->dy[i]) );
-  }
-  return result;
+  add_matrix_form(new VolumetricJacobian);
+  add_vector_form(new VolumetricResidual);
+  add_matrix_form_surf(new BoundaryJacobian("nonzero constant inflow", new HermesFunction(1.0)));
+  add_vector_form_surf(new BoundaryResidual("nonzero constant inflow", new HermesFunction(1.0)));
+  add_matrix_form_surf(new BoundaryJacobian("zero inflow", new HermesFunction(0.0)));
+  add_vector_form_surf(new BoundaryResidual("zero inflow", new HermesFunction(0.0)));
+  add_matrix_form_surf(new BoundaryJacobian("varying inflow", new InflowVariation));
+  add_vector_form_surf(new BoundaryResidual("varying inflow", new InflowVariation));
+  add_matrix_form_surf(new BoundaryJacobian("outflow"));
+  add_vector_form_surf(new BoundaryResidual("outflow"));
+  add_matrix_form_surf(new InterfaceJacobian(theta));
+  add_vector_form_surf(new InterfaceResidual(theta));
 }
 
-template<typename Real, typename Scalar>
-Scalar dg_interface_biform(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+scalar CustomWeakFormDiscontinuousGalerkin::BoundaryJacobian::value(int n, double* wt, Func< scalar >* u_ext[], Func< double >* u, Func< double >* v, Geom< double >* e, ExtData< scalar >* ext) const
 {
-  Scalar result = 0;
-  Real theta = 0.5;   // Stabilization parameter. Standard upwind scheme is obtained for theta = 0.5.
-    
-  for (int i = 0; i < n; i++) 
-  {
-    Real a = fn_a<Real>(e->x[i], e->y[i]);
-    Real b = fn_b<Real>(e->x[i], e->y[i]);
-    Real beta_dot_n = dot2<Real>(a, b, e->nx[i], e->ny[i]);
-    result += wt[i] * AVG(u) * dot2<Real>(a, b, JUMP(v));
-    result += wt[i] * theta * magn(beta_dot_n) * dot2<Real>(JUMP(u), JUMP(v));
-  }
-  
-  return result;
-}
-
-template<typename Real, typename Scalar>
-Scalar dg_boundary_biform(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  Scalar result = 0;
+  scalar result = 0;
   
   for (int i = 0; i < n; i++) 
   {
-    Real a = fn_a<Real>(e->x[i], e->y[i]);
-    Real b = fn_b<Real>(e->x[i], e->y[i]);
-    Real beta_dot_n = dot2<Real>(a, b, e->nx[i], e->ny[i]);
+    double beta_dot_n = FlowField<double>::dot_n(e,i);
     if (beta_dot_n >= 0)   // outflow
       result += wt[i] * u->val[i] * beta_dot_n * v->val[i];
   }
   
   return result;
 }
-template<>
-Ord dg_boundary_biform(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
+
+Ord CustomWeakFormDiscontinuousGalerkin::BoundaryJacobian::ord(int n, double* wt, Func< Ord >* u_ext[], Func< Ord >* u, Func< Ord >* v, Geom< Ord >* e, ExtData< Ord >* ext) const
 {
-  Ord result = 0;
+  return u->val[0] * FlowField<Ord>::dot_n(e,0) * v->val[0];
+}
+
+scalar CustomWeakFormDiscontinuousGalerkin::BoundaryResidual::value(int n, double* wt, Func< scalar >* u_ext[], Func< double >* v, Geom< double >* e, ExtData< scalar >* ext) const
+{
+  scalar result = 0;
   
   for (int i = 0; i < n; i++) 
   {
-    Ord a = fn_a<Ord>(e->x[i], e->y[i]);
-    Ord b = fn_b<Ord>(e->x[i], e->y[i]);
-    Ord beta_dot_n = dot2<Ord>(a, b, e->nx[i], e->ny[i]);
-    result += wt[i] * u->val[i] * beta_dot_n * v->val[i];
+    double beta_dot_n = FlowField<double>::dot_n(e,i);
+    if (beta_dot_n >= 0)   // outflow
+      result += wt[i] * u_ext[0]->val[i] * beta_dot_n * v->val[i];
+    else  // inflow
+      result += wt[i] * (-beta_dot_n) * (-inflow->value(e->x[i], e->y[i])) * v->val[i];
   }
   
   return result;
 }
 
-template<typename Real, typename Scalar>
-Scalar dg_boundary_liform(int n, double *wt, Func<Real> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Ord CustomWeakFormDiscontinuousGalerkin::BoundaryResidual::ord(int n, double* wt, Func< Ord >* u_ext[], Func< Ord >* v, Geom< Ord >* e, ExtData< Ord >* ext) const
 {
-  Scalar result = 0;
+  return FlowField<Ord>::dot_n(e,0) * (u_ext[0]->val[i] + inflow->value(e->x[0], e->y[0])) * v->val[0];
+}
+
+template<typename Real, typename Scalar>
+Scalar CustomWeakFormDiscontinuousGalerkin::VolumetricJacobian::matrix_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* u, Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
+{
+  static ReactionTerm mu(DG);
   
-  for (int i = 0; i < n; i++) 
-  {
-    Real x = e->x[i], y = e->y[i];
-    Real a = fn_a<Real>(x, y);
-    Real b = fn_b<Real>(x, y);
-    Real beta_dot_n = dot2<Real>(a, b, e->nx[i], e->ny[i]);
-    
-    if (beta_dot_n < 0)    // inflow
-    {
-      Scalar g = essential_bc_values<Real, Scalar>(e->edge_marker, x, y);
-      result += -wt[i] * beta_dot_n * g * v->val[i];
-    }
-  }
+  Scalar result = 0;
+  for (int i = 0; i < n; i++)
+    result += wt[i] * u->val[i] * ( mu.value(e->x[i], e->y[i]) * v->val[i] - FlowField<Real>::dot_grad(v,e,i) );
+
+  return result;
+}
+
+template<typename Real, typename Scalar>
+Scalar CustomWeakFormDiscontinuousGalerkin::VolumetricResidual::vector_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
+{
+  static ReactionTerm mu(DG);
+  
+  Scalar result = 0;
+  for (int i = 0; i < n; i++)
+    result += wt[i] * u_ext[0]->val[i] * ( mu.value(e->x[i], e->y[i]) * v->val[i] - FlowField<Real>::dot_grad(v,e,i) );
   
   return result;
 }
-template<>
-Ord dg_boundary_liform(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
+
+template<typename Real, typename Scalar>
+Scalar CustomWeakFormDiscontinuousGalerkin::InterfaceJacobian::matrix_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* u, Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
 {
-  Ord x = e->x[0], y = e->y[0];
-  Ord a = fn_a<Ord>(x, y);
-  Ord b = fn_b<Ord>(x, y);
-  Ord beta_dot_n = dot2<Ord>(a, b, e->nx[0], e->ny[0]);
-  Ord g = essential_bc_values<Ord,Ord>(e->edge_marker, x, y);
+  static FlowField<Real> beta;
   
-  return beta_dot_n * g * v->val[0];
+  Scalar result = 0;
+  for (int i = 0; i < n; i++) 
+    result += wt[i] * ( AVG(u) * beta.dot(e->x[i], e->y[i], JUMP(v)) + 
+                        theta * magn(beta.dot_n(e,i)) * dot2<Real>(JUMP(u), JUMP(v)) );
+                        
+  return result;
+}
+
+template<typename Real, typename Scalar>
+Scalar CustomWeakFormDiscontinuousGalerkin::InterfaceResidual::vector_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
+{
+  static FlowField<Real> beta;
+  
+  Scalar result = 0;
+  for (int i = 0; i < n; i++) 
+    result += wt[i] * ( AVG(u_ext[0]) * beta.dot(e->x[i], e->y[i], JUMP(v)) + 
+                        theta * magn(beta.dot_n(e,i)) * dot2<Real>(JUMP(u_ext[0]), JUMP(v)) );
+  
+  return result;
 }
