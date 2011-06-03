@@ -15,14 +15,13 @@ error is large.
     P04-adaptivity/01-intro
     P04-adaptivity/intro-3
     P04-adaptivity/02-system
-    P04-adaptivity/03-general
-    P04-adaptivity/04-complex
-    P04-adaptivity/05-hcurl
-    P04-adaptivity/06-exact
-    P04-adaptivity/07-nonlinear
-    P04-adaptivity/08-transient-space-only
-    P04-adaptivity/09-transient-time-only
-    P04-adaptivity/10-transient-space-and-time
+    P04-adaptivity/03-complex
+    P04-adaptivity/04-hcurl
+    P04-adaptivity/05-exact
+    P04-adaptivity/06-nonlinear
+    P04-adaptivity/07-transient-space-only
+    P04-adaptivity/08-transient-time-only
+    P04-adaptivity/09-transient-space-and-time
 
  
 
