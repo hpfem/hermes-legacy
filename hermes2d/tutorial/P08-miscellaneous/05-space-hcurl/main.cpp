@@ -24,13 +24,7 @@ int main(int argc, char* argv[])
   // Initial mesh refinement.
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
-  // Enter boundary markers (default is Neumann boundary).
-  BCTypes bc_types;
-
-  // Enter Dirichlet boundary values (not relevant here).
-  BCValues bc_values;
-
-  HcurlSpace space(&mesh, &bc_types, &bc_values, P_INIT);
+  HcurlSpace space(&mesh, P_INIT);
 
   // Visualize FE basis.
   VectorBaseView bview("VectorBaseView", new WinGeom(0, 0, 700, 600));
