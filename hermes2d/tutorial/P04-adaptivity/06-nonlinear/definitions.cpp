@@ -1,39 +1,30 @@
-#include "hermes2d.h"
+#include "definitions.h"
 
 /* Initial condition */
 
-class InitialSolutionHeatTransfer : public ExactSolutionScalar
+scalar InitialSolutionHeatTransfer::value (double x, double y) const 
 {
-public:
-  InitialSolutionHeatTransfer(Mesh* mesh) : ExactSolutionScalar(mesh) {};
+  return (x + 10) * (y + 10) / 100. + 2.;
+}
 
-  virtual scalar value (double x, double y) const {
-    return (x + 10) * (y + 10) / 100. + 2.;
-  }
+void InitialSolutionHeatTransfer::derivatives (double x, double y, scalar& dx, scalar& dy) const 
+{
+  dx = (y + 10) / 10.;
+  dy = (x + 10) / 10.;
+}
 
-  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const {
-    dx = (y + 10) / 10.;
-    dy = (x + 10) / 10.;
-  }
-
-  virtual Ord ord(Ord x, Ord y) const {
-    return (x + 10) * (y + 10) / 100. + 2.;
-  }
-};
+Ord InitialSolutionHeatTransfer::ord(Ord x, Ord y) const 
+{
+  return (x + 10) * (y + 10) / 100. + 2.;
+}
 
 /* Essential BC */
+EssentialBoundaryCondition::EssentialBCValueType CustomEssentialBCNonConst::get_value_type() const 
+{
+  return EssentialBoundaryCondition::BC_FUNCTION;
+}
 
-class CustomEssentialBCNonConst : public EssentialBoundaryCondition {
-public:
-  CustomEssentialBCNonConst(std::string marker) : EssentialBoundaryCondition(Hermes::vector<std::string>(marker)) { }
-
-  ~CustomEssentialBCNonConst() { };
-
-  inline EssentialBCValueType get_value_type() const {
-    return EssentialBoundaryCondition::BC_FUNCTION;
-  }
-
-  virtual scalar value(double x, double y, double n_x, double n_y, double t_x, double t_y) const {
-    return (x + 10) * (y + 10) / 100.;
-  }
-};
+scalar CustomEssentialBCNonConst::value(double x, double y, double n_x, double n_y, double t_x, double t_y) const 
+{
+  return (x + 10) * (y + 10) / 100.;
+}

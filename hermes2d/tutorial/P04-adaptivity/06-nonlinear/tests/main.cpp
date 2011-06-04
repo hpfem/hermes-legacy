@@ -1,7 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
-#include "function/function.h"
+#include "definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -46,9 +45,6 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 
 // Problem parameters.
 double heat_src = 1.0;
-
-// Initial and boundary conditions.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
