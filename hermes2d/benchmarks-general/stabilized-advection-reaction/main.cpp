@@ -207,6 +207,9 @@ int main(int argc, char* args[])
       // Construct globally refined reference mesh and setup reference space.
       actual_sln_space = Space::construct_refined_space(space, ORDER_INCREASE);
     
+    int ndof_fine = Space::get_num_dofs(actual_sln_space);
+    int ndof_coarse = Space::get_num_dofs(space);
+    
     // Initialize the FE problem.
     DiscreteProblem* dp = new DiscreteProblem(wf, actual_sln_space);
     
@@ -226,12 +229,11 @@ int main(int argc, char* args[])
       dp->set_fvm();
     
     // Solve the linear system. If successful, obtain the solution.
-    info("Solving.");
+    info("Solving on the refined mesh (%d NDOF).", ndof_fine);
     
     // Initial coefficient vector for the Newton's method.  
-    int ndof_ref = Space::get_num_dofs(actual_sln_space);
-    scalar* coeff_vec = new scalar[ndof_ref];
-    memset(coeff_vec, 0, ndof_ref * sizeof(scalar));
+    scalar* coeff_vec = new scalar[ndof_fine];
+    memset(coeff_vec, 0, ndof_fine * sizeof(scalar));
     
     // Perform Newton's iteration.
     if (!hermes2d.solve_newton(coeff_vec, dp, solver, matrix, rhs)) 
@@ -245,7 +247,7 @@ int main(int argc, char* args[])
     sprintf(title, "Step-%d solution", as);
     sview.set_title(title);
     sview.show(&ref_sln);
-    sprintf(title, "Distribution of polynomial orders (%d DOF).", Space::get_num_dofs(actual_sln_space)); 
+    sprintf(title, "Distribution of polynomial orders (%d DOF).", ndof_fine); 
     oview.set_title(title);
     oview.show(actual_sln_space);
     
@@ -275,10 +277,7 @@ int main(int argc, char* args[])
       bool solutions_for_adapt = true;
       double err_est_rel = adaptivity->calc_err_est(&sln, &ref_sln, solutions_for_adapt, 
                           HERMES_TOTAL_ERROR_REL | HERMES_ELEMENT_ERROR_REL);
-                          
-      int ndof_fine = Space::get_num_dofs(actual_sln_space);
-      int ndof_coarse = Space::get_num_dofs(space);
-  
+      
       // Report results.
       info("ndof_coarse: %d, ndof_fine: %d, err_est_rel: %g%%",
            ndof_coarse, ndof_fine, err_est_rel*100);

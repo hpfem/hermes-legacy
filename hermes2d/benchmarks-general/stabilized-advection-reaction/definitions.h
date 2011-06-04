@@ -7,7 +7,7 @@ enum DiscretizationMethod
   DG
 };
 
-const std::string method_names[4] = 
+const std::string method_names[3] = 
 {
   "unstabilized continuous Galerkin",
   "streamline upwind Petrov-Galerkin",

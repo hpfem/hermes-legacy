@@ -1,17 +1,3 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
-#include "config.h"
-#include <hermes2d.h>
-
-#include <iostream>
-
-// For writing results into file.
-#include <fstream>
-#include <iterator>
-
-using namespace RefinementSelectors;
-
 /** \addtogroup t_bench_stabilized-advection-reaction benchmarks/stabilized-advection-reaction
  *  \{
  *  \brief This test makes sure that the benchmark "stabilized-advection-reaction" works correctly.
@@ -26,35 +12,33 @@ using namespace RefinementSelectors;
  *   - MESH_REGULARITY=-1
  *   - CONV_EXP=1.0
  *   - ERR_STOP=5.0
- *   - NDOF_STOP=60000
+ *   - NDOF_STOP=8000
  *   - matrix_solver = SOLVER_UMFPACK
- *   - method = DG
+ *   - method = SUPG/DG
  *
  *  \section s_res Results
- *  - DOFs: 1229
- *  - Iterations: 16 
+ *  - DOFs: 174 (SUPG) / 1229 (DG)
+ *  - Iterations: 9 (SUPG) / 16 (DG)
  */
 
-enum DiscretizationMethod
-{
-  CG,
-  SUPG,
-  DG
-};
+#define HERMES_REPORT_ALL
+#define HERMES_REPORT_FILE "application.log"
+#include "../definitions.h"
 
-const std::string method_names[4] = 
-{
-  "unstabilized continuous Galerkin",
-  "streamline upwind Petrov-Galerkin",
-  "discontinuous Galerkin",
-};
+// For writing results into file.
+#include <fstream>
+#include <iterator>
 
-const DiscretizationMethod method = DG;
-const bool SAVE_FINAL_SOLUTION = false;           // Save the final solution at specified points for comparison with the
+// The following two parameters will be set according to command line arguments.
+DiscretizationMethod method;
+int P_INIT;                                       // Initial polynomial degrees of mesh elements.
+
+using namespace RefinementSelectors;
+
+const bool SAVE_FINAL_SOLUTION = true;            // Save the final solution at specified points for comparison with the
                                                   // semi-analytic solution in Mathematica?
                                                   
 const int INIT_REF = 0;                           // Number of initial uniform mesh refinements.
-const int P_INIT = 0;                             // Initial polynomial degrees of mesh elements.
 const double THRESHOLD = 0.20;                    // This is a quantitative parameter of the adapt(...) function and
                                                   // it has different meanings for various adaptive strategies (see below).
 const int STRATEGY = 0;                           // Adaptive strategy:
@@ -95,175 +79,32 @@ const char* preconditioner = "jacobi";            // Name of the preconditioner 
                                                   // Possibilities: none, jacobi, neumann, least-squares, or a
                                                   // preconditioner from IFPACK (see solver/aztecoo.h).
 
-// Flow field and reaction term.
-
-template<typename Real>
-inline Real fn_a(Real x, Real y) {
-  return 10.*sqr(y) - 12.*x + 1.;
-}
-template<typename Real>
-inline Real fn_b(Real x, Real y) {
-  return 1. + y;
-}
-template<typename Real>
-inline Real fn_c(Real x, Real y) {
-  if (method == DG)
-    return 11.; // -div(beta)
-  else
-    return 0.; 
-}
-
-// Boundary conditions.
-
-const int BDY_NONZERO_CONSTANT_INFLOW = 1;
-const int BDY_ZERO_INFLOW = 2;
-const int BDY_VARYING_INFLOW = 3;
-const int BDY_OUTFLOW = 4;
-
-template<typename Real, typename Scalar>
-inline Scalar fn_g(Real x, Real y)
-{
-  return sqr(sin(M_PI*y));
-}
-
-// Function values for Dirichlet boundary conditions.
-template<typename Real, typename Scalar>
-Scalar essential_bc_values(int ess_bdy_marker, Real x, Real y)
-{
-  switch (ess_bdy_marker) 
-  {
-    case BDY_NONZERO_CONSTANT_INFLOW:
-      return 1.0; break;
-    case BDY_VARYING_INFLOW:
-      return fn_g<Real,Scalar>(x,y); break;
-  };
-  
-  return 0.0;
-}
-
-// Forcing source term.
-template<typename Real>
-Real F(Real x, Real y)
-{
-  return 0.0;
-}
-
-// Exact solution and Weak forms.
-#include "../definitions.cpp"
-
-// Weighting function for the target functional.
-double weight_fn(double x, double y)
-{
-  return sin(M_PI*x*0.5);
-}
-
-// Weighted integral over the specified boundary edge.
-double bdry_integral(MeshFunction* sln, int marker, double (*weight_fn_ptr)(double,double))
-{
-  Quad2D* quad = &g_quad_2d_std;
-  sln->set_quad_2d(quad);
-  RefMap rm;
-    
-  Mesh* mesh = sln->get_mesh();
-  
-  double integral = 0.0;
-  Element* el;
-  for_all_active_elements(el, mesh)
-  {
-    for (int e = 0; e < el->nvert; e++)
-    {
-      if (el->en[e]->bnd && el->en[e]->marker == marker)
-      {
-        sln->set_active_element(el);
-        rm.set_active_element(el);
-        
-        // Set quadrature order.
-        int eo = quad->get_edge_points(e, g_safe_max_order);
-        sln->set_quad_order(eo, H2D_FN_VAL);
-                
-        // Obtain quadrature points, corresponding solution values and tangent vectors (for computing outward normal).
-        double* x = rm.get_phys_x(eo);
-        double* y = rm.get_phys_y(eo);
-        scalar* z = sln->get_fn_values();
-        double3* t = rm.get_tangent(e,eo);
-        
-        // Add contribution from current edge.
-        int np = quad->get_num_points(eo);
-        double3* pt = quad->get_points(eo);
-                
-        for (int i = 0; i < np; i++)
-        {
-          double beta_dot_n = dot2<double>( t[i][1],-t[i][0],fn_a<double>(x[i],y[i]),fn_b<double>(x[i],y[i]) );
-          // Weights sum up to two on every edge, therefore the division by two must be present.
-          integral += 0.5 * pt[i][2] * t[i][2] * (*weight_fn_ptr)(x[i],y[i]) * z[i] * beta_dot_n; 
-        } 
-      }
-    }
-  }
-  
-  return integral;
-}
-
 // Construct a string representing the program options.
-void make_str_from_program_options(std::stringstream& str)
-{ 
-  switch (method)
-  {
-    case CG:
-      str << "cg";
-      break;
-    case SUPG:
-      str << "supg";
-      break;
-    case DG:
-      str << "dg";
-      break;
-  }
-  
-  if (STRATEGY > -1)
-  {
-    switch (CAND_LIST) 
-    {
-      case H2D_H_ANISO:
-      case H2D_H_ISO:
-        str << "_h" << P_INIT;
-        break;
-      case H2D_P_ANISO:
-      case H2D_P_ISO:
-        str << "_p" << INIT_REF;
-        break;
-      default:
-        str << "_hp";
-        break;
-    }
-    switch (CAND_LIST) 
-    {
-      case H2D_H_ANISO:
-      case H2D_P_ANISO:
-      case H2D_HP_ANISO:
-        str << "_aniso";
-        break;
-      case H2D_H_ISO:
-      case H2D_P_ISO:
-      case H2D_HP_ISO:
-        str << "_iso";
-        break;
-      case H2D_HP_ANISO_H:
-        str << "_anisoh";
-        break;
-      case H2D_HP_ANISO_P:
-        str << "_anisop";
-        break;
-    }
-  }
-  else
-  {
-    str << "_h-" << INIT_REF << "_p-" << P_INIT;
-  }
-}
+void make_str_from_program_options(std::stringstream& str);
 
 int main(int argc, char* args[])
 {
+  std::string arg = (argc == 1) ? "SUPG" : args[1];
+ 
+  if (arg == "SUPG")
+  {
+    method = SUPG;
+    P_INIT = 1;
+  }
+  else if (arg == "DG")
+  {
+    method = DG;
+    P_INIT = 0;
+    error("DG option not yet supported.");
+  }
+  else
+  {
+    error("Invalid discretization method.");
+  }
+  
+  // Instantiate a class with global functions.
+  Hermes2D hermes2d;
+  
   // Load the mesh.
   Mesh mesh;
   H2DReader mloader;
@@ -272,19 +113,14 @@ int main(int argc, char* args[])
   // Perform initial mesh refinement.
   for (int i=0; i<INIT_REF; i++) mesh.refine_all_elements();
   
-  // Object representing types of condtions prescribed on each part of the domain boundary.
-  BCTypes bc_types;
-  
   // Create a space and refinement selector appropriate for the selected discretization method.
   Space *space;
   ProjBasedSelector *selector;
   ProjNormType norm;
   
-  // For both methods, all inflow boundaries are treated as natural, enforcing the Dirichlet conditions in a weak sense. 
-  bc_types.add_bc_neumann(Hermes::vector<int>(BDY_NONZERO_CONSTANT_INFLOW, BDY_ZERO_INFLOW, BDY_VARYING_INFLOW));
   if (method != DG)
   { 
-    space = new H1Space(&mesh, &bc_types, Ord2(P_INIT, P_INIT));
+    space = new H1Space(&mesh, P_INIT);
     norm = HERMES_L2_NORM;
     //norm = HERMES_H1_NORM;
     
@@ -298,9 +134,7 @@ int main(int argc, char* args[])
   }
   else
   {
-    // For DGM, there is also a bilinear form on the outflow boundary.
-    bc_types.add_bc_neumann(BDY_OUTFLOW);
-    space = new L2Space(&mesh, &bc_types, Ord2(P_INIT, P_INIT));
+    space = new L2Space(&mesh, P_INIT);
     norm = HERMES_L2_NORM;
     
     if (STRATEGY > -1)
@@ -312,33 +146,24 @@ int main(int argc, char* args[])
   
   // Initialize the weak formulation.
   info("Discretization method: %s", method_names[method].c_str());
-    
-  WeakForm wf;
-  wf.add_vector_form(callback(source_liform));
+  
+  WeakForm* wf;
   switch(method)
   {
     case CG:
-      wf.add_matrix_form(callback(cg_biform));
-      wf.add_matrix_form_surf(callback(cg_boundary_biform));
-      wf.add_vector_form_surf(callback(cg_boundary_liform));
+      wf = new CustomWeakFormContinuousGalerkin(false);
       break;
     case SUPG:
-      wf.add_matrix_form(callback(cg_biform));
-      wf.add_matrix_form_surf(callback(cg_boundary_biform));
-      wf.add_vector_form_surf(callback(cg_boundary_liform));
-      wf.add_matrix_form(callback(stabilization_biform_supg));
+      wf = new CustomWeakFormContinuousGalerkin(true);
       break; 
     case DG:
-      wf.add_matrix_form(callback(dg_volumetric_biform));
-      wf.add_matrix_form_surf(callback(dg_boundary_biform));
-      wf.add_vector_form_surf(callback(dg_boundary_liform));
-      wf.add_matrix_form_surf(callback(dg_interface_biform), H2D_DG_INNER_EDGE);
+      wf = new CustomWeakFormDiscontinuousGalerkin();
       break;
   }      
-      
+  
   Solution sln;
   Solution ref_sln;
-
+  
   // DOF and CPU convergence graphs.
   SimpleGraph graph_dof_est, graph_cpu_est, graph_dof_ex, graph_cpu_ex, graph_dof_outfl, graph_cpu_outfl;
   
@@ -361,10 +186,12 @@ int main(int argc, char* args[])
   }
   
   // Load the exact solution evaluated at the Gauss-Kronrod quadrature points.
-  SemiAnalyticSolution exact_sln("exact/sol_GaussKronrod50.map");
+  SemiAnalyticSolution exact_sln("../exact/sol_GaussKronrod50.map");
+  // Create a class for calculating a functional with known exact value (used for benchmarking).
+  BoundaryIntegral benchmark_functional("outflow");
+  
   
   int as = 1; bool done = false;
-  char title[128];
   Space* actual_sln_space;
   do
   {
@@ -376,9 +203,11 @@ int main(int argc, char* args[])
       // Construct globally refined reference mesh and setup reference space.
       actual_sln_space = Space::construct_refined_space(space, ORDER_INCREASE);
     
+    int ndof_fine = Space::get_num_dofs(actual_sln_space);
+    int ndof_coarse = Space::get_num_dofs(space);
+    
     // Initialize the FE problem.
-    bool is_linear = true;
-    DiscreteProblem* dp = new DiscreteProblem(&wf, actual_sln_space, is_linear);
+    DiscreteProblem* dp = new DiscreteProblem(wf, actual_sln_space);
     
     // Speed-up assembly when 0-th order elements are used.
     bool is_fvm = true;
@@ -395,14 +224,17 @@ int main(int argc, char* args[])
     if (is_fvm)
       dp->set_fvm();
     
-    // Assemble the linear problem.
-    info("Assembling (ndof: %d%s", Space::get_num_dofs(actual_sln_space), is_fvm ? ", FVM)." : ").");
-    dp->assemble(matrix, rhs);
-
     // Solve the linear system. If successful, obtain the solution.
-    info("Solving.");
-    if(solver->solve()) Solution::vector_to_solution(solver->get_solution(), actual_sln_space, &ref_sln);
-    else error ("Matrix solver failed.\n");
+    info("Solving on the refined mesh (%d NDOF).", ndof_fine);
+    
+    // Initial coefficient vector for the Newton's method.  
+    scalar* coeff_vec = new scalar[ndof_fine];
+    memset(coeff_vec, 0, ndof_fine * sizeof(scalar));
+    
+    // Perform Newton's iteration.
+    if (!hermes2d.solve_newton(coeff_vec, dp, solver, matrix, rhs)) 
+      error("Newton's iteration failed.");
+    Solution::vector_to_solution(solver->get_solution(), actual_sln_space, &ref_sln);
     
     // Process the intermediate solution, but don't accumulate cpu time.
     cpu_time.tick();
@@ -412,12 +244,12 @@ int main(int argc, char* args[])
     double err_exact_rel = exact_sln.get_l2_rel_err(&ref_sln);
     info("Relative L2 error w.r.t. exact solution: %g%%", err_exact_rel*100);
     
-    // Calculate integral along the outflow boundary (top side of the rectangle).
-    double outflow = bdry_integral(&ref_sln, BDY_OUTFLOW, &weight_fn);
-    double err_outflow = std::abs(outflow - 0.246500343856481)/0.246500343856481;
-    info("Integrated outflow: %f, relative error w.r.t. the ref. value (~0.2465): %g%%", 
-         outflow, 100*err_outflow);
-    
+    double outflow = benchmark_functional.value(&ref_sln);
+    double exact_outflow = benchmark_functional.exact();
+    double err_outflow = std::abs(outflow - exact_outflow)/exact_outflow;
+    info("Integrated outflow: %f, relative error w.r.t. the ref. value (~%1.4f): %g%%", 
+         outflow, exact_outflow, 100*err_outflow);
+         
     cpu_time.tick(HERMES_SKIP);
          
     if (STRATEGY == -1) done = true;  // Do not adapt.
@@ -484,10 +316,11 @@ int main(int argc, char* args[])
   }
   while (done == false);
 
-  // Destroy the matrix solver.
+  // Solving finished - destroy the matrix solver and weak form objects.
   delete solver;
   delete matrix;
   delete rhs;
+  delete wf;
   
   clk_time.tick();
   info("Total running time: %g s", clk_time.accumulated());
@@ -554,8 +387,8 @@ int main(int argc, char* args[])
   }
   delete actual_sln_space; 
   
-  int n_dof_allowed = 1235;
-  printf("n_dof_actual = %d\n", ndof);
+  int n_dof_allowed = (method == DG) ? 1235 : 174;
+  printf("\n n_dof_actual = %d\n", ndof);
   printf("n_dof_allowed = %d\n", n_dof_allowed);
   if (ndof <= n_dof_allowed) {
     printf("Success!\n");
@@ -564,5 +397,62 @@ int main(int argc, char* args[])
   else {
     printf("Failure!\n");
     return ERR_FAILURE;
+  }
+}
+
+void make_str_from_program_options(std::stringstream& str)
+{ 
+  switch (method)
+  {
+    case CG:
+      str << "cg";
+      break;
+    case SUPG:
+      str << "supg";
+      break;
+    case DG:
+      str << "dg";
+      break;
+  }
+  
+  if (STRATEGY > -1)
+  {
+    switch (CAND_LIST) 
+    {
+      case H2D_H_ANISO:
+      case H2D_H_ISO:
+        str << "_h" << P_INIT;
+        break;
+      case H2D_P_ANISO:
+      case H2D_P_ISO:
+        str << "_p" << INIT_REF;
+        break;
+      default:
+        str << "_hp";
+        break;
+    }
+    switch (CAND_LIST) 
+    {
+      case H2D_H_ANISO:
+      case H2D_P_ANISO:
+      case H2D_HP_ANISO:
+        str << "_aniso";
+        break;
+      case H2D_H_ISO:
+      case H2D_P_ISO:
+      case H2D_HP_ISO:
+        str << "_iso";
+        break;
+      case H2D_HP_ANISO_H:
+        str << "_anisoh";
+        break;
+      case H2D_HP_ANISO_P:
+        str << "_anisop";
+        break;
+    }
+  }
+  else
+  {
+    str << "_h-" << INIT_REF << "_p-" << P_INIT;
   }
 }
