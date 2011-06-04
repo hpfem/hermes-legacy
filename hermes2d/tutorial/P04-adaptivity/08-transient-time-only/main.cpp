@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -58,9 +58,6 @@ const double ALPHA = 4.0;                          // For the nonlinear thermal 
 ButcherTableType butcher_table_type = Implicit_SDIRK_CASH_3_23_embedded;
 
 const std::string BDY_DIRICHLET = "1";
-
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {
