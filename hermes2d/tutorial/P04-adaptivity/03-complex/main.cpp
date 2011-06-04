@@ -1,7 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
-#include "boundaryconditions/essential_bcs.h"
+#include "definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -65,9 +64,6 @@ const double GAMMA_IRON = 6e6;
 const double J_EXT = 1e6;
 const double FREQ = 5e3;
 const double OMEGA = 2 * M_PI * FREQ;
-
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {

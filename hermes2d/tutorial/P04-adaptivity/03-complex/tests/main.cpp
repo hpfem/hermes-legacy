@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -42,7 +42,7 @@ const char* preconditioner = "least-squares";     // Name of the preconditioner 
                                                   // the other solvers).
                                                   // Possibilities: none, jacobi, neumann, least-squares, or a
                                                   //  preconditioner from IFPACK (see solver/aztecoo.h)
-MatrixSolverType matrix_solver = SOLVER_AZTECOO;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
+MatrixSolverType matrix_solver = SOLVER_UMFPACK;//SOLVER_AZTECOO;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Problem parameters.
@@ -52,9 +52,6 @@ const double GAMMA_IRON = 6e6;
 const double J_EXT = 1e6;
 const double FREQ = 5e3;
 const double OMEGA = 2 * M_PI * FREQ;
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
@@ -198,11 +195,9 @@ int main(int argc, char* argv[])
 
   ndof = Space::get_num_dofs(&space);
 
-#define ERROR_SUCCESS                                0
-#define ERROR_FAILURE                               -1
   printf("ndof allowed = %d\n", 360);
   printf("ndof actual = %d\n", ndof);
-  if (ndof < 650) {      // ndofs was 352 atthe time this test was created
+  if (ndof < 650) {      // ndofs was 352 at the time this test was created
     printf("Success!\n");
     return ERROR_SUCCESS;
   }
