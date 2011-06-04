@@ -1,29 +1,23 @@
-# Linear problems
+# Linear problems.
 add_subdirectory(P01-linear)
 
-# Nonlinear problems
+# Nonlinear problems.
 add_subdirectory(P02-nonlinear)
 
-# Time-dependent problems
-add_subdirectory(P03-timedep)
+# Time-dependent problems.
+add_subdirectory(P03-transient)
 
-# Adaptivity for linear problems
-add_subdirectory(P04-linear-adapt)
+# Adaptivity.
+add_subdirectory(P04-adaptivity)
 
-# Adaptivity for nonlinear problems
-add_subdirectory(P05-nonlinear-adapt)
+# Eigenproblems.
+add_subdirectory(P05-eigenproblems)
 
-# Adaptivity for time-dependent problems
-add_subdirectory(P06-timedep-adapt)
+# FVM and DG.
+add_subdirectory(P06-fvm-and-dg)
 
-# Eigenproblems
-add_subdirectory(P07-eigen)
+# Using Trilinos.
+add_subdirectory(P07-trilinos)
 
-# FVM and DG
-add_subdirectory(P08-fvm-and-dg)
-
-# Using Trilinos
-add_subdirectory(P09-trilinos)
-
-# Miscellaneous techniques
-add_subdirectory(P10-miscellaneous)
+# Miscellaneous techniques.
+add_subdirectory(P08-miscellaneous)

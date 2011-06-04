@@ -103,6 +103,7 @@ Examples
     src/hermes2d/examples/acoustics.rst
     src/hermes2d/examples/advection-diffusion-reaction.rst
     src/hermes2d/examples/euler.rst
+    src/hermes2d/examples/flame-propagation.rst
     src/hermes2d/examples/heat-transfer.rst
     src/hermes2d/examples/helmholtz.rst
     src/hermes2d/examples/linear-elasticity.rst
