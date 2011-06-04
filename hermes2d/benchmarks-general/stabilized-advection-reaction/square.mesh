@@ -18,14 +18,14 @@ elements = [
 ]
 
 boundaries = [
-  [ 0, 1, 1 ],
-  [ 1, 2, 2 ],
-  [ 2, 3, 3 ],
-  [ 3, 4, 3 ],
-  [ 4, 5, 4 ],
-  [ 5, 6, 4 ],
-  [ 6, 7, 2 ],
-  [ 7, 0, 1 ]
+  [ 0, 1, "nonzero constant inflow" ],
+  [ 1, 2, "zero inflow" ],
+  [ 2, 3, "varying inflow" ],
+  [ 3, 4, "varying inflow" ],
+  [ 4, 5, "outflow" ],
+  [ 5, 6, "outflow" ],
+  [ 6, 7, "zero inflow" ],
+  [ 7, 0, "nonzero constant inflow" ]
 ]
 
 

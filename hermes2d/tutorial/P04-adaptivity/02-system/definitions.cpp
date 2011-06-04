@@ -1,21 +1,26 @@
 #include "hermes2d.h"
 
-using namespace WeakFormsH1;
-
 /* Custom function that is used in the exact solution and in right-hand side */
 
 class CustomExactFunction1
 {
 public:
-  CustomExactFunction1() { };
+  CustomExactFunction1() 
+  { 
+  };
 
-  double val(double x) {
+  double val(double x) 
+  {
     return cos(M_PI*x/2);
   }
-  double dx(double x) {
+  
+  double dx(double x) 
+  {
     return -sin(M_PI*x/2)*(M_PI/2.);
   }
-  double ddxx(double x) {
+  
+  double ddxx(double x) 
+  {
     return -cos(M_PI*x/2)*(M_PI/2.)*(M_PI/2.);
   }
 };
@@ -23,15 +28,22 @@ public:
 class CustomExactFunction2
 {
 public:
-  CustomExactFunction2(double K) : K(K) {};
+  CustomExactFunction2(double K) : K(K) 
+  {
+  };
 
-  double val(double x) {
+  double val(double x) 
+  {
     return 1. - (exp(K*x) + exp(-K*x))/(exp(K) + exp(-K));
   }
-  double dx(double x) {
+  
+  double dx(double x) 
+  {
     return -K*(exp(K*x) - exp(-K*x))/(exp(K) + exp(-K));
   }
-  double ddxx(double x) {
+  
+  double ddxx(double x) 
+  {
     return -K*K*(exp(K*x) + exp(-K*x))/(exp(K) + exp(-K));
   }
 
@@ -59,11 +71,16 @@ public:
     return -d_u * d_u * Laplace_u - u + sigma * v;
   }
 
-  virtual Ord ord(Ord x, Ord y) const {
+  virtual Ord ord(Ord x, Ord y) const 
+  {
     return Ord(10);
   }
 
-  ~CustomRightHandSide1() { delete cef1; delete cef2;}
+  ~CustomRightHandSide1() 
+  { 
+    delete cef1; 
+    delete cef2;
+  }
 
   CustomExactFunction1* cef1;
   CustomExactFunction2* cef2;
@@ -89,11 +106,16 @@ public:
     return -d_v*d_v * Laplace_v - u + v;
   }
 
-  virtual Ord ord(Ord x, Ord y) const {
+  virtual Ord ord(Ord x, Ord y) const 
+  {
     return Ord(10);
   }
 
-  ~CustomRightHandSide2() { delete cef1; delete cef2;}
+  ~CustomRightHandSide2() 
+  { 
+    delete cef1; 
+    delete cef2;
+  }
 
   CustomExactFunction1* cef1;
   CustomExactFunction2* cef2;
@@ -173,7 +195,9 @@ class CustomResidual1 : public WeakForm::VectorFormVol
 {
 public:
   CustomResidual1(double d_u, double sigma, CustomRightHandSide1* g1)
-    : WeakForm::VectorFormVol(0, HERMES_ANY), d_u(d_u), sigma(sigma), g1(g1) { };
+    : WeakForm::VectorFormVol(0, HERMES_ANY), d_u(d_u), sigma(sigma), g1(g1) 
+  { 
+  };
 
   virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
                        Geom<double> *e, ExtData<scalar> *ext) const
@@ -205,7 +229,6 @@ public:
      return result;
   }
 
-  // This is to make the form usable in rk_time_step().
   virtual WeakForm::VectorFormVol* clone() {
     return new CustomResidual1(*this);
   }
@@ -252,7 +275,6 @@ public:
      return result;
   }
 
-  // This is to make the form usable in rk_time_step().
   virtual WeakForm::VectorFormVol* clone() {
     return new CustomResidual2(*this);
   }
@@ -262,18 +284,18 @@ public:
     CustomRightHandSide2* g2;
 };
 
-class WeakFormFitzHughNagumo : public WeakForm
+class CustomWeakForm : public WeakForm
 {
 public:
-  WeakFormFitzHughNagumo(CustomRightHandSide1* g1, CustomRightHandSide2* g2) : WeakForm(2) 
+  CustomWeakForm(CustomRightHandSide1* g1, CustomRightHandSide2* g2) : WeakForm(2) 
   {
     // Jacobian.
-    add_matrix_form(new DefaultJacobianDiffusion(0, 0, HERMES_ANY, new HermesFunction(D_u * D_u)));
-    add_matrix_form(new DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(-1.0)));
-    add_matrix_form(new DefaultMatrixFormVol(0, 1, HERMES_ANY, new HermesFunction(g1->sigma), HERMES_NONSYM));
-    add_matrix_form(new DefaultMatrixFormVol(1, 0, HERMES_ANY, new HermesFunction(-1.0), HERMES_NONSYM));
-    add_matrix_form(new DefaultJacobianDiffusion(1, 1, HERMES_ANY, new HermesFunction(D_v * D_v)));
-    add_matrix_form(new DefaultMatrixFormVol(1, 1, HERMES_ANY, new HermesFunction(1.0)));
+    add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, HERMES_ANY, new HermesFunction(D_u * D_u)));
+    add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 0, HERMES_ANY, new HermesFunction(-1.0)));
+    add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 1, HERMES_ANY, new HermesFunction(g1->sigma), HERMES_NONSYM));
+    add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(1, 0, HERMES_ANY, new HermesFunction(-1.0), HERMES_NONSYM));
+    add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(1, 1, HERMES_ANY, new HermesFunction(D_v * D_v)));
+    add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(1, 1, HERMES_ANY, new HermesFunction(1.0)));
 
     // Residual.
     add_vector_form(new CustomResidual1(D_u, g1->sigma, g1));

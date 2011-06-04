@@ -1,7 +1,7 @@
 if(NOT H2D_REAL)
     return()
 endif(NOT H2D_REAL)
-project(P04-01-intro)
+project(P04-05-exact)
 
 add_executable(${PROJECT_NAME} main.cpp)
 include (${hermes2d_SOURCE_DIR}/CMake.common)

@@ -1,4 +1,4 @@
 rm *~ 
 ./stabilized-advection-reaction
-python plot_graph.py &
+python plot_graph.py supg_hp_iso &
 
