@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -67,9 +67,6 @@ const double NEWTON_TOL_FINE = 0.05;              // Stopping criterion for Newt
 const int NEWTON_MAX_ITER = 20;                   // Maximum allowed number of Newton iterations.
 
 const double ALPHA = 4.0;                         // For the nonlinear thermal conductivity.
-
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {
