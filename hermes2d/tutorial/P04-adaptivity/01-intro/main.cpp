@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -68,9 +68,6 @@ const double EPS0 = 8.863e-12;
 const double VOLTAGE = 50.0;
 const double EPS_MOTOR = 10.0 * EPS0;
 const double EPS_AIR = 1.0 * EPS0;
-
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {
