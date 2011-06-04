@@ -1,7 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
-#include "runge_kutta.h"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -37,9 +36,6 @@ ButcherTableType butcher_table_type = Implicit_RK_1;
 // Problem parameters.
 const double alpha = 4.0;                         // For the nonlinear thermal conductivity.
 const double heat_src = 1.0;
-
-// Weak forms.
-#include "../definitions.cpp"
 
 // Main function.
 int main(int argc, char* argv[])
