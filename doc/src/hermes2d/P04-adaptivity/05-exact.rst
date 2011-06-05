@@ -1,62 +1,35 @@
-Adapting Mesh to an Exact Function (06-exact)
+Adapting Mesh to an Exact Function (05-exact)
 ---------------------------------------------
 
-**Git reference:** Tutorial example `06-exact <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-adaptivity/06-exact>`_. 
+**Git reference:** Tutorial example `05-exact <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-adaptivity/05-exact>`_. 
 
-This technique can be useful, for example, when a time-dependent proces
+This technique can be useful in a number of situations, 
+for example when a time-dependent proces
 starts from a complicated initial condition that would not be represented
 with sufficient accuracy on a coarse initial mesh. 
 
-As usual, the adaptivity algorithm expects a pair of solutions on the 
-coarse and globally refined meshes. So the adaptivity loop begins with 
-refining the coarse mesh::
+Assigning an exact function to the fine mesh
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    // Construct globally refined reference mesh and setup reference space.
-    Space* ref_space = construct_refined_space(&space);
+At the beginning of each adaptivity step, instead of calculating a solution on 
+the fine mesh, we assign the exact function to it::
 
-Setting an exact solution instead of a reference solution
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Instead of calculating a solution on the fine mesh, we set the exact 
-function::
-
-    // Assign the function f() to the fine mesh.
-    info("Assigning f() to the reference mesh.");
-    bool is_linear = true;
-    ref_sln.set_exact(ref_space->get_mesh(), f);
-
-Extracting low-order part for error calculation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The coarse mesh solution is obtained by projecting 'sln_fine'::
-
-    // Project the fine mesh solution onto the coarse mesh.
-    info("Projecting reference solution on coarse mesh.");
-    OGProjection::project_global(&space, &ref_sln, &sln, matrix_solver); 
-
-Error estimates are calculated as usual::
-
-    // Calculate element errors and total error estimate.
-    info("Calculating exact error."); 
-    Adapt* adaptivity = new Adapt(&space, HERMES_H1_NORM);
-    // Note: the error estimate is now equal to the exact error.
-    bool solutions_for_adapt = true;
-    double err_exact_rel = adaptivity->calc_err_est(&sln, &ref_sln, solutions_for_adapt, 
-                           HERMES_TOTAL_ERROR_REL | HERMES_ELEMENT_ERROR_REL) * 100;
-
-Mesh adaptation is standard as well::
-
-    // If err_exact_rel too large, adapt the mesh.
-    if (err_exact_rel < ERR_STOP) done = true;
-    else 
+    // Adaptivity loop:
+    int as = 1; bool done = false;
+    do
     {
-      info("Adapting coarse mesh.");
-      done = adaptivity->adapt(&selector, THRESHOLD, STRATEGY, MESH_REGULARITY);
-      
-      // Increase the counter of performed adaptivity steps.
-      if (done == false)  as++;
-    }
-    if (Space::get_num_dofs(&space) >= NDOF_STOP) done = true;
+      info("---- Adaptivity step %d:", as);
+
+      // Construct globally refined reference mesh and setup reference space.
+      Space* ref_space = Space::construct_refined_space(&space);
+
+      // Assign the function f() to the fine mesh.
+      info("Assigning f() to the reference mesh.");
+      if(ref_sln != NULL) delete ref_sln;
+      ref_sln = new ExactSolutionCustom(ref_space->get_mesh());
+      ...
+
+The rest of the adaptivity loop is as usual.
 
 Sample results
 ~~~~~~~~~~~~~~

@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
   InitialSolutionHeatTransfer init_sln(&mesh);
   OGProjection::project_global(&space, &init_sln, coeff_vec_coarse, matrix_solver);
 
-  // Newton's loop on the coarse mesh. This is needed to obtain a good
+  // Newton's loop on the coarse mesh. This is done to obtain a good
   // starting point for the Newton's method on the reference mesh.
   info("Solving on coarse mesh:");
   bool verbose = true;
