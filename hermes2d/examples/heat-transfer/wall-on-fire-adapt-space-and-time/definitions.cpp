@@ -37,8 +37,8 @@ public:
     add_matrix_form(new CustomJacobianVol(0, 0, rho, heatcap));
 
     // Jacobian - surface part.
-    add_matrix_form_surf(new DefaultMatrixFormSurf(0, 0, bdy_fire, -alpha_fire/(rho*heatcap)));
-    add_matrix_form_surf(new DefaultMatrixFormSurf(0, 0, bdy_air, -alpha_air/(rho*heatcap)));
+    add_matrix_form_surf(new DefaultMatrixFormSurf(0, 0, bdy_fire, new HermesFunction(-alpha_fire/(rho*heatcap))));
+    add_matrix_form_surf(new DefaultMatrixFormSurf(0, 0, bdy_air, new HermesFunction(-alpha_air/(rho*heatcap))));
 
     // Residual - volumetric part.
     add_vector_form(new CustomFormResidualVol(0, rho, heatcap));
@@ -49,8 +49,8 @@ public:
     add_vector_form_surf(vec_form_surf_1);
 
     // Surface residual - top boundary.
-    add_vector_form_surf(new DefaultResidualSurf(0, HERMES_ANY, -alpha_air / (rho*heatcap)));
-    add_vector_form_surf(new DefaultVectorFormSurf(0, HERMES_ANY, alpha_air* temp_ext_air / (rho*heatcap)));
+    add_vector_form_surf(new DefaultResidualSurf(0, HERMES_ANY, new HermesFunction(-alpha_air / (rho*heatcap))));
+    add_vector_form_surf(new DefaultVectorFormSurf(0, HERMES_ANY, new HermesFunction(alpha_air* temp_ext_air / (rho*heatcap))));
   };
 
 private:

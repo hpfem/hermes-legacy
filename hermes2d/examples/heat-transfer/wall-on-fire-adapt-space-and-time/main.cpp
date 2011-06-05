@@ -247,7 +247,7 @@ int main(int argc, char* argv[])
       /* If ADAPTIVE_TIME_STEP_ON == true, estimate temporal error. 
          If too large or too small, then adjust it and restart the time step. */
 
-      double rel_err_time;
+      double rel_err_time = 0;
       if (bt.is_embedded() == true) {
         info("Calculating temporal error estimate.");
 
