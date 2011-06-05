@@ -199,10 +199,10 @@ int main(int argc, char* argv[])
   printf("ndof actual = %d\n", ndof);
   if (ndof < 650) {      // ndofs was 352 at the time this test was created
     printf("Success!\n");
-    return ERROR_SUCCESS;
+    return ERR_SUCCESS;
   }
   else {
     printf("Failure!\n");
-    return ERROR_FAILURE;
+    return ERR_FAILURE;
   }
 }
