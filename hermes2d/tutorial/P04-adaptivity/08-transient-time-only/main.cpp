@@ -4,21 +4,25 @@
 
 using namespace RefinementSelectors;
 
-//  This example is analogous to example 01-timedep-adapt-space-only except that 
+//  This example is analogous to example 07-transient-space-only except that 
 //  a fixed mesh is used and only the time stepping is adaptive. An arbitrary 
 //  embedded Runge-Kutta method can be used. By embedded we mean that the 
-//  Butcher's table contains two B rows. After calculating the stages K_1, 
-//  K_2, ..., K_s, the two B rows are used to calculate two different 
-//  approximations Y_{n+1} on the next time level, with different orders 
-//  of accuracy. With those one works as usual.
+//  Butcher's table contains two B rows. The two B rows are used to calculate 
+//  two different approximations Y_{n+1} on the next time level, with different 
+//  orders of accuracy. With those one works as usual.
+//
+//  For a list of available R-K methods see the file hermes_common/tables.h.
 //
 //  PDE: time-dependent heat transfer equation with nonlinear thermal
-//  conductivity, du/dt - div[lambda(u)grad u] = f.
+//  conductivity, du/dt = div[lambda(u) grad u] + f.
 //
-//  Domain: square (-10,10)^2.
+//  Nonlinearity: lambda(u) = 1 + pow(u, alpha).
 //
-//  BC: Dirichlet, given by the function dir_lift() below.
-//  IC: Same function dir_lift().
+//  Domain: square (-10, 10)^2.
+//
+//  BC: Nonconstant Dirichlet.
+//
+//  IC: Custom initial condition matching the BC.
 //
 //  The following parameters can be changed:
 

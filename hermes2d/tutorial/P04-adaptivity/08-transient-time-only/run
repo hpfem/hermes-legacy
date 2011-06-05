@@ -1,2 +1,3 @@
 rm *~ 
-./P06-02-timedep-adapt-time-only
+./P04-08-transient-time-only
+
