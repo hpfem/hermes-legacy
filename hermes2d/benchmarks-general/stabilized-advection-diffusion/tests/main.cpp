@@ -1,59 +1,47 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 
-/** \addtogroup t_bench_stabilized-advection-diffusion Benchmarks/stabilized-advection-diffusion
+/** \addtogroup t_bench_stabilized-advection-diffusion benchmarks-general/stabilized-advection-diffusion
  *  \{
  *  \brief This test makes sure that the benchmark "stabilized-advection-diffusion" works correctly.
  *
- *  \section s_params Parameters
- *   - P_INIT = 0
+ *  \section s_params Common parameters
  *   - INIT_REF_NUM = 1
  *   - INIT_BDY_REF_NUM = 2
- *   - ORDER_INCREASE = 1
  *   - THRESHOLD=0.2
  *   - STRATEGY=0
- *   - CAND_LIST=H2D_HP_ANISO;
  *   - MESH_REGULARITY=-1
  *   - CONV_EXP=1.0
  *   - ERR_STOP=5.0
  *   - NDOF_STOP=60000
  *   - matrix_solver = SOLVER_UMFPACK
- *   - method = DG
  *
  *  \section s_res Results
- *   - DOFs: 36
- *   - Adaptivity steps: 9 
+ *   - DOFs:
+ *      - CG:       5
+ *      - SUPG:     184
+ *      - GLS_1:    187
+ *      - GLS_2:    75
+ *      - SGS:      417
+ *      - SGS_ALT:  178
+ *      - DG:       TODO
+ *   - Adaptivity steps: 
+ *      - CG:       2
+ *      - SUPG:     10
+ *      - GLS_1:    10
+ *      - GLS_2:    3
+ *      - SGS:      13
+ *      - SGS_ALT:  10  
+ *      - DG:       TODO
  */
 
-enum GalerkinMethod
-{
-  CG,
-  CG_STAB_SUPG,    // assumes H2D_SECOND_DERIVATIVES_ENABLED, linear elements
-  CG_STAB_GLS,     // assumes H2D_SECOND_DERIVATIVES_ENABLED, linear or quadratic elements
-  CG_STAB_SGS,     // assumes H2D_SECOND_DERIVATIVES_ENABLED, linear elements
-  CG_STAB_SGS_ALT, // assumes H2D_SECOND_DERIVATIVES_ENABLED, linear elements
-  DG
-};
-
-const std::string method_names[6] = 
-{
-  "unstabilized continuous Galerkin",
-  "streamline upwind Petrov-Galerkin",
-  "Galerkin least squares",
-  "subgrid scale stabilized Galerkin",
-  "alternative subgrid scale stabilized Galerkin",
-  "discontinuous Galerkin"
-};
-
-const int P_INIT = 0;                             // Initial polynomial degree of all mesh elements.
 const int INIT_REF_NUM = 1;                       // Number of initial uniform mesh refinements. 
 const int INIT_BDY_REF_NUM = 2;                   // Number of initial refinements towards boundary. If INIT_BDY_REF_NUM == 0, 
                                                   // the first solution will be performed on a mesh (INIT_REF_NUM + 1) times 
                                                   // globally refined.
-const int ORDER_INCREASE = 1;                     // Order increase for the refined space. If no change of order is allowed 
                                                   // (not even for computing the reference solution), set to 0.
 const double THRESHOLD = 0.2;                     // This is a quantitative parameter of the adapt(...) function and
                                                   // it has different meanings for various adaptive strategies (see below).
@@ -66,11 +54,7 @@ const int STRATEGY = 0;                           // Adaptive strategy:
                                                   //   than THRESHOLD times maximum element error.
                                                   // STRATEGY = 2 ... refine all elements whose error is larger
                                                   //   than THRESHOLD.
-                                                  // More adaptive strategies can be created in adapt_ortho_h1.cpp.
-const CandList CAND_LIST = H2D_HP_ANISO;          // Predefined list of element refinement candidates. Possible values are
-                                                  // H2D_P_ISO, H2D_P_ANISO, H2D_H_ISO, H2D_H_ANISO, H2D_HP_ISO,
-                                                  // H2D_HP_ANISO_H, H2D_HP_ANISO_P, H2D_HP_ANISO.
-                                                  // See User Documentation for details.
+                                                  // More adaptive strategies can be created in adapt_ortho_h1.cpp.                                                  
 const int MESH_REGULARITY = -1;                   // Maximum allowed level of hanging nodes:
                                                   // MESH_REGULARITY = -1 ... arbitrary level hangning nodes (default),
                                                   // MESH_REGULARITY = 1 ... at most one-level hanging nodes,
@@ -79,65 +63,98 @@ const int MESH_REGULARITY = -1;                   // Maximum allowed level of ha
                                                   // their notoriously bad performance.
 const double CONV_EXP = 1.0;                      // Default value is 1.0. This parameter influences the selection of
                                                   // cancidates in hp-adaptivity. See get_optimal_refinement() for details.
-const double ERR_STOP = 5.0;                      // Stopping criterion for adaptivity (rel. error tolerance between the
+const double ERR_STOP = 3.0;                      // Stopping criterion for adaptivity (rel. error tolerance between the
                                                   // exact and the coarse mesh solution in percent).
 const int NDOF_STOP = 60000;                      // Adaptivity process stops when the number of degrees of freedom grows
                                                   // over this limit. This is to prevent h-adaptivity to go on forever.
 
-GalerkinMethod method = DG;
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
-                                                  // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK. 
-
-// Problem parameters.
-const double EPSILON = 0.01;                      // Diffusivity.
-const double B1 = 0., B2 = 1.;                    // Advection direction, div(B) = 0.
-
-// Boundary markers.
-const int NONZERO_DIRICHLET = 1;
-const int BOUNDARY_LAYER = 2;
-
-// Boundary condition types.
-BCType bc_types(int marker)
-{
-  if (method != DG)
-    return BC_ESSENTIAL;
-  else
-    return BC_NATURAL;
-}
-
-// Essential (Dirichlet) boundary condition values.
-template<typename Real, typename Scalar>
-Scalar essential_bc_values(int ess_bdy_marker, Real x, Real y)
-{
-    if (ess_bdy_marker == NONZERO_DIRICHLET) return sin(M_PI*x);
-    else return 0;
-}
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Exact solution:
-
-static double exact_sln(double x, double y, double& dx, double& dy)
-{
-  double D = sqrt(1.+4.*sqr(EPSILON*M_PI));
-  double m1 = (1.-D) / (2.*EPSILON);
-  double m2 = (1.+D) / (2.*EPSILON);
-  
-  double e12y = exp(m1+m2*y);
-  double e21y = exp(m2+m1*y);
-  double ie1me2 = 1. / (exp(m1) - exp(m2));
-  
-  dx = ie1me2 * (e12y - e21y) * M_PI * cos(M_PI*x);
-  dy = ie1me2 * (e12y*m2 - e21y*m1) * sin(M_PI*x);
-  
-  return ie1me2 * (e12y - e21y) * sin(M_PI*x);
-}
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
-{
+{ 
+  GalerkinMethod method;
+  CandList CAND_LIST;
+  int P_INIT;                             
+  int ORDER_INCREASE;
+  int n_dof_allowed;
+  int iter_allowed;
+  
+  std::string arg = (argc == 1) ? "CG" : argv[1];
+  
+  if (arg == "CG")
+  {
+    method = CG;
+    CAND_LIST = H2D_HP_ANISO;
+    P_INIT = 1;
+    ORDER_INCREASE = 1;
+    n_dof_allowed = 7;
+    iter_allowed = 3;
+  }
+  else if (arg == "SUPG")
+  {
+    method = CG_STAB_SUPG;
+    CAND_LIST = H2D_H_ANISO;
+    P_INIT = 1;
+    ORDER_INCREASE = 0;
+    n_dof_allowed = 190;
+    iter_allowed = 11;
+  }
+  else if (arg == "GLS_1")
+  {
+    method = CG_STAB_GLS_1;
+    CAND_LIST = H2D_H_ANISO;
+    P_INIT = 1;
+    ORDER_INCREASE = 0;
+    n_dof_allowed = 195;
+    iter_allowed = 12;
+  }
+  else if (arg == "GLS_2")
+  {
+    method = CG_STAB_GLS_2;
+    CAND_LIST = H2D_H_ANISO;
+    P_INIT = 2;
+    ORDER_INCREASE = 0;
+    n_dof_allowed = 80;
+    iter_allowed = 4;
+  }
+  else if (arg == "SGS")
+  {
+    method = CG_STAB_SGS;
+    CAND_LIST = H2D_H_ANISO;
+    P_INIT = 1;
+    ORDER_INCREASE = 0;
+    n_dof_allowed = 430;
+    iter_allowed = 14;
+  }
+  else if (arg == "SGS_ALT")
+  {
+    method = CG_STAB_SGS_ALT;
+    CAND_LIST = H2D_H_ANISO;
+    P_INIT = 1;
+    ORDER_INCREASE = 0;
+    n_dof_allowed = 190;
+    iter_allowed = 11;
+  }
+  else if (arg == "DG")
+  {
+    method = DG;
+    CAND_LIST = H2D_HP_ANISO;
+    P_INIT = 0;
+    ORDER_INCREASE = 1;
+    n_dof_allowed = 0;//TODO
+    iter_allowed = 0;//TODO
+    error("DG option not yet supported.");
+  }
+  else
+  {
+    error("Invalid discretization method.");
+  }
+  
+  // Instantiate a class with global functions.
+  Hermes2D hermes2d;
+  
+  info("Discretization method: %s", method_names[method].c_str());
+  
   // Load the mesh.
   Mesh mesh;
   H2DReader mloader;
@@ -145,89 +162,44 @@ int main(int argc, char* argv[])
 
   // Perform initial mesh refinement.
   for (int i=0; i<INIT_REF_NUM; i++) mesh.refine_all_elements();
-  mesh.refine_towards_boundary(BOUNDARY_LAYER, INIT_BDY_REF_NUM);
+  mesh.refine_towards_boundary("outflow", INIT_BDY_REF_NUM);
   //mesh.refine_towards_boundary(NONZERO_DIRICHLET, INIT_BDY_REF_NUM/2);
 
   // Create a space and refinement selector appropriate for the selected discretization method.
   Space *space;
   ProjBasedSelector *selector;
   ProjNormType norm;
+  
+  WeaklyImposableBC bc_fn(Hermes::vector<std::string>("nonzero Dirichlet"), new NonzeroBoundaryValues(&mesh));
+  WeaklyImposableBC bc_zero(Hermes::vector<std::string>("zero Dirichlet", "outflow"), 0.0);
+  EssentialBCs bcs(Hermes::vector<EssentialBoundaryCondition*>(&bc_fn, &bc_zero));
+  
+  WeakForm *wf;
+  
   if (method != DG)
-  {
-    space = new H1Space(&mesh, bc_types, essential_bc_values, P_INIT);
+  {    
+    space = new H1Space(&mesh, &bcs, P_INIT);
     selector = new L2ProjBasedSelector(CAND_LIST, CONV_EXP, H2DRS_DEFAULT_ORDER);
     norm = HERMES_L2_NORM;  // WARNING: In order to compare the errors with DG, L2 norm should be here.
+    
+    wf = new CustomWeakFormContinuousGalerkin(method, EPSILON, ConstFlowField::b1, ConstFlowField::b2);
   }
   else
   {
-    space = new L2Space(&mesh, bc_types, NULL, Ord2(P_INIT));
+    space = new L2Space(&mesh, P_INIT);
     selector = new L2ProjBasedSelector(CAND_LIST, CONV_EXP, H2DRS_DEFAULT_ORDER);
     norm = HERMES_L2_NORM;
     // Disable weighting of refinement candidates.
     selector->set_error_weights(1, 1, 1);
-  }
-
-  // Initialize the weak formulation.
-  info("Discretization method: %s", method_names[method].c_str());
     
-  if (method != CG && method != DG)
-  {
-    if (STRATEGY > -1 && CAND_LIST != H2D_H_ISO && CAND_LIST != H2D_H_ANISO)
-      error("The %s method may be used only with h-refinement.", method_names[method].c_str());
-  
-    int eff_order = (STRATEGY == -1) ? P_INIT : P_INIT + ORDER_INCREASE;
-    
-    if (method != CG_STAB_GLS)
-    {
-      if (eff_order > 1)
-        error("The %s method may be used only with at most 1st order elements.", method_names[method].c_str());
-    }
-    else
-    {
-      if (eff_order > 2)
-        error("The %s method may be used only with at most 2nd order elements.", method_names[method].c_str());
-    }
-  }
-  
-  WeakForm wf;
-  switch(method)
-  {
-    case CG:
-      wf.add_matrix_form(callback(cg_biform));
-      break;
-    case CG_STAB_SUPG:
-      wf.add_matrix_form(callback(cg_biform));
-      wf.add_matrix_form(callback(stabilization_biform_supg));
-      break; 
-    case CG_STAB_GLS:
-      wf.add_matrix_form(callback(cg_biform));
-      wf.add_matrix_form(callback(stabilization_biform_gls));
-      break;
-    case CG_STAB_SGS:
-      wf.add_matrix_form(callback(cg_biform));
-      wf.add_matrix_form(callback(stabilization_biform_sgs));
-      break;
-    case CG_STAB_SGS_ALT:
-      wf.add_matrix_form(callback(cg_biform));
-      wf.add_matrix_form(callback(stabilization_biform_sgs_alt));
-      break;
-    case DG:
-      wf.add_matrix_form(callback(dg_volumetric_biform_advection));
-      wf.add_matrix_form(callback(dg_volumetric_biform_diffusion));
-      wf.add_matrix_form_surf(callback(dg_interface_biform_advection), H2D_DG_INNER_EDGE);
-      wf.add_matrix_form_surf(callback(dg_interface_biform_diffusion), H2D_DG_INNER_EDGE);
-      wf.add_matrix_form_surf(callback(dg_boundary_biform_advection));
-      wf.add_matrix_form_surf(callback(dg_boundary_biform_diffusion));
-      wf.add_vector_form_surf(callback(dg_boundary_liform_advection));
-      wf.add_vector_form_surf(callback(dg_boundary_liform_diffusion));
-      break;
+    wf = new CustomWeakFormDiscontinuousGalerkin(bcs, EPSILON);
   }
   
   // Initialize coarse and reference mesh solution.
   Solution sln, ref_sln;
   
   // Set exact solution.
-  ExactSolution exact(&mesh, exact_sln);
+  CustomExactSolution exact(&mesh, EPSILON);
   
   // DOF and CPU convergence graphs initialization.
   SimpleGraph graph_dof, graph_cpu, graph_dof_exact, graph_cpu_exact;
@@ -255,28 +227,30 @@ int main(int argc, char* argv[])
       // Construct globally refined reference mesh and setup reference space.
       actual_sln_space = Space::construct_refined_space(space, ORDER_INCREASE);
 
-    // Assemble the reference problem.
-    info("Solving on reference mesh.");
-    bool is_linear = true;
-    DiscreteProblem* dp = new DiscreteProblem(&wf, actual_sln_space, is_linear);
-    dp->assemble(matrix, rhs);
+    int ndof_fine = Space::get_num_dofs(actual_sln_space);
+    int ndof_coarse = Space::get_num_dofs(space);
     
-    // Solve the linear system of the reference problem. 
-    // If successful, obtain the solution.
-    if(solver->solve()) Solution::vector_to_solution(solver->get_solution(), actual_sln_space, &ref_sln);
-    else error ("Matrix solver failed.\n");
+    // Solve the linear system. If successful, obtain the solution.
+    info("Solving on the refined mesh (%d NDOF).", ndof_fine);
+    
+    DiscreteProblem dp(wf, actual_sln_space);
+    
+    // Initial coefficient vector for the Newton's method.  
+    scalar* coeff_vec = new scalar[ndof_fine];
+    memset(coeff_vec, 0, ndof_fine * sizeof(scalar));
+    
+    // Perform Newton's iteration.
+    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs)) 
+      error("Newton's iteration failed.");
+    Solution::vector_to_solution(solver->get_solution(), actual_sln_space, &ref_sln);
     
     // Instantiate adaptivity and error calculation driver. Space is used only for adaptivity, it is ignored when 
     // STRATEGY == -1 and only the exact error is calculated by this object.
     Adapt* adaptivity = new Adapt(space, norm);
     
-    // Calculate and report exact error.
-    bool solutions_for_adapt = false;
-    double err_exact_rel = adaptivity->calc_err_exact(&ref_sln, &exact, solutions_for_adapt, HERMES_TOTAL_ERROR_REL | HERMES_ELEMENT_ERROR_REL) * 100;
-    info("ndof_fine: %d, err_exact_rel: %g%%", Space::get_num_dofs(actual_sln_space), err_exact_rel);
-
-    // Time measurement.
-    cpu_time.tick();
+    // Calculate exact error.
+    double err_exact_rel = hermes2d.calc_rel_error(&ref_sln, &exact, norm) * 100;
+    info("ndof_fine: %d, err_exact_rel: %g%%", ndof_fine, err_exact_rel);
 
     if (STRATEGY == -1) done = true;  // Do not adapt.
     else
@@ -288,20 +262,20 @@ int main(int argc, char* argv[])
       // Calculate element errors and total error estimate.
       info("Calculating error estimate."); 
       bool solutions_for_adapt = true;
-      double err_est_rel = adaptivity->calc_err_est(&sln, &ref_sln, solutions_for_adapt, HERMES_TOTAL_ERROR_REL | HERMES_ELEMENT_ERROR_REL) * 100;
+      double err_est_rel = adaptivity->calc_err_est(&sln, &ref_sln, solutions_for_adapt) * 100;
 
       // Report results.
-      info("ndof_coarse: %d, err_est_rel: %g%%", Space::get_num_dofs(space), err_est_rel);
+      info("ndof_coarse: %d, err_est_rel: %g%%", ndof_coarse, err_est_rel);
 
       // Time measurement.
       cpu_time.tick();
       
       // Add entry to DOF and CPU convergence graphs.
-      graph_dof.add_values(Space::get_num_dofs(space), err_est_rel);
+      graph_dof.add_values(ndof_coarse, err_est_rel);
       graph_dof.save("conv_dof_est.dat");
       graph_cpu.add_values(cpu_time.accumulated(), err_est_rel);
       graph_cpu.save("conv_cpu_est.dat");
-      graph_dof_exact.add_values(Space::get_num_dofs(space), err_exact_rel);
+      graph_dof_exact.add_values(ndof_coarse, err_exact_rel);
       graph_dof_exact.save("conv_dof_exact.dat");
       graph_cpu_exact.add_values(cpu_time.accumulated(), err_exact_rel);
       graph_cpu_exact.save("conv_cpu_exact.dat");
@@ -330,7 +304,6 @@ int main(int argc, char* argv[])
     
     // Clean up.
     delete adaptivity;
-    delete dp;
   }
   while (done == false);
   
@@ -349,10 +322,22 @@ int main(int argc, char* argv[])
   
   verbose("Total running time: %g s", cpu_time.accumulated());
 
-  int n_dof_allowed = 40;
+  // Test number of DOF.
   printf("n_dof_actual = %d\n", ndof);
   printf("n_dof_allowed = %d\n", n_dof_allowed);
   if (ndof <= n_dof_allowed) {
+    printf("Success!\n");
+    return ERR_SUCCESS;
+  }
+  else {
+    printf("Failure!\n");
+    return ERR_FAILURE;
+  }
+  
+  // Test number of iterations.
+  printf("iterations = %d\n", as);
+  printf("iterations allowed = %d\n", iter_allowed);
+  if (as <= iter_allowed) {
     printf("Success!\n");
     return ERR_SUCCESS;
   }

@@ -1,149 +1,208 @@
+#include "definitions.h"
+#include "weakform_library/weakforms_h1.h"
+
 //////////////////////////////////////////////////// CONTINUOUS APPROXIMATION ////////////////////////////////////////////////////
-//
-// References:
-//
-// R. Codina:
-// Comparison of some finite element methods for solving the diffusion-convection-reaction equation.
-// Comput. Meth. Appl. Mech. Engrg. 156 (1998) 185-210.
-//
-// F. Shakib, T.J.R. Hughes, Z. Johan: 
-// A new finite element formulation for computational fluid dynamics: X. The compressible Euler and Navier-Stokes equations. 
-// Comput. Methods Appl. Mech. Engrg. 89 (1991) 141-219.
-//
 
-// Bilinear form.
-template<typename Real, typename Scalar>
-Scalar cg_biform(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  Scalar result = 0;
-  for (int i=0; i < n; i++)
+CustomWeakFormContinuousGalerkin::CustomWeakFormContinuousGalerkin(GalerkinMethod method, double epsilon, 
+                                                                   double b1, double b2)
+  : WeakForm(1), fn_epsilon(new HermesFunction(epsilon)), fn_b1(new HermesFunction(b1)), fn_b2(new HermesFunction(b2))
+{ 
+  //add_matrix_form(new AdvectionJacobian);
+  //add_vector_form(new AdvectionResidual);
+  add_matrix_form(new WeakFormsH1::DefaultJacobianAdvection(0, 0, HERMES_ANY, fn_b1, fn_b2));
+  add_vector_form(new WeakFormsH1::DefaultResidualAdvection(0, HERMES_ANY, fn_b1, fn_b2));
+  add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, HERMES_ANY, fn_epsilon, HERMES_SYM));
+  add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, HERMES_ANY, fn_epsilon));
+  
+  if (method != CG) 
   {
-    result += wt[i] * (EPSILON * (u->dx[i]*v->dx[i] + u->dy[i]*v->dy[i])
-                               - (B1 * u->val[i] * v->dx[i] + B2 * u->val[i] * v->dy[i])
-                      );
+    add_matrix_form(new StabilizationJacobian(method, epsilon));
+    add_vector_form(new StabilizationResidual(method, epsilon));
   }
-  return result;
 }
 
-// Streamline upwind Petrov-Galerkin stabilization, stabilization parameter according to Codina (derived from nodal exactness).
 template<typename Real, typename Scalar>
-Scalar stabilization_biform_supg(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar CustomWeakFormContinuousGalerkin::AdvectionJacobian::matrix_form(int n, double* wt, 
+                                                                        Func< Scalar >* u_ext[], Func< Real >* u, Func< Real >* v,
+                                                                        Geom< Real >* e, ExtData< Scalar >* ext) const
 {
-#ifdef H2D_SECOND_DERIVATIVES_ENABLED
-  Real h_e = e->diam;
   Scalar result = 0;
-  for (int i=0; i < n; i++) {
-    double b_norm = sqrt(B1*B1 + B2*B2);
-    Real Pe = b_norm * h_e / (2*EPSILON);
-    Real alpha = 1 + 2./(exp(2*Pe) - 1) - 1./Pe;  // coth(Pe)-1/Pe
-    Real tau = alpha*h_e / (2*b_norm);
-    
-    result += wt[i] * tau * (B1 * v->dx[i] + B2 * v->dy[i])
-                          * (B1 * u->dx[i] + B2 * u->dy[i] - EPSILON * u->laplace[i]);
-  }
-  return result;
-#else
-  error("Define H2D_SECOND_DERIVATIVES_ENABLED in h2d_common.h if you want to use second derivatives of shape functions in weak forms.");
-#endif  
+ 
+  for (int i=0; i < n; i++)
+    result += -wt[i] * u->val[i] * ConstFlowField::dot_grad<Real>(v,e,i);
+
+  return result;  
 }
 
-// Galerkin least-squares stabilization, stabilization parameter according to Codina.
 template<typename Real, typename Scalar>
-Scalar stabilization_biform_gls(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar CustomWeakFormContinuousGalerkin::AdvectionResidual::vector_form(int n, double* wt,
+                                                                        Func< Scalar >* u_ext[], Func< Real >* v,
+                                                                        Geom< Real >* e, ExtData< Scalar >* ext) const
 {
-#ifdef H2D_SECOND_DERIVATIVES_ENABLED
-  Real h_e = e->diam;
   Scalar result = 0;
-  for (int i=0; i < n; i++) {
-    double b_norm = sqrt(B1*B1 + B2*B2);
-    Real Pe = b_norm * h_e / (2*EPSILON);
-    double C1 = (P_INIT == 1) ? 1./3. : 1./9.;
-    double C2 = (P_INIT == 1) ? 1.    : 1./2.;
-    Real tau = std::min(C1*Pe, C2)*h_e / (2*b_norm);
-    
-    result += wt[i] * tau * (B1 * v->dx[i] + B2 * v->dy[i] - EPSILON * v->laplace[i])
-                          * (B1 * u->dx[i] + B2 * u->dy[i] - EPSILON * u->laplace[i]);
-  }
+  
+  for (int i=0; i < n; i++)
+    result += -wt[i] * u_ext[0]->val[i] * ConstFlowField::dot_grad<Real>(v,e,i);
+  
   return result;
-#else
-  error("Define H2D_SECOND_DERIVATIVES_ENABLED in h2d_common.h if you want to use second derivatives of shape functions in weak forms.");
-#endif
 }
 
-template<>
-Ord stabilization_biform_gls(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
+scalar CustomWeakFormContinuousGalerkin::StabilizationJacobian::value(int n, double *wt, 
+                                                                      Func<scalar> *u_ext[], Func<double> *u, Func<double> *v,
+                                                                      Geom<double> *e, ExtData<scalar> *ext) const
 {
-  return Ord(  (B1 * v->dx[0] + B2 * v->dy[0] - EPSILON * v->laplace[0])
-             * (B1 * u->dx[0] + B2 * u->dy[0] - EPSILON * u->laplace[0]) );
-}
-
-// Subgrid scale stabilization, stabilization parameter from discrete max. principle, according to Codina.
-//
-template<typename Real, typename Scalar>
-Scalar stabilization_biform_sgs(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-#ifdef H2D_SECOND_DERIVATIVES_ENABLED
-  Real h_e = e->diam;
-  Scalar result = 0;
-  for (int i=0; i < n; i++) {
-    double b_norm = sqrt(B1*B1 + B2*B2);   
-    Real tau = 1. / (4*EPSILON/sqr(h_e) + 2*b_norm/h_e);
-    result += wt[i] * tau * (B1 * v->dx[i] + B2 * v->dy[i] + EPSILON * v->laplace[i])
-                          * (B1 * u->dx[i] + B2 * u->dy[i] - EPSILON * u->laplace[i]);
+  scalar result = 0;
+  double h_e = e->diam;
+  double Pe = element_Peclet_number(h_e);
+  
+  switch(method)
+  {
+    case CG_STAB_SUPG:
+      // Streamline upwind Petrov-Galerkin stabilization, stabilization parameter according to Codina 
+      // (derived from nodal exactness).
+      for (int i=0; i < n; i++) 
+      {
+        double alpha = 1 + 2./(exp(2*Pe) - 1) - 1./Pe;  // coth(Pe)-1/Pe
+        double tau = alpha*h_e / (2*b_norm);
+        
+        result += wt[i] * tau * ConstFlowField::dot_grad<double>(v,e,i) * 
+                               (ConstFlowField::dot_grad<double>(u,e,i) - epsilon * u->laplace[i]);
+      }
+      
+      break; 
+    case CG_STAB_GLS_1:
+    case CG_STAB_GLS_2:
+      // Galerkin least-squares stabilization, stabilization parameter according to Codina.
+      for (int i=0; i < n; i++) 
+      {
+        double C1 = (method == CG_STAB_GLS_1) ? 1./3. : 1./9.;
+        double C2 = (method == CG_STAB_GLS_1) ? 1.    : 1./2.;
+        double tau = std::min(C1*Pe, C2)*h_e / (2*b_norm);
+        
+        result += wt[i] * tau * (ConstFlowField::dot_grad<double>(v,e,i) - epsilon * v->laplace[i])
+                              * (ConstFlowField::dot_grad<double>(u,e,i) - epsilon * u->laplace[i]);
+      }
+      break;
+    case CG_STAB_SGS:
+      // Subgrid scale stabilization, stabilization parameter from discrete max. principle, according to Codina.
+      for (int i=0; i < n; i++) 
+      {
+        double tau = 1. / (4*epsilon/sqr(h_e) + 2*b_norm/h_e);
+        result += wt[i] * tau * (ConstFlowField::dot_grad<double>(v,e,i) + epsilon * v->laplace[i])
+                              * (ConstFlowField::dot_grad<double>(u,e,i) - epsilon * u->laplace[i]);
+      }
+    case CG_STAB_SGS_ALT:
+      // Subgrid scale stabilization, stabilization parameter according to Shakib.
+      for (int i=0; i < n; i++) 
+      {
+        double tau = 1. / sqrt(9*sqr(4*epsilon/sqr(h_e)) + sqr(2*b_norm/h_e));
+        result += wt[i] * tau * (ConstFlowField::dot_grad<double>(v,e,i) + epsilon * v->laplace[i])
+                              * (ConstFlowField::dot_grad<double>(u,e,i) - epsilon * u->laplace[i]);
+      }      
   }
+  
   return result;
-#else
-  error("Define H2D_SECOND_DERIVATIVES_ENABLED in h2d_common.h if you want to use second derivatives of shape functions in weak forms.");
-#endif
 }
 
-// Subgrid scale stabilization, stabilization parameter according to Shakib.
-//
-template<typename Real, typename Scalar>
-Scalar stabilization_biform_sgs_alt(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Ord CustomWeakFormContinuousGalerkin::StabilizationJacobian::ord(int n, double* wt, 
+                                                                 Func< Ord >* u_ext[], Func< Ord >* u, Func< Ord >* v, 
+                                                                 Geom< Ord >* e, ExtData< Ord >* ext) const
 {
-#ifdef H2D_SECOND_DERIVATIVES_ENABLED
-  Real h_e = e->diam;
-  Scalar result = 0;
-  for (int i=0; i < n; i++) {
-    double b_norm = sqrt(B1*B1 + B2*B2);   
-    Real tau = 1. / sqrt(9*sqr(4*EPSILON/sqr(h_e)) + sqr(2*b_norm/h_e));
-    result += wt[i] * tau * (B1 * v->dx[i] + B2 * v->dy[i] + EPSILON * v->laplace[i])
-                          * (B1 * u->dx[i] + B2 * u->dy[i] - EPSILON * u->laplace[i]);
-  }
-  return result;
-#else
-  error("Define H2D_SECOND_DERIVATIVES_ENABLED in h2d_common.h if you want to use second derivatives of shape functions in weak forms.");
-#endif
+  if (method == CG_STAB_SUPG)
+    return ConstFlowField::dot_grad<Ord>(v,e,0) * (ConstFlowField::dot_grad<Ord>(u,e,0) - epsilon * u->laplace[0]);   
+  else
+    return (ConstFlowField::dot_grad<Ord>(v,e,0) + epsilon * v->laplace[0]) *
+           (ConstFlowField::dot_grad<Ord>(u,e,0) + epsilon * u->laplace[0]);
 }
 
+scalar CustomWeakFormContinuousGalerkin::StabilizationResidual::value(int n, double *wt, 
+                                                                      Func<scalar> *u_ext[], Func<double> *v,
+                                                                      Geom<double> *e, ExtData<scalar> *ext) const
+{
+  scalar result = 0;
+  double h_e = e->diam;
+  double Pe = element_Peclet_number(h_e);
+  
+  switch(method)
+  {
+    case CG_STAB_SUPG:
+      // Streamline upwind Petrov-Galerkin stabilization, stabilization parameter according to Codina 
+      // (derived from nodal exactness).
+      for (int i=0; i < n; i++) 
+      {
+        double alpha = 1 + 2./(exp(2*Pe) - 1) - 1./Pe;  // coth(Pe)-1/Pe
+        double tau = alpha*h_e / (2*b_norm);
+        
+        result += wt[i] * tau * ConstFlowField::dot_grad<double>(v,e,i) * 
+                               (ConstFlowField::dot_grad<double>(u_ext[0],e,i) - epsilon * u_ext[0]->laplace[i]);
+      }
+      
+      break; 
+    case CG_STAB_GLS_1:
+    case CG_STAB_GLS_2:
+      // Galerkin least-squares stabilization, stabilization parameter according to Codina.
+      for (int i=0; i < n; i++) 
+      {
+        double C1 = (method == CG_STAB_GLS_1) ? 1./3. : 1./9.;
+        double C2 = (method == CG_STAB_GLS_1) ? 1.    : 1./2.;
+        double tau = std::min(C1*Pe, C2)*h_e / (2*b_norm);
+        
+        result += wt[i] * tau * (ConstFlowField::dot_grad<double>(v,e,i) - epsilon * v->laplace[i])
+                              * (ConstFlowField::dot_grad<double>(u_ext[0],e,i) - epsilon * u_ext[0]->laplace[i]);
+      }
+      break;
+    case CG_STAB_SGS:
+      // Subgrid scale stabilization, stabilization parameter from discrete max. principle, according to Codina.
+      for (int i=0; i < n; i++) 
+      {
+        double tau = 1. / (4*epsilon/sqr(h_e) + 2*b_norm/h_e);
+        result += wt[i] * tau * (ConstFlowField::dot_grad<double>(v,e,i) + epsilon * v->laplace[i])
+                              * (ConstFlowField::dot_grad<double>(u_ext[0],e,i) - epsilon * u_ext[0]->laplace[i]);
+      }
+    case CG_STAB_SGS_ALT:
+      // Subgrid scale stabilization, stabilization parameter according to Shakib.
+      for (int i=0; i < n; i++) 
+      {
+        double tau = 1. / sqrt(9*sqr(4*epsilon/sqr(h_e)) + sqr(2*b_norm/h_e));
+        result += wt[i] * tau * (ConstFlowField::dot_grad<double>(v,e,i) + epsilon * v->laplace[i])
+                              * (ConstFlowField::dot_grad<double>(u_ext[0],e,i) - epsilon * u_ext[0]->laplace[i]);
+      }      
+  }
+  
+  return result;
+}
 
+Ord CustomWeakFormContinuousGalerkin::StabilizationResidual::ord(int n, double* wt, 
+                                                                 Func< Ord >* u_ext[], Func< Ord >* v, 
+                                                                 Geom< Ord >* e, ExtData< Ord >* ext) const
+{
+  if (method == CG_STAB_SUPG)
+    return ConstFlowField::dot_grad<Ord>(v,e,0) * (ConstFlowField::dot_grad<Ord>(u_ext[0],e,0) - epsilon * u_ext[0]->laplace[0]);   
+  else
+    return (ConstFlowField::dot_grad<Ord>(v,e,0) + epsilon * v->laplace[0]) *
+           (ConstFlowField::dot_grad<Ord>(u_ext[0],e,0) + epsilon * u_ext[0]->laplace[0]);
+}
 
 //////////////////////////////////////////////////// DISCONTINUOUS APPROXIMATION ////////////////////////////////////////////////////
 
-// Flux definition.
-
-template<typename Real>
-inline Real calculate_a_dot_v(Real x, Real y, Real vx, Real vy) 
+CustomWeakFormDiscontinuousGalerkin::CustomWeakFormDiscontinuousGalerkin(const EssentialBCs& boundary_values,
+                                                                        double epsilon, int theta, int C_W)
+  : WeakForm(1), theta(theta), C_W(C_W), fn_epsilon(new HermesFunction(epsilon))
 {
-  return B1*vx + B2*vy;
+  add_matrix_form(new Advection::VolumetricJacobian);
+  add_vector_form(new Advection::VolumetricResidual);
+  add_matrix_form_surf(new Advection::BoundaryJacobian);
+  add_vector_form_surf(new Advection::BoundaryResidual(boundary_values));
+  add_matrix_form_surf(new Advection::InterfaceJacobian);
+  add_vector_form_surf(new Advection::InterfaceResidual);
+  add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0,0,HERMES_ANY,fn_epsilon,HERMES_SYM));
+  add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0,HERMES_ANY,fn_epsilon));
+  add_matrix_form_surf(new Diffusion::BoundaryJacobian(epsilon, theta, C_W));
+  add_vector_form_surf(new Diffusion::BoundaryResidual(boundary_values, epsilon, theta, C_W));
+  add_matrix_form_surf(new Diffusion::InterfaceJacobian(epsilon, theta, C_W));
+  add_vector_form_surf(new Diffusion::InterfaceResidual(epsilon, theta, C_W));
 }
 
-template<typename Real, typename Scalar>
-inline Scalar upwind_flux(Real u_cent, Real u_neib, Real a_dot_n)
-{
-  Scalar eff_val;
-  if (a_dot_n > 0) eff_val = u_cent;
-  else if (a_dot_n < 0) eff_val = u_neib;
-  else eff_val = 0.5*(u_cent + u_neib);
-  return a_dot_n * eff_val;
-}
-
-template<>
-inline Ord upwind_flux(Ord u_cent, Ord u_neib, Ord a_dot_n)
-{
-  return a_dot_n * (u_cent + u_neib); 
-}
 
 // Weak forms.
 
@@ -154,78 +213,143 @@ inline Ord upwind_flux(Ord u_cent, Ord u_neib, Ord a_dot_n)
 //--- ADVECTION
 
 template<typename Real, typename Scalar>
-Scalar dg_volumetric_biform_advection(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar CustomWeakFormDiscontinuousGalerkin::Advection::VolumetricJacobian::matrix_form(int n, double *wt, 
+                                                                            Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, 
+                                                                            Geom<Real> *e, ExtData<Scalar> *ext) const
 {
   Scalar result = 0;
   for (int i = 0; i < n; i++)
-    result += -wt[i] * u->val[i] * calculate_a_dot_v<Real>(e->x[i], e->y[i], v->dx[i], v->dy[i]);
+    result += -wt[i] * u->val[i] * ConstFlowField::dot_grad<Real>(v,e,i);
   return result;
 }
 
 template<typename Real, typename Scalar>
-Scalar dg_interface_biform_advection(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar CustomWeakFormDiscontinuousGalerkin::Advection::VolumetricResidual::vector_form(int n, double *wt, 
+                                                                            Func<Scalar> *u_ext[], Func<Real> *v, 
+                                                                            Geom<Real> *e, ExtData<Scalar> *ext) const
 {
   Scalar result = 0;
+  for (int i = 0; i < n; i++)
+    result += -wt[i] * u_ext[0]->val[i] * ConstFlowField::dot_grad<Real>(v,e,i);
+  return result;
+}
 
-  for (int i = 0; i < n; i++) {
-    Real a_dot_n = calculate_a_dot_v<Real>(e->x[i], e->y[i], e->nx[i], e->ny[i]);
-    result += wt[i] * upwind_flux<Real,Scalar>(u->get_val_central(i), u->get_val_neighbor(i), a_dot_n) * JUMP(v);
+template<typename Real, typename Scalar>
+Scalar CustomWeakFormDiscontinuousGalerkin::Advection::BoundaryJacobian::matrix_form(int n, double* wt,
+                                                                                     Func< Scalar >* u_ext[], Func< Real >* u, Func< Real >* v, 
+                                                                                     Geom< Real >* e, ExtData< Scalar >* ext) const
+{
+  Scalar result = 0;
+  
+  for (int i = 0; i < n; i++)
+    result += wt[i] * upwind_flux(u->val[i], 0, ConstFlowField::dot_n<Real>(e,i)) * v->val[i];
+  
+  return result;
+}
+
+template<typename Real, typename Scalar>
+Scalar CustomWeakFormDiscontinuousGalerkin::Advection::BoundaryResidual::vector_form(int n, double* wt, 
+                                                                                     Func< Scalar >* u_ext[], Func< Real >* v, 
+                                                                                     Geom< Real >* e, ExtData< Scalar >* ext) const
+{
+  Scalar result = 0;
+  
+  std::string marker = wf->get_boundary_markers_conversion()->get_user_marker(e->edge_marker);
+  
+  for (int i = 0; i < n; i++) 
+  {
+    Real beta_dot_n = ConstFlowField::dot_n<Real>(e,i);
+    WeaklyImposableBC* bc = static_cast<WeaklyImposableBC*>(boundary_values.get_boundary_condition(marker));
+    result += ( upwind_flux(u_ext[0]->val[i], 0, beta_dot_n) 
+                + upwind_flux(0, bc->value(e->x[i], e->y[i]), beta_dot_n) ) * wt[i] * v->val[i];
   }
   
   return result;
 }
 
 template<typename Real, typename Scalar>
-Scalar dg_boundary_biform_advection(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar CustomWeakFormDiscontinuousGalerkin::Advection::InterfaceJacobian::matrix_form(int n, double* wt, 
+                                                                                      Func< Scalar >* u_ext[], Func< Real >* u, Func< Real >* v, 
+                                                                                      Geom< Real >* e, ExtData< Scalar >* ext) const
 {
   Scalar result = 0;
   
-  for (int i = 0; i < n; i++) {
-    Real a_dot_n = calculate_a_dot_v<Real>(e->x[i], e->y[i], e->nx[i], e->ny[i]);
-    result += wt[i] * upwind_flux<Real,Scalar>(u->val[i], 0, a_dot_n) * v->val[i];
-  }
+  for (int i = 0; i < n; i++)
+    result += wt[i] * upwind_flux( u->get_val_central(i), u->get_val_neighbor(i), ConstFlowField::dot_n<Real>(e,i) ) * JUMP(v);
   
   return result;
 }
 
 template<typename Real, typename Scalar>
-Scalar dg_boundary_liform_advection(int n, double *wt, Func<Real> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar CustomWeakFormDiscontinuousGalerkin::Advection::InterfaceResidual::vector_form(int n, double* wt, 
+                                                                                      Func< Scalar >* u_ext[], Func< Real >* v,
+                                                                                      Geom< Real >* e, ExtData< Scalar >* ext) const
 {
   Scalar result = 0;
   
-  for (int i = 0; i < n; i++) {
-    Real x = e->x[i], y = e->y[i];
-    Real a_dot_n = calculate_a_dot_v<Real>(x, y, e->nx[i], e->ny[i]);
-    result += -wt[i] * upwind_flux<Real,Scalar>(0, essential_bc_values<Real,Scalar>(e->edge_marker, x, y), a_dot_n) * v->val[i];
-  }
+  for (int i = 0; i < n; i++)
+    result += upwind_flux( u_ext[0]->get_val_central(i), u_ext[0]->get_val_neighbor(i), ConstFlowField::dot_n<Real>(e,i) )
+              * JUMP(v) * wt[i];
   
   return result;
 }
 
 //--- DIFFUSION AND PENALTIES
-//
-// SIPG (Symmetric Interior Penalty Galerkin): theta = -1, C_W nontrivial, optimal convergence rate
-// IIPG (Incomplete Interior Penalty Galerkin): theta = 0, C_W nontrivial, sub-optimal convergence rate
-// NIPG (Nonsymmetric Interior Penalty Galerkin): theta = 1, C_W arbitrary, sub-optimal convergence rate
-// (I haven't searched the literature for a proof of these claims yet, it is from a mini-seminar lectured by Vit Dolejsi).
-//
-// Dirichlet b.c. are weakly imposed through the boundary biforms, no linear form is thus present 
-// (there is neither a source term nor a Neumann boundary in this benchmark problem).
-//
-const int theta = 1; // Using NIPG.
-const int C_W = 1;
 
 template<typename Real, typename Scalar>
-Scalar dg_volumetric_biform_diffusion(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar CustomWeakFormDiscontinuousGalerkin::Diffusion::BoundaryJacobian::matrix_form(int n, double* wt, 
+                                                                                     Func< Scalar >* u_ext[], Func< Real >* u, Func< Real >* v, 
+                                                                                     Geom< Real >* e, ExtData< Scalar >* ext) const
 {
   Scalar result = 0;
+  //Real sigma = C_W * EPSILON / e->diam;
+  Real edge_len = 0.;
   for (int i = 0; i < n; i++)
-    result += wt[i] * EPSILON * ( u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i] );
+    edge_len += wt[i];
+  
+  Real sigma = C_W * epsilon / (0.5*edge_len);
+  
+  for (int i = 0; i < n; i++)
+  {
+    result += wt[i] * epsilon * ( -dot2<Real>(u->dx[i], u->dy[i], e->nx[i], e->ny[i]) * v->val[i]
+                                  +dot2<Real>(v->dx[i], v->dy[i], e->nx[i], e->ny[i]) * theta * u->val[i] );   
+    result += wt[i] * sigma * u->val[i] * v->val[i];                    
+  }
+  
   return result;
 }
 
 template<typename Real, typename Scalar>
-Scalar dg_interface_biform_diffusion(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar CustomWeakFormDiscontinuousGalerkin::Diffusion::BoundaryResidual::vector_form(int n, double* wt, 
+                                                                                     Func< Scalar >* u_ext[], Func< Real >* v, 
+                                                                                     Geom< Real >* e, ExtData< Scalar >* ext) const
+{
+  Scalar result = 0;
+  //Real sigma = C_W * EPSILON / e->diam;
+  Real edge_len = 0.;
+  for (int i = 0; i < n; i++)
+    edge_len += wt[i];
+  
+  Real sigma = C_W * epsilon / (0.5*edge_len);
+  
+  std::string marker = wf->get_boundary_markers_conversion()->get_user_marker(e->edge_marker);
+  
+  for (int i = 0; i < n; i++)
+  {
+    WeaklyImposableBC* bc = static_cast<WeaklyImposableBC*>(boundary_values.get_boundary_condition(marker));
+    Scalar bnd_diff = u_ext[0]->val[i] - bc->value(e->x[i], e->y[i]);
+    result += wt[i] * epsilon * ( -dot2<Real>(u_ext[0]->dx[i], u_ext[0]->dy[i], e->nx[i], e->ny[i]) * v->val[i]
+                                  +dot2<Real>(v->dx[i], v->dy[i], e->nx[i], e->ny[i]) * theta * bnd_diff );   
+    result += wt[i] * sigma * bnd_diff * v->val[i];                        
+  }
+  
+  return result;
+}
+
+template<typename Real, typename Scalar>
+Scalar CustomWeakFormDiscontinuousGalerkin::Diffusion::InterfaceJacobian::matrix_form(int n, double* wt, 
+                                                                                      Func< Scalar >* u_ext[], Func< Real >* u, Func< Real >* v, 
+                                                                                      Geom< Real >* e, ExtData< Scalar >* ext) const
 {
   Scalar result = 0;
   //Real sigma = 2 * C_W / (e->diam + e->get_neighbor_diam());
@@ -233,59 +357,33 @@ Scalar dg_interface_biform_diffusion(int n, double *wt, Func<Real> *u_ext[], Fun
   for (int i = 0; i < n; i++)
     edge_len += wt[i];
   
-  Real sigma = C_W * EPSILON / (0.5*edge_len);
+  Real sigma = C_W * epsilon / (0.5*edge_len);
   
   for (int i = 0; i < n; i++)
   {
-    result += wt[i] * EPSILON * ( -AVG_GRAD(u) * JUMP(v) + theta * AVG_GRAD(v) * JUMP(u) ); // diffusion
-    result += wt[i] * sigma * JUMP(u) * JUMP(v);                          // interior discontinuity penalization
-  }
-  return result;
-}
-
-template<>
-Ord dg_interface_biform_diffusion(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
-{
-  int i = 0;
-  return AVG_GRAD(u) * JUMP(v) + theta * AVG_GRAD(v) * JUMP(u) + JUMP(u) * JUMP(v);
-}
-
-template<typename Real, typename Scalar>
-Scalar dg_boundary_biform_diffusion(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  Scalar result = 0;
-  //Real sigma = C_W * EPSILON / e->diam;
-  Real edge_len = 0.;
-  for (int i = 0; i < n; i++)
-    edge_len += wt[i];
-  
-  Real sigma = C_W * EPSILON / (0.5*edge_len);
-  
-  for (int i = 0; i < n; i++)
-  {
-    result += wt[i] * EPSILON * ( -( u->dx[i]*e->nx[i] + u->dy[i]*e->ny[i] ) * v->val[i]
-                                  + theta * ( v->dx[i]*e->nx[i] + v->dy[i]*e->ny[i] ) * (u->val[i]) );   
-    result += wt[i] * sigma * ( u->val[i] ) * v->val[i];                    
+    result += wt[i] * epsilon * (-AVG_GRAD(u) * JUMP(v) + theta * AVG_GRAD(v) * JUMP(u)); // diffusion
+    result += wt[i] * sigma * JUMP(u) * JUMP(v);                                          // interior discontinuity penalization
   }
   return result;
 }
 
 template<typename Real, typename Scalar>
-Scalar dg_boundary_liform_diffusion(int n, double *wt, Func<Real> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar CustomWeakFormDiscontinuousGalerkin::Diffusion::InterfaceResidual::vector_form(int n, double* wt,
+                                                                                      Func< Scalar >* u_ext[], Func< Real >* v, 
+                                                                                      Geom< Real >* e, ExtData< Scalar >* ext) const
 {
   Scalar result = 0;
-  //Real sigma = C_W * EPSILON / e->diam;
+  //Real sigma = 2 * C_W / (e->diam + e->get_neighbor_diam());
   Real edge_len = 0.;
   for (int i = 0; i < n; i++)
     edge_len += wt[i];
   
-  Real sigma = C_W * EPSILON / (0.5*edge_len);
+  Real sigma = C_W * epsilon / (0.5*edge_len);
   
   for (int i = 0; i < n; i++)
   {
-    Scalar u_dir = essential_bc_values<Real,Scalar>(e->edge_marker, e->x[i], e->y[i]);
-    result += wt[i] * EPSILON * theta * ( v->dx[i]*e->nx[i] + v->dy[i]*e->ny[i] ) * u_dir;
-    result += wt[i] * sigma * u_dir * v->val[i];                        
+    result += wt[i] * epsilon * (-AVG_GRAD(u_ext[0]) * JUMP(v) + theta * AVG_GRAD(v) * JUMP(u_ext[0])); 
+    result += wt[i] * sigma * JUMP(u_ext[0]) * JUMP(v);                                                 
   }
   return result;
 }
