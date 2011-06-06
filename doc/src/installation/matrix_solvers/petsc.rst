@@ -15,6 +15,8 @@ it in some temporary directory::
   rm petsc-3.1-p7.spkg
   cd petsc-3.1-p7
 
+.. youtube:: zpV-8PR0CoY
+
 In order to install the library into say ``~/solvers/petsc`` (you may choose any
 path you like, provided that you have write access to it; the target directory 
 will be created if it doesn't exist), type now into the terminal::

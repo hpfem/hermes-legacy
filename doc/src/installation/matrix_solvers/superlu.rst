@@ -20,6 +20,8 @@ Install the `libsuperlu3` and `libsuperlu3-dev` packages. In Ubuntu 6.06 (Dapper
 or newer, you can use the Synaptic package manager for that, or type::
 
   sudo apt-get install libsuperlu3 libsuperlu3-dev 
+
+.. youtube:: I76Sui_FMMs
   
 Now go to the directory with Hermes. Create the file CMake.vars with the
 following lines (or append to the existing one)::
