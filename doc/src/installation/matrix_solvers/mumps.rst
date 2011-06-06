@@ -8,6 +8,8 @@ Mumps
 Linux
 ~~~~~
 
+.. youtube:: 9LBeSsL_x7Y
+
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory::
   
@@ -15,8 +17,6 @@ it in some temporary directory::
   tar -jxvf mumps-4.9.2.spkg
   rm mumps-4.9.2.spkg
   cd mumps-4.9.2
-
-.. youtube:: 9LBeSsL_x7Y
 
 In order to install the library into say ``~/solvers/mumps`` (you may choose any
 path you like, provided that you have write access to it; the target directory 
