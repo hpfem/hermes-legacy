@@ -230,6 +230,8 @@ int main(int argc, char* argv[])
       // Clean up.
       delete adaptivity;
       delete ref_space;
+      if(!done)
+        delete sln_time_new.get_mesh();
     }
     while (done == false);
 
