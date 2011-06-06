@@ -16,6 +16,8 @@ it in some temporary directory::
   rm mumps-4.9.2.spkg
   cd mumps-4.9.2
 
+.. youtube:: 9LBeSsL_x7Y
+
 In order to install the library into say ``~/solvers/mumps`` (you may choose any
 path you like, provided that you have write access to it; the target directory 
 will be created if it doesn't exist), type now into the terminal::
