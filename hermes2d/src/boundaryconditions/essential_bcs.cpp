@@ -148,11 +148,12 @@ void EssentialBCs::create_marker_cache() {
 }
 
 
-EssentialBoundaryCondition* EssentialBCs::get_boundary_condition(std::string marker) {
-  if(markers.find(marker) == markers.end())
+EssentialBoundaryCondition* EssentialBCs::get_boundary_condition(const std::string& marker) const {
+  std::map<std::string, EssentialBoundaryCondition *>::const_iterator found = markers.find(marker);
+  if(found == markers.end())
     return NULL;
   else
-    return markers[marker];
+    return found->second;
 }
 
 void EssentialBCs::set_current_time(double time) {

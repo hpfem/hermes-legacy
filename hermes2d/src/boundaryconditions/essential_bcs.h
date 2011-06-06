@@ -144,7 +144,7 @@ public:
   Hermes::vector<EssentialBoundaryCondition *>::const_iterator begin() const;
   Hermes::vector<EssentialBoundaryCondition *>::const_iterator end() const;
   
-  EssentialBoundaryCondition* get_boundary_condition(std::string marker);
+  EssentialBoundaryCondition* get_boundary_condition(const std::string& marker) const;
 
   /// Sets the current time for time-dependent boundary conditions.
   void set_current_time(double time);
