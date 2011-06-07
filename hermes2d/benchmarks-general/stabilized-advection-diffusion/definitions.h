@@ -65,7 +65,34 @@ struct ConstFlowField
   
 };
 
-// Essential boundary conditions represented by a non-vanishing function.
+// Boundary condition represented by a non-vanishing function.
+class NonzeroBoundaryValues : public ExactSolutionScalar 
+{
+  public:
+    NonzeroBoundaryValues(Mesh* mesh) : ExactSolutionScalar(mesh) {};
+    
+    virtual scalar value(double x, double y) const {
+      return sin(M_PI*x);
+    }
+    virtual Ord value(Ord x, Ord y) const {
+      return ord(x, y);
+    }
+    virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const {
+      dx = M_PI * cos(M_PI*x); dy = 0.0;      
+    }
+    virtual Ord ord(Ord x, Ord y) const {
+      return Ord(10);
+    }
+};
+
+// This class allows Hermes to treat essential boundary conditions either in a standard way
+// (automatically during construction of the space) or weakly (by integrating their values 
+// in a user-defined integral form). The container EssentialBCs may be used to pass all
+// weakly imposable essential b.c.'s of the problem to the space constructor, or to obtain
+// the b.c. associated with currently assembled boundary edge inside the integral form.
+// In the latter case, the retrieved pointer to EssentialBoundaryCondition must be 
+// static-cast to WeaklyImposableBC in order to correctly handle calls to 'value' with both
+// double and Ord arguments.
 class WeaklyImposableBC : public EssentialBoundaryCondition
 {  
   EssentialBCValueType type;
@@ -94,25 +121,6 @@ class WeaklyImposableBC : public EssentialBoundaryCondition
     }
     virtual Ord value(Ord x, Ord y) const {
       return (type == BC_CONST) ? Ord(1) : exact_solution->ord(x, y);
-    }
-};
-
-class NonzeroBoundaryValues : public ExactSolutionScalar 
-{
-  public:
-    NonzeroBoundaryValues(Mesh* mesh) : ExactSolutionScalar(mesh) {};
-    
-    virtual scalar value(double x, double y) const {
-      return sin(M_PI*x);
-    }
-    virtual Ord value(Ord x, Ord y) const {
-      return ord(x, y);
-    }
-    virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const {
-      dx = M_PI * cos(M_PI*x); dy = 0.0;      
-    }
-    virtual Ord ord(Ord x, Ord y) const {
-      return Ord(10);
     }
 };
 
@@ -166,63 +174,12 @@ class CustomWeakFormContinuousGalerkin : public WeakForm
   HermesFunction *fn_epsilon, *fn_b1, *fn_b2;
   
   public:
-    CustomWeakFormContinuousGalerkin(GalerkinMethod method, double epsilon, double b1, double b2);
+    CustomWeakFormContinuousGalerkin(GalerkinMethod method, double epsilon);
     ~CustomWeakFormContinuousGalerkin() {
       delete fn_epsilon; delete fn_b1; delete fn_b2;
     }
                                      
   private:
-    class AdvectionJacobian : public WeakForm::MatrixFormVol
-    {      
-      public:
-        AdvectionJacobian() : WeakForm::MatrixFormVol(0,0) {};
-
-        template<typename Real, typename Scalar>
-        Scalar matrix_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u,
-                          Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const;
-
-        virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
-                            Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const
-        {
-          return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
-        }
-
-        virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v,
-                        Geom<Ord> *e, ExtData<Ord> *ext) const
-        {
-          return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
-        } 
-
-        virtual WeakForm::MatrixFormVol* clone() {
-          return new AdvectionJacobian(*this);
-        }
-    };
-    
-    class AdvectionResidual : public WeakForm::VectorFormVol
-    { 
-      public:
-        AdvectionResidual() : WeakForm::VectorFormVol(0) {};
-        
-        template<typename Real, typename Scalar>
-        Scalar vector_form(int n, double *wt, Func<Scalar> *u_ext[],
-                          Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const;
-
-        virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
-                            Geom<double> *e, ExtData<scalar> *ext) const
-        {
-          return vector_form<double, scalar>(n, wt, u_ext, v, e, ext);
-        }                    
-
-        virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v,
-                        Geom<Ord> *e, ExtData<Ord> *ext) const
-        {
-          return vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext);
-        }
-
-        virtual WeakForm::VectorFormVol* clone() {
-          return new AdvectionResidual(*this);
-        }
-    };
     
     class StabilizationJacobian : public WeakForm::MatrixFormVol
     {

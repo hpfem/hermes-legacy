@@ -3,12 +3,10 @@
 
 //////////////////////////////////////////////////// CONTINUOUS APPROXIMATION ////////////////////////////////////////////////////
 
-CustomWeakFormContinuousGalerkin::CustomWeakFormContinuousGalerkin(GalerkinMethod method, double epsilon, 
-                                                                   double b1, double b2)
-  : WeakForm(1), fn_epsilon(new HermesFunction(epsilon)), fn_b1(new HermesFunction(b1)), fn_b2(new HermesFunction(b2))
+CustomWeakFormContinuousGalerkin::CustomWeakFormContinuousGalerkin(GalerkinMethod method, double epsilon)
+  : WeakForm(1), fn_epsilon(new HermesFunction(epsilon)), 
+    fn_b1(new HermesFunction(ConstFlowField::b1)), fn_b2(new HermesFunction(ConstFlowField::b2))
 { 
-  //add_matrix_form(new AdvectionJacobian);
-  //add_vector_form(new AdvectionResidual);
   add_matrix_form(new WeakFormsH1::DefaultJacobianAdvection(0, 0, HERMES_ANY, fn_b1, fn_b2));
   add_vector_form(new WeakFormsH1::DefaultResidualAdvection(0, HERMES_ANY, fn_b1, fn_b2));
   add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, HERMES_ANY, fn_epsilon, HERMES_SYM));
@@ -19,32 +17,6 @@ CustomWeakFormContinuousGalerkin::CustomWeakFormContinuousGalerkin(GalerkinMetho
     add_matrix_form(new StabilizationJacobian(method, epsilon));
     add_vector_form(new StabilizationResidual(method, epsilon));
   }
-}
-
-template<typename Real, typename Scalar>
-Scalar CustomWeakFormContinuousGalerkin::AdvectionJacobian::matrix_form(int n, double* wt, 
-                                                                        Func< Scalar >* u_ext[], Func< Real >* u, Func< Real >* v,
-                                                                        Geom< Real >* e, ExtData< Scalar >* ext) const
-{
-  Scalar result = 0;
- 
-  for (int i=0; i < n; i++)
-    result += -wt[i] * u->val[i] * ConstFlowField::dot_grad<Real>(v,e,i);
-
-  return result;  
-}
-
-template<typename Real, typename Scalar>
-Scalar CustomWeakFormContinuousGalerkin::AdvectionResidual::vector_form(int n, double* wt,
-                                                                        Func< Scalar >* u_ext[], Func< Real >* v,
-                                                                        Geom< Real >* e, ExtData< Scalar >* ext) const
-{
-  Scalar result = 0;
-  
-  for (int i=0; i < n; i++)
-    result += -wt[i] * u_ext[0]->val[i] * ConstFlowField::dot_grad<Real>(v,e,i);
-  
-  return result;
 }
 
 scalar CustomWeakFormContinuousGalerkin::StabilizationJacobian::value(int n, double *wt, 

@@ -174,6 +174,7 @@ int main(int argc, char* argv[])
   WeaklyImposableBC bc_zero(Hermes::vector<std::string>("zero Dirichlet", "outflow"), 0.0);
   EssentialBCs bcs(Hermes::vector<EssentialBoundaryCondition*>(&bc_fn, &bc_zero));
   
+  // Initialize the weak formulation.
   WeakForm *wf;
   
   if (method != DG)
@@ -182,7 +183,7 @@ int main(int argc, char* argv[])
     selector = new L2ProjBasedSelector(CAND_LIST, CONV_EXP, H2DRS_DEFAULT_ORDER);
     norm = HERMES_L2_NORM;  // WARNING: In order to compare the errors with DG, L2 norm should be here.
     
-    wf = new CustomWeakFormContinuousGalerkin(method, EPSILON, ConstFlowField::b1, ConstFlowField::b2);
+    wf = new CustomWeakFormContinuousGalerkin(method, EPSILON);
   }
   else
   {
@@ -244,10 +245,6 @@ int main(int argc, char* argv[])
       error("Newton's iteration failed.");
     Solution::vector_to_solution(solver->get_solution(), actual_sln_space, &ref_sln);
     
-    // Instantiate adaptivity and error calculation driver. Space is used only for adaptivity, it is ignored when 
-    // STRATEGY == -1 and only the exact error is calculated by this object.
-    Adapt* adaptivity = new Adapt(space, norm);
-    
     // Calculate exact error.
     double err_exact_rel = hermes2d.calc_rel_error(&ref_sln, &exact, norm) * 100;
     info("ndof_fine: %d, err_exact_rel: %g%%", ndof_fine, err_exact_rel);
@@ -255,6 +252,8 @@ int main(int argc, char* argv[])
     if (STRATEGY == -1) done = true;  // Do not adapt.
     else
     {  
+      Adapt* adaptivity = new Adapt(space, norm);
+      
       // Project the fine mesh solution onto the coarse mesh.
       info("Projecting reference solution on coarse mesh.");
       OGProjection::project_global(space, &ref_sln, &sln, matrix_solver, norm); 
@@ -295,15 +294,15 @@ int main(int argc, char* argv[])
       }
       if (Space::get_num_dofs(space) >= NDOF_STOP) done = true;
       
+      // Clean up.
       if(done == false) 
       {
         delete actual_sln_space->get_mesh();
         delete actual_sln_space;
       }
+       
+      delete adaptivity;
     }
-    
-    // Clean up.
-    delete adaptivity;
   }
   while (done == false);
   
