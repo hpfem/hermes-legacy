@@ -23,13 +23,13 @@ namespace WeakFormsElasticity
   }
 
   scalar DefaultJacobianElasticity_0_0::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
-                                                      Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+                                              Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
   {
     return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
   }
 
   Ord DefaultJacobianElasticity_0_0::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v,
-                                                 Geom<Ord> *e, ExtData<Ord> *ext) const 
+                                         Geom<Ord> *e, ExtData<Ord> *ext) const 
   {
     return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
   }
@@ -49,20 +49,20 @@ namespace WeakFormsElasticity
 
   template<typename Real, typename Scalar>
   Scalar DefaultJacobianElasticity_0_1::matrix_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u,
-                      Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const
+                                                    Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const
   {
     return lambda * int_dudy_dvdx<Real, Scalar>(n, wt, u, v) +
                 mu * int_dudx_dvdy<Real, Scalar>(n, wt, u, v);
   }
 
   scalar DefaultJacobianElasticity_0_1::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
-                Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const
+                                              Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const
   {
     return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
   }
 
   Ord DefaultJacobianElasticity_0_1::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u,
-          Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const
+                                         Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const
   {
       return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
   }
@@ -82,20 +82,20 @@ namespace WeakFormsElasticity
 
   template<typename Real, typename Scalar>
   Scalar DefaultResidualElasticity_0_0::vector_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, 
-                      Geom<Real> *e, ExtData<Scalar> *ext) const
+                                                    Geom<Real> *e, ExtData<Scalar> *ext) const
   {
     return (2*mu + lambda) * int_dudx_dvdx<Real, Scalar>(n, wt, u_ext[0], v) +
-                mu * int_dudy_dvdy<Real, Scalar>(n, wt, u_ext[0], v);
+                        mu * int_dudy_dvdy<Real, Scalar>(n, wt, u_ext[0], v);
   }
 
   scalar DefaultResidualElasticity_0_0::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, 
-                        Geom<double> *e, ExtData<scalar> *ext) const
+                                              Geom<double> *e, ExtData<scalar> *ext) const
   {
     return vector_form<double, scalar>(n, wt, u_ext, v, e, ext);
   }
 
   Ord DefaultResidualElasticity_0_0::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
-                  Geom<Ord> *e, ExtData<Ord> *ext) const
+                                         Geom<Ord> *e, ExtData<Ord> *ext) const
   {
       return vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext);
   }
@@ -115,20 +115,20 @@ namespace WeakFormsElasticity
 
   template<typename Real, typename Scalar>
   Scalar DefaultResidualElasticity_0_1::vector_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, 
-                      Geom<Real> *e, ExtData<Scalar> *ext) const
+                                                    Geom<Real> *e, ExtData<Scalar> *ext) const
   {
     return lambda * int_dudy_dvdx<Real, Scalar>(n, wt, u_ext[1], v) +
-                mu * int_dudx_dvdy<Real, Scalar>(n, wt, u_ext[1], v);
+               mu * int_dudx_dvdy<Real, Scalar>(n, wt, u_ext[1], v);
   }
 
   scalar DefaultResidualElasticity_0_1::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, 
-                        Geom<double> *e, ExtData<scalar> *ext) const
+                                              Geom<double> *e, ExtData<scalar> *ext) const
   {
     return vector_form<double, scalar>(n, wt, u_ext, v, e, ext);
   }
 
   Ord DefaultResidualElasticity_0_1::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
-                  Geom<Ord> *e, ExtData<Ord> *ext) const
+                                         Geom<Ord> *e, ExtData<Ord> *ext) const
   {
       return vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext);
   }
@@ -148,20 +148,20 @@ namespace WeakFormsElasticity
 
   template<typename Real, typename Scalar>
   Scalar DefaultResidualElasticity_1_0::vector_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, 
-                      Geom<Real> *e, ExtData<Scalar> *ext) const
+                                                    Geom<Real> *e, ExtData<Scalar> *ext) const
   {
-    return mu * int_dudy_dvdx<Real, Scalar>(n, wt, u_ext[0], v) +
+    return      mu * int_dudy_dvdx<Real, Scalar>(n, wt, u_ext[0], v) +
             lambda * int_dudx_dvdy<Real, Scalar>(n, wt, u_ext[0], v);
   }
 
   scalar DefaultResidualElasticity_1_0::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, 
-                        Geom<double> *e, ExtData<scalar> *ext) const
+                                              Geom<double> *e, ExtData<scalar> *ext) const
   {
     return vector_form<double, scalar>(n, wt, u_ext, v, e, ext);
   }
 
   Ord DefaultResidualElasticity_1_0::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
-                  Geom<Ord> *e, ExtData<Ord> *ext) const
+                                         Geom<Ord> *e, ExtData<Ord> *ext) const
   {
       return vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext);
   }
@@ -181,20 +181,20 @@ namespace WeakFormsElasticity
 
   template<typename Real, typename Scalar>
   Scalar DefaultResidualElasticity_1_1::vector_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, 
-                      Geom<Real> *e, ExtData<Scalar> *ext) const
+                                                    Geom<Real> *e, ExtData<Scalar> *ext) const
   {
     return (2*mu + lambda) * int_dudy_dvdy<Real, Scalar>(n, wt, u_ext[1], v) +
-                mu * int_dudx_dvdx<Real, Scalar>(n, wt, u_ext[1], v);
+                        mu * int_dudx_dvdx<Real, Scalar>(n, wt, u_ext[1], v);
   }
 
   scalar DefaultResidualElasticity_1_1::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, 
-                        Geom<double> *e, ExtData<scalar> *ext) const
+                                              Geom<double> *e, ExtData<scalar> *ext) const
   {
     return vector_form<double, scalar>(n, wt, u_ext, v, e, ext);
   }
 
   Ord DefaultResidualElasticity_1_1::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
-                  Geom<Ord> *e, ExtData<Ord> *ext) const
+                                         Geom<Ord> *e, ExtData<Ord> *ext) const
   {
       return vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext);
   }
@@ -214,20 +214,20 @@ namespace WeakFormsElasticity
 
   template<typename Real, typename Scalar>
   Scalar DefaultJacobianElasticity_1_1::matrix_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u,
-                      Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const
+                                                    Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const
   {
     return              mu * int_dudx_dvdx<Real, Scalar>(n, wt, u, v) +
-            (lambda + 2*mu) * int_dudy_dvdy<Real, Scalar>(n, wt, u, v);
+           (lambda + 2*mu) * int_dudy_dvdy<Real, Scalar>(n, wt, u, v);
   }
 
   scalar DefaultJacobianElasticity_1_1::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
-                Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const
+                                              Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const
   {
     return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
   }
 
   Ord DefaultJacobianElasticity_1_1::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v,
-          Geom<Ord> *e, ExtData<Ord> *ext) const
+                                         Geom<Ord> *e, ExtData<Ord> *ext) const
   {
       return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
   }
@@ -247,7 +247,7 @@ namespace WeakFormsElasticity
 
   template<typename Real, typename Scalar>
   void DefaultJacobianElasticity_00_11::matrix_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v,
-                    Geom<Real> *e, ExtData<Scalar> *ext, Hermes::vector<Scalar>& result) const 
+                                                    Geom<Real> *e, ExtData<Scalar> *ext, Hermes::vector<Scalar>& result) const 
   {
     Scalar result_0_0 = 0;
     Scalar result_1_1 = 0;
@@ -260,13 +260,13 @@ namespace WeakFormsElasticity
   }
 
   void DefaultJacobianElasticity_00_11::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v,
-                      Geom<double> *e, ExtData<scalar> *ext, Hermes::vector<scalar>& result) const 
+                                              Geom<double> *e, ExtData<scalar> *ext, Hermes::vector<scalar>& result) const 
   {
     matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext, result);
   }
 
   Ord DefaultJacobianElasticity_00_11::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v,
-                      Geom<Ord> *e, ExtData<Ord> *ext) const 
+                                           Geom<Ord> *e, ExtData<Ord> *ext) const 
   {
     Hermes::vector<Ord> result;
     matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext, result);
@@ -293,7 +293,7 @@ namespace WeakFormsElasticity
 
   template<typename Real, typename Scalar>
   void DefaultResidualElasticity_00_11::vector_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v,
-                      Geom<Real> *e, ExtData<Scalar> *ext, Hermes::vector<Scalar>& result) const 
+                                                    Geom<Real> *e, ExtData<Scalar> *ext, Hermes::vector<Scalar>& result) const 
   {
     Scalar result_0 = 0;
     Scalar result_1 = 0;
@@ -306,13 +306,13 @@ namespace WeakFormsElasticity
   }
 
   void DefaultResidualElasticity_00_11::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,
-                      Geom<double> *e, ExtData<scalar> *ext, Hermes::vector<scalar>& result) const 
+                                              Geom<double> *e, ExtData<scalar> *ext, Hermes::vector<scalar>& result) const 
   {
     vector_form<double, scalar>(n, wt, u_ext, v, e, ext, result);
   }
 
   Ord DefaultResidualElasticity_00_11::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v,
-                      Geom<Ord> *e, ExtData<Ord> *ext) const 
+                                           Geom<Ord> *e, ExtData<Ord> *ext) const 
   {
     Hermes::vector<Ord> result;
     vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext, result);
