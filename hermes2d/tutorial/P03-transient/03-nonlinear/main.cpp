@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
   HermesFunction f(heat_src);
   WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
 
-  // Previous and next time level solutions.
+  // Next time level solution.
   Solution sln_time_new(&mesh);
 
   // Initialize the FE problem.
@@ -115,7 +115,8 @@ int main(int argc, char* argv[])
     Hermes::vector<Solution*> slns_time_new;
     slns_time_new.push_back(&sln_time_new);
 
-    if (!runge_kutta.rk_time_step(current_time, time_step, slns_time_prev, slns_time_new, true, verbose, NEWTON_TOL, NEWTON_MAX_ITER)) {
+    if (!runge_kutta.rk_time_step(current_time, time_step, slns_time_prev, slns_time_new, true, verbose, NEWTON_TOL, NEWTON_MAX_ITER)) 
+    {
       error("Runge-Kutta time step failed, try to decrease time step size.");
     }
 

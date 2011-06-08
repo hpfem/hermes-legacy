@@ -12,8 +12,8 @@ if((NOT NMAKE) AND (NOT MSVC))
 add_subdirectory(neutronics-2-group-adapt) 
 endif((NOT NMAKE) AND (NOT MSVC))
 
+add_subdirectory(stabilized-advection-diffusion)
 add_subdirectory(stabilized-advection-reaction)
-#add_subdirectory(stabilized-advection-diffusion) TODO: Convert to new forms.
 add_subdirectory(nonsym-check)
 
 #if(NOT WITH_TRILINOS)

@@ -13,6 +13,8 @@ library.
 Linux
 ~~~~~
 
+.. youtube:: I76Sui_FMMs
+
 Using standard Debian packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

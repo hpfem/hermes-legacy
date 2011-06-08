@@ -14,7 +14,7 @@ using namespace RefinementSelectors;
 //  PDE: time-dependent heat transfer equation with nonlinear thermal
 //  conductivity:
 //
-//  du/dt - div[lambda(u)grad u] = f.
+//  du/dt = div[lambda(u)grad u] + f.
 //
 //  Domain: square (-10,10)^2.
 //
@@ -77,8 +77,6 @@ const double TIME_ERR_TOL_LOWER = 0.1;            // If rel. temporal error is l
 const double TIME_STEP_INC_RATIO = 1.1;           // Time step increase ratio (applied when rel. temporal error is too small).
 const double TIME_STEP_DEC_RATIO = 0.8;           // Time step decrease ratio (applied when rel. temporal error is too large).
 
-const double ALPHA = 4.0;                         // For the nonlinear thermal conductivity.
-
 // Newton's method.
 const double NEWTON_TOL_COARSE = 0.001;           // Stopping criterion for Newton on fine mesh.
 const double NEWTON_TOL_FINE = 0.005;             // Stopping criterion for Newton on fine mesh.
@@ -100,6 +98,10 @@ const int NEWTON_MAX_ITER = 20;                   // Maximum allowed number of N
 //   Implicit_SDIRK_BILLINGTON_3_23_embedded, Implicit_SDIRK_CASH_5_24_embedded, Implicit_SDIRK_CASH_5_34_embedded, 
 //   Implicit_DIRK_ISMAIL_7_45_embedded. 
 ButcherTableType butcher_table_type = Implicit_SDIRK_CASH_3_23_embedded;
+
+// Problem parameters.
+const double alpha = 4.0;                         // For the nonlinear thermal conductivity.
+const double heat_src = 1.0;
 
 int main(int argc, char* argv[])
 {
@@ -137,10 +139,12 @@ int main(int argc, char* argv[])
   int ndof = space.get_num_dofs();
 
   // Convert initial condition into a Solution.
-  InitialSolutionHeatTransfer sln_time_prev(&mesh);
+  CustomInitialCondition sln_time_prev(&mesh);
 
   // Initialize the weak formulation
-  WeakFormHeatTransferNewtonTimedep wf(ALPHA, time_step, &sln_time_prev);
+  CustomNonlinearity lambda(alpha);
+  HermesFunction f(heat_src);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
 
   // Initialize the discrete problem.
   DiscreteProblem dp(&wf, &space);

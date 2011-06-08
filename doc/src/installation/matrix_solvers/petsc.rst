@@ -7,6 +7,8 @@ PETSc
 Linux
 ~~~~~
 
+.. youtube:: zpV-8PR0CoY
+
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory::
   

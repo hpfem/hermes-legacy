@@ -8,6 +8,8 @@ Mumps
 Linux
 ~~~~~
 
+.. youtube:: 9LBeSsL_x7Y
+
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory::
   

@@ -218,6 +218,9 @@ void Space::adjust_element_order(int order_change, int min_order)
     if(e->is_triangle())
       set_element_order_internal(e->id, std::max<int>(min_order, get_element_order(e->id) + order_change));
     else {
+      if(get_element_order(e->id) == -1)
+        set_element_order_internal(e->id, H2D_MAKE_QUAD_ORDER(min_order, min_order));
+
       int h_order, v_order;
       // check that we are not imposing smaller than minimal orders.
       if(H2D_GET_H_ORDER(get_element_order(e->id)) + order_change < min_order)
@@ -238,17 +241,31 @@ void Space::adjust_element_order(int order_change, int min_order)
 
 void Space::adjust_element_order(int horizontal_order_change, int vertical_order_change, unsigned int horizontal_min_order, unsigned int vertical_min_order)
 {
-  _F_
+   _F_
   Element* e;
   for_all_active_elements(e, this->get_mesh()) {
     if(e->is_triangle()) {
       warn("Using quad version of Space::adjust_element_order(), only horizontal orders will be used.");
       set_element_order_internal(e->id, std::max<int>(horizontal_min_order, get_element_order(e->id) + horizontal_order_change));
     }
-    else
-      set_element_order_internal(e->id, std::max<int>
-          (H2D_MAKE_QUAD_ORDER(horizontal_min_order, vertical_min_order), 
-           H2D_MAKE_QUAD_ORDER(H2D_GET_H_ORDER(get_element_order(e->id)) + horizontal_order_change, H2D_GET_V_ORDER(get_element_order(e->id)) + vertical_order_change)));
+    else {
+      if(get_element_order(e->id) == -1)
+        set_element_order_internal(e->id, H2D_MAKE_QUAD_ORDER(horizontal_min_order, vertical_min_order));
+
+      int h_order, v_order;
+      // check that we are not imposing smaller than minimal orders.
+      if(H2D_GET_H_ORDER(get_element_order(e->id)) + horizontal_order_change < horizontal_min_order)
+        h_order = horizontal_min_order;
+      else
+        h_order = H2D_GET_H_ORDER(get_element_order(e->id)) + horizontal_order_change;
+
+      if(H2D_GET_V_ORDER(get_element_order(e->id)) + vertical_order_change < vertical_min_order)
+        v_order = vertical_min_order;
+      else
+        v_order = H2D_GET_V_ORDER(get_element_order(e->id)) + vertical_order_change;
+
+      set_element_order_internal(e->id, H2D_MAKE_QUAD_ORDER(h_order, v_order));
+    }
   }
   assign_dofs();
 }

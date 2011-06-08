@@ -73,8 +73,7 @@ int main(int argc, char* argv[])
   SimpleGraph graph_dof, graph_cpu;
 
   // Adaptivity loop:
-  int as = 1; 
-  bool done = false;
+  int as = 1; bool done = false;
   do
   {
     info("---- Adaptivity step %d:", as);
@@ -83,10 +82,8 @@ int main(int argc, char* argv[])
     Space* ref_space = Space::construct_refined_space(&space);
 
     // Assign the function f() to the fine mesh.
-    info("Assigning f() to the reference mesh.");
-    bool is_linear = true;
-    if(ref_sln != NULL)
-      delete ref_sln;
+    info("Assigning f() to the fine mesh.");
+    if(ref_sln != NULL) delete ref_sln;
     ref_sln = new ExactSolutionCustom(ref_space->get_mesh());
 
     // Time measurement.

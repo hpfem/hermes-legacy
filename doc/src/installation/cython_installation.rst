@@ -17,7 +17,7 @@ Then, in your terminal type::
 Note: If FEMhub is not found, then you need to add the path of your local femhub directory 
 to your "PATH" variable in the .bashrc file::
 
-    export PATH=${PATH}:/home/pavel/repos/femhub/
+    export PATH=\${PATH}:/home/pavel/repos/femhub/
 
 
 How to update and install cython (outside of FEMhub)
@@ -32,8 +32,8 @@ Then, in your terminal type::
 
 Add the path of cython to your "PATH" and "PYTHONPATH" variable in your .bashrc file::
 
-    export PYTHONPATH=.:$HOME/usr/lib/python:$PYTHONPATH
-    export PATH=.:$HOME/usr/bin:$PATH
+    export PYTHONPATH=.:\$HOME/usr/lib/python:\$PYTHONPATH
+    export PATH=.:\$HOME/usr/bin:\$PATH
 
 
 

@@ -1,5 +1,5 @@
-Nonlinear Parabolic Problem (07-transient-space-only)
------------------------------------------------------
+Transient Problem I - Adaptivity in Space (07-transient-space-only)
+-------------------------------------------------------------------
 
 **Git reference:** Tutorial example `07-transient-space-only 
 <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P04-adaptivity/07-transient-space-only>`_.

@@ -4,20 +4,23 @@
 
 using namespace RefinementSelectors;
 
-//  This example is derived from example P03-timedep/03-newton-heat-ie
+//  This example is derived from example P03-timedep/03-nonlinear
 //  and it shows how automatic adaptivity in space can be combined with 
-//  the implicit Euler method for a nonlinear time-dependent PDE. The
-//  example uses fixed time step size.
+//  arbitrary Runge-Kutta methods in time. The example uses fixed time 
+//  step size.
+//
+//  For a list of available R-K methods see the file hermes_common/tables.h.
 //
 //  PDE: time-dependent heat transfer equation with nonlinear thermal
-//  conductivity:
+//  conductivity, du/dt = div[lambda(u) grad u] + f.
 //
-//  du/dt - div[lambda(u)grad u] - f = 0.
+//  Nonlinearity: lambda(u) = 1 + pow(u, alpha).
 //
-//  Domain: square (-10,10)^2.
+//  Domain: square (-10, 10)^2.
 //
-//  BC:  Dirichlet, given by the function dir_lift() below.
-//  IC: Same function dir_lift().
+//  BC: Nonconstant Dirichlet.
+//
+//  IC: Custom initial condition matching the BC.
 //
 //  The following parameters can be changed:
 
@@ -62,16 +65,40 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Newton's method
-const double NEWTON_TOL_COARSE = 0.01;            // Stopping criterion for Newton on fine mesh.
-const double NEWTON_TOL_FINE = 0.05;              // Stopping criterion for Newton on fine mesh.
+const double NEWTON_TOL = 1e-5;                   // Stopping criterion for Newton on fine mesh.
 const int NEWTON_MAX_ITER = 20;                   // Maximum allowed number of Newton iterations.
 
-const double ALPHA = 4.0;                         // For the nonlinear thermal conductivity.
+// Choose one of the following time-integration methods, or define your own Butcher's table. The last number
+// in the name of each method is its order. The one before last, if present, is the number of stages.
+// Explicit methods:
+//   Explicit_RK_1, Explicit_RK_2, Explicit_RK_3, Explicit_RK_4.
+// Implicit methods:
+//   Implicit_RK_1, Implicit_Crank_Nicolson_2_2, Implicit_SIRK_2_2, Implicit_ESIRK_2_2, Implicit_SDIRK_2_2,
+//   Implicit_Lobatto_IIIA_2_2, Implicit_Lobatto_IIIB_2_2, Implicit_Lobatto_IIIC_2_2, Implicit_Lobatto_IIIA_3_4,
+//   Implicit_Lobatto_IIIB_3_4, Implicit_Lobatto_IIIC_3_4, Implicit_Radau_IIA_3_5, Implicit_SDIRK_5_4.
+// Embedded explicit methods:
+//   Explicit_HEUN_EULER_2_12_embedded, Explicit_BOGACKI_SHAMPINE_4_23_embedded, Explicit_FEHLBERG_6_45_embedded,
+//   Explicit_CASH_KARP_6_45_embedded, Explicit_DORMAND_PRINCE_7_45_embedded.
+// Embedded implicit methods:
+//   Implicit_SDIRK_CASH_3_23_embedded, Implicit_ESDIRK_TRBDF2_3_23_embedded, Implicit_ESDIRK_TRX2_3_23_embedded,
+//   Implicit_SDIRK_BILLINGTON_3_23_embedded, Implicit_SDIRK_CASH_5_24_embedded, Implicit_SDIRK_CASH_5_34_embedded,
+//   Implicit_DIRK_ISMAIL_7_45_embedded.
+ButcherTableType butcher_table_type = Implicit_RK_1;
+
+// Problem parameters.
+const double alpha = 4.0;                         // For the nonlinear thermal conductivity.
+const double heat_src = 1.0;
 
 int main(int argc, char* argv[])
 {
   // Instantiate a class with global functions.
   Hermes2D hermes2d;
+
+  // Choose a Butcher's table or define your own.
+  ButcherTable bt(butcher_table_type);
+  if (bt.is_explicit()) info("Using a %d-stage explicit R-K method.", bt.get_size());
+  if (bt.is_diagonally_implicit()) info("Using a %d-stage diagonally implicit R-K method.", bt.get_size());
+  if (bt.is_fully_implicit()) info("Using a %d-stage fully implicit R-K method.", bt.get_size());
 
   // Load the mesh.
   Mesh mesh, basemesh;
@@ -88,19 +115,18 @@ int main(int argc, char* argv[])
 
   // Create an H1 space with default shapeset.
   H1Space space(&mesh, &bcs, P_INIT);
-  int ndof = space.get_num_dofs();
+  int ndof_coarse = space.get_num_dofs();
 
-  // Initialize coarse and reference mesh solution.
-  Solution sln, ref_sln;
-
-  // Convert initial condition into a Solution.
-  InitialSolutionHeatTransfer sln_prev_time(&mesh);
+  // Previous time level solution (initialized by initial condition).
+  CustomInitialCondition sln_time_prev(&mesh);
 
   // Initialize the weak formulation
-  WeakFormHeatTransferNewtonTimedep wf(ALPHA, time_step, &sln_prev_time);
+  CustomNonlinearity lambda(alpha);
+  HermesFunction f(heat_src);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
 
-  // Initialize the discrete problem.
-  DiscreteProblem dp_coarse(&wf, &space);
+  // Next time level solution.
+  Solution sln_time_new(&mesh);
 
   // Create a refinement selector.
   H1ProjBasedSelector selector(CAND_LIST, CONV_EXP, H2DRS_DEFAULT_ORDER);
@@ -109,11 +135,11 @@ int main(int argc, char* argv[])
   char title[100];
   ScalarView view("Initial condition", new WinGeom(0, 0, 440, 350));
   OrderView ordview("Initial mesh", new WinGeom(445, 0, 410, 350));
-  view.show(&sln_prev_time);
+  view.show(&sln_time_prev);
   ordview.show(&space);
   
   // Time stepping loop.
-  double current_time = time_step; int ts = 1;
+  double current_time = 0; int ts = 1;
   do 
   {
     // Periodic global derefinement.
@@ -134,38 +160,10 @@ int main(int argc, char* argv[])
         default: error("Wrong global derefinement method.");
       }
 
-      ndof = Space::get_num_dofs(&space);
+      ndof_coarse = Space::get_num_dofs(&space);
     }
 
-    // The following is done only in the first time step, 
-    // when the nonlinear problem was never solved before.
-    if (ts == 1) {
-      // Set up the solver, matrix, and rhs for the coarse mesh according to the solver selection.
-      SparseMatrix* matrix_coarse = create_matrix(matrix_solver);
-      Vector* rhs_coarse = create_vector(matrix_solver);
-      Solver* solver_coarse = create_linear_solver(matrix_solver, matrix_coarse, rhs_coarse);
-      scalar* coeff_vec_coarse = new scalar[ndof];
-
-      // Calculate initial coefficient vector for Newton on the coarse mesh.
-      info("Projecting initial condition to obtain coefficient vector on coarse mesh.");
-      OGProjection::project_global(&space, &sln_prev_time, coeff_vec_coarse, matrix_solver);
-
-      // Newton's loop on the coarse mesh.
-      info("Solving on coarse mesh:");
-      bool verbose = true;
-      bool jacobian_changed = true;
-      if (!hermes2d.solve_newton(coeff_vec_coarse, &dp_coarse, solver_coarse, matrix_coarse, rhs_coarse, 
-	  jacobian_changed, NEWTON_TOL_COARSE, NEWTON_MAX_ITER, verbose)) error("Newton's iteration failed.");
-      Solution::vector_to_solution(coeff_vec_coarse, &space, &sln);
-
-      // Cleanup after the Newton loop on the coarse mesh.
-      delete matrix_coarse;
-      delete rhs_coarse;
-      delete solver_coarse;
-      delete [] coeff_vec_coarse;
-    }
-
-    // Spatial adaptivity loop. Note: sln_prev_time must not be changed during spatial adaptivity. 
+    // Spatial adaptivity loop. Note: sln_time_prev must not be changed during spatial adaptivity. 
     bool done = false; int as = 1;
     double err_est;
     do {
@@ -173,50 +171,36 @@ int main(int argc, char* argv[])
 
       // Construct globally refined reference mesh and setup reference space.
       Space* ref_space = Space::construct_refined_space(&space);
-
-      // Initialize matrix solver.
-      SparseMatrix* matrix = create_matrix(matrix_solver);
-      Vector* rhs = create_vector(matrix_solver);
-      Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
-      scalar* coeff_vec = new scalar[Space::get_num_dofs(ref_space)];
+      int ndof_ref = Space::get_num_dofs(ref_space);
 
       // Initialize discrete problem on reference mesh.
-      DiscreteProblem* dp = new DiscreteProblem(&wf, ref_space);
+      DiscreteProblem dp(&wf, ref_space);
 
-      // Calculate initial coefficient vector for Newton on the fine mesh.
-      if (ts == 1 && as == 1) {
-        info("Projecting coarse mesh solution to obtain coefficient vector on fine mesh.");
-        OGProjection::project_global(ref_space, &sln, coeff_vec, matrix_solver);
-      }
-      else {
-        info("Projecting last fine mesh solution to obtain coefficient vector on new fine mesh.");
-        OGProjection::project_global(ref_space, &ref_sln, coeff_vec, matrix_solver);
-      }
+      // Initialize Runge-Kutta time stepping.
+      RungeKutta runge_kutta(&dp, &bt, matrix_solver);
 
-      // Now we can deallocate the previous fine mesh.
-      if(as > 1) delete ref_sln.get_mesh();
-
-      // Newton's loop on the fine mesh.
-      info("Solving on fine mesh:");
+      // Perform one Runge-Kutta time step according to the selected Butcher's table.
+      info("Runge-Kutta time step (t = %g s, tau = %g s, stages: %d).",
+           current_time, time_step, bt.get_size());
       bool verbose = true;
-      bool jacobian_changed = true;
-      if (!hermes2d.solve_newton(coeff_vec, dp, solver, matrix, rhs, 
-	  jacobian_changed, NEWTON_TOL_FINE, NEWTON_MAX_ITER, verbose)) error("Newton's iteration failed.");
-
-      // Store the result in ref_sln.
-      Solution::vector_to_solution(coeff_vec, ref_space, &ref_sln);
+      if (!runge_kutta.rk_time_step(current_time, time_step, &sln_time_prev, &sln_time_new, 
+                                    true, verbose, NEWTON_TOL, NEWTON_MAX_ITER)) 
+      {
+        error("Runge-Kutta time step failed, try to decrease time step size.");
+      }
 
       // Project the fine mesh solution onto the coarse mesh.
+      Solution sln_coarse;
       info("Projecting fine mesh solution on coarse mesh for error estimation.");
-      OGProjection::project_global(&space, &ref_sln, &sln, matrix_solver); 
+      OGProjection::project_global(&space, &sln_time_new, &sln_coarse, matrix_solver); 
 
       // Calculate element errors and total error estimate.
       info("Calculating error estimate.");
       Adapt* adaptivity = new Adapt(&space);
-      double err_est_rel_total = adaptivity->calc_err_est(&sln, &ref_sln) * 100;
+      double err_est_rel_total = adaptivity->calc_err_est(&sln_coarse, &sln_time_new) * 100;
 
       // Report results.
-      info("ndof: %d, ref_ndof: %d, err_est_rel: %g%%", 
+      info("ndof_coarse: %d, ndof_ref: %d, err_est_rel: %g%%", 
            Space::get_num_dofs(&space), Space::get_num_dofs(ref_space), err_est_rel_total);
 
       // If err_est too large, adapt the mesh.
@@ -238,24 +222,21 @@ int main(int argc, char* argv[])
       sprintf(title, "Solution, time %g", current_time);
       view.set_title(title);
       view.show_mesh(false);
-      view.show(&ref_sln);
+      view.show(&sln_time_new);
       sprintf(title, "Mesh, time %g", current_time);
       ordview.set_title(title);
       ordview.show(&space);
 
       // Clean up.
-      delete solver;
-      delete matrix;
-      delete rhs;
       delete adaptivity;
       delete ref_space;
-      delete dp;
-      delete [] coeff_vec;
+      if(!done)
+        delete sln_time_new.get_mesh();
     }
     while (done == false);
 
-    // Copy last reference solution into sln_prev_time.
-    sln_prev_time.copy(&ref_sln);
+    // Copy last reference solution into sln_time_prev.
+    sln_time_prev.copy(&sln_time_new);
 
     // Increase current time and counter of time steps.
     current_time += time_step;

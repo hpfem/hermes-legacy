@@ -10,9 +10,9 @@ elements = [
 ]
 
 boundaries = [
-  [ 0, 1, 1 ],
-  [ 1, 2, 3 ],
-  [ 2, 3, 2 ],
-  [ 3, 0, 3 ]
+  [ 0, 1, "nonzero Dirichlet" ],
+  [ 1, 2, "zero Dirichlet" ],
+  [ 2, 3, "outflow" ],
+  [ 3, 0, "zero Dirichlet" ]
 ]
 

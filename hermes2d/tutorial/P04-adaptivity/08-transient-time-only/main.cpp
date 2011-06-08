@@ -4,21 +4,25 @@
 
 using namespace RefinementSelectors;
 
-//  This example is analogous to example 01-timedep-adapt-space-only except that 
+//  This example is analogous to example 07-transient-space-only except that 
 //  a fixed mesh is used and only the time stepping is adaptive. An arbitrary 
 //  embedded Runge-Kutta method can be used. By embedded we mean that the 
-//  Butcher's table contains two B rows. After calculating the stages K_1, 
-//  K_2, ..., K_s, the two B rows are used to calculate two different 
-//  approximations Y_{n+1} on the next time level, with different orders 
-//  of accuracy. With those one works as usual.
+//  Butcher's table contains two B rows. The two B rows are used to calculate 
+//  two different approximations Y_{n+1} on the next time level, with different 
+//  orders of accuracy. With those one works as usual.
+//
+//  For a list of available R-K methods see the file hermes_common/tables.h.
 //
 //  PDE: time-dependent heat transfer equation with nonlinear thermal
-//  conductivity, du/dt - div[lambda(u)grad u] = f.
+//  conductivity, du/dt = div[lambda(u) grad u] + f.
 //
-//  Domain: square (-10,10)^2.
+//  Nonlinearity: lambda(u) = 1 + pow(u, alpha).
 //
-//  BC: Dirichlet, given by the function dir_lift() below.
-//  IC: Same function dir_lift().
+//  Domain: square (-10, 10)^2.
+//
+//  BC: Nonconstant Dirichlet.
+//
+//  IC: Custom initial condition matching the BC.
 //
 //  The following parameters can be changed:
 
@@ -38,8 +42,6 @@ const double TIME_STEP_DEC_RATIO = 0.8;            // Time step decrease ratio (
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;   // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                    // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
-const double ALPHA = 4.0;                          // For the nonlinear thermal conductivity.
-
 // Choose one of the following time-integration methods, or define your own Butcher's table. The last number 
 // in the name of each method is its order. The one before last, if present, is the number of stages.
 // Explicit methods:
@@ -57,7 +59,9 @@ const double ALPHA = 4.0;                          // For the nonlinear thermal 
 //   Implicit_DIRK_ISMAIL_7_45_embedded. 
 ButcherTableType butcher_table_type = Implicit_SDIRK_CASH_3_23_embedded;
 
-const std::string BDY_DIRICHLET = "1";
+// Problem parameters.
+const double alpha = 4.0;                         // For the nonlinear thermal conductivity.
+const double heat_src = 1.0;
 
 int main(int argc, char* argv[])
 {
@@ -77,10 +81,10 @@ int main(int argc, char* argv[])
 
   // Initial mesh refinements.
   for(int i = 0; i < INIT_GLOB_REF_NUM; i++) mesh.refine_all_elements();
-  mesh.refine_towards_boundary(BDY_DIRICHLET, INIT_BDY_REF_NUM);
+  mesh.refine_towards_boundary("Bdy", INIT_BDY_REF_NUM);
 
   // Initialize boundary conditions.
-  EssentialBCNonConst bc_essential(BDY_DIRICHLET);
+  EssentialBCNonConst bc_essential("Bdy");
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.
@@ -88,12 +92,14 @@ int main(int argc, char* argv[])
   int ndof = space.get_num_dofs();
 
   // Convert initial condition into a Solution.
-  InitialSolutionHeatTransfer sln_time_prev(&mesh);
+  CustomInitialCondition sln_time_prev(&mesh);
   Solution sln_time_new(&mesh);
   Solution time_error_fn(&mesh, 0.0);
 
   // Initialize the weak formulation
-  WeakFormHeatTransferNewtonTimedep wf(ALPHA, time_step, &sln_time_prev);
+  CustomNonlinearity lambda(alpha);
+  HermesFunction f(heat_src);
+  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, &lambda, &f);
 
   // Initialize the discrete problem.
   DiscreteProblem dp(&wf, &space);
