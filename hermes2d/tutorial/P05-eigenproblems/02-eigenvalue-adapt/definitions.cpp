@@ -1,21 +1,14 @@
-#include "hermes2d.h"
-
-using namespace WeakFormsH1;
+#include "definitions.h"
 
 /* Weak forms */
 
-class WeakFormEigenLeft : public WeakForm
+WeakFormEigenLeft::WeakFormEigenLeft() : WeakForm(1) 
 {
-public:
-  WeakFormEigenLeft() : WeakForm(1) {
-    add_matrix_form(new DefaultJacobianDiffusion(0, 0));
-  };
-};
+  add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0));
+}
 
-class WeakFormEigenRight : public WeakForm
+WeakFormEigenRight::WeakFormEigenRight() : WeakForm(1) 
 {
-public:
-  WeakFormEigenRight() : WeakForm(1) {
-    add_matrix_form(new DefaultMatrixFormVol(0, 0));
-  };
-};
+  add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 0));
+}
+

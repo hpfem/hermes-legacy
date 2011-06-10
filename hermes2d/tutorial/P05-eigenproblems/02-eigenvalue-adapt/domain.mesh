@@ -9,7 +9,7 @@ vertices = [
 ]
 
 elements = [
-  [ 0, 1, 2, 3, 0 ]  # quad 0
+  [ 0, 1, 2, 3, "mat" ]  # quad 0
 ]
 
 boundaries = [
