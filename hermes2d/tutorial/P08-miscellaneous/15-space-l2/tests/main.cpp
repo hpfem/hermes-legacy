@@ -1,4 +1,8 @@
-#include "hermes2d.h"
+#define HERMES_REPORT_ALL
+#define HERMES_REPORT_FILE "application.log"
+#include "definitions.h"
+
+using namespace RefinementSelectors;
 
 // This test makes sure that example 32-space-l2 works correctly.
 
@@ -6,9 +10,6 @@ const int INIT_REF_NUM = 1;                       // Number of initial uniform m
 const int P_INIT = 3;                             // Polynomial degree of mesh elements.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
-
-// Projected function.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {

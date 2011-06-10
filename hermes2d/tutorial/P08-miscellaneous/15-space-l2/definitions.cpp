@@ -1,19 +1,18 @@
-// Exact solution.
-class CustomExactSolution : public ExactSolutionScalar
+#include "definitions.h"
+
+scalar CustomExactSolution::value (double x, double y) const 
 {
-  public:
-  CustomExactSolution(Mesh* mesh) : ExactSolutionScalar(mesh) {};
+  return - pow(x, 4) * pow(y, 5); 
+}
 
-  virtual scalar value (double x, double y) const {
-    return - pow(x, 4) * pow(y, 5); 
-  };
+void CustomExactSolution::derivatives (double x, double y, scalar& dx, scalar& dy) const 
+{
+  dx = 0; // Not needed for L2 projections.
+  dy = 0; // Not needed for L2 projections.
+}
 
-  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const {
-    dx = 0; // Not needed for L2 projections.
-    dy = 0; // Not needed for L2 projections.
-  };
+Ord CustomExactSolution::ord(Ord x, Ord y) const 
+{
+  return - pow(x, 4) * pow(y, 5);
+}
 
-  virtual Ord ord(Ord x, Ord y) const {
-    return - pow(x, 4) * pow(y, 5);
-  }
-};
