@@ -1,7 +1,9 @@
 #define HERMES_REPORT_ALL
-#include "hermes2d.h"
+#define HERMES_REPORT_FILE "application.log"
+#include "definitions.h"
 #include <stdio.h>
 
+using namespace RefinementSelectors;
 using Teuchos::RCP;
 using Teuchos::rcp;
 using Hermes::EigenSolver;
@@ -25,9 +27,6 @@ const double TARGET_VALUE = 2.0;                  // PySparse parameter: Eigenva
                                                   // this number will be computed. 
 const double TOL = 1e-10;                         // Pysparse parameter: Error tolerance.
 const int MAX_ITER = 1000;                        // PySparse parameter: Maximum number of iterations.
-
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {
