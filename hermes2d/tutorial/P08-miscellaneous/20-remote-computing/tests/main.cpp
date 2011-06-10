@@ -1,6 +1,8 @@
-#define HERMES_REPORT_INFO
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
+
+using namespace RefinementSelectors;
 
 // This test makes sure that example 34-remote-computing works correctly.
 
@@ -23,9 +25,6 @@ const double T_FINAL = 18000;    // Length of time interval (24 hours) in second
 
 // Global time variable.
 double current_time = 0;
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
