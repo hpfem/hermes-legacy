@@ -458,7 +458,6 @@ namespace WeakFormsH1
                                     Geom<Ord> *e, ExtData<Ord> *ext) const 
   {
     Ord result = 0;
-    // Planar base.
     for (int i = 0; i < n; i++) {
       result += wt[i] * coeff->value(u_ext[idx_i]->val[i])
                       * (u_ext[idx_i]->dx[i] * v->dx[i] + u_ext[idx_i]->dy[i] * v->dy[i]);
@@ -670,7 +669,6 @@ namespace WeakFormsH1
     return matrix_form_surf<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
   }
 
-  // This is to make the form usable in rk_time_step().
   WeakForm::MatrixFormSurf* DefaultJacobianFormSurf::clone() 
   {
     return new DefaultJacobianFormSurf(*this);
@@ -881,7 +879,6 @@ namespace WeakFormsH1
     return result;
   }
 
-  // This is to make the form usable in rk_time_step().
   WeakForm::VectorFormSurf* DefaultResidualSurf::clone() 
   {
     return new DefaultResidualSurf(*this);
@@ -906,7 +903,7 @@ namespace WeakFormsH1
                                                  GeomType gt) : WeakForm()
   {
     // Jacobian.
-    // NOTE: The flag HERMES_NONSYM is very important here.
+    // NOTE: The flag HERMES_NONSYM is important here.
     add_matrix_form(new DefaultJacobianDiffusion(0, 0, area, coeff, HERMES_NONSYM, gt));
 
     // Residual.

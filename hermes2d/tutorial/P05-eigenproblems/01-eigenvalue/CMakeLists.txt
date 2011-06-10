@@ -1,4 +1,4 @@
-project(P07-01-eigenvalue)
+project(P05-01-eigenvalue)
 
 add_executable(${PROJECT_NAME} main.cpp)
 include (${hermes2d_SOURCE_DIR}/CMake.common)

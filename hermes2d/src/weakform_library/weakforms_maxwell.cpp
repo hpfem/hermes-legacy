@@ -23,21 +23,26 @@ namespace WeakFormsMaxwell {
   }
 
   scalar DefaultJacobianMagnetostatics::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u,
-    Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
+    Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+  {
       scalar planar_part = 0;
       scalar axisym_part = 0;
-      for (int i = 0; i < n; i++) {
+      for (int i = 0; i < n; i++) 
+      {
         scalar B_i = sqrt(sqr(u_ext[idx_j]->dx[i]) + sqr(u_ext[idx_j]->dy[i]));
-        if (std::abs(B_i) > 1e-12) {
+        if (std::abs(B_i) > 1e-12) 
+        {
           planar_part += wt[i] * coeff->derivative(B_i) / B_i
             * (u_ext[idx_j]->dx[i] * u->dx[i] + u_ext[idx_j]->dy[i] * u->dy[i])
             * (u_ext[idx_j]->dx[i] * v->dx[i] + u_ext[idx_j]->dy[i] * v->dy[i]);
-          if (gt == HERMES_AXISYM_X) {
+          if (gt == HERMES_AXISYM_X) 
+          {
             axisym_part += wt[i] * coeff->derivative(B_i) / B_i / e->y[i]
             * (u_ext[idx_j]->dx[i] * u->dx[i] + u_ext[idx_j]->dy[i] * u->dy[i])
               * u_ext[idx_j]->val[i] * v->dy[i];
           }
-          else if (gt == HERMES_AXISYM_Y) {
+          else if (gt == HERMES_AXISYM_Y) 
+          {
             axisym_part += wt[i] * coeff->derivative(B_i) / B_i / e->x[i]
             * (u_ext[idx_j]->dx[i] * u->dx[i] + u_ext[idx_j]->dy[i] * u->dy[i])
               * u_ext[idx_j]->val[i] * v->dx[i];
@@ -45,11 +50,13 @@ namespace WeakFormsMaxwell {
         }
         planar_part += wt[i] * coeff->value(B_i)
           * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]);
-        if (gt == HERMES_AXISYM_X) {
+        if (gt == HERMES_AXISYM_X) 
+        {
           axisym_part += wt[i] * coeff->value(B_i) / e->y[i]
           * u->val[i] * v->dy[i];
         }
-        else if (gt == HERMES_AXISYM_Y) {
+        else if (gt == HERMES_AXISYM_Y) 
+        {
           axisym_part += wt[i] * coeff->value(B_i) / e->x[i]
           * u->val[i] * v->dx[i];
         }
@@ -59,9 +66,11 @@ namespace WeakFormsMaxwell {
   }
 
   Ord DefaultJacobianMagnetostatics::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v,
-    Geom<Ord> *e, ExtData<Ord> *ext) const {
+    Geom<Ord> *e, ExtData<Ord> *ext) const 
+  {
       Ord planar_part = 0;
-      for (int i = 0; i < n; i++) {
+      for (int i = 0; i < n; i++) 
+      {
         Ord B_i = sqrt(sqr(u_ext[idx_j]->dx[i]) + sqr(u_ext[idx_j]->dy[i]));
         planar_part += wt[i] * coeff->derivative(B_i) / B_i
           * (u_ext[idx_j]->dx[i] * u->dx[i] + u_ext[idx_j]->dy[i] * u->dy[i])
@@ -76,7 +85,8 @@ namespace WeakFormsMaxwell {
       return planar_part * Ord(order_increase);
   }
 
-  WeakForm::MatrixFormVol* DefaultJacobianMagnetostatics::clone() {
+  WeakForm::MatrixFormVol* DefaultJacobianMagnetostatics::clone() 
+  {
     return new DefaultJacobianMagnetostatics(*this);
   }
 
@@ -105,7 +115,8 @@ namespace WeakFormsMaxwell {
     Geom<double> *e, ExtData<scalar> *ext) const {
       scalar planar_part = 0;
       scalar axisym_part = 0;
-      for (int i = 0; i < n; i++) {
+      for (int i = 0; i < n; i++) 
+      {
         scalar B_i = sqrt(sqr(u_ext[idx_i]->dx[i]) + sqr(u_ext[idx_i]->dy[i]));
         planar_part += wt[i] * coeff->value(B_i) *
           (u_ext[idx_i]->dx[i] * v->dx[i] + u_ext[idx_i]->dy[i] * v->dy[i]);
@@ -118,18 +129,21 @@ namespace WeakFormsMaxwell {
   }
 
   Ord DefaultResidualMagnetostatics::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v,
-    Geom<Ord> *e, ExtData<Ord> *ext) const {
-      Ord planar_part = 0;
-      for (int i = 0; i < n; i++) {
-        Ord B_i = sqrt(sqr(u_ext[idx_i]->dx[i]) + sqr(u_ext[idx_i]->dy[i]));
-        planar_part += wt[i] * coeff->value(B_i) *
-          (u_ext[idx_i]->dx[i] * v->dx[i] + u_ext[idx_i]->dy[i] * v->dy[i]);
-      }
-      return planar_part * Ord(order_increase);
+    Geom<Ord> *e, ExtData<Ord> *ext) const 
+  {
+    Ord planar_part = 0;
+    for (int i = 0; i < n; i++) 
+    {
+      Ord B_i = sqrt(sqr(u_ext[idx_i]->dx[i]) + sqr(u_ext[idx_i]->dy[i]));
+      planar_part += wt[i] * coeff->value(B_i) *
+        (u_ext[idx_i]->dx[i] * v->dx[i] + u_ext[idx_i]->dy[i] * v->dy[i]);
+    }
+    return planar_part * Ord(order_increase);
   }
 
   // This is to make the form usable in rk_time_step().
-  WeakForm::VectorFormVol* DefaultResidualMagnetostatics::clone() {
+  WeakForm::VectorFormVol* DefaultResidualMagnetostatics::clone() 
+  {
     return new DefaultResidualMagnetostatics(*this);
   }
 };

@@ -1,4 +1,4 @@
-project(P07-02-eigenvalue-adapt)
+project(P05-02-eigenvalue-adapt)
 
 add_executable(${PROJECT_NAME} main.cpp)
 include (${hermes2d_SOURCE_DIR}/CMake.common)
