@@ -1,40 +1,32 @@
-#include "hermes2d.h"
+#include "definitions.h"
 
-/* Exact solution */
-
-class CustomExactSolution : public ExactSolutionScalar
+scalar CustomExactSolution::value (double x, double y) const 
 {
-public:
-  CustomExactSolution(Mesh* mesh) : ExactSolutionScalar(mesh) {};
+  return x*x +y*y;
+}
 
-  virtual scalar value (double x, double y) const {
-    return x*x +y*y;
-  }
-
-  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const {
-    dx = 2*x;
-    dy = 2*y;
-  };
-
-  virtual Ord ord(Ord x, Ord y) const {
-    return x*x + y*y;
-  }
-};
-
-/* Weak forms */
-
-class CustomWeakFormPoisson : public WeakForm
+void CustomExactSolution::derivatives (double x, double y, scalar& dx, scalar& dy) const 
 {
-public:
-  CustomWeakFormPoisson(bool is_matfree = false) : WeakForm(1) {
-    this->is_matfree = is_matfree;
+  dx = 2*x;
+  dy = 2*y;
+}
 
-    // Jacobian.
-    add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0));
+Ord CustomExactSolution::ord(Ord x, Ord y) const 
+{
+  return x*x + y*y;
+}
 
-    // Residual.
-    add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0));
-    add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, new HermesFunction(4.0)));
-  };
-};
+
+CustomWeakFormPoisson::CustomWeakFormPoisson(bool is_matfree) : WeakForm(1) 
+{
+  this->is_matfree = is_matfree;
+
+  // Jacobian.
+  add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0));
+
+  // Residual.
+  add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0));
+  add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, new HermesFunction(4.0)));
+}
+
 

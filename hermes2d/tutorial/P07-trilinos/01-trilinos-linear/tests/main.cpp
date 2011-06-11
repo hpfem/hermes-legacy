@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 using namespace Teuchos;
 
@@ -32,9 +32,6 @@ double abs_resid = 1.0e-3;                        // Tolerance for absolute valu
 unsigned flag_relresid = 1;                       // Flag for relative value of the residuum.
 double rel_resid = 1.0e-2;                        // Tolerance for relative value of the residuum.
 int max_iters = 100;                              // Max number of iterations.
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char **argv)
 {
