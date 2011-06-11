@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 using namespace Teuchos;
 using namespace RefinementSelectors;
@@ -58,9 +58,6 @@ double slope = 60;                                // Slope of the layer inside t
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
                                                   // This solver is used for projections only.
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {

@@ -3,7 +3,7 @@
 #include "definitions.h"
 
 using namespace Teuchos;
-//using namespace RefinementSelectors;
+using namespace RefinementSelectors;
 
 //  The purpose of this example is to show how to use Trilinos
 //  for time-dependent PDE problem.
