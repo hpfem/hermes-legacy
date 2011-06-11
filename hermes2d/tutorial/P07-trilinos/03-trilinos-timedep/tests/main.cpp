@@ -1,8 +1,6 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 using namespace Teuchos;
 using namespace RefinementSelectors;
@@ -23,12 +21,6 @@ const double TAU = 50.0;          // Time step.
 const bool JFNK = true;
 const bool PRECOND = true;
 
-// Boundary markers.
-const std::string BDY_BOTTOM = "1", BDY_RIGHT = "2", BDY_TOP = "3", BDY_LEFT = "4";
-
-// Weak forms.
-#include "../definitions.cpp"
-
 int main(int argc, char* argv[])
 {
   // Load the mesh.
@@ -40,7 +32,7 @@ int main(int argc, char* argv[])
   for (int i=0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Initialize boundary conditions.
-  DefaultEssentialBCConst bc(BDY_BOTTOM, TEMP_INIT);
+  DefaultEssentialBCConst bc("Bdy_bottom", TEMP_INIT);
   EssentialBCs bcs(&bc);
 
   // Create an H1 space with default shapeset.
@@ -52,7 +44,7 @@ int main(int argc, char* argv[])
   Solution t_prev_time(&mesh, TEMP_INIT);
 
   // Initialize the weak formulation.
-  CustomWeakForm wf(Hermes::vector<std::string>(BDY_RIGHT, BDY_TOP, BDY_LEFT), HEATCAP, RHO, TAU, LAMBDA, ALPHA, TEMP_EXT, &t_prev_time, JFNK);
+  CustomWeakForm wf(Hermes::vector<std::string>("Bdy_right", "Bdy_top", "Bdy_left"), HEATCAP, RHO, TAU, LAMBDA, ALPHA, TEMP_EXT, &t_prev_time, JFNK);
 
   // Initialize the finite element problem.
   DiscreteProblem dp(&wf, &space);
