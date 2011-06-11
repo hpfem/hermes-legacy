@@ -7,7 +7,7 @@ add_subdirectory(layer-interior)
 add_subdirectory(layer-boundary)
 # TODO: This does not work in Windows.
 if((NOT NMAKE) AND (NOT MSVC))
-#add_subdirectory(neutronics-heat-conduction) TODO: Convert to new forms.
+add_subdirectory(neutronics-heat-conduction)
 #add_subdirectory(neutronics-heat-conduction-adapt) TODO: Convert to new forms.
 add_subdirectory(neutronics-2-group-adapt) 
 endif((NOT NMAKE) AND (NOT MSVC))

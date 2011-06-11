@@ -1,139 +1,196 @@
-/* Exact solutions */
+#include "definitions.h"
 
-scalar phi_exact(double x, double y, double& dx, double& dy)
+const double FuelProperties::Tref = 0.0;              // Reference temperature for defining temperature dependence of parameters.
+const double FuelProperties::neutron_velocity = 5e3;  // Averaged neutron speed.
+const double FuelProperties::D = 1.268;               // Neutron diffusion coefficient.
+const double FuelProperties::nu = 2.41;               // Number of neutrons emitted per fission event.
+const double FuelProperties::Sigma_f = 0.00191244;    // Fission cross section.
+const double FuelProperties::kappa = 1.0e-6;          // Energy per fission.
+const double FuelProperties::rho = 1.0;               // Fuel density.
+const double FuelProperties::cp = 1.0;                // Fuel heat capacity.
+const double FuelProperties::k0 = 3.0e-3;             // Constant coefficient of heat conduction dependence on temperature.
+const double FuelProperties::k1 = 2.0e-4;             // Linear coefficient of heat conduction dependence on temperature.
+const double FuelProperties::Sigma_r_ref = 0.0349778; // Absorption cross section for reference temperature Tref.
+const double FuelProperties::doppler_coeff = 1.0e-5;  // Coefficient for modelling the dependence of absorption cross section
+                                                      // on temperature (Doppler effect).
+
+// Heat source.
+template<typename Real>
+Real TemperatureField::SourceTerm::val(Real x, Real y, double t) const
 {
-  dx = CF*PHI_FTIME<double>()*(sin(M_PI*x/LX)*sin(M_PI*y/LY)/LX*y/LY
-         + M_PI/LX*cos(M_PI*x/LX)*sin(M_PI*y/LY)*x/LX*y/LY);
-  dy = CF*PHI_FTIME<double>()*(sin(M_PI*x/LX)*sin(M_PI*y/LY)*x/LX/LY
-         + sin(M_PI*x/LX)*M_PI/LY*cos(M_PI*y/LY)*x/LX*y/LY);
-  return CF*PHI_FTIME<double>()*sin(M_PI*x/LX)*sin(M_PI*y/LY)*x/LX*y/LY;
-}
-
-scalar T_exact(double x, double y, double& dx, double& dy)
-{
-  dx = CT*T_FTIME<double>()*M_PI/LX*cos(M_PI*x/LX)*sin(M_PI*y/LY);
-  dy = CT*T_FTIME<double>()*sin(M_PI*x/LX)*M_PI/LY*cos(M_PI*y/LY);
-  return CT*T_FTIME<double>()*sin(M_PI*x/LX)*sin(M_PI*y/LY);
-}
-
-/* Weak forms */
-
-// Heat conduction equation
-template<typename Real, typename Scalar>
-Scalar jac_TT(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *uj, Func<Real> *ui, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  Scalar result = 0.0;
-  Func<Scalar>* T_prev_newton = u_ext[0];
+  double dTdt = TemperatureField::transient_profile_derivative(t);
+  double Tt = TemperatureField::transient_profile(t);
+  double PHIt = NeutronField::transient_profile(t);
   
-  for (int i = 0; i < n; i++)
-    result += wt[i] * (rho * cp * uj->val[i] * ui->val[i] / TAU
-            + dk_dT(T_prev_newton->val[i]) * uj->val[i] * (T_prev_newton->dx[i] * ui->dx[i]
-            + T_prev_newton->dy[i] * ui->dy[i])
-            + k(T_prev_newton->val[i]) * (uj->dx[i] * ui->dx[i]
-            + uj->dy[i] * ui->dy[i]));
-  return result;
+  double PI_sqr = sqr(M_PI);
+  Real sx = sin((M_PI*x)/LX);
+  Real sy = sin((M_PI*y)/LY);
+  
+  return CT*dTdt*sx*sy 
+          - (NeutronField::CF*fuel.kappa*PHIt*x*fuel.Sigma_f*y*sx*sy)/(LX*LY*fuel.rho*fuel.cp) 
+          - ( -(CT*PI_sqr*Tt*sx*sy)/sqr(LX) - (CT*PI_sqr*Tt*sx*sy)/sqr(LY) ) 
+          * (fuel.k0 + fuel.k1*(-fuel.Tref + CT*Tt*sx*sy)) / (fuel.rho*fuel.cp);
 }
 
-Ord jac_TT_ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
+// Neutron source.
+template<typename Real>
+Real NeutronField::SourceTerm::val(Real x, Real y, double t) const
 {
-  return Ord(30);
+  double PHIt = NeutronField::transient_profile(t);
+  double dPHIdt = NeutronField::transient_profile_derivative(t);
+  double Tt = TemperatureField::transient_profile(t);
+  
+  Real PI_sqr = sqr(M_PI);
+  Real sx = sin((M_PI*x)/LX);
+  Real sy = sin((M_PI*y)/LY);
+  
+  return (CF*dPHIdt*x*y*sx*sy)/(LX*LY) - fuel.neutron_velocity * (
+            fuel.D * ( 
+              (2*CF*PHIt*M_PI*x*cos((M_PI*y)/LY)*sx)/(LX*sqr(LY)) + (2*CF*PHIt*M_PI*y*cos((M_PI*x)/LX)*sy)/(sqr(LX)*LY) 
+              -(CF*PHIt*PI_sqr*x*y*sx*sy)/(LX*pow(LY,3)) - (CF*PHIt*PI_sqr*x*y*sx*sy)/(pow(LX,3)*LY)
+            ) + (
+              CF*PHIt*x*y*sx*sy*(
+                fuel.nu*fuel.Sigma_f-fuel.Sigma_r_ref*( 1 + fuel.doppler_coeff*(-sqrt(fuel.Tref) + sqrt(TemperatureField::CT*Tt*sx*sy)) )
+              )
+            )/(LX*LY)
+          );
 }
-
 
 template<typename Real, typename Scalar>
-Scalar jac_Tphi(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *uj, Func<Real> *ui, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar TemperatureField::Residual::vector_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
 {
   Scalar result = 0.0;
-  for (int i = 0; i < n; i++)
-    result += wt[i] * (-kappa * xsfiss * uj->val[i] * ui->val[i]);
-  return result;
-}
-
-Ord jac_Tphi_ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
-{
-  return Ord(30);
-}
-
-template<typename Real, typename Scalar>
-Scalar res_T(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *ui, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  Scalar result = 0.0;
+  
   Func<Scalar>* T_prev_newton = u_ext[0];
   Func<Scalar>* phi_prev_newton = u_ext[1];
-  Func<Scalar>* T_prev_time = ext->fn[0];
+  
+  double t = get_current_stage_time();
   
   for (int i = 0; i < n; i++)
-    result += wt[i] * (rho * cp * (T_prev_newton->val[i] - T_prev_time->val[i]) / TAU * ui->val[i]
-            + k(T_prev_newton->val[i]) * (T_prev_newton->dx[i] * ui->dx[i]
-            + T_prev_newton->dy[i] * ui->dy[i])
-            - kappa * xsfiss * phi_prev_newton->val[i] * ui->val[i]
-            - qT(e->x[i], e->y[i]) * ui->val[i]);
+    result += ( minus_lambda.value(T_prev_newton->val[i]) * (T_prev_newton->dx[i] * v->dx[i] + T_prev_newton->dy[i] * v->dy[i])
+                + fission_source_coeff * phi_prev_newton->val[i] * v->val[i]
+                + qT.value(e->x[i], e->y[i], t) * v->val[i] ) * wt[i];
+  
   return result;
 }
 
-Ord res_T_ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
-{
-  return Ord(30);
-}
-
-// Neutronics equation
 template<typename Real, typename Scalar>
-Scalar jac_phiphi(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *uj, Func<Real> *ui, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar NeutronField::NeutronFluxDerivative::matrix_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* u, Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
 {
   Scalar result = 0.0;
   Func<Scalar>* T_prev_newton = u_ext[0];
   
   for (int i = 0; i < n; i++)
-    result += wt[i] * (invvel * uj->val[i] * ui->val[i] / TAU
-            + xsdiff * (uj->dx[i] * ui->dx[i]
-            + uj->dy[i] * ui->dy[i])
-            + xsrem(T_prev_newton->val[i]) * uj->val[i] * ui->val[i]
-            - nu * xsfiss * uj->val[i] * ui->val[i]);
+    result += ( - diffusion_coeff * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i])
+                - Sigma_r.value(T_prev_newton->val[i]) * u->val[i] * v->val[i]
+                + fission_yield_coeff * u->val[i] * v->val[i] ) * wt[i];
+  
   return result;
 }
 
-Ord jac_phiphi_ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
-{
-  return Ord(30);
-}
-
 template<typename Real, typename Scalar>
-Scalar jac_phiT(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *uj, Func<Real> *ui, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar NeutronField::TemperatureDerivative::matrix_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* u, Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
 {
   Scalar result = 0.0;
+  
   Func<Scalar>* T_prev_newton = u_ext[0];
   Func<Scalar>* phi_prev_newton = u_ext[1];
   
   for (int i = 0; i < n; i++)
-    result += wt[i] * (dxsrem_dT(T_prev_newton->val[i]) * uj->val[i] * phi_prev_newton->val[i] * ui->val[i]);
-  return result;
-}
-
-Ord jac_phiT_ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
-{
-  return Ord(30);
+    result += wt[i] * (-Sigma_r.derivative(T_prev_newton->val[i]) * u->val[i] * phi_prev_newton->val[i] * v->val[i]);
+  
+  return result;  
 }
 
 template<typename Real, typename Scalar>
-Scalar res_phi(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *ui, Geom<Real> *e, ExtData<Scalar> *ext)
+Scalar NeutronField::Residual::vector_form(int n, double* wt, Func< Scalar >* u_ext[], Func< Real >* v, Geom< Real >* e, ExtData< Scalar >* ext) const
 {
   Scalar result = 0.0;
+  
   Func<Scalar>* T_prev_newton = u_ext[0];
   Func<Scalar>* phi_prev_newton = u_ext[1];
-  Func<Scalar>* phi_prev_time = ext->fn[0];
+ 
+  double t = get_current_stage_time();
   
   for (int i = 0; i < n; i++)
-    result += wt[i] * (invvel * (phi_prev_newton->val[i] - phi_prev_time->val[i]) / TAU * ui->val[i]
-            + xsdiff * (phi_prev_newton->dx[i] * ui->dx[i]
-            + phi_prev_newton->dy[i] * ui->dy[i])
-            + xsrem(T_prev_newton->val[i]) * phi_prev_newton->val[i] * ui->val[i] 
-            - nu * xsfiss * phi_prev_newton->val[i] * ui->val[i]
-            - q(e->x[i], e->y[i]) * ui->val[i]);
+    result += ( - diffusion_coeff * (phi_prev_newton->dx[i] * v->dx[i] + phi_prev_newton->dy[i] * v->dy[i])
+                - Sigma_r.value(T_prev_newton->val[i]) * phi_prev_newton->val[i] * v->val[i] 
+                + fission_yield_coeff * phi_prev_newton->val[i] * v->val[i]
+                + qF.value(e->x[i], e->y[i], t) * v->val[i] ) * wt[i];
+  
   return result;
 }
 
-Ord res_phi_ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
+CustomWeakForm::CustomWeakForm(double lx, double ly) : WeakForm(2)
 {
-  return Ord(30);
+  // Jacobian 
+  
+  // dF_T/dT
+  add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, HERMES_ANY, 
+                                                            new FuelProperties::NegativeConductivityTemperatureProfile, 
+                                                            HERMES_SYM));
+
+  // dF_T/dPhi
+  double coeff = FuelProperties::kappa / (FuelProperties::rho * FuelProperties::cp) * FuelProperties::Sigma_f;
+  add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 1, HERMES_ANY, new HermesFunction(coeff)));
+  
+  // dF_Phi/dT
+  add_matrix_form(new NeutronField::TemperatureDerivative);
+  
+  // dF_Phi/dPhi
+  add_matrix_form(new NeutronField::NeutronFluxDerivative);
+  
+  // Residual
+  
+  // F_T
+  add_vector_form(new TemperatureField::Residual(lx, ly));
+  
+  // F_Phi
+  add_vector_form(new NeutronField::Residual(lx, ly));
+}
+
+Views::Views() 
+{
+  // Initialize solution views (their titles will be updated in each time step).
+  sview_T = new ScalarView("", new WinGeom(0, 0, 500, 400));
+  sview_T->fix_scale_width(50);
+  sview_phi = new ScalarView("", new WinGeom(0, 500, 500, 400));
+  sview_phi->fix_scale_width(50);
+  sview_T_exact = new ScalarView("", new WinGeom(550, 0, 500, 400));
+  sview_T_exact->fix_scale_width(50);
+  sview_phi_exact = new ScalarView("", new WinGeom(550, 500, 500, 400));
+  sview_phi_exact->fix_scale_width(50);
+}
+
+Views::~Views()
+{
+  delete sview_T;
+  delete sview_phi;
+  delete sview_T_exact;
+  delete sview_phi_exact;
+}
+
+void Views::show_solutions(double current_time, Hermes::vector<Solution*> solutions)
+{
+  // Show the new time level solution.
+  sprintf(title, "Approx. solution for T, t = %g s", current_time);
+  sview_T->set_title(title); 
+  sview_T->show(solutions[0]);
+  
+  sprintf(title, "Approx. solution for phi, t = %g s", current_time);
+  sview_phi->set_title(title);
+  sview_phi->show(solutions[1]);
+}
+
+void Views::show_exact(double current_time, Hermes::vector< Solution* > exact)
+{
+  // Show exact solution.
+  sview_T_exact->show(exact[0]);
+  sprintf(title, "Exact solution for T, t = %g s", current_time);
+  sview_T_exact->set_title(title);
+  
+  sview_phi_exact->show(exact[1]);
+  sprintf(title, "Exact solution for phi, t = %g s", current_time);
+  sview_phi_exact->set_title(title);
 }
 
