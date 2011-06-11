@@ -1,6 +1,8 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
+
+using namespace Teuchos;
 
 //  The purpose of this example is to show how to use Trilinos for nonlinear PDE problems. It 
 //  compares performance of the Newton's method in Hermes (assembling via the DiscreteProblem 
@@ -19,8 +21,6 @@
 //  Initial guess for the Newton's method: zero function.
 //
 //  The following parameters can be changed:
-
-using namespace Teuchos;
 
 const int INIT_REF_NUM = 5;                       // Number of initial uniform mesh refinements.
 const int P_INIT = 3;                             // Initial polynomial degree of all mesh elements.
@@ -52,9 +52,6 @@ double abs_resid = 1.0e-8;                        // Tolerance for absolute valu
 unsigned flag_relresid = 1;                       // Flag for relative value of the residuum.
 double rel_resid = 1.0e-8;                        // Tolerance for relative value of the residuum.
 int max_iters = 100;                              // Max number of iterations.
-
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {
