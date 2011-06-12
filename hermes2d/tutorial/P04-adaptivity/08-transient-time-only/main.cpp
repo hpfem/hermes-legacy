@@ -106,8 +106,7 @@ int main(int argc, char* argv[])
 
   // Initialize views.
   ScalarView sview_high("Solution (higher-order)", new WinGeom(0, 0, 500, 400));
-  ScalarView sview_low("Solution (lower-order)", new WinGeom(490, 0, 500, 400));
-  ScalarView eview("Temporal error", new WinGeom(1000, 0, 500, 400));
+  ScalarView eview("Temporal error", new WinGeom(500, 0, 500, 400));
   eview.fix_scale_width(50);
 
   RungeKutta runge_kutta(&dp, &bt, matrix_solver);
@@ -133,7 +132,7 @@ int main(int argc, char* argv[])
 
     // Plot error function.
     char title[100];
-    sprintf(title, "Temporal error, t = %g", current_time + time_step);
+    sprintf(title, "Temporal error, t = %g", current_time);
     eview.set_title(title);
     AbsFilter abs_tef(&time_error_fn);
     eview.show(&abs_tef, HERMES_EPS_VERYHIGH);
@@ -162,21 +161,17 @@ int main(int argc, char* argv[])
     time_step_graph.add_values(current_time, time_step);
     time_step_graph.save("time_step_history.dat");
 
-    // Update time.
-    current_time += time_step;
 
     // Show the new time level solution.
     sprintf(title, "Solution (higher-order), t = %g", current_time);
     sview_high.set_title(title);
     sview_high.show(&sln_time_new, HERMES_EPS_HIGH);
-    sprintf(title, "Solution (lower-order), t = %g", current_time);
-    sview_low.set_title(title);
-    SumFilter sln_time_new_low(Hermes::vector<MeshFunction*>(&sln_time_new, &time_error_fn), 
-                               Hermes::vector<int>(H2D_FN_VAL, H2D_FN_VAL));
-    sview_low.show(&sln_time_new_low, HERMES_EPS_HIGH);
 
     // Copy solution for next time step.
     sln_time_prev.copy(&sln_time_new);
+
+    // Update time.
+    current_time += time_step;
 
     // Increase counter of time steps.
     ts++;

@@ -163,7 +163,8 @@ int main(int argc, char* argv[])
       ndof_coarse = Space::get_num_dofs(&space);
     }
 
-    // Spatial adaptivity loop. Note: sln_time_prev must not be changed during spatial adaptivity. 
+    // Spatial adaptivity loop. Note: sln_time_prev must not be changed 
+    // during spatial adaptivity. 
     bool done = false; int as = 1;
     double err_est;
     do {
