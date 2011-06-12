@@ -11,7 +11,7 @@ Scalar WeakFormEigenLeft::MatrixFormPotential::matrix_form(int n, double *wt, Fu
                                                            Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const 
 {
   Scalar result = 0;
-  for (int i=0;  i < n; i++) 
+  for (int i = 0; i < n; i++) 
   {
     Real x = e->x[i];
     Real y = e->y[i];

@@ -1,20 +1,27 @@
-Laplace-Pysparse (01-eigenvalue)
+Using Pysparse (01-eigenvalue)
 --------------------------------
 
-**Git reference:** Tutorial example `01-eigenvalue <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P07-eigen/01-eigenvalue>`_. 
+**Git reference:** Tutorial example `01-eigenvalue <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P05-eigenproblems/01-eigenvalue>`_. 
 
-This tutorial example shows how to solve generalized eigenproblems using the 
-Pysparse library. 
+This tutorial example shows how to solve generalized eigenproblems using the EigenSolver
+class which is based on the Pysparse library. 
 
 Model problem
 ~~~~~~~~~~~~~
 
-We will solve a Laplace eigenproblem of the form 
+We will solve an elliptic eigenproblem of the form 
 
 .. math::
-    -\Delta u = \lambda u
+    -\Delta u + V(x, y) u = \lambda u
 
-in a square $\Omega = (0, \pi)^2$ with zero Dirichlet boundary conditions.
+with the potential 
+
+.. math::
+    V(x, y) = x^2 + y^2.
+
+The problem is considered in a square domain 
+$\Omega = (0, \pi)^2$, and equipped with zero 
+Dirichlet boundary conditions.
 
 Input parameters
 ~~~~~~~~~~~~~~~~
@@ -32,157 +39,98 @@ The parameter TARGET_VALUE is specific to the PySparse library::
 Weak forms
 ~~~~~~~~~~
 
-The weak forms on the right- and left-hand side are standard::
+The matrix weak forms on the right- and left-hand side are standard::
 
-    template<typename Real, typename Scalar>
-    Scalar bilinear_form_left(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, 
-                              Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+    WeakFormEigenLeft::WeakFormEigenLeft() : WeakForm(1) 
     {
-      return int_grad_u_grad_v<Real, Scalar>(n, wt, u, v);
+      add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0));
+      add_matrix_form(new MatrixFormPotential(0, 0));
     }
 
     template<typename Real, typename Scalar>
-    Scalar bilinear_form_right(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, 
-                               Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+    Scalar WeakFormEigenLeft::MatrixFormPotential::matrix_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, 
+							       Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const 
     {
-      return int_u_v<Real, Scalar>(n, wt, u, v);
+      Scalar result = 0;
+      for (int i = 0; i < n; i++) 
+      {
+	Real x = e->x[i];
+	Real y = e->y[i];
+	result += wt[i] * (x*x + y*y) * u->val[i] * v->val[i];
+      }
+      return result;
     }
+
+    scalar WeakFormEigenLeft::MatrixFormPotential::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
+							 Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+    {
+      return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
+    }
+
+    Ord WeakFormEigenLeft::MatrixFormPotential::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, 
+						    Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
+    {
+      return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
+    }
+
+
+    WeakFormEigenRight::WeakFormEigenRight() : WeakForm(1) 
+    {
+      add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 0));
+    }
+
+
 
 Initialization and assembling of matrices
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-After defining boundary conditions and initializing the space, we initialize
-two matrices (no matrix solver this time)::
+The matrices are initialized using Reference Counted Pointers (RCP) provided
+by the Trilinos/Teuchos library::
 
   // Initialize matrices.
-  SparseMatrix* matrix_left = create_matrix(matrix_solver);
-  SparseMatrix* matrix_right = create_matrix(matrix_solver);
+  RCP<SparseMatrix> matrix_left = rcp(new CSCMatrix());
+  RCP<SparseMatrix> matrix_right = rcp(new CSCMatrix());
 
 They are assembled as follows, each one having its own DiscreteProblem
 instance::
 
   // Assemble the matrices.
-  bool is_linear = true;
-  DiscreteProblem dp_left(&wf_left, &space, is_linear);
-  dp_left.assemble(matrix_left);
-  DiscreteProblem dp_right(&wf_right, &space, is_linear);
-  dp_right.assemble(matrix_right);
+  DiscreteProblem dp_left(&wf_left, &space);
+  dp_left.assemble(matrix_left.get());
+  DiscreteProblem dp_right(&wf_right, &space);
+  dp_right.assemble(matrix_right.get());
 
-Writing the matrices to the hard disk
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Perhaps not too elegant, but it works::
-
-  // Write matrix_left in MatrixMarket format.
-  write_matrix_mm("mat_left.mtx", matrix_left);
-
-  // Write matrix_left in MatrixMarket format.
-  write_matrix_mm("mat_right.mtx", matrix_right);
-
-The function to write the matrices is::
-
-    // Write the matrix in Matrix Market format.
-    void write_matrix_mm(const char* filename, Matrix* mat) 
-    {
-      // Get matrix size.
-      int ndof = mat->get_size();
-      FILE *out = fopen(filename, "w" );
-      if (out == NULL) error("failed to open file for writing.");
-
-      // Calculate the number of nonzeros.
-      int nz = 0;
-      for (int i = 0; i < ndof; i++) {
-        for (int j = 0; j <= i; j++) { 
-          double tmp = mat->get(i, j);
-          if (fabs(tmp) > 1e-15) nz++;
-        }
-      }  
-
-      // Write the matrix in MatrixMarket format
-      fprintf(out,"%%%%MatrixMarket matrix coordinate real symmetric\n");
-      fprintf(out,"%d %d %d\n", ndof, ndof, nz);
-      for (int i = 0; i < ndof; i++) {
-        for (int j = 0; j <= i; j++) { 
-          double tmp = mat->get(i, j);
-          if (fabs(tmp) > 1e-15) fprintf(out, "%d %d %24.15e\n", i + 1, j + 1, tmp);
-        }
-      } 
-
-      fclose(out);
-    }
-
-Call to PySparse
+Calling Pysparse
 ~~~~~~~~~~~~~~~~
 
-This is perhaps the most interesting aspect of this example::
+::
 
-  // Calling Python eigensolver. Solution will be written to "eivecs.dat".
+  EigenSolver es(matrix_left, matrix_right);
   info("Calling Pysparse...");
-  char call_cmd[255];
-  sprintf(call_cmd, "python solveGenEigenFromMtx.py mat_left.mtx mat_right.mtx %g %d %g %d", 
-	  TARGET_VALUE, NUMBER_OF_EIGENVALUES, TOL, MAX_ITER);
-  system(call_cmd);
+  es.solve(NUMBER_OF_EIGENVALUES, TARGET_VALUE, TOL, MAX_ITER);
   info("Pysparse finished.");
+  es.print_eigenvalues();
 
-Here is the Python file solveGenEigenFromMtx.py::
-
-    from numpy import *
-    import sys
-    from pysparse import jdsym, spmatrix, itsolvers, precon
-    matfiles = sys.argv[1:5]
-    target_value = eval(sys.argv[3])
-    eigenval_num = eval(sys.argv[4])
-    jdtol = eval(sys.argv[5])
-    max_iter = eval(sys.argv[6])
-    mat_left = spmatrix.ll_mat_from_mtx(matfiles[0])
-    mat_right = spmatrix.ll_mat_from_mtx(matfiles[1])
-    shape = mat_left.shape
-    T = mat_left.copy()
-    T.shift(-target_value, mat_right)
-    K = precon.ssor(T.to_sss(), 1.0, 1) # K is preconditioner.
-    A = mat_left.to_sss()
-    M = mat_right.to_sss()
-    k_conv, lmbd, Q, it, itall = jdsym.jdsym(A, M, K, eigenval_num, target_value, jdtol, max_iter, itsolvers.minres)
-    NEIG = len(lmbd)
-    #for lam in lmbd:
-    #    print "value:", lam
-    eivecfile = open("eivecs.dat", "w")
-    N = len(Q[:,0])
-    print >> eivecfile, N
-    print >> eivecfile, NEIG
-    for ieig in range(len(lmbd)):
-        eivec = Q[:,ieig]
-        print >> eivecfile, lmbd[ieig] # printing eigenvalue
-        for val in eivec:              # printing eigenvector
-            print >> eivecfile, val
-    eivecfile.close()
-
-Reading eigenvectors from file 
+Visualizing the eigenfunctions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Last, we retrieve computed eigenvalues from the hard disk and visualize them. Note
-that they are separated with a wait for keypress::
+::
 
-    // Reading solution vectors from file and visualizing.
+    // Initializing solution vector, solution and ScalarView.
+    double* coeff_vec;
+    Solution sln;
+    ScalarView view("Solution", new WinGeom(0, 0, 440, 350));
+
+    // Reading solution vectors and visualizing.
     double* eigenval = new double[NUMBER_OF_EIGENVALUES];
-    FILE *file = fopen("eivecs.dat", "r");
-    char line [64];                  // Maximum line size.
-    fgets(line, sizeof line, file);  // ndof
-    int n = atoi(line);            
-    if (n != ndof) error("Mismatched ndof in the eigensolver output file.");  
-    fgets(line, sizeof line, file);  // Number of eigenvectors in the file.
-    int neig = atoi(line);
-    if (neig != NUMBER_OF_EIGENVALUES) error("Mismatched number of eigenvectors in the eigensolver output file.");  
+    int neig = es.get_n_eigs();
+    if (neig != NUMBER_OF_EIGENVALUES) 
+      error("Mismatched number of eigenvectors in the eigensolver output file.");  
     for (int ieig = 0; ieig < neig; ieig++) {
-      // Get next eigenvalue from the file
-      fgets(line, sizeof line, file);
-      eigenval[ieig] = atof(line);            
-      // Get the corresponding eigenvector.
-      for (int i = 0; i < ndof; i++) {  
-        fgets(line, sizeof line, file);
-        coeff_vec[i] = atof(line);
-      }
-
+      eigenval[ieig] = es.get_eigenvalue(ieig);
+      int n;
+      es.get_eigenvector(ieig, &coeff_vec, &n);
       // Convert coefficient vector into a Solution.
       Solution::vector_to_solution(coeff_vec, &space, &sln);
 
@@ -194,7 +142,7 @@ that they are separated with a wait for keypress::
 
       // Wait for keypress.
       View::wait(HERMES_WAIT_KEYPRESS);
-    }  
+    }
 
 Sample results
 ~~~~~~~~~~~~~~
@@ -202,42 +150,42 @@ Sample results
 Below we show first six eigenvectors along with the corresponding 
 eigenvalues:
 
-$\lambda_1 = 2$
+$\lambda_1 = 6.011956$
 
 .. image:: 01-eigenvalue/1.png
    :align: center
    :width: 400
    :alt: Sample result
 
-$\lambda_2 = 5$
+$\lambda_2 = 10.206996$
 
 .. image:: 01-eigenvalue/2.png
    :align: center
    :width: 400
    :alt: Sample result
 
-$\lambda_3 = 5$
+$\lambda_3 = 10.206996$
 
 .. image:: 01-eigenvalue/3.png
    :align: center
    :width: 400
    :alt: Sample result
 
-$\lambda_4 = 8$
+$\lambda_4 = 14.402036$
 
 .. image:: 01-eigenvalue/4.png
    :align: center
    :width: 400
    :alt: Sample result
 
-$\lambda_5 = 10$
+$\lambda_5 = 15.401239$
 
 .. image:: 01-eigenvalue/5.png
    :align: center
    :width: 400
    :alt: Sample result
 
-$\lambda_6 = 10$
+$\lambda_6 = 15.401239$
 
 .. image:: 01-eigenvalue/6.png
    :align: center
