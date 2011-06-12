@@ -1,5 +1,5 @@
-Laplace-Pysparse-Adapt (02-eigenvalue-adapt)
---------------------------------------------
+Adaptivity Problems (02-eigenvalue-adapt)
+-----------------------------------------
 
 **Git reference:** Tutorial example `02-eigenvalue-adapt <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P05-eigenproblems/02-eigenvalue-adapt>`_. 
 
