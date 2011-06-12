@@ -4,29 +4,29 @@
 
 using namespace RefinementSelectors;
 
-//  This example is analogous to examples 01-timedep-adapt-space-only and 
-//  02-timedep-adapt-time-only but it combines adaptive time stepping with 
-//  spatial adaptivity. If an embedded method is used, temporal error is 
+//  This example is analogous to the previous two, and it combines spatial adaptivity 
+//  with adaptive time stepping. If an embedded method is used, temporal error is 
 //  measured and visualized. Adaptive time stepping can be turned on or 
 //  off using the flag ADAPTIVE_TIME_STEP_ON. An embedded R-K method must be 
 //  used if ADAPTIVE_TIME_STEP_ON == true.
 //
+//  For a list of available R-K methods see the file hermes_common/tables.h.
+//
 //  PDE: time-dependent heat transfer equation with nonlinear thermal
-//  conductivity:
+//  conductivity, du/dt = div[lambda(u) grad u] + f.
 //
-//  du/dt = div[lambda(u)grad u] + f.
+//  Nonlinearity: lambda(u) = 1 + pow(u, alpha).
 //
-//  Domain: square (-10,10)^2.
+//  Domain: square (-10, 10)^2.
 //
-//  BC:  Dirichlet, given by the function dir_lift() below.
-//  IC: Same function dir_lift().
+//  BC: Nonconstant Dirichlet.
 //
-//  Time-integration: Use an embedded method for adaptive time stepping. 
+//  IC: Custom initial condition matching the BC.
 //
 //  The following parameters can be changed:
 
-const int INIT_GLOB_REF_NUM = 3;                   // Number of initial uniform mesh refinements.
-const int INIT_BDY_REF_NUM = 4;                    // Number of initial refinements towards boundary.
+const int INIT_GLOB_REF_NUM = 2;                   // Number of initial uniform mesh refinements.
+const int INIT_BDY_REF_NUM = 0;                    // Number of initial refinements towards boundary.
 const int P_INIT = 2;                              // Initial polynomial degree.
 double time_step = 0.05;                           // Time step. 
 const double T_FINAL = 5.0;                        // Time interval length.
@@ -236,7 +236,8 @@ int main(int argc, char* argv[])
         sprintf(title, "Temporal error est, spatial adaptivity step %d", as);     
         time_error_view.set_title(title);
         time_error_view.show_mesh(false);
-        time_error_view.show(time_error_fn, HERMES_EPS_HIGH);
+        AbsFilter abs_tef(time_error_fn);
+        time_error_view.show(&abs_tef, HERMES_EPS_HIGH);
 
         rel_err_time = hermes2d.calc_norm(time_error_fn, HERMES_H1_NORM) / 
                        hermes2d.calc_norm(&ref_sln, HERMES_H1_NORM) * 100;
