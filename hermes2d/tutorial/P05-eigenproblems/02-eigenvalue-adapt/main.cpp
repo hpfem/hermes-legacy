@@ -8,9 +8,10 @@ using Teuchos::RCP;
 using Teuchos::rcp;
 using Hermes::EigenSolver;
 
-//  This example illustrates problems associated with automatic adaptivity 
-//  that calls an eigensolver after each mesh refinement step. Observe how 
-//  eigenfunctions associated with eigenvalues of multiplicity greater than 
+//  NOTE: This is an inofficial example. Its purpose is solely to illustrate problems 
+//  associated with repeated calls to an eigensolver in each mesh refinement step.
+//
+//  Observe how eigenfunctions associated with eigenvalues of multiplicity greater than 
 //  one change from one step to another. The underlying operator is the Laplacian,
 //  in a square with zero boundary conditions. Python and Pysparse must be installed. 
 //
