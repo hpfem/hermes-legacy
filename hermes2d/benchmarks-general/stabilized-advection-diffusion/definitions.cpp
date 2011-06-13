@@ -3,6 +3,9 @@
 
 //////////////////////////////////////////////////// CONTINUOUS APPROXIMATION ////////////////////////////////////////////////////
 
+const double ConstFlowField::b1 = 0.;
+const double ConstFlowField::b2 = 1.;
+
 CustomWeakFormContinuousGalerkin::CustomWeakFormContinuousGalerkin(GalerkinMethod method, double epsilon)
   : WeakForm(1), fn_epsilon(new HermesFunction(epsilon)), 
     fn_b1(new HermesFunction(ConstFlowField::b1)), fn_b2(new HermesFunction(ConstFlowField::b2))
