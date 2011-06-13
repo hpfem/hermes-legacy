@@ -37,8 +37,8 @@ inline Real dot2(Real x1, Real y1, Real x2, Real y2) {
 
 struct ConstFlowField
 {  
-  static const double b1 = 0.;
-  static const double b2 = 1.;
+  static const double b1;
+  static const double b2;
   
   // Inner product between the flow field and a general vector at given point.
   template<typename Real>
