@@ -4,11 +4,9 @@
 
 using namespace Teuchos;
 
-//  The purpose of this example is to show how to use Trilinos
-//  for linear PDE problems. It compares performance of the DiscreteProblem 
-//  class in Hermes using the UMFpack matrix solver with the performance
-//  of the Trilinos NOX solver (using Newton's method or JFNK, with or 
-//  without preconditioning).
+//  The purpose of this example is to use a simple linear problem with known 
+//  exact solution to show how to use NOX, and to compare its performance to 
+//  other linear solvers in Hermes (MUMPS, PETSc, UMFPACK, etc.).
 //
 //  PDE: Poisson equation.
 //
@@ -29,10 +27,10 @@ const bool PRECOND = true;                        // Preconditioning by jacobian
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
-const char* iterative_method = "CG";              // Name of the iterative method employed by AztecOO (ignored
+const char* iterative_method = "GMRES";              // Name of the iterative method employed by AztecOO (ignored
                                                   // by the other solvers). 
                                                   // Possibilities: gmres, cg, cgs, tfqmr, bicgstab.
-const char* preconditioner = "JACOBI";              // Name of the preconditioner employed by AztecOO (ignored by
+const char* preconditioner = "JACOBI";            // Name of the preconditioner employed by AztecOO (ignored by
                                                   // other solvers).
                                                   // Possibilities: none, jacobi, neumann, least-squares, or a
                                                   // preconditioner from IFPACK (see solver/aztecoo.h)
@@ -62,7 +60,7 @@ int main(int argc, char **argv)
   mloader.load("square.mesh", &mesh);
 
   // Perform initial mesh refinemets.
-  for (int i=0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
+  for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Set exact solution.
   CustomExactSolution exact(&mesh);
@@ -151,8 +149,8 @@ int main(int argc, char **argv)
   // Initialize the NOX solver with the vector "coeff_vec".
   info("Initializing NOX.");
   // "" stands for preconditioning that is set later.
-  NoxSolver nox_solver(&dp2, message_type, iterative_method, "Newton", ls_tolerance, "", flag_absresid, abs_resid, 
-                       flag_relresid, rel_resid, max_iters);
+  NoxSolver nox_solver(&dp2, message_type, iterative_method, "Newton", ls_tolerance, "", 
+                       flag_absresid, abs_resid, flag_relresid, rel_resid, max_iters);
   nox_solver.set_init_sln(coeff_vec);
   
   delete coeff_vec;

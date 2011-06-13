@@ -2,7 +2,7 @@
 
 scalar CustomExactSolution::value (double x, double y) const 
 {
-  return x*x +y*y;
+  return x*x + y*y;
 }
 
 void CustomExactSolution::derivatives (double x, double y, scalar& dx, scalar& dy) const 
