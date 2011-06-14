@@ -1,8 +1,6 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -48,9 +46,6 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 const double MU_R   = 1.0;
 const double KAPPA  = 1.0;
 const double LAMBDA = 1.0;
-
-// Bessel functions, exact solution, and weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
