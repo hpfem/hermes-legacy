@@ -1,0 +1,19 @@
+vertices = [
+  [ 0, 0 ],    # vertex 0
+  [ 1, 0 ],    # vertex 1
+  [ 1, 1 ],    # vertex 2
+  [ 0, 1 ]     # vertex 3
+]
+
+elements = [
+  [ 0, 1, 2, 3, "Mat" ]    # quad 0
+]
+
+boundaries = [
+  [ 0, 1, "Bdy" ],
+  [ 1, 2, "Bdy" ],
+  [ 2, 3, "Bdy" ],
+  [ 3, 0, "Bdy" ]
+]
+
+
