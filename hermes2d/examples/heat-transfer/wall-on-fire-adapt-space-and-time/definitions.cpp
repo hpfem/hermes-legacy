@@ -125,13 +125,11 @@ Ord CustomWeakFormHeatRK::CustomFormResidualSurfFire::ord(int n, double *wt, Fun
   return v->val[0] * Ord(3);
 }
 
-// Needed for the rk_time_step() method.
 WeakForm::VectorFormSurf* CustomWeakFormHeatRK::CustomFormResidualSurfFire::clone() 
 {
   return new CustomFormResidualSurfFire(*this);
 }
 
-// Fire temperature as function of x and t.
 template<typename Real>
 Real CustomWeakFormHeatRK::CustomFormResidualSurfFire::T_fire(Real x, Real t) const 
 {
