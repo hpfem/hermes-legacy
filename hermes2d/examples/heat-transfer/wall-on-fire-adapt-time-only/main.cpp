@@ -1,7 +1,9 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 #include "runge_kutta.h"
+
+using namespace RefinementSelectors;
 
 //  This example models a nonstationary distribution of temperature within a wall
 //  exposed to ISO fire. Adaptivity in time is performed.
@@ -74,9 +76,6 @@ const double ALPHA_AIR = 8;        // Heat flux coefficient on the top edge.
 const double HEATCAP = 1020;       // Heat capacity.
 const double RHO = 2200;           // Material density.
 const double T_FINAL = 18000;      // Length of time interval in seconds.
-
-// Problem-specific functions and Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {

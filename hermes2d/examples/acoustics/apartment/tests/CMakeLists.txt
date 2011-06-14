@@ -4,7 +4,7 @@ endif(NOT H2D_COMPLEX)
 
 project(test-example-acoustics-apartment)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp ../definitions.cpp)
 include (${hermes2d_SOURCE_DIR}/CMake.common)
 set_common_target_properties(${PROJECT_NAME} ${HERMES2D_CPLX})
 set(BIN ${PROJECT_BINARY_DIR}/${PROJECT_NAME})

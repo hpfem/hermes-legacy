@@ -1,6 +1,12 @@
 #define HERMES_REPORT_ALL
-#include "hermes2d.h"
+#define HERMES_REPORT_FILE "application.log"
+#include "../definitions.h"
 #include <stdio.h>
+
+using namespace RefinementSelectors;
+using Teuchos::RCP;
+using Teuchos::rcp;
+using Hermes::EigenSolver;
 
 // This test makes sure that example P07-eigen/01-eigenvalue works correctly.
 
@@ -10,16 +16,6 @@ const int INIT_REF_NUM = 0;                       // Number of initial mesh refi
 double TARGET_VALUE = 2.0;                        // PySparse parameter: Eigenvalues in the vicinity of this number will be computed. 
 double TOL = 1e-10;                               // Pysparse parameter: Error tolerance.
 int MAX_ITER = 1000;                              // PySparse parameter: Maximum number of iterations.
-
-using Teuchos::RCP;
-using Teuchos::rcp;
-using Hermes::EigenSolver;
-
-// Boundary markers.
-const std::string BDY = "Zero Dirichlet";
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
@@ -34,7 +30,7 @@ int main(int argc, char* argv[])
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Initialize boundary conditions. 
-  DefaultEssentialBCConst bc_essential(BDY, 0.0);
+  DefaultEssentialBCConst bc_essential("Bdy", 0.0);
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.
@@ -51,10 +47,9 @@ int main(int argc, char* argv[])
   RCP<SparseMatrix> matrix_right = rcp(new CSCMatrix());
 
   // Assemble the matrices.
-  bool is_linear = true;
-  DiscreteProblem dp_left(&wf_left, &space, is_linear);
+  DiscreteProblem dp_left(&wf_left, &space);
   dp_left.assemble(matrix_left.get());
-  DiscreteProblem dp_right(&wf_right, &space, is_linear);
+  DiscreteProblem dp_right(&wf_right, &space);
   dp_right.assemble(matrix_right.get());
 
   EigenSolver es(matrix_left, matrix_right);

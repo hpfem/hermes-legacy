@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 #include "boundaryconditions/essential_bcs.h"
 
 using namespace RefinementSelectors;
@@ -65,13 +65,6 @@ const double OMEGA = 2 * M_PI * FREQ;
 const double SOUND_SPEED = 353.0;
 const scalar P_SOURCE(1.0, 0.0);
 
-// Boundary markers.
-const std::string BDY_NEWTON = "Wall";
-const std::string BDY_DIRICHLET = "Source";
-
-// Weak forms.
-#include "definitions.cpp"
-
 int main(int argc, char* argv[])
 {
   Hermes2D hermes2d;
@@ -102,7 +95,7 @@ int main(int argc, char* argv[])
   info("ndof = %d", ndof);
 
   // Initialize the weak formulation.
-  CustomWeakFormAcoustics wf(BDY_NEWTON, RHO, SOUND_SPEED, OMEGA);
+  CustomWeakFormAcoustics wf("Wall", RHO, SOUND_SPEED, OMEGA);
 
   // Initialize coarse and reference mesh solution.
   Solution sln, ref_sln;

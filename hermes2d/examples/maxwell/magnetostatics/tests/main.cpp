@@ -1,7 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
-#include "function/function.h"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -36,9 +35,6 @@ const std::string MAT_IRON_1 = "0";
 const std::string MAT_IRON_2 = "3";
 const std::string MAT_COPPER = "1";
 const std::string BDY_DIRICHLET = "1";
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {

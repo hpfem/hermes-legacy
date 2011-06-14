@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 #include "boundaryconditions/essential_bcs.h"
 
 using namespace RefinementSelectors;
@@ -47,20 +47,12 @@ const char* preconditioner = "least-squares";     // Name of the preconditioner 
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
-
 // Problem parameters.
 const double RHO = 1.25;
 const double FREQ = 5e2;
 const double OMEGA = 2 * M_PI * FREQ;
 const double SOUND_SPEED = 353.0;
 const scalar P_SOURCE(1.0, 0.0);
-
-// Boundary markers.
-const std::string BDY_NEWTON = "Wall";
-const std::string BDY_DIRICHLET = "Source";
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
@@ -92,19 +84,13 @@ int main(int argc, char* argv[])
   info("ndof = %d", ndof);
 
   // Initialize the weak formulation.
-  CustomWeakFormAcoustics wf(BDY_NEWTON, RHO, SOUND_SPEED, OMEGA);
+  CustomWeakFormAcoustics wf("Wall", RHO, SOUND_SPEED, OMEGA);
 
   // Initialize coarse and reference mesh solution.
   Solution sln, ref_sln;
 
   // Initialize refinement selector.
   H1ProjBasedSelector selector(CAND_LIST, CONV_EXP, H2DRS_DEFAULT_ORDER);
-
-  // Initialize views.
-  // ScalarView sview("Solution", new WinGeom(0, 0, 600, 350));
-  // sview.show_mesh(false);
-  // sview.fix_scale_width(50);
-  // OrderView  oview("Polynomial orders", new WinGeom(610, 0, 600, 350));
 
   // DOF and CPU convergence graphs initialization.
   SimpleGraph graph_dof, graph_cpu;
@@ -154,10 +140,6 @@ int main(int argc, char* argv[])
     // Time measurement.
     cpu_time.tick();
 
-    // View the coarse mesh solution and polynomial orders.
-    // sview.show(&sln);
-    // oview.show(&space);
-
     // Calculate element errors and total error estimate.
     info("Calculating error estimate.");
     Adapt* adaptivity = new Adapt(&space);
@@ -202,10 +184,6 @@ int main(int argc, char* argv[])
   delete solver;
   delete matrix;
   delete rhs;
-
-  // Show the reference solution - the final result.
-  // sview.set_title("Fine mesh solution");
-  // sview.show(&ref_sln);
 
   ndof = Space::get_num_dofs(&space);
 

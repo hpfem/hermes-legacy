@@ -1,5 +1,6 @@
-#define HERMES_REPORT_INFO
-#include "hermes2d.h"
+#define HERMES_REPORT_ALL
+#define HERMES_REPORT_FILE "application.log"
+#include "definitions.h"
 #include <stdio.h>
 
 using namespace RefinementSelectors;
@@ -46,12 +47,6 @@ const int NDOF_STOP = 100000;                     // Adaptivity process stops wh
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
-// Boundary markers.
-const std::string BDY_BOTTOM = "1", BDY_RIGHT = "2", BDY_TOP = "3", BDY_LEFT = "4";
-
-// Weak forms.
-#include "../definitions.cpp"
-
 int main(int argc, char* argv[])
 {
   if (NUMBER_OF_EIGENVALUES > 6) error("Maximum number of eigenvalues is 6.");
@@ -66,7 +61,7 @@ int main(int argc, char* argv[])
   for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Initialize boundary conditions. 
-  DefaultEssentialBCConst bc_essential(Hermes::vector<std::string>(BDY_BOTTOM, BDY_RIGHT, BDY_TOP, BDY_LEFT), 0.0);
+  DefaultEssentialBCConst bc_essential("Bdy", 0.0);
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.
@@ -79,27 +74,6 @@ int main(int argc, char* argv[])
   // Initialize refinement selector.
   H1ProjBasedSelector selector(CAND_LIST, CONV_EXP, H2DRS_DEFAULT_ORDER);
 
-  // Initialize views.
-  ScalarView sview_1("", new WinGeom(0, 0, 400, 360));
-  sview_1.show_mesh(false);
-  sview_1.fix_scale_width(60);
-  ScalarView sview_2("", new WinGeom(405, 0, 400, 360));
-  sview_2.show_mesh(false);
-  sview_2.fix_scale_width(60);
-  ScalarView sview_3("", new WinGeom(810, 0, 400, 360));
-  sview_3.show_mesh(false);
-  sview_3.fix_scale_width(60);
-  ScalarView sview_4("", new WinGeom(0, 410, 400, 360));
-  sview_4.show_mesh(false);
-  sview_4.fix_scale_width(60);
-  ScalarView sview_5("", new WinGeom(405, 410, 400, 360));
-  sview_5.show_mesh(false);
-  sview_5.fix_scale_width(60);
-  ScalarView sview_6("", new WinGeom(810, 410, 400, 360));
-  sview_6.show_mesh(false);
-  sview_6.fix_scale_width(60);
-  OrderView  oview("Polynomial orders", new WinGeom(1215, 0, 400, 360));
-
   // DOF and CPU convergence graphs.
   SimpleGraph graph_dof_est, graph_cpu_est;
 
@@ -110,8 +84,7 @@ int main(int argc, char* argv[])
   Solution sln[NUMBER_OF_EIGENVALUES], ref_sln[NUMBER_OF_EIGENVALUES];
 
   // Adaptivity loop:
-  int as = 1;
-  bool done = false;
+  int as = 1; bool done = false;
   do
   {
     info("---- Adaptivity step %d:", as);
@@ -147,8 +120,6 @@ int main(int argc, char* argv[])
 
     // Initializing solution vector, solution and ScalarView.
     double* ref_coeff_vec;
-    //Solution sln[NUMBER_OF_EIGENVALUES], ref_sln[NUMBER_OF_EIGENVALUES];
-    //ScalarView view("Solution", new WinGeom(0, 0, 440, 350));
 
     // Reading solution vectors from file and visualizing.
     double eigenval[NUMBER_OF_EIGENVALUES];
@@ -166,45 +137,7 @@ int main(int argc, char* argv[])
       OGProjection::project_global(&space, &(ref_sln[ieig]), &(sln[ieig]), matrix_solver);
     }  
 
-    // FIXME: Below, the adaptivity is done for the last eigenvector only,
-    // this needs to be changed to take into account all eigenvectors.
-
-    // View the coarse mesh solution and polynomial orders.
-    
-    //char title[100];
-    //if (NUMBER_OF_EIGENVALUES > 0) {
-    //  sprintf(title, "Solution 0, val = %g", eigenval[0]);
-    //  sview_1.set_title(title);
-    //  sview_1.show(&(sln[0]));
-    //}
-    //if (NUMBER_OF_EIGENVALUES > 1) {
-    //  sprintf(title, "Solution 1, val = %g", eigenval[1]);
-    //  sview_2.set_title(title);
-    //  sview_2.show(&(sln[1]));
-    //}
-    //if (NUMBER_OF_EIGENVALUES > 2) {
-    //  sprintf(title, "Solution 2, val = %g", eigenval[2]);
-    //  sview_3.set_title(title);
-    //  sview_3.show(&(sln[2]));
-    //}
-    //if (NUMBER_OF_EIGENVALUES > 3) {
-    //  sprintf(title, "Solution 3, val = %g", eigenval[3]);
-    //  sview_4.set_title(title);
-    //  sview_4.show(&(sln[3]));
-    //}
-    //if (NUMBER_OF_EIGENVALUES > 4) {
-    //  sprintf(title, "Solution 4, val = %g", eigenval[4]);
-    //  sview_5.set_title(title);
-    //  sview_5.show(&(sln[4]));
-    //}
-    //if (NUMBER_OF_EIGENVALUES > 5) {
-    //  sprintf(title, "Solution 5, val = %g", eigenval[5]);
-    //  sview_6.set_title(title);
-    //  sview_6.show(&(sln[5]));
-    //}
-    //oview.show(&space);
-
-    // Calculate element errors and total error estimate.
+     // Calculate element errors and total error estimate.
     info("Calculating error estimate.");
     Hermes::vector<Space *> spaces;
     for(int i = 0; i < NUMBER_OF_EIGENVALUES; i++) spaces.push_back(&space);
@@ -246,9 +179,6 @@ int main(int argc, char* argv[])
     graph_cpu_est.add_values(cpu_time.accumulated(), err_est_rel);
     graph_cpu_est.save("conv_cpu_est.dat");
 
-    // Wait for keypress.
-    //View::wait(HERMES_WAIT_KEYPRESS);
-
     // If err_est too large, adapt the mesh.
     if (err_est_rel < ERR_STOP) done = true;
     else
@@ -284,6 +214,5 @@ int main(int argc, char* argv[])
     printf("Failure!\n");
     return ERR_FAILURE;
   }
-
  
 }
