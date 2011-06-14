@@ -17,6 +17,7 @@ scalar CustomWeakForm::CustomJacobian::value(int n, double *wt, Func<scalar> *u_
   scalar result = 0;
   for (int i = 0; i < n; i++) {
     result += wt[i] * (u->dx[i] - u->dy[i]) * v->val[i];
+    //result += wt[i] * (u->dx[i]*v->dx[i] + u->dy[i]*v->dy[i]);
   }
   return result;
 }
@@ -27,6 +28,7 @@ Ord CustomWeakForm::CustomJacobian::ord(int n, double *wt, Func<Ord> *u_ext[], F
   Ord result = 0;
   for (int i = 0; i < n; i++) {
     result += wt[i] * (u->dx[i] - u->dy[i]) * v->val[i];
+    //result += wt[i] * (u->dx[i]*v->dx[i] + u->dy[i]*v->dy[i]);
   }
   return result;
 }
@@ -37,6 +39,7 @@ scalar CustomWeakForm::CustomResidual::value(int n, double *wt, Func<scalar> *u_
   scalar result = 0;
   for (int i = 0; i < n; i++) {
     result += wt[i] * (u_ext[0]->dx[i] - u_ext[0]->dy[i]) * v->val[i];
+    //result += wt[i] * (u_ext[0]->dx[i]*v->dx[i] + u_ext[0]->dy[i]*v->dy[i]);
   }
   return result;
 }
@@ -47,6 +50,7 @@ Ord CustomWeakForm::CustomResidual::ord(int n, double *wt, Func<Ord> *u_ext[],
   Ord result = 0;
   for (int i = 0; i < n; i++) {
     result += wt[i] * (u_ext[0]->dx[i] - u_ext[0]->dy[i]) * v->val[i];
+    //result += wt[i] * (u_ext[0]->dx[i]*v->dx[i] + u_ext[0]->dy[i]*v->dy[i]);
   }
   return result;
 }
