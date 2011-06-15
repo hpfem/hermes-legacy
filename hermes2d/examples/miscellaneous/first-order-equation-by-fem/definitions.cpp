@@ -11,7 +11,8 @@ CustomWeakForm::CustomWeakForm() : WeakForm(1)
   add_vector_form(new CustomResidual());
 };
 
-scalar CustomWeakForm::CustomJacobian::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v,
+scalar CustomWeakForm::CustomJacobian::value(int n, double *wt, Func<scalar> *u_ext[], 
+                                             Func<double> *u, Func<double> *v,
                                              Geom<double> *e, ExtData<scalar> *ext) const
 {
   scalar result = 0;
