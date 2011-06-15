@@ -234,8 +234,11 @@ protected:
 
   struct ElementData
   {
-    int order;
-    int bdof, n;
+    int order;   // Polynomial degree of the element. NOTE: This is encoded
+                 // if the element is a quad. In this case, use the macros H2D_GET_H_ORDER
+                 // and H2D_GET_V_ORDER to obtain the directional orders.
+    int bdof, n; // The index of the first bubble function on that element,
+                 // and the number of the bubble functions. 
   };
 
 public:
