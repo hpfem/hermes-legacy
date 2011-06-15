@@ -1,63 +1,43 @@
-#include "weakform/weakform.h"
-#include "integrals/h1.h"
-#include "boundaryconditions/essential_bcs.h"
+#include "definitions.h"
 
-class WeakFormPoisson : public WeakForm
+/* Weak forms */
+
+CustomWeakFormPoisson::CustomWeakFormPoisson(std::string mat_al, HermesFunction* lambda_al,
+                                             std::string mat_cu, HermesFunction* lambda_cu,
+                                             HermesFunction* src_term, bool adapt_eval, 
+                                             int adapt_order_increase, double adapt_rel_error_tol) 
+  : WeakForm(1)
 {
-public:
-  // Problem parameters.
-  double const_f;
+  // Create weak forms.
+  // Jacobian forms.
+  MatrixFormVol* jacobian_diffusion_al = new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_al, lambda_al);
+  MatrixFormVol* jacobian_diffusion_cu = new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_cu, lambda_cu);
+  // Residual forms.
+  VectorFormVol* residual_diffusion_al = new WeakFormsH1::DefaultResidualDiffusion(0, mat_al, lambda_al);
+  VectorFormVol* residual_diffusion_cu = new WeakFormsH1::DefaultResidualDiffusion(0, mat_cu, lambda_cu);
+  VectorFormVol* src_term_form = new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, src_term);
 
-  WeakFormPoisson(double const_f, bool adapt_eval, int adapt_order_increase, double adapt_rel_error_tol)
-    : WeakForm(1), const_f(const_f) {
-    MatrixFormVolPoisson* matrix_form = new MatrixFormVolPoisson(0, 0);
-    VectorFormVolPoisson* vector_form = new VectorFormVolPoisson(0);
-    if(adapt_eval) {
-      matrix_form->adapt_order_increase = adapt_order_increase;
-      vector_form->adapt_order_increase = adapt_order_increase;
-      matrix_form->adapt_rel_error_tol = adapt_rel_error_tol;
-      vector_form->adapt_rel_error_tol = adapt_rel_error_tol;
-    }
-    add_matrix_form(matrix_form);
-    add_vector_form(vector_form);
-  };
-
-private:
-  class MatrixFormVolPoisson : public WeakForm::MatrixFormVol
+  // Set adaptive quadrature parameters.
+  if(adapt_eval) 
   {
-  public:
-    MatrixFormVolPoisson(int i, int j) : WeakForm::MatrixFormVol(i, j) { }
+    // Order increase.
+    jacobian_diffusion_al->adapt_order_increase = adapt_order_increase;
+    jacobian_diffusion_cu->adapt_order_increase = adapt_order_increase;
+    residual_diffusion_al->adapt_order_increase = adapt_order_increase;
+    residual_diffusion_cu->adapt_order_increase = adapt_order_increase;
+    src_term_form->adapt_order_increase = adapt_order_increase;
+    // Relative error tolerance.
+    jacobian_diffusion_al->adapt_rel_error_tol = adapt_rel_error_tol;
+    jacobian_diffusion_cu->adapt_rel_error_tol = adapt_rel_error_tol;
+    residual_diffusion_al->adapt_rel_error_tol = adapt_rel_error_tol;
+    residual_diffusion_cu->adapt_rel_error_tol = adapt_rel_error_tol;
+    src_term_form->adapt_rel_error_tol = adapt_rel_error_tol;
+  }
 
-    template<typename Real, typename Scalar>
-    Scalar matrix_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
-      return int_grad_u_grad_v<Real, Scalar>(n, wt, u, v);
-    }
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
-      return matrix_form<scalar, scalar>(n, wt, u_ext, u, v, e, ext);
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
-      return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
-    }
-  };
-
-  class VectorFormVolPoisson : public WeakForm::VectorFormVol
-  {
-  public:
-    VectorFormVolPoisson(int i) : WeakForm::VectorFormVol(i) { }
-
-    template<typename Real, typename Scalar>
-    Scalar vector_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
-      return static_cast<WeakFormPoisson *>(wf)->const_f * int_v<Real>(n, wt, v);
-    }
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
-      return vector_form<scalar, scalar>(n, wt, u_ext, v, e, ext);
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
-      return vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext);
-    }
-  };
+  // Register weak forms.
+  add_matrix_form(jacobian_diffusion_al);
+  add_matrix_form(jacobian_diffusion_cu);
+  add_vector_form(residual_diffusion_al);
+  add_vector_form(residual_diffusion_cu);
+  add_vector_form(src_term_form);
 };
