@@ -1,10 +1,15 @@
 #define HERMES_REPORT_ALL
 #include "definitions.h"
 
-//  This example solves a simple linear first-order equation using continuous 
-//  elements. The exact solution is u(x, y) = x + y.
+//  This example shows the importance of prescribing correct
+//  boundary conditions for hyperbolic problems. In this case,
+//  we prescribe a Dirichlet condition on the entire boundary 
+//  (both inlet and outlet edges), which makes the Newton's
+//  method converge to a wrong solution. 
 //
 //  PDE:  du/dx - du/dy = 0.
+//
+//  Exact solution is u(x, y) = x + y.
 //
 //  Boundary conditions: Dirichlet matching exact solution u(x, y) = x + y.
 //
