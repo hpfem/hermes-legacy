@@ -73,7 +73,7 @@ const int PYSPARSE_MAX_ITER = 1000;               // PySparse parameter: Maximum
 const double NEWTON_TOL = 1e-3;
 const int NEWTON_MAX_ITER = 10;
 const double PICARD_TOL = 1e-3;
-const int PICARD_MAX_ITER = 50;
+const int PICARD_MAX_ITER = 1000;
 const int USE_ORTHO = 1;
 const int USE_SHIFT = 0;
 
