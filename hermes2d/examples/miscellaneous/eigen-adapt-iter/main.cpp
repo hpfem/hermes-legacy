@@ -73,7 +73,7 @@ const int PYSPARSE_MAX_ITER = 1000;               // PySparse parameter: Maximum
 const double NEWTON_TOL = 1e-3;
 const int NEWTON_MAX_ITER = 10;
 const double PICARD_TOL = 1e-3;
-const int PICARD_MAX_ITER = 1000;
+const int PICARD_MAX_ITER = 50;
 const int USE_ORTHO = 1;
 const int USE_SHIFT = 0;
 
@@ -298,14 +298,14 @@ int main(int argc, char* argv[])
       // Newton's method on the reference mesh for the first eigenfunction in the eigenspace.
       if(!solve_newton_eigen(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
 	  		     coeff_space_ref[0], lambda, matrix_solver, NEWTON_TOL, NEWTON_MAX_ITER))
-        error("Newton's method failed.");
+        info("WARNING: Newton's method reached the maximum number of iterations.");
       for (int i = 1; i < DIMENSION_SUBSPACE; i++) {  
         lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_space_ref[i], ndof_ref)
              / calc_mass_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[i], ndof_ref);
         if(!solve_newton_eigen_ortho(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
 	  		     coeff_space_ref[i], lambda, matrix_solver, PICARD_TOL, PICARD_MAX_ITER,USE_ORTHO,
                              coeff_space_ref,i,DIMENSION_SUBSPACE))
-          error("Newton's method failed.");
+          info("WARNING: Newton's method reached the maximum number of iterations.");
       }
     }
     else if (ITERATIVE_METHOD == 2) {
@@ -314,14 +314,14 @@ int main(int argc, char* argv[])
       // Picard's method on the reference mesh for the first eigenfunction in the eigenspace.
       if(!solve_picard_eigen(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
 	  		     coeff_space_ref[0], lambda, matrix_solver, PICARD_TOL, PICARD_MAX_ITER, USE_SHIFT))
-        error("Picard's method failed.");
+        info("WARNING: Picard's method reached the maximum number of iterations.");
       for (int i = 1; i < DIMENSION_SUBSPACE; i++) {  
         lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_space_ref[i], ndof_ref)
              / calc_mass_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[i], ndof_ref);
         if(!solve_picard_eigen_ortho(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
 	  		     coeff_space_ref[i], lambda, matrix_solver, PICARD_TOL, PICARD_MAX_ITER,USE_ORTHO, USE_SHIFT,
                              coeff_space_ref,i,DIMENSION_SUBSPACE))
-          error("Picard's method failed.");
+          info("WARNING: Picard's method reached the maximum number of iterations.");
       }
     }
     else {
