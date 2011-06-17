@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "../definitions.h"
+#include "../../definitions.h"
 
 const int INIT_GLOB_REF_NUM = 2;                    // Number of initial uniform mesh refinements.
 const int INIT_BDY_REF_NUM = 0;                     // Number of initial refinements towards boundary.
@@ -42,12 +42,12 @@ int main(int argc, char* argv[])
   TimePeriod cpu_time;
   cpu_time.tick();
   
-  info("Simulation length = %d s, number of time steps: %d", T_FINAL, int(T_FINAL / TIME_STEP + 0.5));
+  info("Simulation length = %d s, number of time steps: %f", T_FINAL, int(T_FINAL / TIME_STEP + 0.5));
   
   // Load the mesh file.
   Mesh mesh;
   H2DReader mloader;
-  mloader.load("../domain.mesh", &mesh);
+  mloader.load("../../domain.mesh", &mesh);
   
   const int LX = 100, LY = 100; // Domain extents in x- and y- directions.
   
@@ -76,17 +76,7 @@ int main(int argc, char* argv[])
   // Solutions in the current time.
   Solution T_current_time, phi_current_time;
   Hermes::vector<Solution*> sln_time_new(&T_current_time, &phi_current_time);
-  
-  // Set up the solver, matrix, and rhs according to the solver selection.
-  SparseMatrix* matrix = create_matrix(matrix_solver);
-  Vector* rhs = create_vector(matrix_solver);
-  Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
-  
-  // Although the Jacobian changes every iteration due to the nonlinearity in Sigma_r and lambda,
-  // the change is not too big and some information from its first factorization may be reused.
-  bool reassemble_jacobian = true;
-  solver->set_factorization_scheme(HERMES_REUSE_MATRIX_REORDERING_AND_SCALING);
-  
+    
   // Initialize the weak formulation.
   CustomWeakForm wf(LX, LY);
   
@@ -111,6 +101,10 @@ int main(int argc, char* argv[])
   if (bt.is_fully_implicit()) info("Using a %d-stage fully implicit R-K method.", bt.get_size());
   
   RungeKutta runge_kutta(&dp, &bt, matrix_solver);
+  // Although the Jacobian changes every iteration due to the nonlinearity in Sigma_r and lambda,
+  // the change is not too big and some information from its first factorization may be reused.
+  bool reassemble_jacobian = true;
+  runge_kutta.get_matrix_solver()->set_factorization_scheme(HERMES_REUSE_MATRIX_REORDERING_AND_SCALING);
   
   // Run the time loop.  
   do {    
@@ -148,11 +142,6 @@ int main(int argc, char* argv[])
     phi_prev_time.copy(&phi_current_time);
   }
   while (fabs(current_time - T_FINAL) > 1e-12);
-  
-  // Cleanup.
-  delete matrix;
-  delete rhs;
-  delete solver;
   
   cpu_time.tick();
   verbose("Total running time: %g s", cpu_time.accumulated());
