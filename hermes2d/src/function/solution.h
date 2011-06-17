@@ -96,7 +96,7 @@ class HERMES_API Solution : public MeshFunction
 {
 public:
 
-  void init();
+  virtual void init();
   Solution();
   Solution(Mesh *mesh);
   Solution(Mesh *mesh, scalar init_const);
@@ -253,6 +253,8 @@ protected:
 class HERMES_API ExactSolution : public Solution
 {
 public:
+  virtual void init();
+  
   ExactSolution(Mesh* mesh);
 
   ~ExactSolution();
@@ -266,6 +268,8 @@ public:
 class HERMES_API ExactSolutionScalar : public ExactSolution
 {
 public:
+  virtual void init() { num_components = 1; }
+  
   ExactSolutionScalar(Mesh* mesh);
 
   ~ExactSolutionScalar() = 0;
@@ -293,6 +297,8 @@ public:
 class HERMES_API ExactSolutionVector : public ExactSolution
 {
 public:
+  virtual void init() { num_components = 2; }
+  
   ExactSolutionVector(Mesh* mesh);
 
   ~ExactSolutionVector() = 0;

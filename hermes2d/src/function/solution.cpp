@@ -1472,8 +1472,16 @@ scalar Solution::get_pt_value(double x, double y, int item)
   return NAN;
 }
 
-
 // Exact solution.
+void ExactSolution::init()
+{
+  Solution::init();
+  sln_type = HERMES_EXACT;
+  exact_mult = 1.0;
+  num_dofs = -1;
+}
+
+
 ExactSolution::ExactSolution(Mesh* mesh) : Solution(mesh)
 {
   sln_type = HERMES_EXACT;
