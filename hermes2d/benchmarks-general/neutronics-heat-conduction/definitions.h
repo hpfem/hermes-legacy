@@ -1,3 +1,6 @@
+#ifndef __DEFINITIONS_H__INCLUDED__
+#define __DEFINITIONS_H__INCLUDED__
+
 #include "hermes2d.h"
 
 struct FuelProperties
@@ -63,7 +66,7 @@ struct FuelProperties
       
       virtual Ord derivative(Ord T) const 
       {
-        return Ord(16);
+        return Ord(10);
       }
   };
 };
@@ -108,10 +111,10 @@ struct TemperatureField
       
       virtual Ord ord(Ord x, Ord y) const 
       {
-        return Ord(10);
+        return Ord(Ord::get_max_order());
       }
       
-      void update(double new_time) { time = new_time; }
+      void update(double new_time) { time = new_time; reinit(); }
   };
   
   class SourceTerm : public HermesFunction
@@ -133,7 +136,7 @@ struct TemperatureField
       virtual Ord value(Ord x, Ord y, double t) const 
       {
         //return val<Ord>(x, y, t);
-        return Ord(16);
+        return Ord(10);
       }
   };
     
@@ -212,10 +215,10 @@ struct NeutronField
       
       virtual Ord ord(Ord x, Ord y) const 
       {
-        return Ord(10);
+        return Ord(Ord::get_max_order());
       }
       
-      void update(double new_time) { time = new_time; }
+      void update(double new_time) { time = new_time; reinit(); }
   };
   
   class SourceTerm : public HermesFunction
@@ -237,7 +240,7 @@ struct NeutronField
       virtual Ord value(Ord x, Ord y, double t) const 
       {
         //return val<Ord>(x, y, t);
-        return Ord(16);
+        return Ord(10);
       }
   };
   
@@ -345,17 +348,20 @@ class CustomWeakForm : public WeakForm
 
 class Views
 {
-  char title[100]; // Character array to store the title for an actual view and time step.
-  
-  ScalarView *sview_T;
-  ScalarView *sview_phi;
-  ScalarView *sview_T_exact;
-  ScalarView *sview_phi_exact;
+  protected:
+    char title[100]; // Character array to store the title for an actual view and time step.
+    
+    ScalarView *sview_T;
+    ScalarView *sview_phi;
+    ScalarView *sview_T_exact;
+    ScalarView *sview_phi_exact;
   
   public:
-    Views();
-    ~Views();
+    Views(unsigned int width, unsigned int height);
+    virtual ~Views();
     
-    void show_solutions(double current_time, Hermes::vector< Solution* > solutions);
-    void show_exact(double current_time, Hermes::vector< Solution* > exact);
+    virtual void show_solutions(double current_time, Hermes::vector< Solution* > solutions);
+    virtual void show_exact(double current_time, Hermes::vector< Solution* > exact);
 };
+
+#endif

@@ -1,4 +1,3 @@
 rm *~ 
 ./neutronics-heat-conduction-adapt
-python plot_graph.py &
 

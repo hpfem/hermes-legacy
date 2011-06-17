@@ -149,16 +149,16 @@ CustomWeakForm::CustomWeakForm(double lx, double ly) : WeakForm(2)
   add_vector_form(new NeutronField::Residual(lx, ly));
 }
 
-Views::Views() 
+Views::Views(unsigned int width, unsigned int height) 
 {
   // Initialize solution views (their titles will be updated in each time step).
-  sview_T = new ScalarView("", new WinGeom(0, 0, 500, 400));
+  sview_T = new ScalarView("", new WinGeom(0, 0, width, height));
   sview_T->fix_scale_width(50);
-  sview_phi = new ScalarView("", new WinGeom(0, 500, 500, 400));
+  sview_phi = new ScalarView("", new WinGeom(0, height+50, width, height));
   sview_phi->fix_scale_width(50);
-  sview_T_exact = new ScalarView("", new WinGeom(550, 0, 500, 400));
+  sview_T_exact = new ScalarView("", new WinGeom(width, 0, width, height));
   sview_T_exact->fix_scale_width(50);
-  sview_phi_exact = new ScalarView("", new WinGeom(550, 500, 500, 400));
+  sview_phi_exact = new ScalarView("", new WinGeom(width, height+50, width, height));
   sview_phi_exact->fix_scale_width(50);
 }
 
@@ -185,12 +185,13 @@ void Views::show_solutions(double current_time, Hermes::vector<Solution*> soluti
 void Views::show_exact(double current_time, Hermes::vector< Solution* > exact)
 {
   // Show exact solution.
-  sview_T_exact->show(exact[0]);
   sprintf(title, "Exact solution for T, t = %g s", current_time);
   sview_T_exact->set_title(title);
+  sview_T_exact->show(exact[0]);
   
-  sview_phi_exact->show(exact[1]);
   sprintf(title, "Exact solution for phi, t = %g s", current_time);
   sview_phi_exact->set_title(title);
+  sview_phi_exact->show(exact[1]);
 }
+
 

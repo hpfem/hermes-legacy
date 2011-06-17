@@ -119,6 +119,7 @@ public:
                     bool jacobian_changed = true, bool verbose = false, double newton_tol = 1e-6, int newton_max_iter = 20, 
                     double newton_damping_coeff = 1.0, double newton_max_allowed_residual_norm = 1e6);
 
+  Solver *get_matrix_solver() { return solver; }
 
 protected:
   /// Creates an augmented weak formulation for the multi-stage Runge-Kutta problem.
