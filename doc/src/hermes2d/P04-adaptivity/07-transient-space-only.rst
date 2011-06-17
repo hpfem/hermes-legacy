@@ -73,7 +73,7 @@ parameter UNREF_FREQ::
 
 Option #1 is cleanest from the mathematics point of view since the
 mesh on the new time level will not be influenced by the mesh from 
-the mast step, but in practice we prefer the last option because 
+the last step, but in practice we prefer the last option because 
 it takes less CPU time. 
 
 The adaptivity loop in space is standard. The rk_time_step()
