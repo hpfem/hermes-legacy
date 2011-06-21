@@ -1,7 +1,7 @@
 
 project(test-example-maxwell-resonator-time-domain-II-rk)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp ../definitions.cpp)
 include (${hermes2d_SOURCE_DIR}/CMake.common)
 set_common_target_properties(${PROJECT_NAME} ${HERMES2D_REAL})
 set(BIN ${PROJECT_BINARY_DIR}/${PROJECT_NAME})
