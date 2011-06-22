@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
-#include "hermes2d.h"
-#include <stdio.h>
+#define HERMES_REPORT_FILE "application.log"
+#include "definitions.h"
 
 using namespace RefinementSelectors;
 using Teuchos::RCP;
@@ -94,7 +94,6 @@ int DIMENSION_TARGET_EIGENSPACE = 2;
 int FIRST_INDEX_EIGENSPACE = 2;                   // Index of the first eigenfunction in the continuous eigenspace 
                                                   // that contains the eigenfunction of index TARGET_EIGENFUNCTION            
 
-
 // ORTHOGONALIZATION TECHNOLOGY:
 
 // The orthogonalization technology ensures that the iterative methods converge to the eigenfunction
@@ -103,9 +102,6 @@ int FIRST_INDEX_EIGENSPACE = 2;                   // Index of the first eigenfun
 // also the eigenfunctions of indeces 1 and 2 are computed on each adapted mesh.
 // The value of DIMENSION_SUBSPACE is set automatically in the code.
 int DIMENSION_SUBSPACE = 0;              	  
-
-// Weak forms and Extras.
-#include "definitions.cpp"
 
 // Main function.
 int main(int argc, char* argv[])

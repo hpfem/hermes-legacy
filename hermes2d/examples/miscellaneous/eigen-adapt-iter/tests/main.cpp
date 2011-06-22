@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
-#include "hermes2d.h"
-#include <stdio.h>
+#define HERMES_REPORT_FILE "application.log"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 using Teuchos::RCP;
@@ -85,12 +85,6 @@ const int PICARD_MAX_ITER = 1000;
 const int USE_ORTHO = 1;
 const int USE_SHIFT = 0;
 
-// Boundary markers.
-const std::string BDY_MARKER = "1";
-
-// Weak forms and Extras.
-#include "../definitions.cpp"
-
 // Main function.
 int main(int argc, char* argv[])
 {
@@ -106,7 +100,7 @@ int main(int argc, char* argv[])
     mesh.refine_all_elements();
 
   // Initialize boundary conditions.
-  DefaultEssentialBCConst bc_essential(BDY_MARKER, 0.0);
+  DefaultEssentialBCConst bc_essential("Bdy", 0.0);
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.
