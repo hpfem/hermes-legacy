@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 // This test makes sure that the example "helmholtz/helmholtz-waveguide" works correctly.
 
@@ -22,9 +22,6 @@ const double sigma = 0;                     // Conductivity Ohm/m
 const double beta = 54;                     // Propagation constant
 const double E0 = 100;                      // Input electric intensity
 const double h = 0.1;                       // Height of waveguide
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {

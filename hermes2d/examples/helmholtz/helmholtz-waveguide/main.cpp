@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 
 // This example shows how to model harmonic steady state in parallel plate waveguide.
 // The Helmholtz equation is solved and there are demonstrated two typical boundary
@@ -29,9 +29,6 @@ const int INIT_REF_NUM = 3;                            // Number of initial mesh
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;       // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                        // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
-// Boundary markers.
-const std::string BDY_PERFECT = "1", BDY_LEFT = "2", BDY_IMPEDANCE = "3";
-
 // Problem parameters.
 const double epsr = 1.0;                    // Relative permittivity
 const double eps0 = 8.85418782e-12;         // Permittivity of vacuum F/m
@@ -45,9 +42,6 @@ const double sigma = 0;                     // Conductivity Ohm/m
 const double beta = 54;                     // Propagation constant
 const double E0 = 100;                      // Input electric intensity
 const double h = 0.1;                       // Height of waveguide
-
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {
