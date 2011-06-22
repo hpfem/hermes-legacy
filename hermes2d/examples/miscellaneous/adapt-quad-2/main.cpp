@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -42,18 +42,10 @@ const int NDOF_STOP = 60000;                      // Adaptivity process stops wh
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
-// Boundary markers.
-const std::string OUTER_BDY = "1", STATOR_BDY = "2";
-
 // Problem parameters.
-const std::string MATERIAL_1 = "1";
-const std::string MATERIAL_2 = "2";
 const double EPS_1 = 1.0;       // Relative electric permittivity in Omega_1.
 const double EPS_2 = 10.0;      // Relative electric permittivity in Omega_2.
 const double VOLTAGE = 50.0;    // Voltage on the stator.
-
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {
@@ -63,8 +55,8 @@ int main(int argc, char* argv[])
   mloader.load("motor.mesh", &mesh);
 
   // Initialize boundary conditions
-  DefaultEssentialBCConst bc_essential_out(OUTER_BDY, 0.0);
-  DefaultEssentialBCConst bc_essential_stator(STATOR_BDY, VOLTAGE);
+  DefaultEssentialBCConst bc_essential_out("Bdy_outer", 0.0);
+  DefaultEssentialBCConst bc_essential_stator("Bdy_stator", VOLTAGE);
   EssentialBCs bcs(Hermes::vector<EssentialBoundaryCondition *>(&bc_essential_out, &bc_essential_stator));
 
   // Create an H1 space with default shapeset.
@@ -73,7 +65,7 @@ int main(int argc, char* argv[])
   // Initialize the weak formulation.
   int adapt_order_increase = 1;
   double adapt_rel_error_tol = 1e1;
-  CustomWeakForm wf(MATERIAL_1, EPS_1, MATERIAL_2, EPS_2, ADAPTIVE_QUADRATURE, adapt_order_increase, adapt_rel_error_tol);
+  CustomWeakForm wf("Material_1", EPS_1, "Material_2", EPS_2, ADAPTIVE_QUADRATURE, adapt_order_increase, adapt_rel_error_tol);
   
   if (ADAPTIVE_QUADRATURE)
     info("Adaptive quadrature ON.");    

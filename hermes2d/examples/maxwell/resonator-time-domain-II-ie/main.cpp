@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 
 // This example solves a time-domain resonator problem for the Maxwell's equation. 
 // It is very similar to resonator-time-domain-I but B is eliminated from the 
@@ -38,14 +38,8 @@ const double time_step = 0.05;                     // Time step.
 const double T_FINAL = 35.0;                       // Final time.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;   // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
 
-// Boundary markers.
-const std::string BDY = "Perfect conductor";
-
 // Problem parameters.
 const double C_SQUARED = 1;                      // Square of wave speed.                     
-
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {
@@ -66,7 +60,7 @@ int main(int argc, char* argv[])
   CustomWeakFormWave wf(time_step, C_SQUARED, &E_sln, &F_sln);
   
   // Initialize boundary conditions
-  DefaultEssentialBCConst bc_essential(BDY, 0.0);
+  DefaultEssentialBCConst bc_essential("Perfect conductor", 0.0);
   EssentialBCs bcs(&bc_essential);
 
   // Create x- and y- displacement space using the default H1 shapeset.

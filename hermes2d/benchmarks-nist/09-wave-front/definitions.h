@@ -19,7 +19,6 @@ protected:
     double r_zero;
 };
 
-
 /* Exact solution */
 
 class CustomExactSolution : public ExactSolutionScalar
@@ -40,3 +39,4 @@ protected:
     double y_loc;
     double r_zero;
 };
+

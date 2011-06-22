@@ -1,192 +1,124 @@
-#include "weakform/weakform.h"
-#include <integrals/h1.h>
-#include "boundaryconditions/essential_bcs.h"
+#include "definitions.h"
 
-class EssentialBCNonConst : public EssentialBoundaryCondition {
-public:
-    EssentialBCNonConst(std::string marker) : EssentialBoundaryCondition(Hermes::vector<std::string>())
-    {
-        markers.push_back(marker);
-    }
-
-    ~EssentialBCNonConst() {};
-
-    inline EssentialBCValueType get_value_type() const { return EssentialBoundaryCondition::BC_FUNCTION; }
-
-    virtual scalar value(double x, double y, double n_x, double n_y, double t_x, double t_y) const
-    {
-        return 100*cos(y*M_PI/0.1);
-    }
-};
-
-class WeakFormHelmholtz : public WeakForm
+EssentialBCNonConst::EssentialBCNonConst(std::string marker) : EssentialBoundaryCondition(Hermes::vector<std::string>())
 {
-public:
-    // Problems parameters
-    WeakFormHelmholtz(double eps, double mu, double omega, double sigma, double beta, double E0, double h) : WeakForm(2)
+  markers.push_back(marker);
+}
+
+EssentialBoundaryCondition::EssentialBCValueType EssentialBCNonConst::get_value_type() const 
+{ 
+  return EssentialBoundaryCondition::BC_FUNCTION; 
+}
+
+scalar EssentialBCNonConst::value(double x, double y, double n_x, double n_y, double t_x, double t_y) const
+{
+  return 100*cos(y*M_PI/0.1);
+}
+
+
+WeakFormHelmholtz::WeakFormHelmholtz(double eps, double mu, double omega, double sigma, double beta, double E0, double h) : WeakForm(2)
     {
-        add_matrix_form(new MatrixFormHelmholtzEquation_real_real(0, 0, eps, mu));
+        add_matrix_form(new MatrixFormHelmholtzEquation_real_real(0, 0, eps, omega, mu));
         add_matrix_form(new MatrixFormHelmholtzEquation_real_imag(0, 1, mu, omega, sigma));
         add_matrix_form(new MatrixFormHelmholtzEquation_imag_real(1, 0, mu, omega, sigma));
         add_matrix_form(new MatrixFormHelmholtzEquation_imag_imag(1, 1, eps, mu, omega));
 
         add_matrix_form_surf(new  MatrixFormSurfHelmholtz_real_imag(0, 1, "Bdy_impedance", beta));
         add_matrix_form_surf(new  MatrixFormSurfHelmholtz_imag_real(1, 0, "Bdy_impedance", beta));
-    };
+    }
 
-private:
-    class MatrixFormHelmholtzEquation_real_real : public WeakForm::MatrixFormVol
-    {
-    public:
-        MatrixFormHelmholtzEquation_real_real(int i, int j, double eps, double mu) :
-            WeakForm::MatrixFormVol(i, j), eps(eps), mu(mu) {
-        }
-
-        template<typename Real, typename Scalar>
-        Scalar matrix_form(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
+template<typename Real, typename Scalar>
+Scalar WeakFormHelmholtz::MatrixFormHelmholtzEquation_real_real::matrix_form(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const 
+{
             return int_grad_u_grad_v<Real, Scalar>(n, wt, u, v) - sqr(omega) * mu * eps * int_u_v<Real, Scalar>(n, wt, u, v);
         }
 
-        virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
+scalar WeakFormHelmholtz::MatrixFormHelmholtzEquation_real_real::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
             return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
         }
 
-        virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
+Ord WeakFormHelmholtz::MatrixFormHelmholtzEquation_real_real::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
             return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
         }
 
-    private:
-        // Memebers.
-        double eps;
-        double mu;
-    };
-
-    class MatrixFormHelmholtzEquation_real_imag : public WeakForm::MatrixFormVol
-    {
-
-    private:
-        // Memebers.
-        double mu;
-        double omega;
-        double sigma;
-
-    public:
-        MatrixFormHelmholtzEquation_real_imag(int i, int j, double mu, double omega, double sigma) :
-            WeakForm::MatrixFormVol(i, j), mu(mu), omega(omega), sigma(sigma) {
-        }
 
         template<typename Real, typename Scalar>
-        Scalar matrix_form(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
+        Scalar WeakFormHelmholtz::MatrixFormHelmholtzEquation_real_imag::matrix_form(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
             return -omega * mu * sigma * int_u_v<Real, Scalar>(n, wt, u, v);
         }
 
-        virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
+  scalar WeakFormHelmholtz::MatrixFormHelmholtzEquation_real_imag::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
             return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
         }
 
-        virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
+ Ord WeakFormHelmholtz::MatrixFormHelmholtzEquation_real_imag::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
             return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
         }
-    };
+ 
 
-    class MatrixFormHelmholtzEquation_imag_real : public WeakForm::MatrixFormVol
-    {
-    private:
-        // Memebers.
-        double mu;
-        double omega;
-        double sigma;
-
-    public:
-        MatrixFormHelmholtzEquation_imag_real(int i, int j, double mu, double omega, double sigma) :
-            WeakForm::MatrixFormVol(i, j), mu(mu), omega(omega), sigma(sigma) {
-        }
+ 
 
         template<typename Real, typename Scalar>
-        Scalar matrix_form(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
+        Scalar WeakFormHelmholtz::MatrixFormHelmholtzEquation_imag_real::matrix_form(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
             return  omega * mu * sigma * int_u_v<Real, Scalar>(n, wt, u, v);
         }
 
-        virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
+   scalar WeakFormHelmholtz::MatrixFormHelmholtzEquation_imag_real::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
             return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
         }
 
-        virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
+ Ord WeakFormHelmholtz::MatrixFormHelmholtzEquation_imag_real::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
             return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
         }
+ 
 
-    };
-
-    class MatrixFormHelmholtzEquation_imag_imag : public WeakForm::MatrixFormVol
-    {
-    public:
-        MatrixFormHelmholtzEquation_imag_imag(int i, int j, double eps, double mu, double omega) :
-            WeakForm::MatrixFormVol(i, j), eps(eps), mu(mu), omega(omega) {
-        }
+ 
 
         template<typename Real, typename Scalar>
-        Scalar matrix_form(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
+        Scalar WeakFormHelmholtz::MatrixFormHelmholtzEquation_imag_imag::matrix_form(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
             return int_grad_u_grad_v<Real, Scalar>(n, wt, u, v) - sqr(omega) * mu * eps * int_u_v<Real, Scalar>(n, wt, u, v);
         }
-        virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
+   scalar WeakFormHelmholtz::MatrixFormHelmholtzEquation_imag_imag::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
             return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
         }
 
-        virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
+ Ord WeakFormHelmholtz::MatrixFormHelmholtzEquation_imag_imag::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
             return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
         }
 
-        // Memebers.
-        double eps;
-        double mu;
-        double omega;
-    };
+ 
 
 
-    class MatrixFormSurfHelmholtz_real_imag : public WeakForm::MatrixFormSurf
-    {
-
-    private:
-        double beta;
-    public:
-        MatrixFormSurfHelmholtz_real_imag(int i, int j, std::string area, double beta)
-            : WeakForm::MatrixFormSurf(i, j, area), beta(beta){ }
+ 
 
         template<typename Real, typename Scalar>
-        Scalar matrix_form_surf(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
+        Scalar WeakFormHelmholtz::MatrixFormSurfHelmholtz_real_imag::matrix_form_surf(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
             return beta * int_u_v<Real, Scalar>(n, wt, u, v);
         }
 
-        virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
+  scalar WeakFormHelmholtz::MatrixFormSurfHelmholtz_real_imag::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
             return matrix_form_surf<double, scalar>(n, wt, u_ext, u, v, e, ext);
         }
 
-        virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
+     Ord WeakFormHelmholtz::MatrixFormSurfHelmholtz_real_imag::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
             return matrix_form_surf<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
         }
-    };
+ 
 
 
 
-    class MatrixFormSurfHelmholtz_imag_real : public WeakForm::MatrixFormSurf
-    {
-
-    private:
-        double beta;
-    public:
-        MatrixFormSurfHelmholtz_imag_real(int i, int j, std::string area, double beta)
-            : WeakForm::MatrixFormSurf(i, j, area), beta(beta){ }
+ 
 
         template<typename Real, typename Scalar>
-        Scalar matrix_form_surf(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
+        Scalar WeakFormHelmholtz::MatrixFormSurfHelmholtz_imag_real::matrix_form_surf(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
             return - beta*int_u_v<Real, Scalar>(n, wt, u, v);
         }
-        virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
+
+ scalar WeakFormHelmholtz::MatrixFormSurfHelmholtz_imag_real::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
             return matrix_form_surf<double, scalar>(n, wt, u_ext, u, v, e, ext);
         }
 
-        virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
+  Ord WeakFormHelmholtz::MatrixFormSurfHelmholtz_imag_real::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
             return matrix_form_surf<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
         }
-    };
-};
+

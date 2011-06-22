@@ -1,8 +1,7 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
+#define HERMES_REPORT_ALL
+#define HERMES_REPORT_FILE "application.log"
 #include "config.h"
-#include <hermes2d.h>
+#include "definitions.h"
 
 //  This example solves a linear advection equation using Dicontinuous Galerkin (DG) method.
 //	It is intended to show how evalutation of surface matrix forms that take basis functions defined
@@ -59,11 +58,6 @@ const char* preconditioner = "jacobi";            // Name of the preconditioner 
                                                   // the other solvers). 
                                                   // Possibilities: none, jacobi, neumann, least-squares, or a
                                                   // preconditioner from IFPACK (see solver/aztecoo.h).
-// Boundary markers.
-const std::string BDY_BOTTOM_LEFT = "1";
-
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* args[])
 {
@@ -101,7 +95,7 @@ int main(int argc, char* args[])
   Solution ref_sln;
 
   // Initialize the weak formulation.
-  CustomWeakForm wf(BDY_BOTTOM_LEFT);
+  CustomWeakForm wf("Bdy_bottom_left");
 
   ScalarView view1("Solution", new WinGeom(900, 0, 450, 350));
   view1.fix_scale_width(60);

@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 // This test makes sure that the example "maxwell/resonator-time-domain-I" works correctly.
 
@@ -31,14 +31,8 @@ ButcherTableType butcher_table_type = Implicit_RK_1;
 //ButcherTableType butcher_table_type = Implicit_SDIRK_2_2;
 //ButcherTableType butcher_table_type = Implicit_Radau_IIA_3_5;
 
-// Boundary markers.
-const std::string BDY = "Perfect conductor";
-
 // Problem parameters.
 const double C_SQUARED = 1;                      // Square of wave speed.                     
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {
@@ -65,7 +59,7 @@ int main(int argc, char* argv[])
   CustomWeakFormWave wf(C_SQUARED);
   
   // Initialize boundary conditions
-  DefaultEssentialBCConst bc_essential(BDY, 0.0);
+  DefaultEssentialBCConst bc_essential("Perfect conductor", 0.0);
   EssentialBCs bcs_E(&bc_essential);
   EssentialBCs bcs_B;
 
