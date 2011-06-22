@@ -1,8 +1,10 @@
 Trilinos - Coupled (05-trilinos-coupled)
 ----------------------------------------
 
+**NOTE - THIS EXAMPLE HAS NOT BEEN UPGRADED TO NEW WEAK FORMS YET**
+
 **Git reference:** Example `05-trilinos-coupled
-<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P09-trilinos/05-trilinos-coupled>`_.
+<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P07-trilinos/05-trilinos-coupled>`_.
 
 The purpose of this example is to show how to use Trilinos for nonlinear time-dependent coupled PDE systems.
 Solved by NOX solver via Newton or JFNK, with or without preconditioning. 
