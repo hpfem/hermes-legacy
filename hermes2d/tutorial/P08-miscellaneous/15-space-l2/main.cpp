@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
   mloader.load("square.mesh", &mesh);
 
   // Perform uniform mesh refinements.
-  for (int i = 0; i<INIT_REF_NUM; i++) mesh.refine_all_elements();
+  for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Create an L2 space with default shapeset.
   L2Space space(&mesh, P_INIT);
@@ -34,9 +34,6 @@ int main(int argc, char* argv[])
   BaseView bview("BaseView", new WinGeom(0, 0, 600, 500));
   bview.show(&space);
   // View::wait(H2DV_WAIT_KEYPRESS);
-
-  // Assemble and solve the finite element problem.
-  WeakForm wf_dummy;
 
   // Initialize the exact and projected solution.
   Solution sln;

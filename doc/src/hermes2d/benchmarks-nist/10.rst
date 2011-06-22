@@ -1,7 +1,7 @@
 NIST-10 (Interior Line Singularity)
 ------------------
 
-**Git reference:** Benchmark `nist-10 <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks/nist-10>`_.
+**Git reference:** Benchmark `10-interior-line-singularity <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks-nist/10-interior-line-singularity>`_.
 
 This example is an extension of Boundary Line Singularity (NIST-07) with an anisotropic solution to allow 
 for a sloped line so that the singularity does not necessarily coincide with element edges. 
@@ -15,7 +15,7 @@ Equation solved: Poisson equation
 .. math::
     :label: line-sing
 
-       -\Delta u = f.
+       -\Delta u - f = 0.
 
 Domain of interest: $(-1, 1)^2$.
 
@@ -31,22 +31,10 @@ Exact solution
 
 where $K$ and $\alpha$ are real constants. 
 
-Right-hand side: Obtained by inserting the exact solution into the equation.
-The corresponding code snippet is shown below::
+Right-hand side 
+~~~~~~~~~~~~~~~
 
-    {
-    public:
-      CustomRightHandSide(double k, double alpha)
-        : DefaultNonConstRightHandSide(), k(k), alpha(alpha) {
-        cef = new CustomExactFunction(k, alpha);
-    };
-
-    virtual double value(double x, double y) const {
-      if (x < 0) return cef->fn(x, y) * k * k;
-      else return cef->fn(x, y) * k * k
-                  - alpha *(alpha - 1) * pow(x, alpha - 2.)
-                  - k * k * pow(x, alpha);
-    }
+Obtained by inserting the exact solution into the equation.
 
 Sample solution
 ~~~~~~~~~~~~~~~

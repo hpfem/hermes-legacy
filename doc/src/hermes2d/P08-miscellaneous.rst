@@ -12,10 +12,8 @@ into the previous sections.
    P08-miscellaneous/10-space-hdiv
    P08-miscellaneous/15-space-l2
    P08-miscellaneous/20-remote-computing
-   P08-miscellaneous/25-markers-typical
-   P08-miscellaneous/30-markers-nontypical
-   P08-miscellaneous/35-nurbs
-   P08-miscellaneous/40-matrix-solvers
+   P08-miscellaneous/30-nurbs
+   P08-miscellaneous/35-matrix-solvers
 
 
 

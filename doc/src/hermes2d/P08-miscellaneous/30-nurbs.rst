@@ -1,7 +1,7 @@
-Using NURBS (35-nurbs)
+Using NURBS (30-nurbs)
 ----------------------
 
-**Git reference:** Tutorial example `35-nurbs <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P10-miscellaneous/35-nurbs>`_. 
+**Git reference:** Tutorial example `35-nurbs <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P08-miscellaneous/35-nurbs>`_. 
 
 This example illustrates how to use full-featured NURBS
 to define curved boundary edges. Recall that simplified 
@@ -71,7 +71,7 @@ Snippet from the file domain-1.mesh::
 
 Result:
 
-.. image:: 35-nurbs/1.png
+.. image:: 30-nurbs/1.png
    :align: center
    :width: 500
    :alt: NURBS with one control point.
@@ -98,7 +98,7 @@ Snippet from the file domain-3.mesh::
 
 Result:
 
-.. image:: 35-nurbs/2.png
+.. image:: 30-nurbs/2.png
    :align: center
    :width: 500
    :alt: NURBS with two control points.
@@ -127,7 +127,7 @@ Snippet from the file domain-2.mesh::
 
 Result:
 
-.. image:: 35-nurbs/3.png
+.. image:: 30-nurbs/3.png
    :align: center
    :width: 500
    :alt: NURBS with three control points.

@@ -1,7 +1,7 @@
 NIST-09 (Wave Front)
 --------------------
 
-**Git reference:** Benchmark `nist-09 <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks/nist-09>`_.
+**Git reference:** Benchmark `09-wave-front <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks-nist/09-wave-front>`_.
 
 Commonly used for testing adaptive refinement algorithms is Poisson's equation with a solution that has
 a steep wave front in the interior of the domain.
@@ -14,7 +14,7 @@ Equation solved: Poisson equation
 .. math::
     :label: nist-9
 
-       -\Delta u = f.
+       -\Delta u - f = 0.
 
 Domain of interest: Unit Square $(0, 1)^2$ 
 
@@ -53,7 +53,6 @@ Solution for $\alpha = 50$, $(x_{loc}, y_{loc}) = (0.5, 0.5)$, and $r_{0} = 0.25
 .. image:: nist-09/solution.png
    :align: center
    :width: 600
-   :height: 400
    :alt: Solution.
 
 Comparison of h-FEM (p=1), h-FEM (p=2) and hp-FEM with anisotropic refinements
@@ -85,7 +84,6 @@ DOF convergence graphs:
 .. image:: nist-09/conv_dof_aniso.png
    :align: center
    :width: 600
-   :height: 400
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
@@ -93,7 +91,6 @@ CPU convergence graphs:
 .. image:: nist-09/conv_cpu_aniso.png
    :align: center
    :width: 600
-   :height: 400
    :alt: CPU convergence graph.
 
 hp-FEM with iso, h-aniso and hp-aniso refinements
@@ -125,7 +122,6 @@ DOF convergence graphs:
 .. image:: nist-09/conv_dof_hp.png
    :align: center
    :width: 600
-   :height: 400
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
@@ -133,7 +129,6 @@ CPU convergence graphs:
 .. image:: nist-09/conv_cpu_hp.png
    :align: center
    :width: 600
-   :height: 400
    :alt: CPU convergence graph.
 
 

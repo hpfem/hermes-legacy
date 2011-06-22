@@ -1,7 +1,7 @@
 Smooth-aniso-x (Elliptic)
 -------------------------
 
-**Git reference:** Benchmark `smooth-aniso-x <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks/smooth-aniso-x>`_.
+**Git reference:** Benchmark `smooth-aniso-x <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks-general/smooth-aniso-x>`_.
 
 We show that one should use (spatially as well as polynomially) anisotropic refinements for solutions 
 containing anisotropy. 
@@ -14,7 +14,7 @@ Equation solved: Poisson equation
 .. math::
     :label: sin
 
-       -\Delta u = f.
+       -\Delta u - f = 0.
 
 Domain of interest: Square $(0, \pi)^2$.
 
@@ -27,25 +27,7 @@ Right-hand side:
 
 Boundary conditions: Zero Dirichlet on the left edge, zero Neumann on the top and bottom edges.
 Nonzero Neumann $\partial u / \partial n = -1$ on the right edge.
-
-In the code::
-
-    // Enter boundary markers.
-    BCTypes bc_types;
-    bc_types.add_bc_dirichlet(BDY_LEFT);
-    bc_types.add_bc_neumann(Hermes::Tuple<int>(BDY_BOTTOM, BDY_RIGHT, BDY_TOP));
-
-    // Enter Dirichlet boundary values.
-    BCValues bc_values;
-    bc_values.add_zero(BDY_LEFT);
-
-The nonzero Neumann yields a surface linear form on the right edge::
-
-    template<typename Real, typename Scalar>
-    Scalar linear_form_surf(int n, double *wt, Func<Real> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      return -int_v<Real, Scalar>(n, wt, v);
-    }
+The nonzero Neumann yields a surface linear form.
 
 Exact solution
 ~~~~~~~~~~~~~~
