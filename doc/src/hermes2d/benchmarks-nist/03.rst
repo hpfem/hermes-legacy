@@ -1,7 +1,7 @@
 NIST-03 (Linear Elasticity)
 ---------------------------
 
-**Git reference:** Benchmark `nist-03 <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks/nist-03>`_.
+**Git reference:** Benchmark `03-linear-elasticity <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks-nist/03-linear-elasticity>`_.
 
 This problem is a coupled system of two equations with a mixed derivative in the coupling term 
 (Lame equations); the context of the problem comes from the subject of linear elasticity. 
@@ -13,13 +13,13 @@ Equation solved: Coupled system of two equations
 
 .. math::
 
-        -E \frac{1-nu^2}{1-2*nu} \frac{\partial^{2} u}{\partial x^{2}} - E\frac{1-nu^2}{2-2*nu} \frac{\partial^{2} u}{\partial y^{2}} 
-        -E \frac{1-nu^2}{(1-2*nu)(2-2*nu)} \frac{\partial^{2} v}{\partial x \partial y} = F_{x}.
+        -E \frac{1-\nu^2}{1-2\nu} \frac{\partial^{2} u}{\partial x^{2}} - E\frac{1-\nu^2}{2-2\nu} \frac{\partial^{2} u}{\partial y^{2}} 
+        -E \frac{1-\nu^2}{(1-2\nu)(2-2\nu)} \frac{\partial^{2} v}{\partial x \partial y} - F_{x} = 0.
 
 .. math::
 
-        -E \frac{1-nu^2}{2-2*nu} \frac{\partial^{2} v}{\partial x^{2}} - E\frac{1-nu^2}{1-2*nu} \frac{\partial^{2} v}{\partial y^{2}} 
-        -E \frac{1-nu^2}{(1-2*nu)(2-2*nu)} \frac{\partial^{2} u}{\partial x \partial y} = F_{y}.
+        -E \frac{1-\nu^2}{2-2\nu} \frac{\partial^{2} v}{\partial x^{2}} - E\frac{1-\nu^2}{1-2\nu} \frac{\partial^{2} v}{\partial y^{2}} 
+        -E \frac{1-\nu^2}{(1-2\nu)(2-2\nu)} \frac{\partial^{2} u}{\partial x \partial y} - F_{y} = 0.
 
 where $F_{x} = F_{y} = 0$, $u$ and $v$ are the $x$ and $y$ displacements, $E$ is Young's Modulus, and $\nu$ is Poisson's ratio.
 
