@@ -1,7 +1,7 @@
 Space H(div) (10-space-hdiv)
 ----------------------------
 
-**Git reference:** Tutorial example `10-space-hdiv <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P10-miscellaneous/10-space-hdiv>`_. 
+**Git reference:** Tutorial example `10-space-hdiv <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P08-miscellaneous/10-space-hdiv>`_. 
 
 The space H(div) in 2D is very similar in nature to the space H(curl), except its functions 
 behave like (vector-valued) divergences of $H^1$ functions. Finite element basis functions 
@@ -24,15 +24,9 @@ its basis functions:
       // Initial mesh refinement.
       for (int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
-      // Enter boundary markers (default is Neumann boundary).
-      BCTypes bc_types;
-
-      // Enter Dirichlet boundary values (not relevant here).
-      BCValues bc_values;
-
       // Create an Hdiv space with default shapeset.
       // (BC types and essential BC values not relevant.)
-      HdivSpace space(&mesh, &bc_types, &bc_values, P_INIT);
+      HdivSpace space(&mesh, P_INIT);
 
       // Visualise the FE basis.
       VectorBaseView bview("VectorBaseView", new WinGeom(0, 0, 700, 600));

@@ -1,7 +1,7 @@
-Using Matrix Solvers (40-matrix-solvers)
+Using Matrix Solvers (35-matrix-solvers)
 ----------------------------------------
 
-**Git reference:** Tutorial example `40-matrix-solvers <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P08-miscellaneous/40-matrix-solvers>`_. 
+**Git reference:** Tutorial example `35-matrix-solvers <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P08-miscellaneous/35-matrix-solvers>`_. 
 
 This example shows how to solve a matrix problem Ax = b in Hermes using various solvers
 that Hermes supports. The matrix and the right-hand side vector are first read from a text 
@@ -15,7 +15,6 @@ use the CMake.vars file. For example, a line "set(WITH_MUMPS YES)" will override
 default value for the Mumps solver.
 
 **Usage:**
-::
 
 There are two available solver options: real and complex one.
 The distinction between these two is in system matrix and right hand side vector entries they handle.

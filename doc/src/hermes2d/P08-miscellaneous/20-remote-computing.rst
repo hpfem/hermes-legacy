@@ -1,7 +1,7 @@
 Remote Computing (20-remote-computing)
 --------------------------------------
 
-**Git reference:** Tutorial example `20-remote-computing <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P10-miscellaneous/20-remote-computing>`_. 
+**Git reference:** Tutorial example `20-remote-computing <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P08-miscellaneous/20-remote-computing>`_. 
 
 This example shows how to save visualization data if you are working 
 on a distant computer and cannot use ScalarView, OrderView, or 
@@ -16,8 +16,7 @@ related classes directly. There are two basic options:
     ScalarView::Linearizer::load_data() and ScalarView::show_linearizer_data()
     on your local machine.
 
-The underlying model for computation is the tutorial example 09-timedep. The 
-part of the code that is relevant for this example is::
+The part of the code that is relevant for this example is::
 
     if (ts % OUTPUT_FREQUENCY == 0) {
       Linearizer lin;
@@ -42,9 +41,8 @@ part of the code that is relevant for this example is::
       info("Complete Solution saved to file %s.", filename);
     }
 
-In the code above, do not worry about the parameters 'xdisp', 'ydisp' and 'dmult'
-as these are only used to deform the domain (in linear elasticity problems and such,
-see example 08-system).
+In the above code, do not worry about the parameters 'xdisp', 'ydisp' and 'dmult'
+as these are only used to deform the domain (in linear elasticity problems and such).
 
 
 
