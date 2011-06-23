@@ -1,7 +1,7 @@
 Smooth-iso (Elliptic)
 ---------------------
 
-**Git reference:** Benchmark `smooth-iso <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks/smooth-iso>`_.
+**Git reference:** Benchmark `smooth-iso <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks-general/smooth-iso>`_.
 
 We show that it is a very bad idea to approximate smooth solutions using low-order 
 elements.
@@ -14,7 +14,7 @@ Equation solved: Poisson equation
 .. math::
     :label: smooth-iso
 
-       -\Delta u = f.
+       -\Delta u - f = 0.
 
 Domain of interest: Square $(0, \pi)^2$.
 
@@ -27,15 +27,6 @@ Right-hand side:
 
 Boundary conditions: Zero Dirichlet. 
 
-In the code::
-
-    // Enter boundary markers.
-    BCTypes bc_types;
-    bc_types.add_bc_dirichlet(BDY_DIRICHLET);
-
-    // Enter Dirichlet boudnary values.
-    BCValues bc_values;
-
 Exact solution
 ~~~~~~~~~~~~~~
 
@@ -43,47 +34,6 @@ Exact solution
     :label: smooth-iso-exact
 
     u(x, y) = \sin(x)\sin(y).
-
-In the code::
-
-    // Exact solution.
-    static double fn(double x, double y)
-    {
-      return sin(x)*sin(y);
-    }
-
-    static double fndd(double x, double y, double& dx, double& dy)
-    {
-      dx = cos(x)*sin(y);
-      dy = sin(x)*cos(y);
-      return fn(x, y);
-    }
-
-Weak forms
-~~~~~~~~~~
-
-::
-
-    // Weak forms.
-    template<typename Real, typename Scalar>
-    Scalar bilinear_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, 
-                         Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      return int_grad_u_grad_v<Real, Scalar>(n, wt, u, v);
-    }
-
-    template<typename Real>
-    Real rhs(Real x, Real y)
-    {
-      return 2*sin(x)*sin(y);
-    }
-
-    template<typename Real, typename Scalar>
-    Scalar linear_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, 
-                       Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      return int_F_v<Real, Scalar>(n, wt, rhs, v, e);
-    }
 
 Sample solution
 ~~~~~~~~~~~~~~~

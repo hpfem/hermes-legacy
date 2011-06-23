@@ -1,7 +1,7 @@
 Boundary Layer (Elliptic)
 -------------------------
 
-**Git reference:** Benchmark `layer-boundary <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks/layer-boundary>`_.
+**Git reference:** Benchmark `layer-boundary <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks-general/layer-boundary>`_.
 
 This example is a singularly perturbed problem with known exact solution that exhibits a thin boundary layer 
 The reader can use it to perform various experiments with adaptivity. The sample numerical results presented 
@@ -19,7 +19,7 @@ Equation solved: Poisson equation
 .. math::
     :label: layer-boundary
 
-       -\Delta u + K^2 u = f.
+       -\Delta u + K^2 u - f = 0.
 
 Domain of interest: Square $(-1, 1)^2$.
 
@@ -44,61 +44,10 @@ in $(-1,1)$ with zero Dirichlet boundary conditions. This solution has the form
 
     \hat u (x) = 1 - [exp(Kx) + exp(-Kx)] / [exp(K) + exp(-K)];
 
-Right-hand side: Calculated by inserting the exact solution into the equation. Here
-is the code snippet with both the exact solution and the right-hand side:
+Right-hand side
+~~~~~~~~~~~~~~~
 
-::
-
-    // Solution to the 1D problem -u'' + K*K*u = K*K in (-1,1) with zero Dirichlet BC.
-    double uhat(double x) {
-      return 1. - (exp(K*x) + exp(-K*x)) / (exp(K) + exp(-K));
-    }
-    double duhat_dx(double x) {
-      return -K * (exp(K*x) - exp(-K*x)) / (exp(K) + exp(-K));
-    }
-    double dduhat_dxx(double x) {
-      return -K*K * (exp(K*x) + exp(-K*x)) / (exp(K) + exp(-K));
-    }
-
-    // Exact solution u(x,y) to the 2D problem is defined as the
-    // Cartesian product of the 1D solutions.
-    static double sol_exact(double x, double y, double& dx, double& dy)
-    {
-      dx = duhat_dx(x) * uhat(y);
-      dy = uhat(x) * duhat_dx(y);
-      return uhat(x) * uhat(y);
-    }
-
-    // Right-hand side.
-    double rhs(double x, double y) {
-      return -(dduhat_dxx(x)*uhat(y) + uhat(x)*dduhat_dxx(y)) + K*K*uhat(x)*uhat(y);
-    }
-
-Weak forms
-~~~~~~~~~~
-
-The weak forms are very simple and they are defined as follows. The only thing worth mentioning 
-here is that we integrate the non-polynomial right-hand side with a very high order for accuracy::
-
-    // Weak forms.
-    template<typename Real, typename Scalar>
-    Scalar bilinear_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, 
-                         Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      return int_grad_u_grad_v<Real, Scalar>(n, wt, u, v) + K*K * int_u_v<Real, Scalar>(n, wt, u, v);
-    }
-
-    template<typename Real, typename Scalar>
-    Scalar linear_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      return int_F_v<Real, Scalar>(n, wt, rhs, v, e);;
-    }
-
-    // Integration order for linear_form_0.
-    Ord linear_form_ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
-    {
-      return 24;
-    }
+Calculated by inserting the exact solution into the equation. 
 
 Sample solution
 ~~~~~~~~~~~~~~~

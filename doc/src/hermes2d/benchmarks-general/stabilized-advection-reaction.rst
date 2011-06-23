@@ -1,7 +1,7 @@
 Advection-reaction (Hyperbolic)
 -------------------------------
 
-**Git reference:** Benchmark `stabilized-advection-reaction <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks/stabilized-advection-reaction>`_.
+**Git reference:** Benchmark `stabilized-advection-reaction <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks-general/stabilized-advection-reaction>`_.
 
 This benchmark shows how to solve a steady-state `1`\ :sup:`st` order hyperbolic PDE with discontinuous boundary conditions.
 
@@ -36,9 +36,9 @@ Boundary conditions: Dirichlet, prescribed on the inflow parts of the domain bou
 Exact solution
 ~~~~~~~~~~~~~~
 
-Exact solution has been obtained by the method of characteristics, but it cannot be stated in a fully analytic form. Using Mathematica 7.0, the expression for the solution has been derived symbolically without any numerical approximation and its numerical evaluation at any point :math:`(x,y)\in\Omega` only amounts to calulating roots of `14`\ :sup:`th` order polynomials with coefficients defined by :math:`x,y`, evaluating standard analytical functions (exponential, sine) and performing standard algebraic operations. All these operations can be realized by Mathematica in machine precision and hence the solution may be considered exact for the purposes of comparison with the approximate results of Hermes. The `source notebook <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks/stabilized-advection-reaction/exact/hyper_moc.nb>`_ is included [1]_.
+Exact solution has been obtained by the method of characteristics, but it cannot be stated in a fully analytic form. Using Mathematica 7.0, the expression for the solution has been derived symbolically without any numerical approximation and its numerical evaluation at any point :math:`(x,y)\in\Omega` only amounts to calulating roots of `14`\ :sup:`th` order polynomials with coefficients defined by :math:`x,y`, evaluating standard analytical functions (exponential, sine) and performing standard algebraic operations. All these operations can be realized by Mathematica in machine precision and hence the solution may be considered exact for the purposes of comparison with the approximate results of Hermes. The `source notebook <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks-general/stabilized-advection-reaction/exact/hyper_moc.nb>`_ is included [1]_.
 
-For illustration purposes, the plots below were produced by the Matlab script `plotu.m <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks/stabilized-advection-reaction/exact/plotu.m>`_ from file `sol_101x101.map <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks/stabilized-advection-reaction/exact/sol_100x100.map>`_, which contains the solution values on a uniform grid of :math:`101\times101` points in :math:`\Omega`. 
+For illustration purposes, the plots below were produced by the Matlab script `plotu.m <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks-general/stabilized-advection-reaction/exact/plotu.m>`_ from file `sol_101x101.map <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks-general/stabilized-advection-reaction/exact/sol_100x100.map>`_, which contains the solution values on a uniform grid of :math:`101\times101` points in :math:`\Omega`. 
 
 .. image:: benchmark-stabilized-advection-reaction/exact_complete.png
    :align: center
@@ -80,21 +80,7 @@ The bilinear form for the SUPG discretization of problem :eq:`eq-adv-rea`, :eq:`
 
     \int_\Omega (\vec\beta\cdot\nabla u + c)v \,\mathrm{d}x.
 
-Note that we do not apply the Green's theorem and seek the *strong* solution, which lies in :math:`L^2(\Omega)` together with its *streamline derivative* :math:`\vec\beta\cdot\nabla u` [2]_. Space of such functions contains :math:`H^1(\Omega)` and in particular its finite-dimensional subspace of piecewise continuous polynomials up to a specified order, which we use for the practical implementation. Code for the first part of the SUPG bilinear form is below::
-
-    template<typename Real, typename Scalar>
-    Scalar cg_biform(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      Scalar result = 0;
-      for (int i=0; i < n; i++)
-      {
-        Real a = fn_a<Real>(e->x[i], e->y[i]);
-        Real b = fn_b<Real>(e->x[i], e->y[i]);
-        Real c = fn_c<Real>(e->x[i], e->y[i]);
-        result += wt[i] * v->val[i] * (dot2<Real>(a, b, u->dx[i], u->dy[i]) + c * u->val[i]);
-      }
-      return result;
-    }
+Note that we do not apply the Green's theorem and seek the *strong* solution, which lies in :math:`L^2(\Omega)` together with its *streamline derivative* :math:`\vec\beta\cdot\nabla u` [2]_. Space of such functions contains :math:`H^1(\Omega)` and in particular its finite-dimensional subspace of piecewise continuous polynomials up to a specified order, which we use for the practical implementation. 
  
 The second part reads
 
@@ -113,190 +99,22 @@ Appropriate choice of parameter :math:`\tau`, so that the scheme is neither over
     
 and is working reasonably well for the current problem. Nevertheless, the reader is encouraged to derive and experiment with his own expressions. 
 
-Code for this part of the SUPG bilinear form is then
-
-::
-
-    template<typename Real, typename Scalar>
-    Scalar stabilization_biform_supg(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      Real h_e = e->diam;
-      Scalar result = 0;
-      Real norm_a_sq = 0.;
-      Real norm_b_sq = 0.;
-      for (int i=0; i < n; i++) 
-      {
-        Real a = fn_a<Real>(e->x[i], e->y[i]);
-        Real b = fn_b<Real>(e->x[i], e->y[i]);
-        Real c = fn_c<Real>(e->x[i], e->y[i]);
-        Real f = F<Real>(e->x[i], e->y[i]);
-        
-        Real R = dot2<Real>(a, b, u->dx[i], u->dy[i]) + c * u->val[i] - f;    
-        result += wt[i] * dot2<Real>(a, b, v->dx[i], v->dy[i]) * R;
-        norm_a_sq += 0.5 * wt[i] * sqr(a);
-        norm_b_sq += 0.5 * wt[i] * sqr(b);
-      }
-      
-      return result * sqr(h_e)/(4*(norm_a_sq + norm_b_sq));
-    }
-
 The final part of the SUPG bilinear form, together with the corresponding linear form, enforces the Dirichlet boundary conditions on the inflow boundaries in an :math:`L^2`-integral sense. Although this form has been traditionally used in literature rather for mathematical analysis than for practical computation, we have found it advantageous for the latter purpose as well since with open quadrature rules currently used in Hermes, the problematic evaluation of the boundary condition and approximate solution at the vertices of discontinuity is hence avoided.
 
-::   
-
-    template<typename Real, typename Scalar>
-    Scalar cg_boundary_biform(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      Scalar result = 0;
-      for (int i=0; i < n; i++)
-      {
-        Real a = fn_a<Real>(e->x[i], e->y[i]);
-        Real b = fn_b<Real>(e->x[i], e->y[i]);
-        Real beta_dot_n = dot2<Real>(a, b, e->nx[i], e->ny[i]);
-        
-        if (beta_dot_n < 0)     // inflow
-          result += -wt[i] * u->val[i] * v->val[i] * beta_dot_n;
-      }
-      return result;
-    }
-
-    template<typename Real, typename Scalar>
-    Scalar cg_boundary_liform(int n, double *wt, Func<Real> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      Scalar result = 0;
-      
-      for (int i = 0; i < n; i++) 
-      {
-        Real x = e->x[i], y = e->y[i];
-        Real a = fn_a<Real>(x, y);
-        Real b = fn_b<Real>(x, y);
-        Real beta_dot_n = dot2<Real>(a, b, e->nx[i], e->ny[i]);
-        
-        if (beta_dot_n < 0)    // inflow
-        {
-          Scalar g = essential_bc_values<Real, Scalar>(e->edge_marker, x, y);
-          result += -wt[i] * beta_dot_n * g * v->val[i];
-        }
-      }
-      
-      return result;
-    }
-
-    
 Discontinuous Galerkin
 ^^^^^^^^^^^^^^^^^^^^^^
 
-There are several possibilities how to formulate the DGM. We choose that presented and analysed in [BMS04]_ and define the bilinear and linear forms for the weak formulation of problem :eq:`eq-adv-rea`, :eq:`bc-adv-rea` as follows::
-
-    // Scalar average, vector jump.
-
-    #define AVG(w)      ( 0.5 * (w->get_val_central(i) + w->get_val_neighbor(i)) )
-
-    #define JUMP(w)     w->get_val_central(i)*e->nx[i] - w->get_val_neighbor(i)*e->nx[i],\
-                        w->get_val_central(i)*e->ny[i] - w->get_val_neighbor(i)*e->ny[i] 
-
-    // Weak forms:
-
-    template<typename Real, typename Scalar>
-    Scalar dg_volumetric_biform(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      Scalar result = 0;
-      for (int i = 0; i < n; i++)
-      {
-        Real a = fn_a<Real>(e->x[i], e->y[i]);
-        Real b = fn_b<Real>(e->x[i], e->y[i]);
-        Real c = fn_c<Real>(e->x[i], e->y[i]);
-        result += wt[i] * u->val[i] * ( c * v->val[i] - dot2<Real>(a, b, v->dx[i], v->dy[i]) );
-      }
-      return result;
-    }
-
-    template<typename Real, typename Scalar>
-    Scalar dg_interface_biform(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      Scalar result = 0;
-      Real theta = 0.5;   // Stabilization parameter. Standard upwind scheme is obtained for theta = 0.5.
-        
-      for (int i = 0; i < n; i++) 
-      {
-        Real a = fn_a<Real>(e->x[i], e->y[i]);
-        Real b = fn_b<Real>(e->x[i], e->y[i]);
-        Real beta_dot_n = dot2<Real>(a, b, e->nx[i], e->ny[i]);
-        result += wt[i] * AVG(u) * dot2<Real>(a, b, JUMP(v));
-        result += wt[i] * theta * abs(beta_dot_n) * dot2<Real>(JUMP(u), JUMP(v));
-      }
-      
-      return result;
-    }
-
-    template<typename Real, typename Scalar>
-    Scalar dg_boundary_biform(int n, double *wt, Func<Real> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      Scalar result = 0;
-      
-      for (int i = 0; i < n; i++) 
-      {
-        Real a = fn_a<Real>(e->x[i], e->y[i]);
-        Real b = fn_b<Real>(e->x[i], e->y[i]);
-        Real beta_dot_n = dot2<Real>(a, b, e->nx[i], e->ny[i]);
-        if (beta_dot_n >= 0)   // outflow
-          result += wt[i] * u->val[i] * beta_dot_n * v->val[i];
-      }
-      
-      return result;
-    }
-
-    template<typename Real, typename Scalar>
-    Scalar dg_boundary_liform(int n, double *wt, Func<Real> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-    {
-      Scalar result = 0;
-      
-      for (int i = 0; i < n; i++) 
-      {
-        Real x = e->x[i], y = e->y[i];
-        Real a = fn_a<Real>(x, y);
-        Real b = fn_b<Real>(x, y);
-        Real beta_dot_n = dot2<Real>(a, b, e->nx[i], e->ny[i]);
-        
-        if (beta_dot_n < 0)    // inflow
-        {
-          Scalar g = essential_bc_values<Real, Scalar>(e->edge_marker, x, y);
-          result += -wt[i] * beta_dot_n * g * v->val[i];
-        }
-      }
-      
-      return result;
-    }
-
+There are several possibilities how to formulate the DGM. We choose that presented and analysed in [BMS04]_.
 
 The weak solution is well defined in the *broken Sobolev space* of functions :math:`u\in L^2(\Omega)` such that :math:`u\in H^1(K)` for every element :math:`K`,
-whose finite-dimensional subspace suitable for the FE discretization is represented in Hermes by class ``L2Space``. Since :math:`u` is not expected to be continuous across element interfaces, the Green's theorem has been applied element-wise. The consequence is the presence of surface integrals of basis and test functions, or more precisely of their arithmetic averages and jumps across element interfaces. If the surface form representing these integrals is added with the special marker ``H2D_DG_INNER_EDGE``, as in
+whose finite-dimensional subspace suitable for the FE discretization is represented in Hermes by class ``L2Space``. Since :math:`u` is not expected to be continuous across element interfaces, the Green's theorem has been applied element-wise. The consequence is the presence of surface integrals of basis and test functions, or more precisely of their arithmetic averages and jumps across element interfaces. If the surface form representing these integrals is added with the special marker ``H2D_DG_INNER_EDGE``.
 
-::
+The values of the traces of the shape functions from both sides of an interface may then be obtained at the quadrature points along the interface.
 
-    wf.add_matrix_form_surf(callback(dg_interface_biform), H2D_DG_INNER_EDGE);
-    
-the values of the traces of the shape functions from both sides of an interface may then be obtained at the quadrature points along the interface using methods like
+The jump and average operators defined as in the macros ``AVG`` and ``JUMP`` above. Note that in order to apply the Green's theorem, a transition to the conservative form of :eq:`eq-adv-rea` has been performed using the product rule for derivatives (utilizing differentiability of :math:`\vec\beta`), eventually leading to the term :math:`-\nabla\cdot\vec\beta` added to the reaction term :math:`c` in the final weak form. 
 
-::
-
-    u->get_val_central(i), u->get_val_neighbor(i),
-    u->get_dx_central(i), u->get_dx_neighbor(i),
-    etc.
-
-and the jump and average operators defined as in the macros ``AVG`` and ``JUMP`` above. Note that in order to apply the Green's theorem, a transition to the conservative form of :eq:`eq-adv-rea` has been performed using the product rule for derivatives (utilizing differentiability of :math:`\vec\beta`), eventually leading to the term :math:`-\nabla\cdot\vec\beta` added to the reaction term :math:`c` in the final weak form. Hence the code for the function defining the reaction term writes as follows::
-
-    template<typename Real>
-    inline Real fn_c(Real x, Real y) 
-    {
-      if (method == DG)
-        return 11.; // -div(beta)
-      else
-        return 0.; 
-    }
-
-Computed solutions
-~~~~~~~~~~~~~~~~~~
+Sample results
+~~~~~~~~~~~~~~
 
 In this section, we present graphs of the solutions we obtained using the various adaptivity schemes. All approaches started
 from the unrefined, 4-element mesh, used the following heuristic setting 
@@ -393,7 +211,7 @@ Below we compare the convergence of the various adaptive methods using two metri
     
      \frac{||u_{\mathrm{ex}} - u_h||_{L^2(\Omega)}}{||u_\mathrm{ex}||_{L^2(\Omega)}}
 
-  In order to calculate this quantity, the exact solution has been evaluated at the :math:`(50+51)\times (50+51)` nodal points of the two-dimensional `50`\ :sup:`th`-order Gauss quadrature rule with Kronrod extension and saved together with the corresponding quadrature weights to file `sol_GaussKronrod50.map <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks/stabilized-advection-reaction/exact/sol_GaussKronrod50.map>`_. There is a class ``SemiAnalyticSolution`` responsible for loading the file and repeatedly calculating the norm, but be warned that since the latter operation involves a call to ``Solution::get_pt_value``, computation of this metric considerably prolongates each adaptation step (particularly when there are many small low-order elements).
+  In order to calculate this quantity, the exact solution has been evaluated at the :math:`(50+51)\times (50+51)` nodal points of the two-dimensional `50`\ :sup:`th`-order Gauss quadrature rule with Kronrod extension and saved together with the corresponding quadrature weights to file `sol_GaussKronrod50.map <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks-general/stabilized-advection-reaction/exact/sol_GaussKronrod50.map>`_. There is a class ``SemiAnalyticSolution`` responsible for loading the file and repeatedly calculating the norm, but be warned that since the latter operation involves a call to ``Solution::get_pt_value``, computation of this metric considerably prolongates each adaptation step (particularly when there are many small low-order elements).
   
   .. image:: benchmark-stabilized-advection-reaction/conv_ex_dof.png
      :align: center
