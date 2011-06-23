@@ -1,8 +1,11 @@
-Waveguide (Helmholtz Equation - Electromagnetics)
--------------------------------------------------
+Waveguide
+---------
+
+**Git reference:** Example `helmholtz-waveguide <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/helmholtz/helmholtz-waveguide>`_.
 
 Mathematical description of waveguides
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Mathematical description of waveguides is given by the Maxwell's equations  
 
 .. math::
@@ -181,6 +184,7 @@ For a given geometry the equation :eq:`Impedance matching` can be reduced to the
 
 Material parameters
 ~~~~~~~~~~~~~~~~~~~
+
 ::
 
 	const double epsr = 1.0;                    // Relative permittivity
@@ -196,64 +200,20 @@ Boundary conditions
 
 There are three possible types of boundary conditions:
 
-	* Zero Dirichlet boundary condition on boundaries :math:`\Gamma_1, \Gamma_2`:
-	::
-
-		bc_types.add_bc_dirichlet(Hermes::vector<int>(BDY_PERFECT, BDY_LEFT));
-		BCValues bc_values_r;
-		bc_values_r.add_const(BDY_PERFECT, 0.0);
-		BCValues bc_values_i;
-		bc_values_i.add_const(BDY_PERFECT, 0.0);
-
-	Note: There are two ways how to approach to complex problems. The first one is using the type complex from the STL library. The second approach is demonstrated - two matrices and two right side vectors (one for real parts and second for imagnary parts) are build.
-
-	* Nonzero Dirichlet boundary conditions:
-		
-	The boundary condition on the boundary :math:`\Gamma_3` is specified according to the expression :eq:`TE Electric field`.::
-
-		scalar essential_bc_values(double x, double y)
-		{
-		  return cos(y*M_PI/0.1)*100;
-		}
-
-		int main()
-		{
-		  ...
-		  bc_values_r.add_function(BDY_LEFT, essential_bc_values);
-		  ...		  
-		}
-
-	* Newton boundary condition
-	::
-
-		bc_types.add_bc_newton(Hermes::vector<int>(BDY_IMPEDANCE));
-
-
-Weak forms
-~~~~~~~~~~
-
-	* registration (in function ``main()``) ::
-
-		WeakForm wf(2);
-		wf.add_matrix_form(0, 0, callback(magnetic_matrix_form_real_real));
-		wf.add_matrix_form(0, 1, callback(magnetic_matrix_form_real_imag));
-		wf.add_matrix_form(1, 1, callback(magnetic_matrix_form_imag_imag));
-		wf.add_matrix_form(1, 0, callback(magnetic_matrix_form_imag_real));
-		wf.add_matrix_form_surf(0, 1, callback(magnetic_vector_form_surface_imag_real), BDY_IMPEDANCE);
-		wf.add_matrix_form_surf(1, 0, callback(magnetic_vector_form_surface_real_imag), BDY_IMPEDANCE);
-	
-	The function ``magnetic_matrix_form_real_real`` describes behaviour of the of the component of electric field :math:`\overline{E_x}` and ``magnetic_matrix_form_imag_imag`` describes behaviour of the imaginary part of the component of electric field :math:`\overline{E_x}` in this code. Functions ``magnetic_matrix_form_imag_real`` and ``magnetic_matrix_form_real_imag`` represent the conection between real and imaginary part. The functions ``magnetic_vector_form_surface_imag_real`` and ``magnetic_vector_form_surface_imag_real`` express the Newton boundary condition and also the conection between the real and the imaginary part of the component of the electric field :math:`\overline{E_x}`. 
+	* Zero Dirichlet boundary conditions.
+	* Nonzero Dirichlet boundary conditions.
+	* Newton boundary conditions.
 
 Sample results
 ~~~~~~~~~~~~~~
 
 .. image:: helmholtz-waveguide/real_part.png
-   :scale: 50 %   
+   :scale: 80 %   
    :align: center 	
    :alt: Paralel plate waveguide geometry
 
 .. image:: helmholtz-waveguide/imaginary_part.png
-   :scale: 50 %   
+   :scale: 80 %   
    :align: center 	
    :alt: Paralel plate waveguide geometry
 

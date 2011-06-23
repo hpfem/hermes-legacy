@@ -1,5 +1,5 @@
 add_subdirectory(bearing)
 add_subdirectory(driven-cavity)
 #add_subdirectory(rayleigh-benard)
-add_subdirectory(timedep)
-#add_subdirectory(timedep-adapt) TODO: Convert to new forms.
+add_subdirectory(circular-obstacle)
+#add_subdirectory(circular-obstacle-adapt) TODO: Convert to new forms.

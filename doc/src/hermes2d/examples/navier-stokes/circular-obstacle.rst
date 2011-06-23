@@ -1,8 +1,8 @@
-Navier-Stokes Equations (07-navier-stokes)
-------------------------------------------
+Circular-Obstacle
+-----------------
 
-**Git reference:** Tutorial example `07-navier-stokes 
-<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P03-timedep/07-navier-stokes>`_.
+**Git reference:** Tutorial example `circular-obstacle
+<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/navier-stokes/circular-obstacle>`_.
 
 Model problem
 ~~~~~~~~~~~~~
@@ -21,7 +21,7 @@ pressure with the standard (continuous) Taylor-Hood elements is shown.
 The computational domain is a rectangular channel containing a 
 circular obstacle: 
 
-.. image:: navier-stokes-timedep/domain.png
+.. image:: img/domain.png
    :align: center
    :width: 760
    :alt: computational domain
@@ -131,46 +131,6 @@ we calculate the initial coefficient vector $\bfY_0$ for the Newton's method::
 Note that when projecting multiple functions, we can use different projection 
 norms for each. 
 
-Time stepping
-~~~~~~~~~~~~~
-
-The time stepping loop incorporates a Newton's loop, and it looks as follows::
-
-    // Time-stepping loop:
-    char title[100];
-    int num_time_steps = T_FINAL / TAU;
-    for (int ts = 1; ts <= num_time_steps; ts++)
-    {
-      TIME += TAU;
-      info("---- Time step %d, time = %g:", ts, TIME);
-
-      // Update time-dependent essential BC are used.
-      if (TIME <= STARTUP_TIME) {
-        info("Updating time-dependent essential BC.");
-        update_essential_bc_values(Tuple<Space *>(&xvel_space, &yvel_space, &p_space));
-      }
-
-      if (NEWTON) 
-      {
-        // Perform Newton's iteration.
-        info("Solving nonlinear problem:");
-        bool verbose = true;
-        if (!solve_newton(coeff_vec, &dp, solver, matrix, rhs, 
-            NEWTON_TOL, NEWTON_MAX_ITER, verbose)) error("Newton's iteration failed.");
-  
-        // Update previous time level solutions.
-        Solution::vector_to_solutions(coeff_vec, Tuple<Space *>(&xvel_space, &yvel_space, &p_space), Tuple<Solution *>(&xvel_prev_time, &yvel_prev_time, &p_prev_time));
-      }
-      else {
-        // Linear solve.
-        info("Assembling and solving linear problem.");
-        dp.assemble(matrix, rhs, false);
-        if(solver->solve()) 
-          Solution::vector_to_solutions(solver->get_solution(), Tuple<Space *>(&xvel_space, &yvel_space, &p_space), Tuple<Solution *>(&xvel_prev_time, &yvel_prev_time, &p_prev_time));
-        else 
-          error ("Matrix solver failed.\n");
-      }
-
 Sample results
 ~~~~~~~~~~~~~~
 
@@ -183,65 +143,65 @@ should definitely use the option (3).
 
 Time t = 10 s:
 
-.. image:: navier-stokes-timedep/sol_no_newton_10.png
+.. image:: img/sol_no_newton_10.png
    :align: center
    :width: 840
    :alt: solution
 
-.. image:: navier-stokes-timedep/sol_newton_10.png
+.. image:: img/sol_newton_10.png
    :align: center
    :width: 840
    :alt: solution
 
-.. image:: navier-stokes-timedep/sol_l2_newton_10.png
+.. image:: img/sol_l2_newton_10.png
    :align: center
    :width: 840
    :alt: solution
 
 Time t = 15 s:
 
-.. image:: navier-stokes-timedep/sol_no_newton_15.png
+.. image:: img/sol_no_newton_15.png
    :align: center
    :width: 840
    :alt: solution
 
-.. image:: navier-stokes-timedep/sol_newton_15.png
+.. image:: img/sol_newton_15.png
    :align: center
    :width: 840
    :alt: solution
 
-.. image:: navier-stokes-timedep/sol_l2_newton_15.png
+.. image:: img/sol_l2_newton_15.png
    :align: center
    :width: 840
    :alt: solution
 
 Time t = 21 s:
 
-.. image:: navier-stokes-timedep/sol_no_newton_20.png
+.. image:: img/sol_no_newton_20.png
    :align: center
    :width: 840
    :alt: solution
 
-.. image:: navier-stokes-timedep/sol_newton_20.png
+.. image:: img/sol_newton_20.png
    :align: center
    :width: 840
    :alt: solution
 
-.. image:: navier-stokes-timedep/sol_l2_newton_20.png
+.. image:: img/sol_l2_newton_20.png
    :align: center
    :width: 840
    :alt: solution
 
 Snapshot of a continuous pressure approximation (t = 20 s):
 
-.. image:: navier-stokes-timedep/p_no_newton_20.png
+.. image:: img/p_no_newton_20.png
    :align: center
    :width: 840
    :alt: solution
 
 Snapshot of a discontinuous pressure approximation (t = 20 s):
 
-.. image:: navier-stokes-timedep/p_l2_newton_20.png
+.. image:: img/p_l2_newton_20.png
    :align: center
    :width: 840
    :alt: solution

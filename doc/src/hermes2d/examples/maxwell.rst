@@ -4,5 +4,5 @@ Maxwell
 .. toctree::
    :maxdepth: 2
 
-   maxwell/maxwell-waveguide
+   maxwell/microwave-oven
 

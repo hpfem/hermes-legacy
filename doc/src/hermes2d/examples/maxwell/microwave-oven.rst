@@ -1,7 +1,7 @@
-Waveguide (Maxwell's Equation - Electromagnetics)
--------------------------------------------------
+Microwave Oven
+--------------
 
-**Git reference:** Example `maxwell-waveguide <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/maxwell/maxwell-waveguide>`_.
+**Git reference:** Example `microwave oven <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/maxwell/microwave-oven>`_.
 
 Model problem
 ~~~~~~~~~~~~~
@@ -10,7 +10,7 @@ This example solves adaptively the electric field in a simplified microwave oven
 The waves are generated using a harmonic surface current on the right-most edge.
 (Such small cavity is present in every microwave oven). 
 
-.. image:: maxwell-waveguide/maxwell-waveguide.png
+.. image:: microwave-oven/maxwell-waveguide.png
    :align: center
    :width: 450
    :alt: Domain.
@@ -42,7 +42,7 @@ Material parameters
 Sample solution
 ~~~~~~~~~~~~~~~
 
-.. image:: maxwell-waveguide/solution.png
+.. image:: microwave-oven/solution.png
    :align: center
    :width: 600
    :height: 400
@@ -53,28 +53,28 @@ Comparison of h-FEM (p=1), h-FEM (p=2) and hp-FEM with anisotropic refinements
 
 Final mesh (h-FEM, p=1, anisotropic refinements):
 
-.. image:: maxwell-waveguide/mesh_h1_aniso.png
+.. image:: microwave-oven/mesh_h1_aniso.png
    :align: center
    :width: 450
    :alt: Final mesh.
 
 Final mesh (h-FEM, p=2, anisotropic refinements):
 
-.. image:: maxwell-waveguide/mesh_h2_aniso.png
+.. image:: microwave-oven/mesh_h2_aniso.png
    :align: center
    :width: 450
    :alt: Final mesh.
 
 Final mesh (hp-FEM, h-anisotropic refinements):
 
-.. image:: maxwell-waveguide/mesh_hp_aniso.png
+.. image:: microwave-oven/mesh_hp_aniso.png
    :align: center
    :width: 450
    :alt: Final mesh.
 
 DOF convergence graphs:
 
-.. image:: maxwell-waveguide/conv_dof_aniso.png
+.. image:: microwave-oven/conv_dof_aniso.png
    :align: center
    :width: 600
    :height: 400
@@ -82,7 +82,7 @@ DOF convergence graphs:
 
 CPU convergence graphs:
 
-.. image:: maxwell-waveguide/conv_cpu_aniso.png
+.. image:: microwave-oven/conv_cpu_aniso.png
    :align: center
    :width: 600
    :height: 400

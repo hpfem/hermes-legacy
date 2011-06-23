@@ -1,8 +1,8 @@
-Flame Propagation Problem (06-flame)
-------------------------------------
+Laminar Flame
+-------------
 
-**Git reference:** Tutorial example `06-flame 
-<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P03-timedep/06-flame>`_.
+**Git reference:** Example `laminar-flame 
+<http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P03-timedep/laminar-flame>`_.
 
 Model problem
 ~~~~~~~~~~~~~
@@ -117,42 +117,6 @@ Details on the functions omega_fn, omega_dt_fn, omega_dy_fn and the weak
 forms can be found in the file `forms.cpp 
 <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P03-timedep/laminar-flame/forms.cpp>`_
 
-Registering weak forms
-~~~~~~~~~~~~~~~~~~~~~~
-
-Here is how we register the weak forms::
-
-    // Initialize the weak formulation.
-    WeakForm wf(2);
-    wf.add_matrix_form(0, 0, callback(newton_bilinear_form_0_0), HERMES_NONSYM, HERMES_ANY, &omega_dt);
-    wf.add_matrix_form_surf(0, 0, callback(newton_bilinear_form_0_0_surf), 3);
-    wf.add_matrix_form(0, 1, callback(newton_bilinear_form_0_1), HERMES_NONSYM, HERMES_ANY, &omega_dc);
-    wf.add_matrix_form(1, 0, callback(newton_bilinear_form_1_0), HERMES_NONSYM, HERMES_ANY, &omega_dt);
-    wf.add_matrix_form(1, 1, callback(newton_bilinear_form_1_1), HERMES_NONSYM, HERMES_ANY, &omega_dc);
-    wf.add_vector_form(0, callback(newton_linear_form_0), HERMES_ANY, 
-                       Tuple<MeshFunction*>(&t_prev_time_1, &t_prev_time_2, &omega));
-    wf.add_vector_form_surf(0, callback(newton_linear_form_0_surf), 3);
-    wf.add_vector_form(1, callback(newton_linear_form_1), HERMES_ANY, 
-                       Tuple<MeshFunction*>(&c_prev_time_1, &c_prev_time_2, &omega));
-
-
-The nonlinear discrete problem is initialized as follows::
-
-    // Initialize the FE problem.
-    bool is_linear = false;
-    DiscreteProblem dp(&wf, Tuple<Space *>(&tspace, &cspace), is_linear);
-
-The initial coefficient vector $\bfY_0$ for the Newton's method is calculated 
-by projecting the initial conditions on the FE spaces::
-
-    // Project the initial condition on the FE space to obtain initial
-    // coefficient vector for the Newton's method.
-    info("Projecting initial condition to obtain initial vector for the Newton's method.");
-    scalar* coeff_vec = new scalar[ndof];
-    OGProjection::project_global(Tuple<Space *>(&tspace, &cspace), 
-                                 Tuple<MeshFunction *>(&t_prev_newton, &c_prev_newton), 
-                                 coeff_vec, matrix_solver);
-
 Reinitialization of Filters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -162,7 +126,7 @@ This is necessary as the functions defining the Filter have changed::
     // Set current solutions to the latest Newton iterate 
     // and reinitialize filters of these solutions.
     Solution::vector_to_solutions(coeff_vec, Tuple<Space *>(&tspace, &cspace), 
-                                    Tuple<Solution *>(&t_prev_newton, &c_prev_newton));
+                                  Tuple<Solution *>(&t_prev_newton, &c_prev_newton));
     omega.reinit();
     omega_dt.reinit();
     omega_dc.reinit();
