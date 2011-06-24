@@ -10,7 +10,7 @@ The computational domain is the unit square, and the equation solved has the for
 
 .. math::
  
-    -\Delta u + K^2 u = K^2.
+    -\Delta u + K^2 u - K^2 = 0.
 
 The boundary conditions are homogeneous Dirichlet. The right-hand side is chosen in this way 
 in order to keep the solution $u(x,y) \approx 1$ inside the domain. For this presentation 
@@ -34,7 +34,6 @@ Final mesh (h-FEM, p=1, anisotropic refinements): 34833 DOF, error 0.34959735689
 .. image:: example-singular-perturbation/mesh-h1-aniso.png
    :align: center
    :width: 500
-   :height: 400
    :alt: Final mesh
 
 Final mesh (h-FEM, p=2, anisotropic refinements): 37097 DOF, error 0.014234904418008 %
@@ -42,7 +41,6 @@ Final mesh (h-FEM, p=2, anisotropic refinements): 37097 DOF, error 0.01423490441
 .. image:: example-singular-perturbation/mesh-h2-aniso.png
    :align: center
    :width: 500
-   :height: 400
    :alt: Final mesh
 
 Final mesh (hp-FEM, anisotropic refinements): 6821 DOF, error 7.322784149253e-05 %
@@ -50,7 +48,6 @@ Final mesh (hp-FEM, anisotropic refinements): 6821 DOF, error 7.322784149253e-05
 .. image:: example-singular-perturbation/mesh-hp-aniso.png
    :align: center
    :width: 500
-   :height: 400
    :alt: Final mesh
 
 DOF convergence graphs for h-FEM with linear and quadratic elements and the hp-FEM (anisotropic 
@@ -59,7 +56,6 @@ refinements enabled):
 .. image:: example-singular-perturbation/conv_dof_compar.png
    :align: center
    :width: 600
-   :height: 400
    :alt: DOF convergence graph.
 
 Corresponding CPU time convergence graphs:
@@ -75,7 +71,6 @@ And at the end let us compare hp-FEM with isotropic and anisotropic refinements:
 .. image:: example-singular-perturbation/conv_dof_hp.png
    :align: center
    :width: 600
-   :height: 400
    :alt: DOF convergence graph.
 
 Corresponding CPU time convergence graphs:
@@ -83,7 +78,6 @@ Corresponding CPU time convergence graphs:
 .. image:: example-singular-perturbation/conv_cpu_hp.png
    :align: center
    :width: 600
-   :height: 400
    :alt: CPU convergence graph.
 
 When using h-FEM, this difference becomes much larger. This is left for the reader
