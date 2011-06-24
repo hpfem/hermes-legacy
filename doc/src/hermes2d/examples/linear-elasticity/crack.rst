@@ -1,14 +1,14 @@
 Crack
 -----
 
-**Git reference:** Example `elasticity-crack <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/linear-elasticity/elasticity-crack>`_.
+**Git reference:** Example `crack <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/linear-elasticity/crack>`_.
 
 This example employs adaptive multimesh hp-FEM to solve
 equations of linear elasticity that we already saw in the tutorial example
 `P01-linear/08-system <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/08-system>`_.
 
-Model problem
-~~~~~~~~~~~~~
+Problem description
+~~~~~~~~~~~~~~~~~~~
 
 The computational domain is a $1.5 \times 0.3$ m rectangle containing two horizontal 
 cracks, as shown in the following figure:

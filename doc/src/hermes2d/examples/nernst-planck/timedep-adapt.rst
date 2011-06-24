@@ -1,15 +1,18 @@
 Nernst-Planck Equation System
 -----------------------------
 
-**Git reference:** Example `nernst-planck-timedep-adapt <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/nernst-planck/nernst-planck-timedep-adapt>`_.
+By David Pugal, University of Nevada, Reno.
+
+**Git reference:** Example `timedep-adapt <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/nernst-planck/timedep-adapt>`_.
+
+Problem description
+~~~~~~~~~~~~~~~~~~~
 
 **Equation reference:** The first version of the following derivation was published in:
 *IPMC: recent progress in modeling, manufacturing, and new applications 
 D. Pugal, S. J. Kim, K. J. Kim, and K. K. Leang 
 Proc. SPIE 7642, (2010)*.
-The following Bibtex entry can be used for the reference:
-
-::
+The following Bibtex entry can be used for the reference::
 
 	@conference{pugal:76420U,
 		author = {D. Pugal and S. J. Kim and K. J. Kim and K. K. Leang},
@@ -123,8 +126,8 @@ For Poisson equation:
  #. (ground): Dirichlet boundary $\phi = 0$.
  #. (insulation): Neumann boundary $\frac{\partial \phi}{\partial n} = 0$.
 
-Weak Form of the Equations
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Weak form of the equations
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To implement the :eq:`nernstplanck` and :eq:`poisson` in Hermes2D, the weak form must be derived. First of all let's denote:
 
@@ -225,7 +228,7 @@ However, for the most cases we use only Poisson boundary conditions to set the v
 term of :eq:`poissonweak3` is omitted and :eq:`poissonweak2` is used instead in the following sections.
 
 Jacobian matrix
-^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~
 
 Equation :eq:`nernstweak3` is time dependent, thus some time stepping 
 method must be chosen. For simplicity we start with first order Euler implicit method
@@ -305,57 +308,8 @@ equations :eq:`bilin1` - :eq:`bilin4` to define the Jacobian matrix $J$.
 It must be noted that in addition to the implicit Euler iteration Crank-Nicolson iteration is implemented 
 in the code (see the next section for the references of the source files).
 
-Simulation
-^^^^^^^^^^
-
-To begin with simulations in Hermes2D, the equations :eq:`Fic` - :eq:`bilin4` were be implemented.
-It was done by implementing the callback functions found in  `nernst-planck-timedep-adapt/forms.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/examples/nernst-planck/nernst-planck-timedep-adapt/forms.cpp>`_.
-
-.. highlight:: c
-
-The functions along with the boundary conditions::
-
-	// Poisson takes Dirichlet and Neumann boundaries
-	BCType phi_bc_types(int marker) {
-		  return (marker == SIDE_MARKER || (marker == TOP_MARKER && VOLT_BOUNDARY == 2))
-		      ? BC_NATURAL : BC_ESSENTIAL;
-	}
-
-	// Nernst-Planck takes Neumann boundaries
-	BCType C_bc_types(int marker) {
-		  return BC_NATURAL;
-	}
-
-	// Diricleht Boundary conditions for Poisson equation.
-	scalar essential_bc_values(int ess_bdy_marker, double x, double y) {
-		  return ess_bdy_marker == TOP_MARKER ? VOLTAGE : 0.0;
-	}
-
-are assembled as follows::
-	
-        // Add the bilinear and linear forms.
-        if (TIME_DISCR == 1) {  // Implicit Euler.
-          wf.add_vector_form(0, callback(Fc_euler), H2D_ANY,
-		             Tuple<MeshFunction*>(&C_prev_time, &C_prev_newton, &phi_prev_newton));
-          wf.add_vector_form(1, callback(Fphi_euler), H2D_ANY, Tuple<MeshFunction*>(&C_prev_newton, &phi_prev_newton));
-          wf.add_matrix_form(0, 0, callback(J_euler_DFcDYc), HERMES_NONSYM, H2D_ANY, &phi_prev_newton);
-          wf.add_matrix_form(0, 1, callback(J_euler_DFcDYphi), HERMES_NONSYM, H2D_ANY, &C_prev_newton);
-          wf.add_matrix_form(1, 0, callback(J_euler_DFphiDYc), HERMES_NONSYM);
-          wf.add_matrix_form(1, 1, callback(J_euler_DFphiDYphi), HERMES_NONSYM);
-        } else {
-          wf.add_vector_form(0, callback(Fc_cranic), H2D_ANY, 
-		             Tuple<MeshFunction*>(&C_prev_time, &C_prev_newton, &phi_prev_newton, &phi_prev_time));
-          wf.add_vector_form(1, callback(Fphi_cranic), H2D_ANY, Tuple<MeshFunction*>(&C_prev_newton, &phi_prev_newton));
-          wf.add_matrix_form(0, 0, callback(J_cranic_DFcDYc), HERMES_NONSYM, H2D_ANY, Tuple<MeshFunction*>(&phi_prev_newton, &phi_prev_time));
-          wf.add_matrix_form(0, 1, callback(J_cranic_DFcDYphi), HERMES_NONSYM, H2D_ANY, Tuple<MeshFunction*>(&C_prev_newton, &C_prev_time));
-          wf.add_matrix_form(1, 0, callback(J_cranic_DFphiDYc), HERMES_NONSYM);
-          wf.add_matrix_form(1, 1, callback(J_cranic_DFphiDYphi), HERMES_NONSYM);
-        }
-
-where the variables ``C_prev_time``, ``C_prev_newton``, 
-``phi_prev_time``, and ``phi_prev_newton`` are solutions of concentration
-$C$ and voltage $\phi$. The suffixes *newton* and *time* are current iteration and previous
-time step, respectively.
+Meshing and Multimesh
+~~~~~~~~~~~~~~~~~~~~~
 
 When it comes to meshing, it should be considered that the gradient of $C$ near the boundaries will
 be higher than gradients of $\phi$. This allows us to create different meshes for those variables. In
@@ -374,8 +328,8 @@ then different H1Spaces for ``phi`` and ``C`` are created. It must be noted that
 is not used, the multimeshing in this example does not have any advantage, however, when
 adaptivity is turned on, then mesh for H1Space ``C`` is refined much more than for ``phi``.
 
-Non adaptive solution
-^^^^^^^^^^^^^^^^^^^^^
+Sample results (non-adaptive)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following figure shows the calculated concentration $C$ inside the IPMC.
 
@@ -395,8 +349,8 @@ The voltage inside the IPMC forms as follows:
 Here we see that the voltage gradient is smaller and more uniform near the boundaries than it is for $C$.
 That is where **the adaptive multimeshing** can become useful.
 
-Adaptive solution
-^^^^^^^^^^^^^^^^^
+Sample results (adaptive)
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To be added soon.
 

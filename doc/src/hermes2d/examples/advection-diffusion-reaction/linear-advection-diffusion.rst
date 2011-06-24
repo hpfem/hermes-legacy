@@ -4,6 +4,9 @@ Linear Advection-Diffusion
 **Git reference:** Example `linear-advection-diffusion 
 <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/advection-diffusion-reaction/linear-advection-diffusion>`_.
 
+Problem description
+~~~~~~~~~~~~~~~~~~~
+
 This example solves the equation 
 
 .. math::
@@ -55,6 +58,10 @@ take care of them as well, as we will see below. Standard stabilization techniqu
 include SUPG, GLS and others. For this example, we implemented the so-called *variational 
 multiscale stabilization* that can be used on an optional basis.
 We have also implemented a shock-capturing term for the reader to experiment with.
+
+Sample results
+~~~~~~~~~~~~~~
+
 The stabilization and shock capturing are **turned off for this computation**.
 
 Let us compare adaptive $h$-FEM with linear and quadratic elements and the $hp$-FEM.

@@ -1,4 +1,4 @@
 rm *~ 
-./thermoelasticity
+./hollow-conductor
 python plot_graph.py &
 

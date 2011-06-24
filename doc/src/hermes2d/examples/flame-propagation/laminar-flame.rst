@@ -4,8 +4,8 @@ Laminar Flame
 **Git reference:** Example `laminar-flame 
 <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P03-timedep/laminar-flame>`_.
 
-Model problem
-~~~~~~~~~~~~~
+Problem description
+~~~~~~~~~~~~~~~~~~~
 
 We will employ the Newton's method to solve a nonlinear system of two parabolic equations 
 describing a very simple flame propagation model (laminar flame, no fluid mechanics involved).

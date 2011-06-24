@@ -3,8 +3,8 @@ Apartment
 
 **Git reference:** Example `apartment <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/acoustics/apartment>`_.
 
-Model problem
-~~~~~~~~~~~~~
+Problem description
+~~~~~~~~~~~~~~~~~~~
 
 This example solves adaptively the pressure field in an apartment, that is 
 caused by a harmonic local acoustics source. The geometry and initial 

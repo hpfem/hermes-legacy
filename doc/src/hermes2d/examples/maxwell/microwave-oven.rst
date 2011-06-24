@@ -3,8 +3,8 @@ Microwave Oven
 
 **Git reference:** Example `microwave oven <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/maxwell/microwave-oven>`_.
 
-Model problem
-~~~~~~~~~~~~~
+Problem description
+~~~~~~~~~~~~~~~~~~~
 
 This example solves adaptively the electric field in a simplified microwave oven.
 The waves are generated using a harmonic surface current on the right-most edge.

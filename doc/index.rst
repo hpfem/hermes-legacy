@@ -95,6 +95,9 @@ Benchmarks
 Examples
 --------
 
+Not all examples are documented, please check the examples/
+directory as well.
+
 .. toctree::
     :maxdepth: 1
 

@@ -1,9 +1,9 @@
-Nernst-planck
-========
+Nernst-Planck
+=============
 
 .. toctree::
    :maxdepth: 2
 
-   nernst-planck/nernst-planck-timedep-adapt
-   nernst-planck/nernst-planck-ipmc
+   nernst-planck/timedep-adapt
+   nernst-planck/ipmc
 

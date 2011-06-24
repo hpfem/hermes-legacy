@@ -1,12 +1,12 @@
 Bracket
 -------
 
-**Git reference:** Example `elasticity-bracket <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/linear-elasticity/elasticity-bracket>`_.
+**Git reference:** Example `bracket <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/linear-elasticity/bracket>`_.
 
 This example employs adaptive multimesh hp-FEM to solve equations of linear elasticity. 
 
-Model problem
-~~~~~~~~~~~~~
+Problem description
+~~~~~~~~~~~~~~~~~~~
 
 Our domain is a bracket loaded on its top edge and fixed to the wall:
 

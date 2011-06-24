@@ -3,8 +3,8 @@ Axisymmetric Horn
 
 **Git reference:** Example `horn-axisym <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/acoustics/horn-axisym>`_.
 
-Model problem
-~~~~~~~~~~~~~
+Problem description
+~~~~~~~~~~~~~~~~~~~
 
 This example solves adaptively the pressure field in a 3D axisymmetric model 
 of a harmonic acoustic horn. The geometry and initial mesh are shown below.

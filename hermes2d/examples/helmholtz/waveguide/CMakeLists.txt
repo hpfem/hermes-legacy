@@ -2,7 +2,7 @@ if(NOT H2D_REAL)
     return()
 endif(NOT H2D_REAL)
 
-project(helmholtz-waveguide)
+project(waveguide)
 
 add_executable(${PROJECT_NAME} main.cpp definitions.cpp)
 include (${hermes2d_SOURCE_DIR}/CMake.common)

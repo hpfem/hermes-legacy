@@ -1,7 +1,9 @@
 Waveguide
 ---------
 
-**Git reference:** Example `helmholtz-waveguide <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/helmholtz/helmholtz-waveguide>`_.
+By David Panek, University of West Bohemia, Czech Republic.
+
+**Git reference:** Example `waveguide <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/examples/helmholtz/waveguide>`_.
 
 Mathematical description of waveguides
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -90,7 +92,7 @@ which is the Helmholtz equation.
 
 Parallel plate waveguide is the simplest type of guide that supports TM (transversal magnetic) and TE (transversal electric) modes. This kind of guide allows also TEM (transversal electric and magnetic) mode.
 
-.. image:: helmholtz-waveguide/waveguide.png
+.. image:: waveguide/waveguide.png
    :scale: 50 %   
    :align: center 	
    :alt: Parallel plate waveguide geometry
@@ -207,14 +209,14 @@ There are three possible types of boundary conditions:
 Sample results
 ~~~~~~~~~~~~~~
 
-.. image:: helmholtz-waveguide/real_part.png
+.. image:: waveguide/real_part.png
    :scale: 80 %   
    :align: center 	
-   :alt: Paralel plate waveguide geometry
+   :alt: Parallel plate waveguide geometry
 
-.. image:: helmholtz-waveguide/imaginary_part.png
+.. image:: waveguide/imaginary_part.png
    :scale: 80 %   
    :align: center 	
-   :alt: Paralel plate waveguide geometry
+   :alt: Parallel plate waveguide geometry
 
 
