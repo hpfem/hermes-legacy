@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 // This test makes sure that the example "wave-equation/wave-1" works correctly.
 
@@ -29,9 +29,6 @@ ButcherTableType butcher_table_type = Implicit_RK_1;
 
 // Problem parameters.
 const double C_SQUARED = 100;                      // Square of wave speed.                     
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {

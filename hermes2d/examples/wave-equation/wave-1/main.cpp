@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 
 // This example solves a simple linear wave equation by converting it 
 // into a system of two first-order equations in time. Time discretization 
@@ -48,9 +48,6 @@ ButcherTableType butcher_table_type = Implicit_RK_1;
 
 // Problem parameters.
 const double C_SQUARED = 100;                      // Square of wave speed.                     
-
-// Weak forms.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {
