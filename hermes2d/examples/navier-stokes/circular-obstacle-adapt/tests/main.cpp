@@ -1,8 +1,6 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -86,9 +84,6 @@ scalar essential_bc_values_xvel(double x, double y, double time) {
   if (time <= STARTUP_TIME) return val_y * time/STARTUP_TIME;
     else return val_y;
   }
-
-// Weak forms
-#include "../definitions.cpp"
 
 void mag(int n, scalar* a, scalar* dadx, scalar* dady,
                 scalar* b, scalar* dbdx, scalar* dbdy,
