@@ -1,8 +1,6 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -44,9 +42,6 @@ const std::string BDY_OBSTACLE = "5";
 
 // Current time (used in weak forms).
 double current_time = 0;
-
-// Weak forms.
-#include "../definitions.cpp"
 
 int main(int argc, char* argv[])
 {

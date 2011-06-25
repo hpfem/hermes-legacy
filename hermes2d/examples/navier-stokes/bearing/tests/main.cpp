@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "../definitions.h"
 
 // This test makes sure that example "ns-bearing" works correctly.
 
@@ -33,15 +33,8 @@ const int NEWTON_MAX_ITER = 10;                   // Maximum allowed number of N
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
-// Boundary markers.
-const std::string BDY_INNER = "Inner";
-const std::string BDY_OUTER = "Outer";
-
 // Current time (used in weak forms).
 double current_time = 0;
-
-// Weak forms.
-#include "../definitions.cpp"
 
 // Custom function to calculate drag coefficient.
 double integrate_over_wall(MeshFunction* meshfn, int marker)
@@ -88,13 +81,13 @@ int main(int argc, char* argv[])
 
   // Initial mesh refinements.
   for (int i=0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
-  mesh.refine_towards_boundary(BDY_INNER, INIT_BDY_REF_NUM_INNER, false);  // true for anisotropic refinements
-  mesh.refine_towards_boundary(BDY_OUTER, INIT_BDY_REF_NUM_OUTER, false);  // false for isotropic refinements
+  mesh.refine_towards_boundary("Inner", INIT_BDY_REF_NUM_INNER, false);  // true for anisotropic refinements
+  mesh.refine_towards_boundary("Outer", INIT_BDY_REF_NUM_OUTER, false);  // false for isotropic refinements
 
   // Initialize boundary conditions.
-  EssentialBCNonConstX bc_inner_vel_x(BDY_INNER, VEL, STARTUP_TIME);
-  EssentialBCNonConstY bc_inner_vel_y(BDY_INNER, VEL, STARTUP_TIME);
-  DefaultEssentialBCConst bc_outer_vel(BDY_OUTER, 0.0);
+  EssentialBCNonConstX bc_inner_vel_x("Inner", VEL, STARTUP_TIME);
+  EssentialBCNonConstY bc_inner_vel_y("Inner", VEL, STARTUP_TIME);
+  DefaultEssentialBCConst bc_outer_vel("Outer", 0.0);
   EssentialBCs bcs_vel_x(Hermes::vector<EssentialBoundaryCondition *>(&bc_inner_vel_x, &bc_outer_vel));
   EssentialBCs bcs_vel_y(Hermes::vector<EssentialBoundaryCondition *>(&bc_inner_vel_y, &bc_outer_vel));
   EssentialBCs bcs_pressure;

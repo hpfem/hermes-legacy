@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 
 // Flow in between two circles, inner circle is rotating with surface 
 // velocity VEL. The time-dependent laminar incompressible Navier-Stokes equations
@@ -50,9 +50,6 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 
 // Current time (used in weak forms).
 double current_time = 0;
-
-// Weak forms.
-#include "definitions.cpp"
 
 // Custom function to calculate drag coefficient.
 double integrate_over_wall(MeshFunction* meshfn, int marker)

@@ -1,30 +1,16 @@
-#include "hermes2d.h"
+#include "definitions.h"
 
-using namespace WeakFormsH1;
-
-/* Weak forms */
-
-class WeakFormS : public WeakForm
+WeakFormS::WeakFormS() : WeakForm(1) 
 {
-public:
-  WeakFormS() : WeakForm(1) {
-    add_matrix_form(new DefaultJacobianDiffusion(0, 0));
-  };
-};
+  add_matrix_form(new DefaultJacobianDiffusion(0, 0));
+}
 
-class WeakFormM : public WeakForm
+
+WeakFormM::WeakFormM() : WeakForm(1) 
 {
-public:
-  WeakFormM() : WeakForm(1) {
-    add_matrix_form(new DefaultMatrixFormVol(0, 0));
-  };
-};
+  add_matrix_form(new DefaultMatrixFormVol(0, 0));
+}
 
-/* Extras */
-
-#define HERMES_REPORT_ALL
-
-// Write the matrix in Matrix Market format.
 void write_matrix_mm(const char* filename, Matrix* mat) 
 {
   // Get matrix size.
@@ -54,7 +40,6 @@ void write_matrix_mm(const char* filename, Matrix* mat)
   fclose(out);
 }
 
-// Calculate mass norm vec^T*mat*vec.
 double calc_mass_product(UMFPackMatrix* mat, double* vec, int length)
 {
   double result = 0;
@@ -65,7 +50,6 @@ double calc_mass_product(UMFPackMatrix* mat, double* vec, int length)
   return result;
 }
 
-// Normalizes vector so that vec^T*mat*vec = 1. 
 void normalize(UMFPackMatrix* mat, double* vec, int length) 
 {
   double norm = sqrt(calc_mass_product(mat, vec, length));
@@ -73,7 +57,6 @@ void normalize(UMFPackMatrix* mat, double* vec, int length)
   for (int i = 0; i < length; i++) vec[i] /= norm;
 }
 
-// Multiply two vectors.
 double scalar_product(double* vec1, double* vec2, int length) 
 {
   double val = 0;
@@ -81,7 +64,6 @@ double scalar_product(double* vec1, double* vec2, int length)
   return val;
 }
 
-// Calculate inner product u^T*mat*vec.
 double calc_inner_product(UMFPackMatrix* mat, double* u, double* vec, int length)
 {
   double result = 0;

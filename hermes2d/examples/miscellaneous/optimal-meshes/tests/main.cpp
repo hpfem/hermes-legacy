@@ -1,9 +1,8 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
-#include "function/function.h"
+#include "../definitions.h"
+
+using namespace RefinementSelectors;
 
 // This test makes sure that example "optimal-meshes" works correctly.
 
@@ -13,13 +12,6 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 
 // Problem parameters.
 double K = 10.0;
-
-// Boundary markers.
-const std::string BDY_LEFT_RIGHT = "1";
-const std::string BDY_TOP_BOTTOM = "2";
-
-// Definitions.
-#include "definitions.cpp"
 
 int main(int argc, char* argv[])
 {

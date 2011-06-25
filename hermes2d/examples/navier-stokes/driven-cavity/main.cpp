@@ -1,6 +1,6 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "hermes2d.h"
+#include "definitions.h"
 
 // Flow inside a rotating circle. Both the flow and the circle are not moving 
 // at the beginning. As the circle starts to rotate at increasing speed. also 
@@ -45,9 +45,6 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 
 // Current time (used in weak forms).
 double current_time = 0;
-
-// Weak forms.
-#include "definitions.cpp"
 
 // Custom function to calculate drag coefficient.
 double integrate_over_wall(MeshFunction* meshfn, int marker)
