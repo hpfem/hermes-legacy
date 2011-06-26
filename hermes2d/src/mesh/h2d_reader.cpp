@@ -40,7 +40,8 @@ void H2DReader::load_str(const char* mesh_str, Mesh *mesh)
 
 Nurbs* H2DReader::load_nurbs(Mesh *mesh, MeshData *m, int id, Node** en, int &p1, int &p2)
 {
-  int i;
+  double dummy_dbl;
+
   Nurbs* nurbs = new Nurbs;
 
   // Decide if curve is a circular arc or a general nurbs curve
@@ -70,7 +71,12 @@ Nurbs* H2DReader::load_nurbs(Mesh *mesh, MeshData *m, int id, Node** en, int &p1
   {
     for (int i = 0; i < m->vars_[m->curv_inner_pts[id]].size(); ++i)
 	{
-		vCP.push_back(atof(m->vars_[m->curv_inner_pts[id]][i].c_str()));
+		std::istringstream istr(m->vars_[m->curv_inner_pts[id]][i]);
+
+		if (!(istr >> dummy_dbl))
+			vCP.push_back(atof(m->vars_[m->vars_[m->curv_inner_pts[id]][i]][0].c_str()));
+		else 
+			vCP.push_back(atof(m->vars_[m->curv_inner_pts[id]][i].c_str()));
 	}
 	inner = vCP.size()/3;
   }
@@ -117,7 +123,12 @@ Nurbs* H2DReader::load_nurbs(Mesh *mesh, MeshData *m, int id, Node** en, int &p1
   {
 	for (int i = 0; i < m->vars_[m->curv_knots[id]].size(); ++i)
 	{
-		vKnots.push_back(atof(m->vars_[m->curv_knots[id]][i].c_str()));
+		std::istringstream istr(m->vars_[m->curv_knots[id]][i]);
+
+		if (!(istr >> dummy_dbl))
+			vKnots.push_back(atof(m->vars_[m->vars_[m->curv_knots[id]][i]][0].c_str()));
+		else
+			vKnots.push_back(atof(m->vars_[m->curv_knots[id]][i].c_str()));
 	}
 	inner = vKnots.size();
   }
@@ -129,17 +140,21 @@ Nurbs* H2DReader::load_nurbs(Mesh *mesh, MeshData *m, int id, Node** en, int &p1
 
   // knot vector is completed by 0.0 on the left and by 1.0 on the right
   nurbs->kv = new double[nurbs->nk];
-  for (i = 0; i < outer/2; i++)
+  
+  for (int i = 0; i < outer/2; i++)
     nurbs->kv[i] = 0.0;
+  
   if (inner) {
-    for (i = outer/2; i < inner + outer/2; i++) {
+    for (int i = outer/2; i < inner + outer/2; i++) {
 		nurbs->kv[i] = vKnots[i - (outer/2)];
     }
   }
-  for (i = outer/2 + inner; i < nurbs->nk; i++)
+
+  for (int i = outer/2 + inner; i < nurbs->nk; i++)
     nurbs->kv[i] = 1.0;
 
   nurbs->ref = 0;
+  
   return nurbs;
 }
 

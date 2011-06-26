@@ -7,3 +7,5 @@ set_common_target_properties(${PROJECT_NAME})
 if(WITH_TESTS)
   add_subdirectory(tests)
 endif(WITH_TESTS)
+
+add_subdirectory(nurbs_mesh)
