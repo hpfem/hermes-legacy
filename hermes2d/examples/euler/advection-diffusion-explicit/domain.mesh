@@ -22,19 +22,19 @@ vertices = [
 ]
 
 elements = [
-  [ 0, 1, 4, 3, 0],   # quad 0
-  [ 3, 4, 6, 7, 0],   # quad 1
-  [ 2, 7, 6, 5, 0]   # quad 2
+  [ 0, 1, 4, 3, "e"],   # quad 0
+  [ 3, 4, 6, 7, "e"],   # quad 1
+  [ 2, 7, 6, 5, "e"]   # quad 2
 ]
 
 boundaries = [
   [ 0, 1, "Inflow" ],
-  [ 1, 4, "Solid Wall" ],
-  [ 3, 0, "Solid Wall" ],
-  [ 4, 6, "Solid Wall" ],
-  [ 3, 7, "Solid Wall" ],
-  [ 2, 7, "Solid Wall" ],
-  [ 6, 5, "Solid Wall" ],
+  [ 1, 4, "Solid_Wall" ],
+  [ 3, 0, "Solid_Wall" ],
+  [ 4, 6, "Solid_Wall" ],
+  [ 3, 7, "Solid_Wall" ],
+  [ 2, 7, "Solid_Wall" ],
+  [ 6, 5, "Solid_Wall" ],
   [ 5, 2, "Outflow" ]
 ]
 
