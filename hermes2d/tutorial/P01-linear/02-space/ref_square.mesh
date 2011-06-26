@@ -17,6 +17,3 @@ boundaries = [
   [ 2, 3, "Bdy" ],
   [ 3, 0, "Bdy" ]
 ]
-
-curves = [
-]

@@ -38,24 +38,19 @@ void H2DReader::load_str(const char* mesh_str, Mesh *mesh)
 
 //// load_nurbs ////////////////////////////////////////////////////////////////////////////////////
 
-Nurbs* H2DReader::load_nurbs(Mesh *mesh, Python &p, int id, Node** en, int &p1, int &p2)
+Nurbs* H2DReader::load_nurbs(Mesh *mesh, MeshData *m, int id, Node** en, int &p1, int &p2)
 {
   int i;
   Nurbs* nurbs = new Nurbs;
 
-  p.exec("curve_n = len(curve)");
-  int curve_n = p.pull_int("curve_n");
-  if (curve_n < 0 || (curve_n != 3 && curve_n != 5))
-    error("Invalid curve #%d.", id);
-  bool circle = (curve_n == 3);
+  // Decide if curve is a circular arc or a general nurbs curve
+  bool circle = not(m->curv_nurbs[id]);
   nurbs->arc = circle;
 
   // read the end point indices
-  p.exec("p1 = curve[0]");
-  p1 = p.pull_int("p1");
-  p.exec("p2 = curve[1]");
-  p2 = p.pull_int("p2");
-
+  p1 = m->curv_first[id];
+  p2 = m->curv_second[id];
+  
   *en = mesh->peek_edge_node(p1, p2);
   if (*en == NULL)
     error("Curve #%d: edge %d-%d does not exist.", id, p1, p2);
@@ -64,17 +59,20 @@ Nurbs* H2DReader::load_nurbs(Mesh *mesh, Python &p, int id, Node** en, int &p1, 
   nurbs->degree = 2;
   if (!circle)
   {
-    p.exec("degree = curve[2]");
-    nurbs->degree = p.pull_int("degree");
+    nurbs->degree = m->curv_third[id];
   }
 
   // get the number of control points
+  std::vector<double> vCP;
+  
   int inner = 1, outer;
   if (!circle)
   {
-    p.exec("inner = curve[3]");
-    p.exec("inner_n = len(inner)");
-    inner = p.pull_int("inner_n");
+    for (int i = 0; i < m->vars_[m->curv_inner_pts[id]].size(); ++i)
+	{
+		vCP.push_back(atof(m->vars_[m->curv_inner_pts[id]][i].c_str()));
+	}
+	inner = vCP.size()/3;
   }
   nurbs->np = inner + 2;
 
@@ -90,20 +88,18 @@ Nurbs* H2DReader::load_nurbs(Mesh *mesh, Python &p, int id, Node** en, int &p1, 
   if (!circle)
   {
     // read inner control points
-    for (i = 0; i < inner; i++)
-    {
-      p.push_int("i", i);
-      p.exec("pt0, pt1, pt2 = inner[i]");
-      nurbs->pt[i+1][0] = p.pull_double("pt0");
-      nurbs->pt[i+1][1] = p.pull_double("pt1");
-      nurbs->pt[i+1][2] = p.pull_double("pt2");
-    }
+	for (int i = 0; i < inner; i++)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			nurbs->pt[i + 1][j] = vCP[3*i + j];
+		}
+	}
   }
   else
   {
     // read the arc angle
-    p.exec("angle = curve[2]");
-    nurbs->angle = p.pull_double("angle");
+	nurbs->angle = m->curv_third[id];
     double a = (180.0 - nurbs->angle) / 180.0 * M_PI;
 
     // generate one control point
@@ -114,12 +110,16 @@ Nurbs* H2DReader::load_nurbs(Mesh *mesh, Python &p, int id, Node** en, int &p1, 
   }
 
   // get the number of knot vector points
+  std::vector<double> vKnots;
+  
   inner = 0;
   if (!circle)
   {
-    p.exec("inner = curve[4]");
-    p.exec("inner_n = len(inner)");
-    inner = p.pull_int("inner_n");
+	for (int i = 0; i < m->vars_[m->curv_knots[id]].size(); ++i)
+	{
+		vKnots.push_back(atof(m->vars_[m->curv_knots[id]][i].c_str()));
+	}
+	inner = vKnots.size();
   }
 
   nurbs->nk = nurbs->degree + nurbs->np + 1;
@@ -133,9 +133,7 @@ Nurbs* H2DReader::load_nurbs(Mesh *mesh, Python &p, int id, Node** en, int &p1, 
     nurbs->kv[i] = 0.0;
   if (inner) {
     for (i = outer/2; i < inner + outer/2; i++) {
-      p.push_int("i", i-outer/2);
-      p.exec("val = inner[i]");
-      nurbs->kv[i] = p.pull_double("val");
+		nurbs->kv[i] = vKnots[i - (outer/2)];
     }
   }
   for (i = outer/2 + inner; i < nurbs->nk; i++)
@@ -145,22 +143,14 @@ Nurbs* H2DReader::load_nurbs(Mesh *mesh, Python &p, int id, Node** en, int &p1, 
   return nurbs;
 }
 
-
 bool H2DReader::load(const char *filename, Mesh *mesh)
 {
+  // Both load_str and load_stream are unnecessary. Remove them??		
+	
   std::ifstream s(filename);
   if (!s.good()) error("Mesh file not found.");
   return this->load_stream(s, mesh, filename);
 }
-
-std::string read_file(std::istream &is)
-{
-    std::ostringstream s;
-    s << is.rdbuf();
-    return s.str();
-}
-
-PyMODINIT_FUNC initpython_reader(void); /*proto*/
 
 bool H2DReader::load_stream(std::istream &is, Mesh *mesh,
         const char *filename)
@@ -171,19 +161,13 @@ bool H2DReader::load_stream(std::istream &is, Mesh *mesh,
 
   mesh->free();
 
-  std::string mesh_str = read_file(is);
-
-  Python p;
-  initpython_reader();
-  p.exec("from python_reader import read_hermes_format_str");
-  p.push_str("s", mesh_str);
-  p.exec("vertices, elements, boundaries, curves, refinements"
-          " = read_hermes_format_str(s)");
+  std::string fName(filename);
+  MeshData m(fName);
+  m.parse_mesh();
 
   //// vertices ////////////////////////////////////////////////////////////////
-
-  p.exec("n = len(vertices)");
-  n = p.pull_int("n");
+  
+  n = m.n_vert;
   if (n < 0) error("File %s: 'vertices' must be a list.", filename);
   if (n < 2) error("File %s: invalid number of vertices.", filename);
 
@@ -202,17 +186,14 @@ bool H2DReader::load_stream(std::istream &is, Mesh *mesh,
     node->bnd = 0;
     node->p1 = node->p2 = -1;
     node->next_hash = NULL;
-    p.push_int("i", i);
-    p.exec("x, y = vertices[i]");
-    node->x = p.pull_double("x");
-    node->y = p.pull_double("y");
+	node->x = m.x_vertex[i];
+	node->y = m.y_vertex[i];
   }
   mesh->ntopvert = n;
 
   //// elements ////////////////////////////////////////////////////////////////
 
-  p.exec("n = len(elements)");
-  n = p.pull_int("n");
+  n = m.n_el;
   if (n < 0) error("File %s: 'elements' must be a list.", filename);
   if (n < 1) error("File %s: no elements defined.", filename);
 
@@ -221,45 +202,34 @@ bool H2DReader::load_stream(std::istream &is, Mesh *mesh,
   for (i = 0; i < n; i++)
   {
     // read and check vertex indices
-    p.push_int("i", i);
-    p.exec("nv = len(elements[i])");
-    int nv = p.pull_int("nv");
-    int idx[5];
+	int nv;
+	if (m.en4[i] == -1)	nv = 4;
+	else nv = 5;
+	
+	int* idx = new int[nv-1];
     std::string el_marker;
     if (!nv) { 
       mesh->elements.skip_slot(); 
       continue; 
     }
-    if (nv < 4 || nv > 5)
-      error("File %s: element #%d: wrong number of vertex indices.", filename, i);
-    if (nv == 4) {
-      p.exec("n1, n2, n3, marker = elements[i]");
-      idx[0] = p.pull_int("n1");
-      idx[1] = p.pull_int("n2");
-      idx[2] = p.pull_int("n3");
-      p.exec("marker_str = 1 if isinstance(marker, str) else 0");
-      if (p.pull_int("marker_str"))
-        el_marker = p.pull_str("marker");
-      else {
-        std::ostringstream string_stream;
-        string_stream << p.pull_int("marker");
-        el_marker = string_stream.str();
-      }
+
+	if (nv < 4 || nv > 5)
+       error("File %s: element #%d: wrong number of vertex indices.", filename, i);
+    
+	if (nv == 4) {
+	  idx[0] = m.en1[i];
+	  idx[1] = m.en2[i];
+	  idx[2] = m.en3[i];
+	  
+	  el_marker = m.e_mtl[i];
     } 
     else {
-      p.exec("n1, n2, n3, n4, marker = elements[i]");
-      idx[0] = p.pull_int("n1");
-      idx[1] = p.pull_int("n2");
-      idx[2] = p.pull_int("n3");
-      idx[3] = p.pull_int("n4");
-      p.exec("marker_str = 1 if isinstance(marker, str) else 0");
-      if (p.pull_int("marker_str"))
-        el_marker = p.pull_str("marker");
-      else {
-        std::ostringstream string_stream;
-        string_stream << p.pull_int("marker");
-        el_marker = string_stream.str();
-      }
+	  idx[0] = m.en1[i];
+	  idx[1] = m.en2[i];
+	  idx[2] = m.en3[i];
+	  idx[3] = m.en4[i];
+	  
+	  el_marker = m.e_mtl[i];
     }
     for (j = 0; j < nv-1; j++)
       if (idx[j] < 0 || idx[j] >= mesh->ntopvert)
@@ -285,39 +255,29 @@ bool H2DReader::load_stream(std::istream &is, Mesh *mesh,
       }
 
     mesh->nactive++;
+	
+	delete [] idx;
   }
   mesh->nbase = n;
 
   //// boundaries //////////////////////////////////////////////////////////////
-  p.exec("have_boundaries = 1 if boundaries else 0");
-  if (p.pull_int("have_boundaries"))
+  if (m.n_bdy > 0)
   {
-    p.exec("n = len(boundaries)");
-    n = p.pull_int("n");
+	n = m.n_bdy;
 
     // read boundary data
     for (i = 0; i < n; i++)
     {
       int v1, v2, marker;
-      p.push_int("i", i);
-      p.exec("v1, v2, marker = boundaries[i]");
-      v1 = p.pull_int("v1");
-      v2 = p.pull_int("v2");
-
+	  v1 = m.bdy_first[i];
+	  v2 = m.bdy_second[i];
+	  
       en = mesh->peek_edge_node(v1, v2);
       if (en == NULL)
         error("File %s: boundary data #%d: edge %d-%d does not exist", filename, i, v1, v2);
 
       std::string bnd_marker;
-      p.exec("marker_str = 1 if isinstance(marker, str) else 0");
-
-      if (p.pull_int("marker_str"))
-        bnd_marker = p.pull_str("marker");
-      else {
-        std::ostringstream string_stream;
-        string_stream << p.pull_int("marker");
-        bnd_marker = string_stream.str();
-      }
+	  bnd_marker = m.bdy_type[i];
 
       // This functions check if the user-supplied marker on this element has been
       // already used, and if not, inserts it in the appropriate structure.
@@ -346,11 +306,9 @@ bool H2DReader::load_stream(std::istream &is, Mesh *mesh,
 #endif
 
   //// curves //////////////////////////////////////////////////////////////////
-  p.exec("have_curves = 1 if curves else 0");
-  if (p.pull_int("have_curves"))
+  if (m.n_curv > 0)
   {
-    p.exec("n = len(curves)");
-    n = p.pull_int("n");
+	n = m.n_curv;
     if (n < 0) error("File %s: 'curves' must be a list.", filename);
 
     // load curved edges
@@ -359,9 +317,8 @@ bool H2DReader::load_stream(std::istream &is, Mesh *mesh,
       // load the control points, knot vector, etc.
       Node* en;
       int p1, p2;
-      p.push_int("i", i);
-      p.exec("curve = curves[i]");
-      Nurbs* nurbs = load_nurbs(mesh, p, i, &en, p1, p2);
+	  
+      Nurbs* nurbs = load_nurbs(mesh, &m, i, &en, p1, p2);
 
       // assign the nurbs to the elements sharing the edge node
       for (k = 0; k < 2; k++)
@@ -405,21 +362,17 @@ bool H2DReader::load_stream(std::istream &is, Mesh *mesh,
       e->cm->update_refmap_coeffs(e);
 
   //// refinements /////////////////////////////////////////////////////////////
-  p.exec("have_refinements = 1 if refinements else 0");
-  if (p.pull_int("have_refinements"))
+  if (m.n_ref > 0)
   {
-    p.exec("n = len(refinements)");
-    n = p.pull_int("n");
+	n = m.n_ref;
     if (n < 0) error("File %s: 'refinements' must be a list.", filename);
 
     // perform initial refinements
     for (i = 0; i < n; i++)
     {
       int id, ref;
-      p.push_int("i", i);
-      p.exec("id, ref = refinements[i]");
-      id = p.pull_int("id");
-      ref = p.pull_int("ref");
+	  id = m.ref_elt[i];
+	  ref = m.ref_type[i];
       mesh->refine_element_id(id, ref);
     }
   }
@@ -517,11 +470,9 @@ bool H2DReader::save(const char* filename, Mesh *mesh)
     if (!e->used)
       fprintf(f, "%s  { }", nl);
     else if (e->is_triangle())
-      fprintf(f, "%s  { %d, %d, %d, \"%s\" }", nl, e->vn[0]->id, e->vn[1]->id, e->vn[2]->id,
-              mesh->element_markers_conversion.get_user_marker(e->marker).c_str());
+      fprintf(f, "%s  { %d, %d, %d, %d }", nl, e->vn[0]->id, e->vn[1]->id, e->vn[2]->id, e->marker);
     else
-      fprintf(f, "%s  { %d, %d, %d, %d, \"%s\" }", nl, e->vn[0]->id, e->vn[1]->id, e->vn[2]->id, e->vn[3]->id,
-              mesh->element_markers_conversion.get_user_marker(e->marker).c_str());
+      fprintf(f, "%s  { %d, %d, %d, %d, %d }", nl, e->vn[0]->id, e->vn[1]->id, e->vn[2]->id, e->vn[3]->id, e->marker);
   }
 
   // save boundary markers

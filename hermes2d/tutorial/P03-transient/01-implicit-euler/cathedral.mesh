@@ -5,22 +5,35 @@ h2 = 4.5 # height of middle part of towers
 h3 = 4   # height of tip of middle part
 h4 = 7   # height of tip of towers
 
+h12 = 10.5 # h1 + h2
+h124 = 17.5 # h1 + h2 + h4
+h13 = 10 # h1 + h3
+
+c1 = 2  # w0/2
+mc1 = -2 # -w0/2
+
+c2 = 5 # w0/2 + w1
+mc2 = -5 # -c2
+
+c3 = 3.5 # w0/2 + w1/2
+mc3 = -3.5 # -c3
+
 vertices = [
-  [ -w0/2 - w1, 0 ],
-  [ -w0/2, 0 ],
-  [ w0/2, 0 ],
-  [ w0/2 + w1, 0 ],
-  [ -w0/2 - w1, h1 ],
-  [ -w0/2, h1 ],
-  [ w0/2, h1 ],
-  [ w0/2 + w1, h1 ],
-  [ -w0/2 - w1, h1 + h2],
-  [ -w0/2, h1 + h2 ],
-  [ 0, h1 + h3 ],
-  [ w0/2, h1 + h2 ],
-  [ w0/2 + w1, h1 + h2 ],
-  [ -w0/2 - w1/2, h1 + h2 + h4],
-  [ w0/2 + w1/2, h1 + h2 + h4]
+  [ mc2, 0 ],
+  [ mc1, 0 ],
+  [ c1, 0 ],
+  [ c2, 0 ],
+  [ mc2, h1 ],
+  [ mc1, h1 ],
+  [ c1, h1 ],
+  [ c2, h1 ],
+  [ mc2, h12],
+  [ mc1, h12 ],
+  [ 0, h13 ],
+  [ c1, h12 ],
+  [ c2, h12 ],
+  [ mc3, h124],
+  [ c3, h124]
 ]
 
 elements = [
