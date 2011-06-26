@@ -2,10 +2,12 @@ R0 = 0.05 # inner radius
 a = 0.2   # wall thickness
 b = 0.4   # height
 
+Ra = 0.25 # (R0 + a)
+
 vertices = [
   [ R0, 0 ],        # vertex 0
-  [ R0 + a, 0 ],    # vertex 1
-  [ R0 + a, b ],    # vertex 2
+  [ Ra, 0 ],    # vertex 1
+  [ Ra, b ],    # vertex 2
   [ R0, b ]         # vertex 3
 ]
 
@@ -15,8 +17,8 @@ elements = [
 
 boundaries = [
   [ 0, 1, "Bottom" ],
-  [ 1, 2, "Heat flux" ],
-  [ 2, 3, "Heat flux" ],
-  [ 3, 0, "Heat flux" ]
+  [ 1, 2, "Heat_flux" ],
+  [ 2, 3, "Heat_flux" ],
+  [ 3, 0, "Heat_flux" ]
 ]
 

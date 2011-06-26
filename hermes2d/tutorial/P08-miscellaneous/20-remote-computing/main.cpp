@@ -46,19 +46,19 @@ int main(int argc, char* argv[])
 
   // Perform initial mesh refinements.
   for(int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
-  mesh.refine_towards_boundary("Boundary air", INIT_REF_NUM_BDY);
-  mesh.refine_towards_boundary("Boundary ground", INIT_REF_NUM_BDY);
+  mesh.refine_towards_boundary("Boundary_air", INIT_REF_NUM_BDY);
+  mesh.refine_towards_boundary("Boundary_ground", INIT_REF_NUM_BDY);
 
   // Previous time level solution (initialized by the external temperature).
   Solution tsln(&mesh, TEMP_INIT);
 
   // Initialize the weak formulation.
   double current_time = 0;
-  CustomWeakFormHeatRK1 wf("Boundary air", ALPHA, LAMBDA, HEATCAP, RHO, time_step, 
+  CustomWeakFormHeatRK1 wf("Boundary_air", ALPHA, LAMBDA, HEATCAP, RHO, time_step, 
                            &current_time, TEMP_INIT, T_FINAL, &tsln);
 
   // Initialize boundary conditions.
-  DefaultEssentialBCConst essential_bc("Boundary ground", TEMP_INIT);
+  DefaultEssentialBCConst essential_bc("Boundary_ground", TEMP_INIT);
   EssentialBCs bcs(&essential_bc);
 
   // Initialize an H1 space with default shepeset.
