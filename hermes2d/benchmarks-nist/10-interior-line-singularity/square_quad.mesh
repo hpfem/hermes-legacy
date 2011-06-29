@@ -1,10 +1,11 @@
 a = 1
+ma = -1
 
 vertices = [
-  [ -a, -a ],
-  [ a, -a ],
+  [ ma, ma ],
+  [ a, ma ],
   [ a, a ],
-  [ -a, a ]
+  [ ma, a ]
 ]
 
 elements = [

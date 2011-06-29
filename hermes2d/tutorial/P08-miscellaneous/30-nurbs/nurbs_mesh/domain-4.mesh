@@ -6,6 +6,19 @@ b = 0.70710678118654757
 
 ab = 0.70710678118654757
 
+a1 = 0.25
+a2 = 0.5
+a3 = 0.75
+
+c1 = -1.5
+c2 = -0.5
+
+b1 = -1.5
+b2 = -2
+
+d1 = 0.2
+d2 = 0.7
+
 vertices = [
   [ 0,  ma],    # vertex 0
   [ a, ma ],    # vertex 1
@@ -35,9 +48,34 @@ boundaries = [
   [ 5, 2, "Left" ]
 ]
 
+degree_1 = 4
+
+inner_points_1 = [
+  [ a1, c1, 1.0 ],
+  [ a2, c2, 1.0 ],
+  [ a3, c1, 1.0 ]
+] 
+
+knots_1 = [
+  0, 0, 0, 1, 1, 1
+]
+
+degree_2 = 3
+
+inner_points_2 = [
+  [ b1, d1, 0.5],
+  [ b2, d2, 1.0]
+]
+
+knots_2 = [
+  0, 0, 0, 1, 1, 1
+]
+
 curves = [
   [ 4, 7, 45 ],  # circular arc with central angle of 45 degrees
-  [ 7, 6, 45 ]   # circular arc with central angle of 45 degrees
+  [ 7, 6, 45 ],   # circular arc with central angle of 45 degrees
+  [ 0, 1, degree_1, inner_points_1, knots_1],
+  [ 2, 5, degree_2, inner_points_2, knots_2]
 ]
 
 

@@ -19,14 +19,15 @@ set(SRC
        mesh/refinement_type.cpp 
        mesh/element_to_refine.cpp
        mesh/exodusii.cpp 
-       mesh/hash.cpp 
+       mesh/hash.cpp
+	   mesh/mesh2d_parser.cpp
        mesh/h2d_reader.cpp
        mesh/mesh.cpp 
        mesh/regul.cpp 
        mesh/transform.cpp 
        mesh/traverse.cpp
        mesh/trans.cpp
-       mesh/python_reader.cpp
+       #mesh/python_reader.cpp
 
        quadrature/limit_order.cpp
        quadrature/quad_std.cpp

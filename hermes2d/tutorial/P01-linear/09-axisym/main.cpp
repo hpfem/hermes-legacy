@@ -24,7 +24,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 const double T1 = 100.0;      // Prescribed temperature on Gamma_bottom.
 const double T0 = 0.0;        // Outer temperature.
 const double LAMBDA = 386;    // Thermal conductivity.
-const double ALPHA = 20.0;    // Heat flux coefficient on Gamma_heat_flux.
+const double ALPHA = 20.0;    // Heat_flux coefficient on Gamma_heat_flux.
 
 // Weak forms.
 #include "definitions.h"
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
   info("ndof = %d", ndof);
 
   // Initialize the weak formulation.
-  CustomWeakFormPoissonNewton wf(LAMBDA, ALPHA, T0, "Heat flux");
+  CustomWeakFormPoissonNewton wf(LAMBDA, ALPHA, T0, "Heat_flux");
 
   // Initialize the FE problem.
   DiscreteProblem dp(&wf, &space);
