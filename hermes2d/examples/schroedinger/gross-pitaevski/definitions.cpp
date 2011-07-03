@@ -39,7 +39,7 @@ Scalar CustomWeakFormGPRK::CustomFormMatrixFormVol::matrix_form_rk(int n, double
   Func<Scalar>* psi_prev_newton = u_ext[0];
   for (int i = 0; i < n; i++)
     result += wt[i] * (H*H/(2*M*ii*H) * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i])
-                     + 2*G/(ii*H)* u->val[i] *  psi_prev_newton->val[i] * conj(psi_prev_newton->val[i]) * v->val[i]
+                     + 2*G/(ii*H)* u->val[i] * psi_prev_newton->val[i] * conj(psi_prev_newton->val[i]) * v->val[i]
                      + (G/ii*H) * psi_prev_newton->val[i] * psi_prev_newton->val[i] * u->val[i] * v->val[i]
                      + .5*M*OMEGA*OMEGA/(ii*H) * (e->x[i] * e->x[i] + e->y[i] * e->y[i]) * u->val[i] * v->val[i]);
   return result;
@@ -71,10 +71,10 @@ Scalar CustomWeakFormGPRK::CustomFormVectorFormVol::vector_form_rk(int n, double
   Scalar result = 0;
   Func<Scalar>* psi_prev_newton = u_ext[0];
   for (int i = 0; i < n; i++)
-    result += wt[i] * (H*H/(2*M*ii*H) * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i])
-                     + 2*G/(ii*H)* u->val[i] *  psi_prev_newton->val[i] * conj(psi_prev_newton->val[i]) * v->val[i]
-                     + (G/ii*H) * psi_prev_newton->val[i] * psi_prev_newton->val[i] * u->val[i] * v->val[i]
-                     + .5*M*OMEGA*OMEGA/(ii*H) * (e->x[i] * e->x[i] + e->y[i] * e->y[i]) * u->val[i] * v->val[i]);
+    result += wt[i] * (H*H/(2*M*ii*H) * (psi_prev_newton->dx[i] * v->dx[i] + psi_prev_newton->dy[i] * v->dy[i])
+                     + 2*G/(ii*H)* psi_prev_newton->val[i] *  psi_prev_newton->val[i] * conj(psi_prev_newton->val[i]) * v->val[i]
+                     + (G/ii*H) * psi_prev_newton->val[i] * psi_prev_newton->val[i] * psi_prev_newton->val[i] * v->val[i]
+                     + .5*M*OMEGA*OMEGA/(ii*H) * (e->x[i] * e->x[i] + e->y[i] * e->y[i]) * psi_prev_newton->val[i] * v->val[i]);
   return result;
 }
 

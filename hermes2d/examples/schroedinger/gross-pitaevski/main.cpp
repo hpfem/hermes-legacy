@@ -45,7 +45,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 //   Implicit_SDIRK_BILLINGTON_3_23_embedded, Implicit_SDIRK_CASH_5_24_embedded, Implicit_SDIRK_CASH_5_34_embedded, 
 //   Implicit_DIRK_ISMAIL_7_45_embedded. 
 
-ButcherTableType butcher_table_type = Implicit_SDIRK_2_2;
+ButcherTableType butcher_table_type = Implicit_RK_1;
 
 // Problem constants
 const double H = 1;                               // Planck constant 6.626068e-34.
