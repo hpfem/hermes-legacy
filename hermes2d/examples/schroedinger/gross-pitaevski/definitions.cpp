@@ -1,23 +1,21 @@
 #include "definitions.h"
 
-/*
-double CustomInitialSolution::value (double x, double y) const 
-{
-  return 0;
-}
-
-void CustomInitialSolution::derivatives (double x, double y, scalar& dx, scalar& dy) const
+void CustomInitialCondition::derivatives (double x, double y, scalar& dx, scalar& dy) const 
 {
   scalar val = exp(-10*(x*x + y*y));
   dx = val * (-20.0 * x);
   dy = val * (-20.0 * y);
 }
 
-Ord CustomInitialSolution::ord(Ord x, Ord y) const 
+scalar CustomInitialCondition::value (double x, double y) const 
 {
-  return Ord(1);
+  return exp(-10*(x*x + y*y));
 }
-*/
+
+Ord CustomInitialCondition::ord(Ord x, Ord y) const 
+{
+  return exp(-10*(x*x + y*y));
+}
 
 CustomWeakFormGPRK::CustomWeakFormGPRK(double H, double M, double G, double OMEGA) : WeakForm(1)
 {
@@ -26,12 +24,11 @@ CustomWeakFormGPRK::CustomWeakFormGPRK(double H, double M, double G, double OMEG
 
   // Residual - volumetric.
   add_vector_form(new CustomFormVectorFormVol(0, H, M, G, OMEGA));
-
 }
 
 template<typename Real, typename Scalar>
-Scalar CustomWeakFormGPRK::CustomFormMatrixFormVol::matrix_form_rk(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-                                                                   Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+Scalar CustomWeakFormGPRK::CustomFormMatrixFormVol::matrix_form_rk(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u,
+                                                                   Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const 
 {
   scalar ii = cplx(0.0, 1.0);  // imaginary unit, ii^2 = -1
 
@@ -51,10 +48,10 @@ scalar CustomWeakFormGPRK::CustomFormMatrixFormVol::value(int n, double *wt, Fun
   return matrix_form_rk<double, scalar>(n, wt, u_ext, u, v, e, ext);
 }
 
-Ord CustomWeakFormGPRK::CustomFormMatrixFormVol::ord(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-                                                     Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+Ord CustomWeakFormGPRK::CustomFormMatrixFormVol::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, 
+                                                     Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
 {
-  return Ord(10);
+  return matrix_form_rk<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
 }
 
 WeakForm::MatrixFormVol* CustomWeakFormGPRK::CustomFormMatrixFormVol::clone() 
@@ -75,6 +72,7 @@ Scalar CustomWeakFormGPRK::CustomFormVectorFormVol::vector_form_rk(int n, double
                      + 2*G/(ii*H)* psi_prev_newton->val[i] *  psi_prev_newton->val[i] * conj(psi_prev_newton->val[i]) * v->val[i]
                      + (G/ii*H) * psi_prev_newton->val[i] * psi_prev_newton->val[i] * psi_prev_newton->val[i] * v->val[i]
                      + .5*M*OMEGA*OMEGA/(ii*H) * (e->x[i] * e->x[i] + e->y[i] * e->y[i]) * psi_prev_newton->val[i] * v->val[i]);
+
   return result;
 }
 
@@ -86,7 +84,7 @@ scalar CustomWeakFormGPRK::CustomFormVectorFormVol::value(int n, double *wt, Fun
 
 Ord CustomWeakFormGPRK::CustomFormVectorFormVol::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
 {
-  return Ord(10);
+  return vector_form_rk<Ord, Ord>(n, wt, u_ext, v, e, ext);
 }
 
 WeakForm::VectorFormVol* CustomWeakFormGPRK::CustomFormVectorFormVol::clone() 
