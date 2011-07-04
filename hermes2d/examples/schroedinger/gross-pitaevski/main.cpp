@@ -48,10 +48,10 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 ButcherTableType butcher_table_type = Implicit_SDIRK_2_2;
 
 // Problem constants
-const double H = 1;                               // Planck constant 6.626068e-34.
-const double M = 1;                               // Mass of boson.
-const double G = 1;                               // Coupling constant.
-const double OMEGA = 1;                           // Frequency.
+const double h = 1;                               // Planck constant 6.626068e-34.
+const double m = 1;                               // Mass of boson.
+const double g = 1;                               // Coupling constant.
+const double omega = 1;                           // Frequency.
 
 int main(int argc, char* argv[])
 {
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
   // Initialize the weak formulation.
   double current_time = 0;
 
-  CustomWeakFormGPRK wf(H, M, G, OMEGA);
+  CustomWeakFormGPRK wf(h, m, g, omega);
   
   // Initialize boundary conditions.
   DefaultEssentialBCConst bc_essential("Bdy", 0.0);

@@ -17,13 +17,13 @@ Ord CustomInitialCondition::ord(Ord x, Ord y) const
   return exp(-10*(x*x + y*y));
 }
 
-CustomWeakFormGPRK::CustomWeakFormGPRK(double H, double M, double G, double OMEGA) : WeakForm(1)
+CustomWeakFormGPRK::CustomWeakFormGPRK(double h, double m, double g, double omega) : WeakForm(1)
 {
   // Jacobian volumetric part.
-  add_matrix_form(new CustomFormMatrixFormVol(0, 0, H, M, G, OMEGA));
+  add_matrix_form(new CustomFormMatrixFormVol(0, 0, h, m, g, omega));
 
   // Residual - volumetric.
-  add_vector_form(new CustomFormVectorFormVol(0, H, M, G, OMEGA));
+  add_vector_form(new CustomFormVectorFormVol(0, h, m, g, omega));
 }
 
 template<typename Real, typename Scalar>
@@ -35,10 +35,10 @@ Scalar CustomWeakFormGPRK::CustomFormMatrixFormVol::matrix_form_rk(int n, double
   Scalar result = 0;
   Func<Scalar>* psi_prev_newton = u_ext[0];
   for (int i = 0; i < n; i++)
-    result += wt[i] * (H*H/(2*M*ii*H) * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i])
-                     + 2*G/(ii*H)* u->val[i] * psi_prev_newton->val[i] * conj(psi_prev_newton->val[i]) * v->val[i]
-                     + (G/ii*H) * psi_prev_newton->val[i] * psi_prev_newton->val[i] * u->val[i] * v->val[i]
-                     + .5*M*OMEGA*OMEGA/(ii*H) * (e->x[i] * e->x[i] + e->y[i] * e->y[i]) * u->val[i] * v->val[i]);
+    result += wt[i] * (h*h/(2*m*ii*h) * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i])
+                     + 2*g/(ii*h)* u->val[i] * psi_prev_newton->val[i] * conj(psi_prev_newton->val[i]) * v->val[i]
+                     + (g/ii*h) * psi_prev_newton->val[i] * psi_prev_newton->val[i] * u->val[i] * v->val[i]
+                     + .5*m*omega*omega/(ii*h) * (e->x[i] * e->x[i] + e->y[i] * e->y[i]) * u->val[i] * v->val[i]);
   return result;
 }
 
@@ -68,10 +68,10 @@ Scalar CustomWeakFormGPRK::CustomFormVectorFormVol::vector_form_rk(int n, double
   Scalar result = 0;
   Func<Scalar>* psi_prev_newton = u_ext[0];
   for (int i = 0; i < n; i++)
-    result += wt[i] * (H*H/(2*M*ii*H) * (psi_prev_newton->dx[i] * v->dx[i] + psi_prev_newton->dy[i] * v->dy[i])
-                     + 2*G/(ii*H)* psi_prev_newton->val[i] *  psi_prev_newton->val[i] * conj(psi_prev_newton->val[i]) * v->val[i]
-                     + (G/ii*H) * psi_prev_newton->val[i] * psi_prev_newton->val[i] * psi_prev_newton->val[i] * v->val[i]
-                     + .5*M*OMEGA*OMEGA/(ii*H) * (e->x[i] * e->x[i] + e->y[i] * e->y[i]) * psi_prev_newton->val[i] * v->val[i]);
+    result += wt[i] * (h*h/(2*m*ii*h) * (psi_prev_newton->dx[i] * v->dx[i] + psi_prev_newton->dy[i] * v->dy[i])
+                     + 2*g/(ii*h)* psi_prev_newton->val[i] *  psi_prev_newton->val[i] * conj(psi_prev_newton->val[i]) * v->val[i]
+                     + (g/ii*h) * psi_prev_newton->val[i] * psi_prev_newton->val[i] * psi_prev_newton->val[i] * v->val[i]
+                     + .5*m*omega*omega/(ii*h) * (e->x[i] * e->x[i] + e->y[i] * e->y[i]) * psi_prev_newton->val[i] * v->val[i]);
 
   return result;
 }

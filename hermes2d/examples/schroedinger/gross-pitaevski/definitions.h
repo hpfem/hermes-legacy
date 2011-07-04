@@ -24,15 +24,15 @@ public:
 class CustomWeakFormGPRK : public WeakForm
 {
 public:
-  CustomWeakFormGPRK(double H, double M, double G, double OMEGA);
+  CustomWeakFormGPRK(double h, double m, double g, double omega);
 
 private:
 
   class CustomFormMatrixFormVol : public WeakForm::MatrixFormVol
   {
   public:
-    CustomFormMatrixFormVol(int i, int j, double H, double M, double G, double OMEGA) 
-          : WeakForm::MatrixFormVol(i, j), H(H), M(M), G(G), OMEGA(OMEGA) {};
+    CustomFormMatrixFormVol(int i, int j, double h, double m, double g, double omega) 
+          : WeakForm::MatrixFormVol(i, j), h(h), m(m), g(g), omega(omega) {};
 
     template<typename Real, typename Scalar>
     Scalar matrix_form_rk(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u,
@@ -47,15 +47,15 @@ private:
     virtual WeakForm::MatrixFormVol* clone();
 
     // Members.
-    double H, M, G, OMEGA;
+    double h, m, g, omega;
   };
 
 
   class CustomFormVectorFormVol : public WeakForm::VectorFormVol
   {
   public:
-    CustomFormVectorFormVol(int i, double H, double M, double G, double OMEGA)
-          : WeakForm::VectorFormVol(i), H(H), M(M), G(G), OMEGA(OMEGA) {};
+    CustomFormVectorFormVol(int i, double h, double m, double g, double omega)
+          : WeakForm::VectorFormVol(i), h(h), m(m), g(g), omega(omega) {};
 
     template<typename Real, typename Scalar>
     Scalar vector_form_rk(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v,
@@ -70,8 +70,8 @@ private:
     virtual WeakForm::VectorFormVol* clone();
 
     // Members.
-    double H, M, G, OMEGA;
+    double h, m, g, omega;
   };
-  double H, M, G, OMEGA;
+  double h, m, g, omega;
 };
 
