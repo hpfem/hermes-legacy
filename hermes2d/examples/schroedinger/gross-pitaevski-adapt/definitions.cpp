@@ -2,19 +2,19 @@
 
 void CustomInitialCondition::derivatives (double x, double y, scalar& dx, scalar& dy) const 
 {
-  scalar val = exp(-10*(x*x + y*y));
-  dx = val * (-20.0 * x);
-  dy = val * (-20.0 * y);
+  scalar val = exp(-20*(x*x + y*y));
+  dx = val * (-40.0 * x);
+  dy = val * (-40.0 * y);
 }
 
 scalar CustomInitialCondition::value (double x, double y) const 
 {
-  return exp(-10*(x*x + y*y));
+  return exp(-20*(x*x + y*y));
 }
 
 Ord CustomInitialCondition::ord(Ord x, Ord y) const 
 {
-  return exp(-10*(x*x + y*y));
+  return exp(-20*(x*x + y*y));
 }
 
 CustomWeakFormGPRK::CustomWeakFormGPRK(double h, double m, double g, double omega) : WeakForm(1)

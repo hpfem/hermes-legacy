@@ -22,9 +22,8 @@ using namespace RefinementSelectors;
 
 const int INIT_REF_NUM = 3;                       // Number of initial uniform refinements.
 const int P_INIT = 4;                             // Initial polynomial degree.
-const double time_step = 0.005;                   // Time step.
+double time_step = 0.005;                         // Time step.
 const double T_FINAL = 2;                         // Time interval length.
-const int TIME_INTEGRATION = 2;                   // 1 for implicit Euler, 2 for Crank-Nicolson.
 const double NEWTON_TOL = 1e-5;                   // Stopping criterion for the Newton's method.
 const int NEWTON_MAX_ITER = 100;                  // Maximum allowed number of Newton iterations.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
@@ -48,10 +47,10 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 ButcherTableType butcher_table_type = Implicit_SDIRK_2_2;
 
 // Problem constants
-const double H = 1;                               // Planck constant 6.626068e-34.
-const double M = 1;                               // Mass of boson.
-const double G = 1;                               // Coupling constant.
-const double OMEGA = 1;                           // Frequency.
+const double h = 1;                               // Planck constant 6.626068e-34.
+const double m = 1;                               // Mass of boson.
+const double g = 1;                               // Coupling constant.
+const double omega = 1;                           // Frequency.
 
 int main(int argc, char* argv[])
 {
@@ -72,12 +71,11 @@ int main(int argc, char* argv[])
   // Convert initial condition into a Solution.
   CustomInitialCondition psi_time_prev(&mesh);
   Solution psi_time_new(&mesh);
-  Solution time_error_fn(&mesh, 0.0);
 
   // Initialize the weak formulation.
   double current_time = 0;
 
-  CustomWeakFormGPRK wf(H, M, G, OMEGA);
+  CustomWeakFormGPRK wf(h, m, g, omega);
   
   // Initialize boundary conditions.
   DefaultEssentialBCConst bc_essential("Bdy", 0.0);
@@ -104,7 +102,7 @@ int main(int argc, char* argv[])
   for(int ts = 1; ts <= nstep; ts++)
   {
     // Perform one Runge-Kutta time step according to the selected Butcher's table.
-    info("Runge-Kutta time step (t = %g s, tau = %g s, stages: %d).", 
+    info("Runge-Kutta time step (t = %g s, time step = %g s, stages: %d).", 
          current_time, time_step, bt.get_size());
     bool jacobian_changed = false;
     bool verbose = true;
