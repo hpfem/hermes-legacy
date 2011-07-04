@@ -55,7 +55,6 @@ double x_0 = 0.0;
 double x_1 = 10.0;
 double y_0 = -10.0;
 double y_1 = 0;
-double t_1 = 10.0;
 double s = 2.0;
 double c = 10000.0;
 
@@ -96,7 +95,7 @@ int main(int argc, char* argv[])
   Solution time_error_fn(&mesh, 0.0);
 
   // Initialize the weak formulation
-  CustomFunction f(x_0, x_1, y_0, y_1, t_1, s, c, &current_time);
+  CustomFunction f(x_0, x_1, y_0, y_1, s, c, &current_time);
   WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, new HermesFunction(-1.0), &f);
 
   // Initialize the discrete problem.
