@@ -1,4 +1,5 @@
 #include "hermes2d.h"
+#include "runge_kutta.h"
 
 /* Exact solution */
 
