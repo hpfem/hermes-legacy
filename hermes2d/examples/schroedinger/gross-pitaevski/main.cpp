@@ -20,7 +20,7 @@ using namespace RefinementSelectors;
 //
 //  BC:  homogeneous Dirichlet everywhere on the boundary.
 
-const int INIT_REF_NUM = 2;                       // Number of initial uniform refinements.
+const int INIT_REF_NUM = 3;                       // Number of initial uniform refinements.
 const int P_INIT = 4;                             // Initial polynomial degree.
 const double time_step = 0.005;                   // Time step.
 const double T_FINAL = 2;                         // Time interval length.
@@ -45,7 +45,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 //   Implicit_SDIRK_BILLINGTON_3_23_embedded, Implicit_SDIRK_CASH_5_24_embedded, Implicit_SDIRK_CASH_5_34_embedded, 
 //   Implicit_DIRK_ISMAIL_7_45_embedded. 
 
-ButcherTableType butcher_table_type = Implicit_RK_1;
+ButcherTableType butcher_table_type = Implicit_SDIRK_2_2;
 
 // Problem constants
 const double H = 1;                               // Planck constant 6.626068e-34.
