@@ -1,22 +1,23 @@
 #include "hermes2d.h"
 #include "runge_kutta.h"
+#include "weakform/weakform.h"
+#include "integrals/h1.h"
+#include "boundaryconditions/essential_bcs.h"
 
-/* Initial solution */
+/* Initial condition */
 
-/*
-class CustomInitialSolution : public ExactSolutionScalar
+class CustomInitialCondition : public ExactSolutionScalar
 {
 public:
-  CustomInitialSolution(Mesh* mesh)
-               : ExactSolutionScalar(mesh) {};
-
-  virtual double value(double x, double y) const;
+  CustomInitialCondition(Mesh* mesh) : ExactSolutionScalar(mesh) {};
 
   virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const;
 
+  virtual scalar value (double x, double y) const;
+
   virtual Ord ord(Ord x, Ord y) const;
 };
-*/
+
 
 /* Weak forms */
 
@@ -34,14 +35,14 @@ private:
           : WeakForm::MatrixFormVol(i, j), H(H), M(M), G(G), OMEGA(OMEGA) {};
 
     template<typename Real, typename Scalar>
-    Scalar matrix_form_rk(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-                          Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const;
+    Scalar matrix_form_rk(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u,
+                          Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const;
 
     virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
                          Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const;
 
-    virtual Ord ord(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-                    Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const;
+    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, 
+                    Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const;
 
     virtual WeakForm::MatrixFormVol* clone();
 
@@ -63,7 +64,8 @@ private:
     virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e,
                          ExtData<scalar> *ext) const;
 
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const;
+    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, 
+                    ExtData<Ord> *ext) const;
 
     virtual WeakForm::VectorFormVol* clone();
 

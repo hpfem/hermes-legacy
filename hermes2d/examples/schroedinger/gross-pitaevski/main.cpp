@@ -69,10 +69,10 @@ int main(int argc, char* argv[])
   // Initial mesh refinements.
   for(int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
-  // Previous time level solution.
-  // Solution* psi_time_prev = new CustomInitialSolution(&mesh);
-  Solution* psi_time_prev = new Solution(&mesh, 0.0);
-  Solution* psi_time_new = new Solution(&mesh);
+  // Convert initial condition into a Solution.
+  CustomInitialCondition psi_time_prev(&mesh);
+  Solution psi_time_new(&mesh);
+  Solution time_error_fn(&mesh, 0.0);
 
   // Initialize the weak formulation.
   double current_time = 0;
@@ -100,7 +100,6 @@ int main(int argc, char* argv[])
   
   // Time stepping:
   int ts = 1;
-  //bool jacobian_changed = true;
   int nstep = (int)(T_FINAL/time_step + 0.5);
   for(int ts = 1; ts <= nstep; ts++)
   {
@@ -109,8 +108,8 @@ int main(int argc, char* argv[])
          current_time, time_step, bt.get_size());
     bool jacobian_changed = false;
     bool verbose = true;
-    if (!runge_kutta.rk_time_step(current_time, time_step, psi_time_prev, 
-                                  psi_time_new, jacobian_changed, verbose)) {
+    if (!runge_kutta.rk_time_step(current_time, time_step, &psi_time_prev, 
+                                  &psi_time_new, jacobian_changed, verbose)) {
       error("Runge-Kutta time step failed, try to decrease time step size.");
     }
 
@@ -118,19 +117,15 @@ int main(int argc, char* argv[])
     char title[100];
     sprintf(title, "Time %3.2f s", current_time);
     view.set_title(title);
-    view.show(psi_time_new);
+    view.show(&psi_time_new);
 
     // Copy solution for the new time step.
-    psi_time_prev->copy(psi_time_new);
+    psi_time_prev.copy(&psi_time_new);
 
     // Increase current time and time step counter.
     current_time += time_step;
     ts++;
   }
-
-  // Cleanup.
-  delete psi_time_prev;
-  delete psi_time_new;
 
   // Wait for the view to be closed.
   View::wait();
