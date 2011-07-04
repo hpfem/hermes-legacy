@@ -1,6 +1,6 @@
 IF(H2D_COMPLEX)
 
-project(schroedinger-gross-pitaevski-adapt)
+project(gross-pitaevski-adapt)
 
 add_executable(${PROJECT_NAME} main.cpp definitions.cpp)
 include (${hermes2d_SOURCE_DIR}/CMake.common)

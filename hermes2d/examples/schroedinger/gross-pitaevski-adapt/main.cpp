@@ -23,7 +23,7 @@ using namespace RefinementSelectors;
 //
 //  The following parameters can be changed:
 
-const int INIT_REF_NUM = 3;                       // Number of initial uniform refinements.
+const int INIT_REF_NUM = 2;                       // Number of initial uniform refinements.
 const int P_INIT = 2;                             // Initial polynomial degree.
 const double T_FINAL = 2.0;                       // Time interval length.
 double time_step = 0.005;                         // Time step.
@@ -159,13 +159,16 @@ int main(int argc, char* argv[])
   char title[100];
   ScalarView sln_view("Initial condition", new WinGeom(0, 0, 440, 350));
   sln_view.show_mesh(false);
-  OrderView ordview("Initial mesh", new WinGeom(445, 0, 440, 350));
+  sln_view.fix_scale_width(50);
+  OrderView ord_view("Initial mesh", new WinGeom(445, 0, 440, 350));
+  ord_view.fix_scale_width(50);
   ScalarView time_error_view("Temporal error", new WinGeom(0, 400, 440, 350));
+  time_error_view.fix_scale_width(50);
   time_error_view.fix_scale_width(60);
   ScalarView space_error_view("Spatial error", new WinGeom(445, 400, 440, 350));
-  space_error_view.fix_scale_width(60);
+  space_error_view.fix_scale_width(50);
   sln_view.show(&psi_time_prev);
-  ordview.show(&space);
+  ord_view.show(&space);
 
   // Graph for time step history.
   SimpleGraph time_step_graph;
@@ -336,8 +339,8 @@ int main(int argc, char* argv[])
     sln_view.show_mesh(false);
     sln_view.show(&ref_sln);
     sprintf(title, "Mesh, time %g s", current_time);
-    ordview.set_title(title);
-    ordview.show(&space);
+    ord_view.set_title(title);
+    ord_view.show(&space);
 
     // Copy last reference solution into psi_time_prev.
     psi_time_prev.copy(&ref_sln);
