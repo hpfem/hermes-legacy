@@ -22,9 +22,8 @@ using namespace RefinementSelectors;
 
 const int INIT_REF_NUM = 3;                       // Number of initial uniform refinements.
 const int P_INIT = 4;                             // Initial polynomial degree.
-const double time_step = 0.005;                   // Time step.
+double time_step = 0.005;                         // Time step.
 const double T_FINAL = 2;                         // Time interval length.
-const int TIME_INTEGRATION = 2;                   // 1 for implicit Euler, 2 for Crank-Nicolson.
 const double NEWTON_TOL = 1e-5;                   // Stopping criterion for the Newton's method.
 const int NEWTON_MAX_ITER = 100;                  // Maximum allowed number of Newton iterations.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
@@ -72,7 +71,6 @@ int main(int argc, char* argv[])
   // Convert initial condition into a Solution.
   CustomInitialCondition psi_time_prev(&mesh);
   Solution psi_time_new(&mesh);
-  Solution time_error_fn(&mesh, 0.0);
 
   // Initialize the weak formulation.
   double current_time = 0;
@@ -104,7 +102,7 @@ int main(int argc, char* argv[])
   for(int ts = 1; ts <= nstep; ts++)
   {
     // Perform one Runge-Kutta time step according to the selected Butcher's table.
-    info("Runge-Kutta time step (t = %g s, tau = %g s, stages: %d).", 
+    info("Runge-Kutta time step (t = %g s, time step = %g s, stages: %d).", 
          current_time, time_step, bt.get_size());
     bool jacobian_changed = false;
     bool verbose = true;
