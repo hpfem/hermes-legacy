@@ -1,14 +1,14 @@
 Mumps
 -----
 
+.. popup:: '#'
+
 .. _MUMPS home page: http://graal.ens-lyon.fr/MUMPS/index.php
 .. _solvers repository: https://github.com/hpfem/solvers
 .. _manual: https://github.com/hpfem/solvers/raw/master/manuals/MUMPS_4.9.2.pdf
 
 Linux
 ~~~~~
-
-.. youtube:: 9LBeSsL_x7Y
 
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory::

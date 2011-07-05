@@ -1,5 +1,8 @@
 PETSc
 -----
+
+.. popup:: '#petsc-matrix-solver'
+
 .. _PETSc home page: http://www.mcs.anl.gov/petsc/
 .. _solvers repository: https://github.com/hpfem/solvers
 .. _manual: https://github.com/hpfem/solvers/raw/master/manuals/petsc.pdf
@@ -7,15 +10,13 @@ PETSc
 Linux
 ~~~~~
 
-.. youtube:: zpV-8PR0CoY
-
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory::
   
-  wget https://github.com/downloads/hpfem/solvers/petsc-3.1-p8.spkg --no-check-certificate
-  tar -jxvf petsc-3.1-p8.spkg
-  rm petsc-3.1-p8.spkg
-  cd petsc-3.1-p8
+  wget https://github.com/downloads/hpfem/solvers/petsc-3.1-p7.spkg --no-check-certificate
+  tar -jxvf petsc-3.1-p7.spkg
+  rm petsc-3.1-p7.spkg
+  cd petsc-3.1-p7
 
 In order to install the library into say ``~/solvers/petsc`` (you may choose any
 path you like, provided that you have write access to it; the target directory 
