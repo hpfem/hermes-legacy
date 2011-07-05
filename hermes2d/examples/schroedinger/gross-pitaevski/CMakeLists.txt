@@ -1,8 +1,8 @@
 IF(H2D_COMPLEX)
 
-project(gross-pitaevski)
+project(schroedinger-gross-pitaevski)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp definitions.cpp)
 include (${hermes2d_SOURCE_DIR}/CMake.common)
 set_common_target_properties(${PROJECT_NAME} ${HERMES2D_CPLX})
 
