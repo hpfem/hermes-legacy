@@ -896,6 +896,9 @@ namespace WeakFormsH1
     add_vector_form(new DefaultResidualDiffusion(0, area, coeff, gt));
   };
   
+  DefaultWeakFormPoisson::DefaultWeakFormPoisson() : WeakForm()
+  {
+  }
   
   DefaultWeakFormPoisson::DefaultWeakFormPoisson(std::string area,
                                                  HermesFunction* coeff,

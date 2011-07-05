@@ -424,10 +424,12 @@ namespace WeakFormsH1
   class HERMES_API DefaultWeakFormPoisson : public WeakForm
   {
   public:
-  DefaultWeakFormPoisson(std::string area = HERMES_ANY, 
-                         HermesFunction* coeff = HERMES_ONE,
-                         HermesFunction* f = HERMES_ONE,
-                         GeomType gt = HERMES_PLANAR);
+    // For not having to indirectly call the WeakForm constructor.
+    DefaultWeakFormPoisson();
+    DefaultWeakFormPoisson(std::string area, 
+                           HermesFunction* coeff = HERMES_ONE,
+                           HermesFunction* f = HERMES_ONE,
+                           GeomType gt = HERMES_PLANAR);
   };
 };
 

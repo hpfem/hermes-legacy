@@ -45,7 +45,7 @@ Nurbs* H2DReader::load_nurbs(Mesh *mesh, MeshData *m, int id, Node** en, int &p1
   Nurbs* nurbs = new Nurbs;
 
   // Decide if curve is a circular arc or a general nurbs curve
-  bool circle = not(m->curv_nurbs[id]);
+  bool circle = (m->curv_nurbs[id] == false);
   nurbs->arc = circle;
 
   // read the end point indices

@@ -95,8 +95,8 @@ int main(int argc, char* argv[])
   Solution time_error_fn(&mesh, 0.0);
 
   // Initialize the weak formulation
-  CustomFunction f(x_0, x_1, y_0, y_1, s, c, &current_time);
-  WeakFormsH1::DefaultWeakFormPoisson wf(HERMES_ANY, new HermesFunction(-1.0), &f);
+  CustomFunction f(x_0, x_1, y_0, y_1, s, c);
+  CustomWeakFormPoisson wf(HERMES_ANY, new HermesFunction(-1.0), &f);
 
   // Initialize the discrete problem.
   DiscreteProblem dp(&wf, &space);
