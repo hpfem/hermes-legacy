@@ -9,12 +9,12 @@ vertices = [
 ]
 
 elements = [
-  [ 0, 1, 2, 3, 0 ]
+  [ 0, 1, 2, 3, "elt" ]
 ]
 
 boundaries = [
-  [ 0, 1, "zero Dirichlet" ],
-  [ 1, 2, "zero Dirichlet" ],
-  [ 2, 3, "zero Dirichlet" ],
-  [ 3, 0, "zero Dirichlet" ]
+  [ 0, 1, "zero_Dirichlet" ],
+  [ 1, 2, "zero_Dirichlet" ],
+  [ 2, 3, "zero_Dirichlet" ],
+  [ 3, 0, "zero_Dirichlet" ]
 ]

@@ -9,10 +9,10 @@ vertices = [
 ]
 
 elements = [
-  [ 0, 1, 4, 0 ],   # tri 0
-  [ 1, 2, 4, 0 ],   # tri 1
-  [ 2, 3, 4, 0 ],   # tri 2
-  [ 3, 0, 4, 0 ]    # tri 3
+  [ 0, 1, 4, "elt" ],   # tri 0
+  [ 1, 2, 4, "elt" ],   # tri 1
+  [ 2, 3, 4, "elt" ],   # tri 2
+  [ 3, 0, 4, "elt" ]    # tri 3
 ]
 
 boundaries = [

@@ -38,14 +38,14 @@ elements = [
 ]
 
 boundaries = [
-  [ 0, 1, "Bottom" ],
-  [ 1, 4, "Outer" ],
-  [ 3, 0, "Inner" ],
-  [ 4, 7, "Outer" ],
-  [ 7, 6, "Outer" ],
-  [ 2, 3, "Inner" ],
-  [ 6, 5, "Outer" ],
-  [ 5, 2, "Left" ]
+  [ 0, 1, "Bottom Layer" ],
+  [ 1, 4, "Outer Layer" ],
+  [ 3, 0, "Inner Layer" ],
+  [ 4, 7, "Outer Layer" ],
+  [ 7, 6, "Outer Layer" ],
+  [ 2, 3, "Inner Layer" ],
+  [ 6, 5, "Outer Layer" ],
+  [ 5, 2, "Left Boundary" ]
 ]
 
 degree_1 = 4
@@ -56,7 +56,7 @@ inner_points_1 = [
   [ a3, c1, 1.0 ]
 ] 
 
-knots_1 = [
+knots 1 = [
   0, 0, 0, 1, 1, 1
 ]
 
@@ -74,7 +74,7 @@ knots_2 = [
 curves = [
   [ 4, 7, 45 ],  # circular arc with central angle of 45 degrees
   [ 7, 6, 45 ],   # circular arc with central angle of 45 degrees
-  [ 0, 1, degree_1, inner_points_1, knots_1],
+  [ 0, 1, degree_1, inner_points_1, knots 1],
   [ 2, 5, degree_2, inner_points_2, knots_2]
 ]
 

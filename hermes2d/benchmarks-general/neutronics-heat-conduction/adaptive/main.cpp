@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
   // Perform initial mesh refinements.
   for (int i=0; i < INIT_GLOB_REF_NUM; i++)
     basemesh.refine_all_elements(0, true);
-  basemesh.refine_towards_boundary("zero Dirichlet", INIT_BDY_REF_NUM, true, true);
+  basemesh.refine_towards_boundary("zero_Dirichlet", INIT_BDY_REF_NUM, true, true);
   
   const int LX = 100, LY = 100; // Domain extents in x- and y- directions.
   
@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
   Hermes::vector<Solution*> exact_solutions(&T_exact_solution, &phi_exact_solution);
   
   // Initialize boundary conditions.
-  DefaultEssentialBCConst bc_essential("zero Dirichlet", 0.0);
+  DefaultEssentialBCConst bc_essential("zero_Dirichlet", 0.0);
   EssentialBCs bcs(&bc_essential);
   
   // Create H1 spaces with default shapesets.

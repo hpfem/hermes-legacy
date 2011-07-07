@@ -31,7 +31,7 @@ using namespace RefinementSelectors;
 // BC:
 //
 //  Homogeneous Neumann on symmetry axes (BDY_SYMMETRY),
-//  homogeneous Dirichlet on zero flux boundary (BDY_FLUX),
+//  homogeneous Dirichlet on zero_flux boundary (BDY_FLUX),
 //  homogeneous Newton on albedo boundary (BDY_GAMMA):
 //    -d D_1\phi_1 / d n = GAMMA_1 \phi_1,
 //    -d D_2\phi_2 / d n = GAMMA_2 \phi_2,
@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < INIT_REF_NUM[0]; i++) mesh1.refine_all_elements();
 
   // Essential boundary conditions.
-  DefaultEssentialBCConst zero_flux("zero flux", 0.0);
+  DefaultEssentialBCConst zero_flux("zero_flux", 0.0);
   EssentialBCs bc(&zero_flux);
   
   // Create H1 space with default shapesets.

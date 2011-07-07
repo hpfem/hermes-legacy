@@ -89,15 +89,15 @@ int main(int argc, char* argv[])
   // Perform initial mesh refinement.
   for (int i=0; i<INIT_REF_NUM; i++) mesh.refine_all_elements();
   mesh.refine_towards_boundary("outflow", INIT_BDY_REF_NUM);
-  //mesh.refine_towards_boundary("nonzero Dirichlet", INIT_BDY_REF_NUM/2);
+  //mesh.refine_towards_boundary("nonzero_Dirichlet", INIT_BDY_REF_NUM/2);
 
   // Create a space and refinement selector appropriate for the selected discretization method.
   Space *space;
   ProjBasedSelector *selector;
   ProjNormType norm;
   
-  WeaklyImposableBC bc_fn(Hermes::vector<std::string>("nonzero Dirichlet"), new NonzeroBoundaryValues(&mesh));
-  WeaklyImposableBC bc_zero(Hermes::vector<std::string>("zero Dirichlet", "outflow"), 0.0);
+  WeaklyImposableBC bc_fn(Hermes::vector<std::string>("nonzero_Dirichlet"), new NonzeroBoundaryValues(&mesh));
+  WeaklyImposableBC bc_zero(Hermes::vector<std::string>("zero_Dirichlet", "outflow"), 0.0);
   EssentialBCs bcs(Hermes::vector<EssentialBoundaryCondition*>(&bc_fn, &bc_zero));
   
   // Initialize the weak formulation.

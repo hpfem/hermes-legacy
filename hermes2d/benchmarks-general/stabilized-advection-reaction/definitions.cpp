@@ -129,12 +129,12 @@ CustomWeakFormContinuousGalerkin::CustomWeakFormContinuousGalerkin(bool supg_sta
   add_matrix_form(new VolumetricJacobian(disc_method));
   add_vector_form(new VolumetricResidual(disc_method));
   
-  add_matrix_form_surf(new InflowBoundaryJacobian("nonzero constant inflow", new HermesFunction(1.0)));
-  add_vector_form_surf(new InflowBoundaryResidual("nonzero constant inflow", new HermesFunction(1.0)));
-  add_matrix_form_surf(new InflowBoundaryJacobian("zero inflow", new HermesFunction(0.0)));
-  add_vector_form_surf(new InflowBoundaryResidual("zero inflow", new HermesFunction(0.0)));
-  add_matrix_form_surf(new InflowBoundaryJacobian("varying inflow", new InflowVariation));
-  add_vector_form_surf(new InflowBoundaryResidual("varying inflow", new InflowVariation));
+  add_matrix_form_surf(new InflowBoundaryJacobian("nonzero_constant_inflow", new HermesFunction(1.0)));
+  add_vector_form_surf(new InflowBoundaryResidual("nonzero_constant_inflow", new HermesFunction(1.0)));
+  add_matrix_form_surf(new InflowBoundaryJacobian("zero_inflow", new HermesFunction(0.0)));
+  add_vector_form_surf(new InflowBoundaryResidual("zero_inflow", new HermesFunction(0.0)));
+  add_matrix_form_surf(new InflowBoundaryJacobian("varying_inflow", new InflowVariation));
+  add_vector_form_surf(new InflowBoundaryResidual("varying_inflow", new InflowVariation));
   
   if (supg_stabilization)
   {
@@ -237,12 +237,12 @@ CustomWeakFormDiscontinuousGalerkin::CustomWeakFormDiscontinuousGalerkin(double 
 {
   add_matrix_form(new VolumetricJacobian);
   add_vector_form(new VolumetricResidual);
-  add_matrix_form_surf(new BoundaryJacobian("nonzero constant inflow", new HermesFunction(1.0)));
-  add_vector_form_surf(new BoundaryResidual("nonzero constant inflow", new HermesFunction(1.0)));
-  add_matrix_form_surf(new BoundaryJacobian("zero inflow", new HermesFunction(0.0)));
-  add_vector_form_surf(new BoundaryResidual("zero inflow", new HermesFunction(0.0)));
-  add_matrix_form_surf(new BoundaryJacobian("varying inflow", new InflowVariation));
-  add_vector_form_surf(new BoundaryResidual("varying inflow", new InflowVariation));
+  add_matrix_form_surf(new BoundaryJacobian("nonzero_constant_inflow", new HermesFunction(1.0)));
+  add_vector_form_surf(new BoundaryResidual("nonzero_constant_inflow", new HermesFunction(1.0)));
+  add_matrix_form_surf(new BoundaryJacobian("zero_inflow", new HermesFunction(0.0)));
+  add_vector_form_surf(new BoundaryResidual("zero_inflow", new HermesFunction(0.0)));
+  add_matrix_form_surf(new BoundaryJacobian("varying_inflow", new InflowVariation));
+  add_vector_form_surf(new BoundaryResidual("varying_inflow", new InflowVariation));
   add_matrix_form_surf(new BoundaryJacobian("outflow"));
   add_vector_form_surf(new BoundaryResidual("outflow"));
   add_matrix_form_surf(new InterfaceJacobian(theta));

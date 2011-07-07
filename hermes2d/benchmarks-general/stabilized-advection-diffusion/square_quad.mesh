@@ -6,13 +6,13 @@ vertices = [
 ]
 
 elements = [
-  [ 2, 3, 0, 1, 0 ]
+  [ 2, 3, 0, 1, "elt" ]
 ]
 
 boundaries = [
-  [ 0, 1, "nonzero Dirichlet" ],
-  [ 1, 2, "zero Dirichlet" ],
+  [ 0, 1, "nonzero_Dirichlet" ],
+  [ 1, 2, "zero_Dirichlet" ],
   [ 2, 3, "outflow" ],
-  [ 3, 0, "zero Dirichlet" ]
+  [ 3, 0, "zero_Dirichlet" ]
 ]
 

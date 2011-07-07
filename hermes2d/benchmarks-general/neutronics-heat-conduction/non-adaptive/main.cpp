@@ -69,10 +69,10 @@ int main(int argc, char* argv[])
   // Perform initial mesh refinements.
   for (int i=0; i < INIT_GLOB_REF_NUM; i++) 
     mesh.refine_all_elements();
-  mesh.refine_towards_boundary("zero Dirichlet", INIT_BDY_REF_NUM);
+  mesh.refine_towards_boundary("zero_Dirichlet", INIT_BDY_REF_NUM);
 
   // Initialize boundary conditions.
-  DefaultEssentialBCConst bc_essential("zero Dirichlet", 0.0);
+  DefaultEssentialBCConst bc_essential("zero_Dirichlet", 0.0);
   EssentialBCs bcs(&bc_essential);
   
   // Create H1 spaces with default shapesets.

@@ -1,4 +1,5 @@
 R = 10.0  # Radius of the circle
+-R = -10.0
 
 vertices = [
   [ -R, 0 ],   # vertex 0
@@ -9,10 +10,10 @@ vertices = [
 ]
 
 elements = [
-  [ 0, 1, 4, "Mat" ],   # tri 0
-  [ 1, 2, 4, "Mat" ],   # tri 1
-  [ 2, 3, 4, "Mat" ],   # tri 2
-  [ 3, 0, 4, "Mat" ]    # tri 3
+  [ 0, 1, 4, "elt" ],   # tri 0
+  [ 1, 2, 4, "elt" ],   # tri 1
+  [ 2, 3, 4, "elt" ],   # tri 2
+  [ 3, 0, 4, "elt" ]    # tri 3
 ]
 
 boundaries = [

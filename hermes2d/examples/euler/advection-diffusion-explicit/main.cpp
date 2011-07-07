@@ -53,12 +53,12 @@ const double CONCENTRATION_EXT_STARTUP_TIME = 0.0;     // Start time of the conc
 const double EPSILON = 0.01;                           // Diffusivity.
 
 // Boundary markers.
-const std::string BDY_INLET = "1";
-const std::string BDY_OUTLET = "2";
-const std::string BDY_SOLID_WALL_BOTTOM = "3";
-const std::string BDY_SOLID_WALL_TOP = "4";
-const std::string BDY_DIRICHLET_CONCENTRATION = "3";
-Hermes::vector<std::string> BDY_NATURAL_CONCENTRATION = Hermes::vector<std::string>("2", "1");
+const std::string BDY_INLET = "b1";
+const std::string BDY_OUTLET = "b2";
+const std::string BDY_SOLID_WALL_BOTTOM = "b3";
+const std::string BDY_SOLID_WALL_TOP = "b4";
+const std::string BDY_DIRICHLET_CONCENTRATION = "b3";
+Hermes::vector<std::string> BDY_NATURAL_CONCENTRATION = Hermes::vector<std::string>("b2", "b1");
 
 // Weak forms.
 #include "../forms_explicit.cpp"

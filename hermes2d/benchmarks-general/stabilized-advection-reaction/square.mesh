@@ -11,21 +11,21 @@ vertices = [
 ]
 
 elements = [
-  [ 0, 1, 8, 7, 0 ],
-  [ 1, 2, 3, 8, 0 ],
-  [ 3, 4, 5, 8, 0 ],
-  [ 7, 8, 5, 6, 0 ]
+  [ 0, 1, 8, 7, "elt" ],
+  [ 1, 2, 3, 8, "elt" ],
+  [ 3, 4, 5, 8, "elt" ],
+  [ 7, 8, 5, 6, "elt" ]
 ]
 
 boundaries = [
-  [ 0, 1, "nonzero constant inflow" ],
-  [ 1, 2, "zero inflow" ],
-  [ 2, 3, "varying inflow" ],
-  [ 3, 4, "varying inflow" ],
+  [ 0, 1, "nonzero_constant_inflow" ],
+  [ 1, 2, "zero_inflow" ],
+  [ 2, 3, "varying_inflow" ],
+  [ 3, 4, "varying_inflow" ],
   [ 4, 5, "outflow" ],
   [ 5, 6, "outflow" ],
-  [ 6, 7, "zero inflow" ],
-  [ 7, 0, "nonzero constant inflow" ]
+  [ 6, 7, "zero_inflow" ],
+  [ 7, 0, "nonzero_constant_inflow" ]
 ]
 
 

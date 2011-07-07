@@ -23,8 +23,8 @@ elements = [
 ]
 
 boundaries = [
-  [ 0, 1, "zero flux" ],
-  [ 1, 2, "zero flux" ],
+  [ 0, 1, "zero_flux" ],
+  [ 1, 2, "zero_flux" ],
   [ 2, 5, "gamma" ],
   [ 5, 8, "gamma" ],
   [ 8, 7, "symmetry" ],

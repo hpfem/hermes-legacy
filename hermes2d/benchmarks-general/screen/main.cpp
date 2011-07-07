@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
   CustomWeakFormScreen wf;
 
   // Initialize boundary conditions
-  DefaultEssentialBCNonConstHcurl bc_essential("Perfect conductor", &exact);
+  DefaultEssentialBCNonConstHcurl bc_essential("Perfect_conductor", &exact);
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.

@@ -5,60 +5,34 @@ eps = 0.6	  # Relative eccentricity in 0..1
 
 ee = eps*(r2-r1)  # Absolute eccentricity, shifts outer center in x-direction
 
-uc0x = cos(da*0)  # Unit Circle
-uc1x = cos(da*1)  # Unit Circle
-uc2x = cos(da*2)  # Unit Circle
-uc3x = cos(da*3)  # Unit Circle
-uc4x = cos(da*4)  # Unit Circle
-uc5x = cos(da*5)  # Unit Circle
-uc6x = cos(da*6)  # Unit Circle
-uc7x = cos(da*7)  # Unit Circle
-uc0y = sin(da*0)  # Unit Circle
-uc1y = sin(da*1)  # Unit Circle
-uc2y = sin(da*2)  # Unit Circle
-uc3y = sin(da*3)  # Unit Circle
-uc4y = sin(da*4)  # Unit Circle
-uc5y = sin(da*5)  # Unit Circle
-uc6y = sin(da*6)  # Unit Circle
-uc7y = sin(da*7)  # Unit Circle
-
-rr0 = ee*uc0x+sqrt(r2*r2-ee*ee*(1-uc0x*uc0x))	  # Outer radius from inner center
-rr1 = ee*uc1x+sqrt(r2*r2-ee*ee*(1-uc1x*uc1x))	  # Outer radius from inner center
-rr2 = ee*uc2x+sqrt(r2*r2-ee*ee*(1-uc2x*uc2x))	  # Outer radius from inner center
-rr3 = ee*uc3x+sqrt(r2*r2-ee*ee*(1-uc3x*uc3x))	  # Outer radius from inner center
-rr4 = ee*uc4x+sqrt(r2*r2-ee*ee*(1-uc4x*uc4x))	  # Outer radius from inner center
-rr5 = ee*uc5x+sqrt(r2*r2-ee*ee*(1-uc5x*uc5x))	  # Outer radius from inner center
-rr6 = ee*uc6x+sqrt(r2*r2-ee*ee*(1-uc6x*uc6x))	  # Outer radius from inner center
-rr7 = ee*uc7x+sqrt(r2*r2-ee*ee*(1-uc7x*uc7x))	  # Outer radius from inner center
-
 vertices = [
-  [ r1*uc0x, r1*uc0y ],
-  [ r1*uc1x, r1*uc1y ],
-  [ r1*uc2x, r1*uc2y ],
-  [ r1*uc3x, r1*uc3y ],
-  [ r1*uc4x, r1*uc4y ],
-  [ r1*uc5x, r1*uc5y ],
-  [ r1*uc6x, r1*uc6y ],
-  [ r1*uc7x, r1*uc7y ],
-  [ rr0*uc0x, rr0*uc0y ],
-  [ rr1*uc1x, rr1*uc1y ],
-  [ rr2*uc2x, rr2*uc2y ],
-  [ rr3*uc3x, rr3*uc3y ],
-  [ rr4*uc4x, rr4*uc4y ],
-  [ rr5*uc5x, rr5*uc5y ],
-  [ rr6*uc6x, rr6*uc6y ],
-  [ rr7*uc7x, rr7*uc7y ]
+  [ 0.6, 0 ],
+  [ 0.424264, 0.424264 ],
+  [ 3.67382e-17, 0.6 ],
+  [ -0.424264, 0.424264 ],
+  [ -0.6, 7.34764e-17 ],
+  [ -0.424264, -0.424264 ],
+  [ -1.10215e-16, -0.6 ],
+  [ 0.424264, -0.424264 ],
+  [ 1.24, 0 ],
+  [ 0.81685, 0.81685 ],
+  [ 5.94407e-17, 0.970773 ],
+  [ -0.57685, 0.57685 ],
+  [ -0.76, 9.30701e-17 ],
+  [ -0.57685, -0.57685 ],
+  [ -1.78322e-16, -0.970773 ],
+  [ 0.81685, -0.81685 ]
 ]
 
 elements = [
-  [ 0, 8, 9, 1, "Mat" ],
-  [ 1, 9, 10, 2, "Mat" ],
-  [ 2, 10, 11, 3, "Mat" ],
-  [ 3, 11, 12, 4, "Mat" ],
-  [ 4, 12, 13, 5, "Mat" ],
-  [ 5, 13, 14, 6, "Mat" ],
-  [ 6, 14, 15, 7, "Mat" ],
-  [ 7, 15, 8, 0, "Mat" ]
+  [ 0, 8, 9, 1, "elt" ],
+  [ 1, 9, 10, 2, "elt" ],
+  [ 2, 10, 11, 3, "elt" ],
+  [ 3, 11, 12, 4, "elt" ],
+  [ 4, 12, 13, 5, "elt" ],
+  [ 5, 13, 14, 6, "elt" ],
+  [ 6, 14, 15, 7, "elt" ],
+  [ 7, 15, 8, 0, "elt" ]
 ]
 
 boundaries = [
