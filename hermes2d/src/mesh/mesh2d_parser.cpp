@@ -26,10 +26,10 @@ void MeshData::strip(std::string& str)
 	// Remove brackets, commas and unnecessary tab spaces
 	for (size_t i = 0; i < str.length(); i++)
 	{
-		//if (str[i] != ' ' and str[i] != '\t' and str[i] != '[' and str[i] != ']' and str[i] != '{' and str[i] != '}' and str[i] != '"')
-		if (str[i] != '\t' and str[i] != '[' and str[i] != ']' and str[i] != '{' and str[i] != '}' and str[i] != '"')
+		//if (str[i] != ' ' && str[i] != '\t' && str[i] != '[' && str[i] != ']' && str[i] != '{' && str[i] != '}' && str[i] != '"')
+		if (str[i] != '\t' && str[i] != '[' && str[i] != ']' && str[i] != '{' && str[i] != '}' && str[i] != '"')
 		{
-			if (str[i] == ',' or str[i] == ';')
+			if (str[i] == ',' || str[i] == ';')
 				temp.append("\t");
 			else if (str[i] == '=')
 				temp.append("=\t");
@@ -53,7 +53,7 @@ void MeshData::strip(std::string& str)
 	{
 		if (str[i] == ' ')
 		{	
-			if (str[i + 1] != ' ' and str[i + 1] != '\t' and str[i + 1] != '=' and str[i - 1] != ' ' and str[i - 1] != '\t')
+			if (str[i + 1] != ' ' && str[i + 1] != '\t' && str[i + 1] != '=' && str[i - 1] != ' ' && str[i - 1] != '\t')
 				temp.append(1,';'); // Meaningful blank spaces are temporarily replaced with ';'
 		}
 		else
