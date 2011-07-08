@@ -25,9 +25,9 @@ class CustomExactSolution : public ExactSolutionScalar
 public:
   CustomExactSolution(Mesh* mesh, double K) : ExactSolutionScalar(mesh), K(K) {};
 
-  virtual scalar value (double x, double y) const;
+  virtual scalar value(double x, double y) const;
 
-  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const;
+  virtual void derivatives(double x, double y, scalar& dx, scalar& dy) const;
 
   virtual Ord ord(Ord x, Ord y) const;
 
