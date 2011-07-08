@@ -8,7 +8,9 @@
 class CustomRightHandSide
 {
 public:
-  CustomRightHandSide(double K) : K(K) {};
+  CustomRightHandSide(double K) : K(K) 
+  {
+  };
 
   template<typename Real>
   Real value(Real x, Real y);
