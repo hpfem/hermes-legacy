@@ -3,6 +3,7 @@
 #define HERMES_REPORT_VERBOSE
 #define HERMES_REPORT_FILE "application.log"
 #include "hermes2d.h"
+#include "definitions.h"
 
 using namespace RefinementSelectors;
 
@@ -54,11 +55,8 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 double K = 10.0;
 
 // Boundary markers.
-const std::string BDY_LEFT_RIGHT = "b1";
-const std::string BDY_TOP_BOTTOM = "b2";
-
-// Definitions.
-#include "definitions.cpp"
+const std::string BDY_LEFT_RIGHT = "Bdy left right";
+const std::string BDY_TOP_BOTTOM = "Bdy top bottom";
 
 int main(int argc, char* argv[])
 {
