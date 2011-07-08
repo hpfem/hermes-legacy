@@ -21,7 +21,7 @@ const int INIT_GLOB_REF_NUM = 4;                   // Number of initial uniform 
 const int INIT_BDY_REF_NUM = 0;                    // Number of initial refinements towards boundary.
 const int P_INIT = 2;                              // Initial polynomial degree.
 double time_step = 0.01;                           // Time step.
-const double T_FINAL = 5.0;                        // Time interval length.
+const double T_FINAL = 10.0;                        // Time interval length.
 const double NEWTON_TOL = 1e-5;                    // Stopping criterion for the Newton's method.
 const int NEWTON_MAX_ITER = 100;                   // Maximum allowed number of Newton iterations.
 const double TIME_TOL_UPPER = 5.0;                 // If rel. temporal error is greater than this threshold, decrease time 
@@ -81,6 +81,9 @@ int main(int argc, char* argv[])
   for(int i = 0; i < INIT_GLOB_REF_NUM; i++) mesh.refine_all_elements();
   mesh.refine_towards_boundary("Bdy", INIT_BDY_REF_NUM);
 
+  // Exact solution.
+  CustomExactSolution exact_sln(&mesh, x_0, x_1, y_0, y_1, &current_time, s, c);
+
   // Initialize boundary conditions.
   DefaultEssentialBCConst bc_essential("Bdy", 0);
   EssentialBCs bcs(&bc_essential);
@@ -103,13 +106,15 @@ int main(int argc, char* argv[])
 
   // Initialize views.
   ScalarView sview_high("Solution (higher-order)", new WinGeom(0, 0, 500, 400));
-  ScalarView eview("Temporal error", new WinGeom(500, 0, 500, 400));
-  eview.fix_scale_width(50);
+  ScalarView est_view("Estimated temporal error", new WinGeom(505, 0, 500, 400));
+  est_view.fix_scale_width(60);
+  ScalarView exact_view("Exact temporal error", new WinGeom(1010, 0, 500, 400));
+  exact_view.fix_scale_width(60);
 
   RungeKutta runge_kutta(&dp, &bt, matrix_solver);
 
   // Graph for time step history.
-  SimpleGraph time_step_graph;
+  SimpleGraph time_step_graph, err_est_graph, err_exact_graph;
   info("Time step history will be saved to file time_step_history.dat.");
 
   // Time stepping loop:
@@ -127,37 +132,50 @@ int main(int argc, char* argv[])
       error("Runge-Kutta time step failed, try to decrease time step size.");
     }
 
-    // Plot error function.
+    // Plot error estimate and exact error.
     char title[100];
-    sprintf(title, "Temporal error, t = %g", current_time);
-    eview.set_title(title);
+    sprintf(title, "Estimated temporal error, t = %g", current_time);
+    est_view.set_title(title);
     AbsFilter abs_tef(&time_error_fn);
-    eview.show(&abs_tef, HERMES_EPS_VERYHIGH);
+    est_view.show(&abs_tef, HERMES_EPS_VERYHIGH);
+    DiffFilter exact_efn(Hermes::vector<MeshFunction*>(&sln_time_new, &exact_sln),
+                         Hermes::vector<int>(H2D_FN_VAL, H2D_FN_VAL));
+    AbsFilter exact_efn_abs(&exact_efn);
+    exact_view.show(&exact_efn_abs, HERMES_EPS_VERYHIGH);
 
-    // Calculate relative time stepping error and decide whether the 
-    // time step can be accepted. If not, then the time step size is 
-    // reduced and the entire time step repeated. If yes, then another
-    // check is run, and if the relative error is very low, time step 
-    // is increased.
-    double rel_err_time = hermes2d.calc_norm(&time_error_fn, HERMES_H1_NORM) / 
-                          hermes2d.calc_norm(&sln_time_new, HERMES_H1_NORM) * 100;
-    info("rel_err_time = %g%%", rel_err_time);
-    if (rel_err_time > TIME_TOL_UPPER) {
-      info("rel_err_time above upper limit %g%% -> decreasing time step from %g to %g and repeating time step.", 
+    // Calculate relative temporal error estimate and exact error.
+    double rel_err_est = hermes2d.calc_norm(&time_error_fn, HERMES_H1_NORM) / 
+                         hermes2d.calc_norm(&sln_time_new, HERMES_H1_NORM) * 100;
+    double rel_err_exact = hermes2d.calc_abs_error(&exact_sln, &sln_time_new, HERMES_H1_NORM) / 
+                           hermes2d.calc_norm(&exact_sln, HERMES_H1_NORM) * 100;
+    info("rel_err_est = %g%%", rel_err_est);
+    info("rel_err_exact = %g%%", rel_err_exact);
+
+    // Add entries to error graphs.
+    err_est_graph.add_values(current_time, rel_err_est);
+    err_est_graph.save("err_est_history.dat");
+    err_exact_graph.add_values(current_time, rel_err_exact);
+    err_exact_graph.save("err_exact_history.dat");
+    
+    // Decide whether the time step can be accepted. If not, then the 
+    // time step size is reduced and the entire time step repeated. 
+    // If yes, then another check is run, and if the relative error 
+    // is very low, time step is increased.
+    if (rel_err_est > TIME_TOL_UPPER) {
+      info("rel_err_est above upper limit %g%% -> decreasing time step from %g to %g and repeating time step.", 
            TIME_TOL_UPPER, time_step, time_step * TIME_STEP_DEC_RATIO);
       time_step *= TIME_STEP_DEC_RATIO;
       continue;
     }
-    if (rel_err_time < TIME_TOL_LOWER) {
-      info("rel_err_time = below lower limit %g%% -> increasing time step from %g to %g", 
+    if (rel_err_est < TIME_TOL_LOWER) {
+      info("rel_err_est = below lower limit %g%% -> increasing time step from %g to %g", 
            TIME_TOL_UPPER, time_step, time_step * TIME_STEP_INC_RATIO);
       time_step *= TIME_STEP_INC_RATIO;
     }
    
-    // Add entry to the timestep graph.
+    // Add entry to time graphs.
     time_step_graph.add_values(current_time, time_step);
     time_step_graph.save("time_step_history.dat");
-
 
     // Show the new time level solution.
     sprintf(title, "Solution (higher-order), t = %g", current_time);

@@ -1,3 +1,5 @@
 rm *~ 
 ./moving-front
+python plot_time_step_history.py
+python plot_error_history.py
 

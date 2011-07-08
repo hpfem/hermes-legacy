@@ -6,8 +6,9 @@
 class CustomExactSolution : public ExactSolutionScalar
 {
 public:
-  CustomExactSolution(Mesh* mesh, double s, double c)
-    : ExactSolutionScalar(mesh), x0(x0), x1(x1), y0(y0), y1(y1), s(s), c(c) {};
+  CustomExactSolution(Mesh* mesh, double x0, double x1, double y0, double y1, 
+                      double* t_ptr, double s, double c)
+    : ExactSolutionScalar(mesh), x0(x0), x1(x1), y0(y0), y1(y1), t_ptr(t_ptr), s(s), c(c) {};
 
   virtual double value(double x, double y) const;
 
@@ -15,7 +16,7 @@ public:
 
   virtual Ord ord(Ord x, Ord y) const;
 
-  double x0, x1, y0, y1, s, c, *t_ptr;
+  double x0, x1, y0, y1, *t_ptr, s, c;
 };
 
 /* Custom function f */
