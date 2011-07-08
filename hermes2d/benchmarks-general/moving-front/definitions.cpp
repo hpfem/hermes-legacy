@@ -1,14 +1,23 @@
 #include "definitions.h"
 
-double CustomExactSolution::value (double x, double y) const 
+double CustomExactSolution::value(double x, double y) const 
 {
-  return 0;
+  double S = s;
+  double C = c;
+  double t = *t_ptr;
+  return ((x - x0)*(x - x1)*(y - y0)*(y - y1)*atan(t)*(M_PI/2. - atan(S*(-t + sqrt(x*x + y*y)))))/C;
 }
 
 void CustomExactSolution::derivatives(double x, double y, scalar& dx, scalar& dy) const 
 {
-  dx = 0; 
-  dy = 0;
+  double S = s;
+  double C = c;
+  double t = *t_ptr;
+  dx = ((y - y0)*(y - y1)*atan(t)*(M_PI*(2*x - x0 - x1) + (2*S*x*(x - x0)*(x - x1))/
+         (sqrt(x*x + y*y)*(-1 + 2*S*S*t*sqrt(x*x + y*y) - S*S*(t*t + x*x + y*y))) + 
+         (4*x - 2*(x0 + x1))*atan(S*(t - sqrt(x*x + y*y)))))/(2.*C);
+  dy = ((x - x0)*(x - x1)*atan(t)*((2*S*y*(y - y0)*(y - y1))/(sqrt(x*x + y*y)*(-1 + 2*S*S*t*sqrt(x*x + y*y) - S*S*(t*t + x*x + y*y))) + 
+         M_PI*(2*y - y0 - y1) + (4*y - 2*(y0 + y1))*atan(S*(t - sqrt(x*x + y*y)))))/(2.*C);
 }
 
 Ord CustomExactSolution::ord(Ord x, Ord y) const 

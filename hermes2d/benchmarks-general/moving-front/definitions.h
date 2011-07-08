@@ -7,15 +7,15 @@ class CustomExactSolution : public ExactSolutionScalar
 {
 public:
   CustomExactSolution(Mesh* mesh, double s, double c)
-    : ExactSolutionScalar(mesh), s(s), c(c) {};
+    : ExactSolutionScalar(mesh), x0(x0), x1(x1), y0(y0), y1(y1), s(s), c(c) {};
 
-  virtual double value (double x, double y) const;
+  virtual double value(double x, double y) const;
 
-  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const;
+  virtual void derivatives(double x, double y, scalar& dx, scalar& dy) const;
 
   virtual Ord ord(Ord x, Ord y) const;
 
-  double s, c, *t_ptr;
+  double x0, x1, y0, y1, s, c, *t_ptr;
 };
 
 /* Custom function f */
