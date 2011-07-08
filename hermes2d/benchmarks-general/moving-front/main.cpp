@@ -53,8 +53,8 @@ ButcherTableType butcher_table_type = Implicit_SDIRK_CASH_3_23_embedded;
 // Problem parameters.
 double x_0 = 0.0;
 double x_1 = 10.0;
-double y_0 = -10.0;
-double y_1 = 0;
+double y_0 = -5.0;
+double y_1 = 5.0;
 double s = 2.0;
 double c = 10000.0;
 
