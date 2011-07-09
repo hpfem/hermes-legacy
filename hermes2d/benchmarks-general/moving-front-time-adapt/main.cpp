@@ -10,7 +10,7 @@ using namespace RefinementSelectors;
 //
 //  PDE: time-dependent heat transfer equation, du/dt = Laplace u + f.
 //
-//  Domain: square (0, 10) \times (-10, 10).
+//  Domain: square (0, 10) \times (-5, 5).
 //
 //  BC: Zero Dirichlet.
 //
@@ -18,8 +18,7 @@ using namespace RefinementSelectors;
 //
 //  The following parameters can be changed:
 
-const int INIT_GLOB_REF_NUM = 4;                   // Number of initial uniform mesh refinements.
-const int INIT_BDY_REF_NUM = 0;                    // Number of initial refinements towards boundary.
+const int INIT_REF_NUM = 4;                        // Number of initial uniform mesh refinements.
 const int P_INIT = 4;                              // Initial polynomial degree.
 double time_step = 0.1;                            // Time step.
 const double T_FINAL = 10.0;                       // Time interval length.
@@ -79,8 +78,7 @@ int main(int argc, char* argv[])
   mloader.load("domain.mesh", &mesh);
 
   // Initial mesh refinements.
-  for(int i = 0; i < INIT_GLOB_REF_NUM; i++) mesh.refine_all_elements();
-  mesh.refine_towards_boundary("Bdy", INIT_BDY_REF_NUM);
+  for(int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
 
   // Exact solution.
   CustomExactSolution exact_sln(&mesh, x_0, x_1, y_0, y_1, &current_time, s, c);
