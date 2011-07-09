@@ -5,7 +5,7 @@ add_subdirectory(smooth-aniso-y)
 add_subdirectory(lshape)
 add_subdirectory(layer-interior)
 add_subdirectory(layer-boundary)
-add_subdirectory(moving-front)
+add_subdirectory(moving-front-time-adapt)
 # TODO: This does not work in Windows.
 if((NOT NMAKE) AND (NOT MSVC))
 add_subdirectory(neutronics-heat-conduction)

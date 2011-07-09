@@ -4,8 +4,9 @@
 
 using namespace RefinementSelectors;
 
-//  This benchmark has an exact solution that exhibits a moving front or 
-//  arbitrary steepness "s". 
+//  This benchmark can be used to test embedded Runge-Kutta methods.
+//  It has an exact solution that exhibits a moving front of arbitrary 
+//  steepness "s". Adaptivity is done in time only.
 //
 //  PDE: time-dependent heat transfer equation, du/dt = Laplace u + f.
 //
@@ -19,9 +20,9 @@ using namespace RefinementSelectors;
 
 const int INIT_GLOB_REF_NUM = 4;                   // Number of initial uniform mesh refinements.
 const int INIT_BDY_REF_NUM = 0;                    // Number of initial refinements towards boundary.
-const int P_INIT = 2;                              // Initial polynomial degree.
-double time_step = 0.01;                           // Time step.
-const double T_FINAL = 10.0;                        // Time interval length.
+const int P_INIT = 4;                              // Initial polynomial degree.
+double time_step = 0.1;                            // Time step.
+const double T_FINAL = 10.0;                       // Time interval length.
 const double NEWTON_TOL = 1e-5;                    // Stopping criterion for the Newton's method.
 const int NEWTON_MAX_ITER = 100;                   // Maximum allowed number of Newton iterations.
 const double TIME_TOL_UPPER = 5.0;                 // If rel. temporal error is greater than this threshold, decrease time 
@@ -56,7 +57,7 @@ double x_1 = 10.0;
 double y_0 = -5.0;
 double y_1 = 5.0;
 double s = 2.0;
-double c = 10000.0;
+double c = 1000.0;
 
 // Current time.
 double current_time = 0.0;
@@ -91,6 +92,7 @@ int main(int argc, char* argv[])
   // Create an H1 space with default shapeset.
   H1Space space(&mesh, &bcs, P_INIT);
   int ndof = space.get_num_dofs();
+  info("ndof = %d", ndof);
 
   // Convert initial condition into a Solution.
   Solution sln_time_prev(&mesh, 0);
@@ -116,6 +118,8 @@ int main(int argc, char* argv[])
   // Graph for time step history.
   SimpleGraph time_step_graph, err_est_graph, err_exact_graph;
   info("Time step history will be saved to file time_step_history.dat.");
+  info("Error estimate history will be saved to file err_est_history.dat.");
+  info("Exact error history will be saved to file err_exact_history.dat.");
 
   // Time stepping loop:
   int ts = 1;
@@ -141,6 +145,8 @@ int main(int argc, char* argv[])
     DiffFilter exact_efn(Hermes::vector<MeshFunction*>(&sln_time_new, &exact_sln),
                          Hermes::vector<int>(H2D_FN_VAL, H2D_FN_VAL));
     AbsFilter exact_efn_abs(&exact_efn);
+    sprintf(title, "Exact temporal error, t = %g", current_time);
+    exact_view.set_title(title);
     exact_view.show(&exact_efn_abs, HERMES_EPS_VERYHIGH);
 
     // Calculate relative temporal error estimate and exact error.
@@ -156,7 +162,7 @@ int main(int argc, char* argv[])
     err_est_graph.save("err_est_history.dat");
     err_exact_graph.add_values(current_time, rel_err_exact);
     err_exact_graph.save("err_exact_history.dat");
-    
+
     // Decide whether the time step can be accepted. If not, then the 
     // time step size is reduced and the entire time step repeated. 
     // If yes, then another check is run, and if the relative error 

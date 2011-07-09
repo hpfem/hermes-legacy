@@ -9,11 +9,11 @@ pylab.ylabel("Error")
 data = numpy.loadtxt("err_est_history.dat")
 x = data[:, 0]
 y = data[:, 1]
-semilogy(x, y, "-s", label="error estimate")
+semilogy(x, y, "-", label="error estimate")
 data = numpy.loadtxt("err_exact_history.dat")
 x = data[:, 0]
 y = data[:, 1]
-semilogy(x, y, "-s", label="exact error")
+semilogy(x, y, "-", label="exact error")
 
 legend()
 
