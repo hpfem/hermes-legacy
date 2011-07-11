@@ -1,6 +1,8 @@
 Finite Element Space (02-space)
 -------------------------
 
+.. popup:: '#p01-linear-02-space-tutorial'
+
 **Git reference:** Tutorial example `02-space <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/02-space>`_. 
 
 Hermes follows the mathematical concept of FEM closely -- after creating a mesh,

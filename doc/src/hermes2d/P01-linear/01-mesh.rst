@@ -1,6 +1,8 @@
 Finite Element Mesh (01-mesh)
 -----------------------------
 
+.. popup:: '#'
+
 **Git reference:** Tutorial example `01-mesh <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/01-mesh>`_. 
 
 Every finite element computation starts with partitioning the domain
