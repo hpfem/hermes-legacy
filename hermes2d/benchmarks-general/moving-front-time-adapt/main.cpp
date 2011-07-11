@@ -24,12 +24,12 @@ double time_step = 0.1;                            // Time step.
 const double T_FINAL = 10.0;                       // Time interval length.
 const double NEWTON_TOL = 1e-5;                    // Stopping criterion for the Newton's method.
 const int NEWTON_MAX_ITER = 100;                   // Maximum allowed number of Newton iterations.
-const double TIME_TOL_UPPER = 5.0;                 // If rel. temporal error is greater than this threshold, decrease time 
+const double TIME_TOL_UPPER = 5.0;                 // If abs. temporal error is greater than this threshold, decrease time 
                                                    // step size and repeat time step.
-const double TIME_TOL_LOWER = 0.5;                 // If rel. temporal error is less than this threshold, increase time step
+const double TIME_TOL_LOWER = 0.5;                 // If abs. temporal error is less than this threshold, increase time step
                                                    // but do not repeat time step (this might need further research).
-const double TIME_STEP_INC_RATIO = 1.1;            // Time step increase ratio (applied when rel. temporal error is too small).
-const double TIME_STEP_DEC_RATIO = 0.8;            // Time step decrease ratio (applied when rel. temporal error is too large).
+const double TIME_STEP_INC_RATIO = 1.1;            // Time step increase ratio (applied when abs. temporal error is too small).
+const double TIME_STEP_DEC_RATIO = 0.8;            // Time step decrease ratio (applied when abs. temporal error is too large).
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;   // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                    // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
@@ -134,6 +134,9 @@ int main(int argc, char* argv[])
       error("Runge-Kutta time step failed, try to decrease time step size.");
     }
 
+    // Set the current time to the exact solution.
+    exact_sln.set_time(current_time + time_step);
+
     // Plot error estimate and exact error.
     char title[100];
     sprintf(title, "Estimated temporal error, t = %g", current_time);
@@ -147,36 +150,35 @@ int main(int argc, char* argv[])
     exact_view.set_title(title);
     exact_view.show(&exact_efn_abs, HERMES_EPS_VERYHIGH);
 
-    // Calculate relative temporal error estimate and exact error.
-    double rel_err_est = hermes2d.calc_norm(&time_error_fn, HERMES_H1_NORM) / 
-                         hermes2d.calc_norm(&sln_time_new, HERMES_H1_NORM) * 100;
-    double rel_err_exact = hermes2d.calc_abs_error(&exact_sln, &sln_time_new, HERMES_H1_NORM) / 
-                           hermes2d.calc_norm(&exact_sln, HERMES_H1_NORM) * 100;
-    info("rel_err_est = %g%%", rel_err_est);
-    info("rel_err_exact = %g%%", rel_err_exact);
+    // Calculate absolute temporal error estimate and exact error.
+    double abs_err_est = hermes2d.calc_norm(&time_error_fn, HERMES_H1_NORM); 
+    double abs_err_exact = hermes2d.calc_abs_error(&exact_sln, &sln_time_new, HERMES_H1_NORM);
+
+    info("abs_err_est = %g%", abs_err_est);
+    info("abs_err_exact = %g%", abs_err_exact);
 
     // Add entries to error graphs.
-    err_est_graph.add_values(current_time, rel_err_est);
+    err_est_graph.add_values(current_time, abs_err_est);
     err_est_graph.save("err_est_history.dat");
-    err_exact_graph.add_values(current_time, rel_err_exact);
+    err_exact_graph.add_values(current_time, abs_err_exact);
     err_exact_graph.save("err_exact_history.dat");
 
     // Decide whether the time step can be accepted. If not, then the 
     // time step size is reduced and the entire time step repeated. 
-    // If yes, then another check is run, and if the relative error 
+    // If yes, then another check is run, and if the absolute error 
     // is very low, time step is increased.
-    if (rel_err_est > TIME_TOL_UPPER) {
-      info("rel_err_est above upper limit %g%% -> decreasing time step from %g to %g and repeating time step.", 
+    if (abs_err_est > TIME_TOL_UPPER) {
+      info("abs_err_est above upper limit %g%% -> decreasing time step from %g to %g and repeating time step.", 
            TIME_TOL_UPPER, time_step, time_step * TIME_STEP_DEC_RATIO);
       time_step *= TIME_STEP_DEC_RATIO;
       continue;
     }
-    if (rel_err_est < TIME_TOL_LOWER) {
-      info("rel_err_est = below lower limit %g%% -> increasing time step from %g to %g", 
+    if (abs_err_est < TIME_TOL_LOWER) {
+      info("abs_err_est = below lower limit %g%% -> increasing time step from %g to %g", 
            TIME_TOL_UPPER, time_step, time_step * TIME_STEP_INC_RATIO);
       time_step *= TIME_STEP_INC_RATIO;
     }
-   
+
     // Add entry to time graphs.
     time_step_graph.add_values(current_time, time_step);
     time_step_graph.save("time_step_history.dat");

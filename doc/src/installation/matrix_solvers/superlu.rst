@@ -1,6 +1,8 @@
 SuperLU
 --------
 
+.. popup:: '#superlu-matrix-solver'
+
 .. _SuperLU home page: http://crd.lbl.gov/~xiaoye/SuperLU/
 .. _solvers repository: https://github.com/hpfem/solvers
 .. _manual: https://github.com/hpfem/solvers/raw/master/manuals/SuperLU.pdf
@@ -12,8 +14,6 @@ library.
 
 Linux
 ~~~~~
-
-.. youtube:: I76Sui_FMMs
 
 Using standard Debian packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
