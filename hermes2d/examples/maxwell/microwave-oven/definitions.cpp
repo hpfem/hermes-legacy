@@ -41,9 +41,9 @@ double CustomMatrixForm::gamma(int marker, double x, double y) const
   return 0.0;
 }
 
-double CustomMatrixForm::gamma(int marker, Ord x, Ord y) const
+Ord CustomMatrixForm::gamma(int marker, Ord x, Ord y) const
 {  
-  return 0.0; 
+  return Ord(0.0); 
 }
 
 double CustomMatrixForm::er(int marker, double x, double y) const
@@ -58,9 +58,9 @@ double CustomMatrixForm::er(int marker, double x, double y) const
   return 1.0;
 }
 
-double CustomMatrixForm::er(int marker, Ord x, Ord y) const
+Ord CustomMatrixForm::er(int marker, Ord x, Ord y) const
 {  
-  return 1.0; 
+  return Ord(1.0); 
 }
 
 bool CustomMatrixForm::in_load(double x, double y) const
@@ -82,20 +82,24 @@ Scalar CustomResidualForm::vector_form(int n, double *wt, Func<Scalar> *u_ext[],
   Scalar result2 = 0;
   Scalar result3 = 0;
   for (int i = 0; i < n; i++)
-    result1 += wt[i] * gamma(e->elem_marker, e->x[i], e->y[i]) * (u_ext[0]->val0[i] * conj(v->val0[i]) + u_ext[0]->val1[i] * conj(v->val1[i]));
+    result1 += wt[i] * gamma(e->elem_marker, e->x[i], e->y[i]) * (u_ext[0]->val0[i] * conj(v->val0[i]) 
+               + u_ext[0]->val1[i] * conj(v->val1[i]));
   for (int i = 0; i < n; i++)
-    result2 += wt[i] * er(e->elem_marker, e->x[i], e->y[i]) * (u_ext[0]->val0[i] * conj(v->val0[i]) + u_ext[0]->val1[i] * conj(v->val1[i]));
+    result2 += wt[i] * er(e->elem_marker, e->x[i], e->y[i]) * (u_ext[0]->val0[i] * conj(v->val0[i]) 
+               + u_ext[0]->val1[i] * conj(v->val1[i]));
   for (int i = 0; i < n; i++)
     result3 += wt[i] * (u_ext[0]->curl[i] * conj(v->curl[i]));
   return 1.0/mu_r * result3 - ikappa * sqrt(mu_0 / e_0) * result1 - sqr(kappa) * result2;
 }
 
-scalar CustomResidualForm::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+scalar CustomResidualForm::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, 
+                                 Geom<double> *e, ExtData<scalar> *ext) const 
 {
   return vector_form<double, scalar>(n, wt, u_ext, v, e, ext);
 }
 
-Ord CustomResidualForm::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
+Ord CustomResidualForm::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
+                            Geom<Ord> *e, ExtData<Ord> *ext) const 
 {
   return vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext);
 }
@@ -112,9 +116,9 @@ double CustomResidualForm::gamma(int marker, double x, double y) const
   return 0.0;
 }
 
-double CustomResidualForm::gamma(int marker, Ord x, Ord y) const
+Ord CustomResidualForm::gamma(int marker, Ord x, Ord y) const
 {  
-  return 0.0; 
+  return Ord(0.0); 
 }
 
 double CustomResidualForm::er(int marker, double x, double y) const
@@ -129,9 +133,9 @@ double CustomResidualForm::er(int marker, double x, double y) const
   return 1.0;
 }
 
-double CustomResidualForm::er(int marker, Ord x, Ord y) const
+Ord CustomResidualForm::er(int marker, Ord x, Ord y) const
 {  
-  return 1.0; 
+  return Ord(1.0); 
 }
 
 bool CustomResidualForm::in_load(double x, double y) const

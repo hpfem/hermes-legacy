@@ -26,12 +26,12 @@ public:
   // Gamma as a function of x, y.
   double gamma(int marker, double x, double y) const;
 
-  double gamma(int marker, Ord x, Ord y) const;
+  Ord gamma(int marker, Ord x, Ord y) const;
 
   // Relative permittivity as a function of x, y.
   double er(int marker, double x, double y) const;
 
-  double er(int marker, Ord x, Ord y) const;
+  Ord er(int marker, Ord x, Ord y) const;
 
   // Geometry of the load.
   bool in_load(double x, double y) const;
@@ -61,12 +61,12 @@ public:
   // Gamma as a function of x, y.
   double gamma(int marker, double x, double y) const;
 
-  double gamma(int marker, Ord x, Ord y) const;
+  Ord gamma(int marker, Ord x, Ord y) const;
 
   // Relative permittivity as a function of x, y.
   double er(int marker, double x, double y) const;
 
-  double er(int marker, Ord x, Ord y) const;
+  Ord er(int marker, Ord x, Ord y) const;
 
   // Geometry of the load.
   bool in_load(double x, double y) const;
