@@ -134,6 +134,9 @@ int main(int argc, char* argv[])
       error("Runge-Kutta time step failed, try to decrease time step size.");
     }
 
+    // Set the current time to the exact solution.
+    exact_sln.set_time(current_time + time_step);
+
     // Plot error estimate and exact error.
     char title[100];
     sprintf(title, "Estimated temporal error, t = %g", current_time);
@@ -152,6 +155,7 @@ int main(int argc, char* argv[])
                          hermes2d.calc_norm(&sln_time_new, HERMES_H1_NORM) * 100;
     double rel_err_exact = hermes2d.calc_abs_error(&exact_sln, &sln_time_new, HERMES_H1_NORM) / 
                            hermes2d.calc_norm(&exact_sln, HERMES_H1_NORM) * 100;
+
     info("rel_err_est = %g%%", rel_err_est);
     info("rel_err_exact = %g%%", rel_err_exact);
 
