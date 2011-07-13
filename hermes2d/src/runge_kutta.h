@@ -127,10 +127,10 @@ protected:
   /// matrix, Y the coefficient vector, and F the (nonlinear) stationary residual.
   /// Below, "stage_wf_left" and "stage_wf_right" refer to the left-hand side
   /// and right-hand side of the equation, respectively.
-  void create_stage_wf(unsigned int size, double current_time, double time_step);
+  void create_stage_wf(unsigned int size, double current_time, double time_step, Hermes::vector<Solution*> slns_time_prev);
   
   // Prepare u_ext_vec.
-  void prepare_u_ext_vec(double time_step, scalar* slns_prev_time_projection);
+  void prepare_u_ext_vec(double time_step);
 
 
   /// Members.

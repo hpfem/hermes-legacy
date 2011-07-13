@@ -90,13 +90,8 @@ bool RungeKutta::rk_time_step(double current_time, double time_step, Hermes::vec
 
   int ndof = dp->get_num_dofs();
 
-  // Project the previous time level solutions onto the actual spaces to be able to add the resulting vector to
-  // the K_vector when passing the u_ext.
-  scalar* slns_prev_time_projection = new scalar[ndof];
-  OGProjection::project_global(dp->get_spaces(), slns_time_prev, slns_prev_time_projection, SOLVER_UMFPACK);
-
   // Creates the stage weak formulation.
-  create_stage_wf(dp->get_spaces().size(), current_time, time_step);
+  create_stage_wf(dp->get_spaces().size(), current_time, time_step, slns_time_prev);
 
   // The tensor discrete problem is created in two parts. First, matrix_left is the Jacobian 
   // matrix of the term coming from the left-hand side of the RK formula k_i = f(...). This is 
@@ -107,6 +102,7 @@ bool RungeKutta::rk_time_step(double current_time, double time_step, Hermes::vec
   // are added to matrix_right and vector_right, respectively.
   DiscreteProblem stage_dp_left(&stage_wf_left, dp->get_spaces());
   DiscreteProblem stage_dp_right(&stage_wf_right, stage_spaces_vector);
+  stage_dp_right.set_RK(dp->get_spaces().size());
 
   // Prepare residuals of stage solutions.
   Hermes::vector<Solution*> residuals_vector;
@@ -136,7 +132,7 @@ bool RungeKutta::rk_time_step(double current_time, double time_step, Hermes::vec
   int it = 1;
   while (true) {
     // Prepare vector h\sum_{j=1}^s a_{ij} K_j.
-    prepare_u_ext_vec(time_step, slns_prev_time_projection);
+    prepare_u_ext_vec(time_step);
 
     // Residual corresponding to the stage derivatives k_i in the equation k_i - f(...) = 0.
     multiply_as_diagonal_block_matrix(&matrix_left, num_stages, K_vector, vector_left);
@@ -145,7 +141,7 @@ bool RungeKutta::rk_time_step(double current_time, double time_step, Hermes::vec
     // Diagonal blocks are created even if empty, so that matrix_left
     // can be added later.
     bool force_diagonal_blocks = true;
-    bool add_dir_lift = true;
+    bool add_dir_lift = false;
     stage_dp_right.assemble(u_ext_vec, NULL, &vector_right, force_diagonal_blocks, add_dir_lift);
 
     // Finalizing the residual vector.
@@ -286,7 +282,7 @@ bool RungeKutta::rk_time_step(double current_time, double time_step, Solution* s
     newton_damping_coeff, newton_max_allowed_residual_norm);
 }
 
-void RungeKutta::create_stage_wf(unsigned int size, double current_time, double time_step) 
+void RungeKutta::create_stage_wf(unsigned int size, double current_time, double time_step, Hermes::vector<Solution*> slns_time_prev) 
 {
   // Clear the WeakForms.
   stage_wf_left.delete_all();
@@ -352,6 +348,9 @@ void RungeKutta::create_stage_wf(unsigned int size, double current_time, double 
         mfv_ij->adapt_order_increase = -1;
         mfv_ij->adapt_rel_error_tol = -1;
 
+        for(unsigned int slns_time_prev_i = 0; slns_time_prev_i < slns_time_prev.size(); slns_time_prev_i++)
+          mfv_ij->ext.push_back(slns_time_prev[slns_time_prev_i]);
+
         mfv_ij->set_current_stage_time(current_time + bt->get_C(i)*time_step);
 
         // Add the matrix form to the corresponding block of the
@@ -381,6 +380,9 @@ void RungeKutta::create_stage_wf(unsigned int size, double current_time, double 
         mfs_ij->adapt_order_increase = -1;
         mfs_ij->adapt_rel_error_tol = -1;
 
+        for(unsigned int slns_time_prev_i = 0; slns_time_prev_i < slns_time_prev.size(); slns_time_prev_i++)
+          mfs_ij->ext.push_back(slns_time_prev[slns_time_prev_i]);
+
         mfs_ij->set_current_stage_time(current_time + bt->get_C(i)*time_step);
 
         // Add the matrix form to the corresponding block of the
@@ -407,6 +409,9 @@ void RungeKutta::create_stage_wf(unsigned int size, double current_time, double 
       vfv_i->adapt_order_increase = -1;
       vfv_i->adapt_rel_error_tol = -1;
 
+      for(unsigned int slns_time_prev_i = 0; slns_time_prev_i < slns_time_prev.size(); slns_time_prev_i++)
+        vfv_i->ext.push_back(slns_time_prev[slns_time_prev_i]);
+
       vfv_i->set_current_stage_time(current_time + bt->get_C(i)*time_step);
 
       // Add the matrix form to the corresponding block of the
@@ -432,6 +437,9 @@ void RungeKutta::create_stage_wf(unsigned int size, double current_time, double 
       vfs_i->adapt_order_increase = -1;
       vfs_i->adapt_rel_error_tol = -1;
 
+      for(unsigned int slns_time_prev_i = 0; slns_time_prev_i < slns_time_prev.size(); slns_time_prev_i++)
+        vfs_i->ext.push_back(slns_time_prev[slns_time_prev_i]);
+
       vfs_i->set_current_stage_time(current_time + bt->get_C(i)*time_step);
 
       // Add the matrix form to the corresponding block of the
@@ -441,7 +449,7 @@ void RungeKutta::create_stage_wf(unsigned int size, double current_time, double 
   }
 }
 
-void RungeKutta::prepare_u_ext_vec(double time_step, scalar* slns_prev_time_projection)
+void RungeKutta::prepare_u_ext_vec(double time_step)
 {
   unsigned int ndof = dp->get_num_dofs();
   for (unsigned int stage_i = 0; stage_i < num_stages; stage_i++) {
@@ -451,7 +459,7 @@ void RungeKutta::prepare_u_ext_vec(double time_step, scalar* slns_prev_time_proj
         scalar increment = 0;
         for (unsigned int stage_j = 0; stage_j < num_stages; stage_j++)
           increment += bt->get_A(stage_i, stage_j) * K_vector[stage_j * ndof + running_space_ndofs + idx];
-        u_ext_vec[stage_i * ndof + running_space_ndofs + idx] = time_step * increment + slns_prev_time_projection[running_space_ndofs + idx];
+        u_ext_vec[stage_i * ndof + running_space_ndofs + idx] = time_step * increment;
       }
       running_space_ndofs += dp->get_space(space_i)->get_num_dofs();
     }
