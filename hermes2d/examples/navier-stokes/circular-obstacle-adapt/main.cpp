@@ -91,11 +91,11 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 double TIME = 0;
 
 // Boundary markers.
-const std::string BDY_BOTTOM = "1";
-const std::string BDY_RIGHT = "2";
-const std::string BDY_TOP = "3";
-const std::string BDY_LEFT = "4";
-const std::string BDY_OBSTACLE = "5";
+const std::string BDY_BOTTOM = "b1";
+const std::string BDY_RIGHT = "b2";
+const std::string BDY_TOP = "b3";
+const std::string BDY_LEFT = "b4";
+const std::string BDY_OBSTACLE = "b5";
 
 // Current time (used in weak forms).
 double current_time = 0;

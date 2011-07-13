@@ -30,11 +30,11 @@ double INIT_COND = 0.0;                           // Initial condition for the m
 double CURRENT_DENSITY = 1e9;                     // Volume source term.
 
 // Material and boundary markers.
-const std::string MAT_AIR = "2";
-const std::string MAT_IRON_1 = "0";
-const std::string MAT_IRON_2 = "3";
-const std::string MAT_COPPER = "1";
-const std::string BDY_DIRICHLET = "1";
+const std::string MAT_AIR = "e2";
+const std::string MAT_IRON_1 = "e0";
+const std::string MAT_IRON_2 = "e3";
+const std::string MAT_COPPER = "e1";
+const std::string BDY_DIRICHLET = "bdy";
 
 int main(int argc, char* argv[])
 {

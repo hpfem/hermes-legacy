@@ -170,8 +170,8 @@ int main(int argc, char* argv[])
   ProjBasedSelector *selector;
   ProjNormType norm;
   
-  WeaklyImposableBC bc_fn(Hermes::vector<std::string>("nonzero Dirichlet"), new NonzeroBoundaryValues(&mesh));
-  WeaklyImposableBC bc_zero(Hermes::vector<std::string>("zero Dirichlet", "outflow"), 0.0);
+  WeaklyImposableBC bc_fn(Hermes::vector<std::string>("nonzero_Dirichlet"), new NonzeroBoundaryValues(&mesh));
+  WeaklyImposableBC bc_zero(Hermes::vector<std::string>("zero_Dirichlet", "outflow"), 0.0);
   EssentialBCs bcs(Hermes::vector<EssentialBoundaryCondition*>(&bc_fn, &bc_zero));
   
   // Initialize the weak formulation.

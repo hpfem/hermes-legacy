@@ -3,7 +3,7 @@ r2 = 1            # Outer radius
 da = pi/4.        # Angular increment 
 eps = 0.6	  # Relative eccentricity in 0..1
 
-ee = eps*(r2-r1)  # Absolute eccentricity, shifts outer center in x-direction
+#ee = eps*(r2-r1)  # Absolute eccentricity, shifts outer center in x-direction
 
 vertices = [
   [ 0.6, 0 ],
@@ -62,15 +62,24 @@ curves = [
   [ 4, 5, 45 ],   
   [ 5, 6, 45 ],   
   [ 6, 7, 45 ],   
-  [ 7, 0, 45],  
-  [ 8, 9, 180/pi*acos(( (rr0*uc0x-ee)*(rr1*uc1x-ee)+rr0*uc0y*rr1*uc1y )/(r2*r2)) ],    
-  [ 9, 10, 180/pi*acos(( (rr1*uc1x-ee)*(rr2*uc2x-ee)+rr1*uc1y*rr2*uc2y )/(r2*r2)) ],   
-  [ 10, 11, 180/pi*acos(( (rr2*uc2x-ee)*(rr3*uc3x-ee)+rr2*uc2y*rr3*uc3y )/(r2*r2)) ],   
-  [ 11, 12, 180/pi*acos(( (rr3*uc3x-ee)*(rr4*uc4x-ee)+rr3*uc3y*rr4*uc4y )/(r2*r2)) ],   
-  [ 12, 13, 180/pi*acos(( (rr4*uc4x-ee)*(rr5*uc5x-ee)+rr4*uc4y*rr5*uc5y )/(r2*r2)) ],   
-  [ 13, 14, 180/pi*acos(( (rr5*uc5x-ee)*(rr6*uc6x-ee)+rr5*uc5y*rr6*uc6y )/(r2*r2)) ],   
-  [ 14, 15, 180/pi*acos(( (rr6*uc6x-ee)*(rr7*uc7x-ee)+rr6*uc6y*rr7*uc7y )/(r2*r2)) ],   
-  [ 15, 8,  180/pi*acos(( (rr7*uc7x-ee)*(rr0*uc0x-ee)+rr7*uc7y*rr0*uc0y )/(r2*r2)) ]  
+  [ 7, 0, 45],
+  [ 8, 9, 54.7707 ],
+  [ 9, 10, 49.1158 ],
+  [ 10, 11, 40.8842 ],
+  [ 11, 12, 35.2293 ],
+  [ 12, 13, 35.2293 ],
+  [ 13, 14, 40.8842 ],
+  [ 14, 15, 49.1158 ],
+  [ 15, 8, 54.7707 ],
 ]
+#  [ 8, 9, 180/pi*acos(( (rr0*uc0x-ee)*(rr1*uc1x-ee)+rr0*uc0y*rr1*uc1y )/(r2*r2)) ],    
+#  [ 9, 10, 180/pi*acos(( (rr1*uc1x-ee)*(rr2*uc2x-ee)+rr1*uc1y*rr2*uc2y )/(r2*r2)) ],   
+#  [ 10, 11, 180/pi*acos(( (rr2*uc2x-ee)*(rr3*uc3x-ee)+rr2*uc2y*rr3*uc3y )/(r2*r2)) ],   
+#  [ 11, 12, 180/pi*acos(( (rr3*uc3x-ee)*(rr4*uc4x-ee)+rr3*uc3y*rr4*uc4y )/(r2*r2)) ],   
+#  [ 12, 13, 180/pi*acos(( (rr4*uc4x-ee)*(rr5*uc5x-ee)+rr4*uc4y*rr5*uc5y )/(r2*r2)) ],   
+#  [ 13, 14, 180/pi*acos(( (rr5*uc5x-ee)*(rr6*uc6x-ee)+rr5*uc5y*rr6*uc6y )/(r2*r2)) ],   
+#  [ 14, 15, 180/pi*acos(( (rr6*uc6x-ee)*(rr7*uc7x-ee)+rr6*uc6y*rr7*uc7y )/(r2*r2)) ],   
+#  [ 15, 8,  180/pi*acos(( (rr7*uc7x-ee)*(rr0*uc0x-ee)+rr7*uc7y*rr0*uc0y )/(r2*r2)) ]  
+#]
 
 
