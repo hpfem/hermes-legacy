@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < INIT_REF_NUM[0]; i++) mesh1.refine_all_elements();
 
   // Essential boundary conditions.
-  DefaultEssentialBCConst zero_flux("zero flux", 0.0);
+  DefaultEssentialBCConst zero_flux("zero_flux", 0.0);
   EssentialBCs bc(&zero_flux);
   
   // Create H1 space with default shapesets.

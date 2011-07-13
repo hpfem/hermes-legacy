@@ -1,23 +1,25 @@
 t = 0.1  # thickness
 l = 0.7  # length
 
-left = 1;
-top  = 2;
-rest = 3;
+a = 0.360555
+b = 0.1
 
+alpha = 0.141897
+delta = 0.5411
+beta = 0.399202
+gamma = 0.488597
 
-a = sqrt(l^2 - (l-t)^2)
-b = t
-alpha = atan(b/l)
-delta = atan(a/(l-t))
-beta  = delta - alpha
-gamma = pi/2 - 2*delta
-c = (l-t)*sin(alpha)
-d = (l-t)*cos(alpha)
-e = (l-t)*sin(delta)
-f = (l-t)*cos(delta)
-q = sqrt(2)/2
+c = 0.0848528
+d = 0.59397
+e = 0.309047
+f = 0.514286
 
+q = 0.707107
+
+l-t = 0.6
+-t = -0.1
+-qt = -0.0707107
+l-qt = 0.629289
 
 vertices = [
   [ l-t, 0 ],  # 0
@@ -42,13 +44,10 @@ vertices = [
   [ l-t, l ],   # 17
 
   [ l, -t ],       # 18
-  [ l-q*t, -q*t ], # 19
+  [ l-qt, -qt ], # 19
   [ -t, l ],       # 20
-  [ -q*t, l-q*t ]  # 21
+  [ -qt, l-qt ]  # 21
 ]
-
-
-m = 0
 
 elements = [
   [ 0, 1, 3, 2, m ],
@@ -92,18 +91,13 @@ boundaries = [
   [ 12, 5, rest ]
 ]
 
-
-alpha = 180*alpha/pi
-beta  = 180*beta/pi
-gamma = 180*gamma/pi
-
 curves = [
-  [ 0, 2, alpha ],
-  [ 2, 4, beta ],
-  [ 4, 11, gamma ],
-  [ 11, 9, beta ],
-  [ 9, 7, alpha ],
-  [ 5,12, gamma ],
+  [ 0, 2, 8.1301 ],
+  [ 2, 4, 22.8726 ],
+  [ 4, 11, 27.9946 ],
+  [ 11, 9, 22.8726 ],
+  [ 9, 7, 8.1301 ],
+  [ 5,12, 27.9946 ],
   [ 0, 19, 45.0 ],
   [ 19, 18, 45.0 ],
   [ 20, 21, 45.0 ],

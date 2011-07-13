@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
   // Associate element markers (corresponding to physical regions) 
   // with material properties (diffusion coefficient, absorption 
   // cross-section, external sources).
-  Hermes::vector<std::string> regions("1", "2", "3", "4", "5");
+  Hermes::vector<std::string> regions("e1", "e2", "e3", "e4", "e5");
   Hermes::vector<double> D_map(D_1, D_2, D_3, D_4, D_5);
   Hermes::vector<double> Sigma_a_map(SIGMA_A_1, SIGMA_A_2, SIGMA_A_3, SIGMA_A_4, SIGMA_A_5);
   Hermes::vector<double> Sources_map(Q_EXT_1, 0.0, Q_EXT_3, 0.0, 0.0);

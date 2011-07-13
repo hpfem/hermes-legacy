@@ -121,10 +121,10 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 #include "initial_conditions.cpp"
 
 // Boundary markers.
-const std::string BDY_SIDE_FIXED = "1";
-const std::string BDY_SIDE_FREE = "2";
-const std::string BDY_TOP = "3";
-const std::string BDY_BOT = "4";
+const std::string BDY_SIDE_FIXED = "b1";
+const std::string BDY_SIDE_FREE = "b2";
+const std::string BDY_TOP = "b3";
+const std::string BDY_BOT = "b4";
 
 int main (int argc, char* argv[]) {
 
