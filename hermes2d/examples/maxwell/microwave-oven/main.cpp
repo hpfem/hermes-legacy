@@ -81,8 +81,8 @@ const double kappa  = 2 * M_PI * freq * sqrt(e_0 * mu_0);
 const double J = 0.0000033333;
 
 //  Boundary markers.
-const std::string BDY_PERFECT_CONDUCTOR = "2";
-const std::string BDY_CURRENT = "1";
+const std::string BDY_PERFECT_CONDUCTOR = "b2";
+const std::string BDY_CURRENT = "b1";
 
 /* WEAK FORM FOR ERROR CALCULATION - TO BE USED IN ADAPTIVITY.
 // error calculation

@@ -40,10 +40,10 @@ const double V2_EXT = 0.0;        // Inlet y-velocity (dimensionless).
 const double KAPPA = 1.4;         // Kappa.
 
 // Boundary markers.
-const std::string BDY_INLET = "1";
-const std::string BDY_OUTLET = "2";
-const std::string BDY_SOLID_WALL_BOTTOM = "3";
-const std::string BDY_SOLID_WALL_TOP = "4";
+const std::string BDY_INLET = "b1";
+const std::string BDY_OUTLET = "b2";
+const std::string BDY_SOLID_WALL_BOTTOM = "b3";
+const std::string BDY_SOLID_WALL_TOP = "b4";
 
 // Weak forms.
 #include "../forms_explicit.cpp"

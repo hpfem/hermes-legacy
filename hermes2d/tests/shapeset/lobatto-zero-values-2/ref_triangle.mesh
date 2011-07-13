@@ -6,7 +6,7 @@ vertices = [
 ]
 
 elements = [
-  [ 0, 1, 2, 0 ]  # ref. triangle
+  [ 0, 1, 2, "e" ]  # ref. triangle
 
 ]
 

@@ -1,4 +1,5 @@
 R = 1.0  # Radius of the circle
+-R = -1.0
 
 vertices = [
   [ -R, 0 ],   # vertex 0

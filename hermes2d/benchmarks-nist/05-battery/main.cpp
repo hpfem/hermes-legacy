@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
   H1Space space(&mesh, P_INIT);
 
   // Initialize the weak formulation.
-  CustomWeakFormPoisson wf("1", "2", "3", "4", "5", 
+  CustomWeakFormPoisson wf("e1", "e2", "e3", "e4", "e5", 
                            "Bdy_left", "Bdy_top", "Bdy_right", "Bdy_bottom");
 
   // Initialize coarse and reference mesh solution.
