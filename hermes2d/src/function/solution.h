@@ -195,6 +195,9 @@ public:
                                  PrecalcShapeset* pss, bool add_dir_lift = true);
 
   bool own_mesh;
+
+  Space* get_space();
+
 protected:
 
   /// Converts a coefficient vector into a Solution.
@@ -203,6 +206,9 @@ protected:
   virtual void set_coeff_vector(Space* space, scalar* coeffs, bool add_dir_lift);
 
   ESolutionType sln_type;
+
+  /// In case this is valid.
+  Space* space;
 
   bool transform;
 
