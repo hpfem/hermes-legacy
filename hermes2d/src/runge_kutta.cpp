@@ -141,7 +141,7 @@ bool RungeKutta::rk_time_step(double current_time, double time_step, Hermes::vec
     // Diagonal blocks are created even if empty, so that matrix_left
     // can be added later.
     bool force_diagonal_blocks = true;
-    bool add_dir_lift = true;
+    bool add_dir_lift = false;
     stage_dp_right.assemble(u_ext_vec, NULL, &vector_right, force_diagonal_blocks, add_dir_lift);
 
     // Finalizing the residual vector.
