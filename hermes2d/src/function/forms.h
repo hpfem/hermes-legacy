@@ -156,6 +156,33 @@ public:
   };
 #undef H2D_SUBTRACT_IF_NOT_NULL
 
+  /// Add arrays stored in a given attribute from the same array in provided function.
+#define H2D_ADD_IF_NOT_NULL(__ATTRIB, __OTHER_FUNC) { if (__ATTRIB != NULL) { \
+  assert_msg(__OTHER_FUNC.__ATTRIB != NULL, "Unable to add a function expansion " #__ATTRIB " is NULL in the other function."); \
+  for(int i = 0; i < num_gip; i++) __ATTRIB[i] += __OTHER_FUNC.__ATTRIB[i]; } }
+
+  /// Calculate this += func for each function expations and each integration point.
+  /** \param[in] func A function which is added from *this. A number of integratioN points and a number of component has to match. */
+  //FIXME : It should be 'virtual', but then it doesn't compile.
+  void add(const Func<T>& func) {
+    assert_msg(num_gip == func.num_gip, "Unable to add a function due to a different number of integration points (this: %d, other: %d)", num_gip, func.num_gip);
+    assert_msg(nc == func.nc, "Unable to add a function due to a different number of components (this: %d, other: %d)", nc, func.nc);
+    H2D_ADD_IF_NOT_NULL(val, func)
+    H2D_ADD_IF_NOT_NULL(dx, func)
+    H2D_ADD_IF_NOT_NULL(dy, func)
+    if (nc > 1) {
+      H2D_ADD_IF_NOT_NULL(val0, func)
+      H2D_ADD_IF_NOT_NULL(val1, func)
+      H2D_ADD_IF_NOT_NULL(dx0, func)
+      H2D_ADD_IF_NOT_NULL(dx1, func)
+      H2D_ADD_IF_NOT_NULL(dy0, func)
+      H2D_ADD_IF_NOT_NULL(dy1, func)
+      H2D_ADD_IF_NOT_NULL(curl, func)
+      H2D_ADD_IF_NOT_NULL(div, func)
+    }
+  };
+#undef H2D_ADD_IF_NOT_NULL
+
   virtual void free_ord() {
     delete val;
     val = val0 = val1 = NULL;

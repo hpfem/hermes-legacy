@@ -249,6 +249,8 @@ public:
 
   void set_fvm() {this->is_fvm = true;}
 
+  void set_RK(int original_spaces_count) { this->RungeKutta = true; RK_original_spaces_count = original_spaces_count; }
+
 protected:
   /// Assembling.
   /// Experimental caching of vector valued (vector) forms.
@@ -667,6 +669,9 @@ protected:
     LightArray<Func<Ord>*> cache_fn_ord;
   };
   AssemblingCaches assembling_caches;
+
+  bool RungeKutta;
+  int RK_original_spaces_count;
 
   friend class Hermes2D;
 };

@@ -48,6 +48,10 @@ DiscreteProblem::DiscreteProblem(WeakForm* wf, Space* space)
 void DiscreteProblem::init()
 {
   _F_
+  
+  RungeKutta = false;
+  RK_original_spaces_count = 0;
+
   // Sanity checks.
   if(wf == NULL)
     error("WeakForm* wf can not be NULL in DiscreteProblem::DiscreteProblem.");
@@ -2503,10 +2507,13 @@ scalar DiscreteProblem::eval_form_subelement(int order, WeakForm::MatrixFormVol 
   // Values of the previous Newton iteration, shape functions 
   // and external functions in quadrature points.
   int prev_size = u_ext.size() - mfv->u_ext_offset;
+  if(RungeKutta)
+    prev_size = RK_original_spaces_count;
+
   Func<scalar>** prev = new Func<scalar>*[prev_size];
   if (u_ext != Hermes::vector<Solution *>())
     for (int i = 0; i < prev_size; i++)
-      if (u_ext[i + mfv->u_ext_offset] != NULL) 
+      if (u_ext[i + mfv->u_ext_offset] != NULL)
         prev[i] = init_fn(u_ext[i + mfv->u_ext_offset], order);
       else 
         prev[i] = NULL;
@@ -2518,6 +2525,11 @@ scalar DiscreteProblem::eval_form_subelement(int order, WeakForm::MatrixFormVol 
   Func<double>* v = get_fn(fv, rv, order);
 
   ExtData<scalar>* ext = init_ext_fns(mfv->ext, rv, order);
+  
+  // Add the previous time level solution previously inserted at the back of ext.
+  if(RungeKutta)
+    for(unsigned int ext_i = 0; ext_i < this->RK_original_spaces_count; ext_i++)
+      prev[ext_i]->add(*ext->fn[mfv->ext.size() - this->RK_original_spaces_count + ext_i]);
 
   // The actual calculation takes place here.
   scalar res = mfv->value(np, jwt, prev, u, v, e, ext) * mfv->scaling_factor;
@@ -2877,6 +2889,10 @@ scalar DiscreteProblem::eval_form_subelement(int order, WeakForm::VectorFormVol 
 
   // Values of the previous Newton iteration, shape functions and external functions in quadrature points.
   int prev_size = u_ext.size() - vfv->u_ext_offset;
+  
+  if(RungeKutta)
+    prev_size = RK_original_spaces_count;
+
   Func<scalar>** prev = new Func<scalar>*[prev_size];
   if (u_ext != Hermes::vector<Solution *>())
     for (int i = 0; i < prev_size; i++)
@@ -2890,6 +2906,11 @@ scalar DiscreteProblem::eval_form_subelement(int order, WeakForm::VectorFormVol 
 
   Func<double>* v = get_fn(fv, rv, order);
   ExtData<scalar>* ext = init_ext_fns(vfv->ext, rv, order);
+
+  // Add the previous time level solution previously inserted at the back of ext.
+  if(RungeKutta)
+    for(unsigned int ext_i = 0; ext_i < this->RK_original_spaces_count; ext_i++)
+      prev[ext_i]->add(*ext->fn[vfv->ext.size() - this->RK_original_spaces_count + ext_i]);
 
   // The actual calculation takes place here.
   scalar res = vfv->value(np, jwt, prev, v, e, ext) * vfv->scaling_factor;
@@ -3232,6 +3253,10 @@ scalar DiscreteProblem::eval_form_subelement(int order, WeakForm::MatrixFormSurf
 
   // Values of the previous Newton iteration, shape functions and external functions in quadrature points.
   int prev_size = u_ext.size() - mfs->u_ext_offset;
+  
+  if(RungeKutta)
+    prev_size = RK_original_spaces_count;
+
   Func<scalar>** prev = new Func<scalar>*[prev_size];
   if (u_ext != Hermes::vector<Solution *>())
     for (int i = 0; i < prev_size; i++)
@@ -3246,6 +3271,11 @@ scalar DiscreteProblem::eval_form_subelement(int order, WeakForm::MatrixFormSurf
   Func<double>* u = get_fn(fu, ru, eo);
   Func<double>* v = get_fn(fv, rv, eo);
   ExtData<scalar>* ext = init_ext_fns(mfs->ext, rv, eo);
+
+  // Add the previous time level solution previously inserted at the back of ext.
+  if(RungeKutta)
+    for(unsigned int ext_i = 0; ext_i < this->RK_original_spaces_count; ext_i++)
+      prev[ext_i]->add(*ext->fn[mfs->ext.size() - this->RK_original_spaces_count + ext_i]);
 
   // The actual calculation takes place here.
   scalar res = mfs->value(np, jwt, prev, u, v, e, ext) * mfs->scaling_factor;
@@ -3587,6 +3617,10 @@ scalar DiscreteProblem::eval_form_subelement(int order, WeakForm::VectorFormSurf
   // Values of the previous Newton iteration, shape functions and external functions in quadrature points.
   int prev_size = u_ext.size() - vfs->u_ext_offset;
   Func<scalar>** prev = new Func<scalar>*[prev_size];
+  
+  if(RungeKutta)
+    prev_size = RK_original_spaces_count;
+
   if (u_ext != Hermes::vector<Solution *>())
     for (int i = 0; i < prev_size; i++)
       if (u_ext[i + vfs->u_ext_offset] != NULL) 
@@ -3599,6 +3633,11 @@ scalar DiscreteProblem::eval_form_subelement(int order, WeakForm::VectorFormSurf
 
   Func<double>* v = get_fn(fv, rv, eo);
   ExtData<scalar>* ext = init_ext_fns(vfs->ext, rv, eo);
+
+  // Add the previous time level solution previously inserted at the back of ext.
+  if(RungeKutta)
+    for(unsigned int ext_i = 0; ext_i < this->RK_original_spaces_count; ext_i++)
+      prev[ext_i]->add(*ext->fn[vfs->ext.size() - this->RK_original_spaces_count + ext_i]);
 
   // The actual calculation takes place here.
   scalar res = vfs->value(np, jwt, prev, v, e, ext) * vfs->scaling_factor;
