@@ -187,6 +187,7 @@ void Solution::init()
   memset(oldest, 0, sizeof(oldest));
   transform = true;
   sln_type = HERMES_UNDEF;
+  space = NULL;
   own_mesh = false;
   num_components = 0;
   e_last = NULL;
@@ -242,6 +243,7 @@ Solution::Solution(Mesh *mesh, scalar init_const_0, scalar init_const_1) : MeshF
 Solution::Solution(Space* s, Vector* coeff_vec) : MeshFunction(s->get_mesh())
 {
   space_type = s->get_type();
+  space = s;
   this->init();
   this->mesh = s->get_mesh();
   this->own_mesh = false;
@@ -251,6 +253,7 @@ Solution::Solution(Space* s, Vector* coeff_vec) : MeshFunction(s->get_mesh())
 Solution::Solution(Space* s, scalar* coeff_vec) : MeshFunction(s->get_mesh())
 {
   space_type = s->get_type();
+  space = s;
   this->init();
   this->mesh = s->get_mesh();
   this->own_mesh = false;
@@ -260,7 +263,8 @@ Solution::Solution(Space* s, scalar* coeff_vec) : MeshFunction(s->get_mesh())
 void Solution::assign(Solution* sln)
 {
   if (sln->sln_type == HERMES_UNDEF) error("Solution being assigned is uninitialized.");
-  if (sln->sln_type != HERMES_SLN) { copy(sln); return; }
+  if (sln->sln_type != HERMES_SLN) 
+    copy(sln); return; 
 
   free();
 
@@ -277,6 +281,7 @@ void Solution::assign(Solution* sln)
   num_elems = sln->num_elems;          sln->num_elems = 0;
 
   sln_type = sln->sln_type;
+  space = sln->space;
   space_type = sln->get_space_type();
   num_components = sln->num_components;
 
@@ -318,6 +323,8 @@ void Solution::copy(const Solution* sln)
     memcpy(elem_orders, sln->elem_orders, sizeof(int) * num_elems);
 
     init_dxdy_buffer();
+
+    space = sln->space;
   }
   else // Const, exact handled differently.
   {
@@ -368,6 +375,8 @@ void Solution::free()
   e_last = NULL;
 
   free_tables();
+
+  space = NULL;
 }
 
 
@@ -375,6 +384,7 @@ Solution::~Solution()
 {
   free();
   space_type = HERMES_INVALID_SPACE;
+  space = NULL;
 }
 
 
@@ -484,6 +494,7 @@ void Solution::set_coeff_vector(Space* space, PrecalcShapeset* pss, scalar* coef
   free();
  
   space_type = space->get_type();
+  this->space = space;
 
   num_components = pss->get_num_components();
   sln_type = HERMES_SLN;
@@ -1470,6 +1481,18 @@ scalar Solution::get_pt_value(double x, double y, int item)
 
   warn("Point (%g, %g) does not lie in any element.", x, y);
   return NAN;
+}
+
+
+Space* Solution::get_space()
+{
+  if(this->sln_type == HERMES_SLN)
+    return space;
+  else
+  {
+    warning("Solution::get_space() called with an instance where FEM space is not defined.");
+    return NULL;
+  }
 }
 
 // Exact solution.
