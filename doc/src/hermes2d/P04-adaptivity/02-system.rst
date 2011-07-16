@@ -202,6 +202,7 @@ Calculate error estimates::
     double err_est_rel_total = adaptivity->calc_err_est(Hermes::vector<Solution *>(&u_sln, &v_sln), 
                                                         Hermes::vector<Solution *>(&u_ref_sln, &v_ref_sln), 
                                                         &err_est_rel) * 100;
+
 Calculate exact errors (optional)::
 
     // Calculate exact error for each solution component and the total exact error.
@@ -210,6 +211,7 @@ Calculate exact errors (optional)::
     double err_exact_rel_total = adaptivity->calc_err_exact(Hermes::vector<Solution *>(&u_sln, &v_sln), 
                                                             Hermes::vector<Solution *>(&exact_u, &exact_v), 
                                                             &err_exact_rel, solutions_for_adapt) * 100;
+
 Adapt the coarse meshes::
 
     // If err_est too large, adapt the mesh.

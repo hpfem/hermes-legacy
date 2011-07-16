@@ -1,5 +1,5 @@
 Finite Element Space (02-space)
------------------------------
+-------------------------------
 
 .. popup:: '#p01-linear-02-space-tutorial'
    ../../../_static/clapper.png
