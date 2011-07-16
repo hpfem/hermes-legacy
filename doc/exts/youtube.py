@@ -5,13 +5,14 @@ CODE = """\
 <object type="application/x-shockwave-flash"
         width="%(width)s"
         height="%(height)s"
-        align="left"
+        align="center"
         border="1"
         hspace="15"
         class="youtube-embed"
         data="http://www.youtube.com/v/%(yid)s">
     <param name="movie" value="http://www.youtube.com/v/%(yid)s"></param>
     <param name="wmode" value="transparent"></param>%(extra)s
+    <param name="allowFullScreen" value="true"></param>
 </object>
 """
 
@@ -42,3 +43,7 @@ def youtube(name, args, options, content, lineno,
     return [nodes.raw('', CODE % (string_vars), format='html')]
 youtube.content = True
 directives.register_directive('youtube', youtube)
+
+
+def setup(foo):
+    pass

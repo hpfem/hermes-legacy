@@ -1,7 +1,8 @@
 Finite Element Space (02-space)
--------------------------
+-----------------------------
 
 .. popup:: '#p01-linear-02-space-tutorial'
+   ../../../_static/clapper.png
 
 **Git reference:** Tutorial example `02-space <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/02-space>`_. 
 

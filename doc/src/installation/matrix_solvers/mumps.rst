@@ -2,6 +2,7 @@ Mumps
 -----
 
 .. popup:: '#'
+   ../../../_static/clapper.png
 
 .. _MUMPS home page: http://graal.ens-lyon.fr/MUMPS/index.php
 .. _solvers repository: https://github.com/hpfem/solvers

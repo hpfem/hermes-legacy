@@ -2,6 +2,7 @@ PETSc
 -----
 
 .. popup:: '#petsc-matrix-solver'
+   ../../../_static/clapper.png
 
 .. _PETSc home page: http://www.mcs.anl.gov/petsc/
 .. _solvers repository: https://github.com/hpfem/solvers
