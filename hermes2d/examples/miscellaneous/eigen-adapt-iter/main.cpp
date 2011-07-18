@@ -23,13 +23,13 @@ using Hermes::EigenSolver;
 
 // Select one of the mesh files below.
 //const char* mesh_file = "domain_square_quad_1_sym.mesh";     // Square domain with one single element (symmetric).
-const char* mesh_file = "domain_square_quad_2_sym.mesh";     // Square domain with four quad elements (symmetric).
+//const char* mesh_file = "domain_square_quad_2_sym.mesh";     // Square domain with four quad elements (symmetric).
 //const char* mesh_file = "domain_lshape_quad_sym.mesh";       // L-Shape domain with quadrilateral mesh (symmetric). 
 //const char* mesh_file = "domain_square_quad_2_nonsym.mesh";  // Square domain with four quad elements (non-symmetric).
 //const char* mesh_file = "domain_square_tria_nonsym.mesh";    // Square domain with triangular mesh    (non-symmetric).
-//const char* mesh_file = "domain_lshape_tria_nonsym.mesh";    // L-Shape domain with triangular mesh   (non-symmetric).  
+const char* mesh_file = "domain_lshape_tria_nonsym.mesh";    // L-Shape domain with triangular mesh   (non-symmetric).  
 
-int TARGET_EIGENFUNCTION = 3;                     // Desired eigenfunction: 1 for the first, 2 for the second, etc.
+int TARGET_EIGENFUNCTION = 1;                     // Desired eigenfunction: 1 for the first, 2 for the second, etc.
 
 int ITERATIVE_METHOD = 1;                         // 1 = Newton, 2 = Picard.
 const int USE_ORTHO = true;                       // This should be always on, set to false only to show that 
@@ -92,7 +92,7 @@ bool RECONSTRUCTION_ON = true;                    // Use eigenfunction reconstru
 // If the actual number of dimensions of the continuous eigenspace is unknown, an upperbound of it is also enough.
 int DIMENSION_TARGET_EIGENSPACE = 2;  
 
-int FIRST_INDEX_EIGENSPACE = 2;                   // Index of the first eigenfunction in the continuous eigenspace 
+int FIRST_INDEX_EIGENSPACE = 1;                   // Index of the first eigenfunction in the continuous eigenspace 
                                                   // that contains the eigenfunction of index TARGET_EIGENFUNCTION            
 
 // ORTHOGONALIZATION TECHNOLOGY:
