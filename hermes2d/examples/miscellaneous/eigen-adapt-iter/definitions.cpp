@@ -233,8 +233,9 @@ bool solve_newton_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
 }
 
 bool solve_newton_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMatrix* matrix_M_ref, 
-                        double* coeff_vec_ref, double &lambda, MatrixSolverType matrix_solver,
-                        double newton_tol, int newton_max_iter, int use_ortho, double** coeff_space_ortho_ref, int index, int dim_space)
+                              double* coeff_vec_ref, double &lambda, MatrixSolverType matrix_solver,
+                              double newton_tol, int newton_max_iter, bool use_ortho, 
+                              double** coeff_space_ortho_ref, int index, int dim_space)
 {
   Hermes2D hermes2D;
 
@@ -283,7 +284,7 @@ bool solve_newton_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
     lambda += increment[ndof_ref];
 
     // orthogonalize
-    if (use_ortho == 1) {
+    if (use_ortho == true) {
       for (int j=0; j<index; j++){
         inner = calc_inner_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ortho_ref[j], coeff_vec_ref, ndof_ref);
         for (int i=0; i<ndof_ref; i++) coeff_vec_ref[i] = coeff_vec_ref[i] - inner * coeff_space_ortho_ref[j][i];
@@ -333,7 +334,7 @@ bool solve_newton_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
 // eigenvalue comes to be very close to the origin where the method tends to converge.
 bool solve_picard_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMatrix* matrix_M_ref, 
                         double* coeff_vec_ref, double &lambda, MatrixSolverType matrix_solver,
-                        double picard_tol, int picard_max_iter, int use_shift)
+                        double picard_tol, int picard_max_iter, bool use_shift)
 {
   Hermes2D hermes2D;
 
@@ -346,7 +347,7 @@ bool solve_picard_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
   Solution::vector_to_solution(coeff_vec_ref, ref_space, &ref_sln_prev);
   bool success = true;
   double shift = 0.0;
-  if (use_shift==1) {
+  if (use_shift == true) {
     shift = lambda;
     // Construct shifted matrx.
     double *Sx = ((UMFPackMatrix*)matrix_S_ref)->get_Ax();
@@ -408,8 +409,9 @@ bool solve_picard_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
 }
 
 bool solve_picard_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMatrix* matrix_M_ref, 
-                        double* coeff_vec_ref, double &lambda, MatrixSolverType matrix_solver,
-                        double picard_tol, int picard_max_iter, int use_ortho, int use_shift, double** coeff_space_ortho_ref, int index, int dim_space)
+                              double* coeff_vec_ref, double &lambda, MatrixSolverType matrix_solver,
+                              double picard_tol, int picard_max_iter, bool use_ortho, bool use_shift, 
+                              double** coeff_space_ortho_ref, int index, int dim_space)
 {
   Hermes2D hermes2D;
 
@@ -422,7 +424,7 @@ bool solve_picard_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
   Solution::vector_to_solution(coeff_vec_ref, ref_space, &ref_sln_prev);
   bool success = true;
   double shift = 0.0;
-  if (use_shift==1) {
+  if (use_shift == true) {
     shift = lambda;
     // Construct shifted matrx.
     double *Sx = ((UMFPackMatrix*)matrix_S_ref)->get_Ax();
@@ -459,7 +461,7 @@ bool solve_picard_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
     for (int i=0; i<ndof_ref; i++) coeff_vec_ref[i] = new_eigen_vec[i];
 
     // orthogonalize
-    if (use_ortho == 1) {
+    if (use_ortho == true) {
       for (int j=0; j<index; j++){
         inner = calc_inner_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ortho_ref[j], coeff_vec_ref, ndof_ref);
         for (int i=0; i<ndof_ref; i++) coeff_vec_ref[i] = coeff_vec_ref[i] - inner * coeff_space_ortho_ref[j][i];

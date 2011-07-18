@@ -31,7 +31,7 @@ const char* mesh_file = "domain_square_quad_2_sym.mesh";     // Square domain wi
 
 int TARGET_EIGENFUNCTION = 3;                     // Desired eigenfunction: 1 for the first, 2 for the second, etc.
 
-int ITERATIVE_METHOD = 1;                         // 1 = Newton, 2 = Picard.
+int ITERATIVE_METHOD = 2;                         // 1 = Newton, 2 = Picard.
 
 int P_INIT = 2;                                   // Uniform polynomial degree of mesh elements.
 const int INIT_REF_NUM = 0;                       // Number of initial mesh refinements.
@@ -74,8 +74,8 @@ const double NEWTON_TOL = 1e-3;
 const int NEWTON_MAX_ITER = 10;
 const double PICARD_TOL = 1e-3;
 const int PICARD_MAX_ITER = 1000;
-const int USE_ORTHO = 1;
-const int USE_SHIFT = 0;
+const int USE_ORTHO = true;
+const int USE_SHIFT = false;
 
 // RECONSTRUCTION TECHNOLOGY:
 
@@ -299,8 +299,8 @@ int main(int argc, char* argv[])
         lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_space_ref[i], ndof_ref)
              / calc_mass_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[i], ndof_ref);
         if(!solve_newton_eigen_ortho(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
-	  		     coeff_space_ref[i], lambda, matrix_solver, PICARD_TOL, PICARD_MAX_ITER,USE_ORTHO,
-                             coeff_space_ref,i,DIMENSION_SUBSPACE))
+	  		     coeff_space_ref[i], lambda, matrix_solver, PICARD_TOL, PICARD_MAX_ITER, USE_ORTHO,
+                             coeff_space_ref, i, DIMENSION_SUBSPACE))
           info("WARNING: Newton's method reached the maximum number of iterations.");
       }
     }
@@ -315,8 +315,8 @@ int main(int argc, char* argv[])
         lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_space_ref[i], ndof_ref)
              / calc_mass_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[i], ndof_ref);
         if(!solve_picard_eigen_ortho(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
-	  		     coeff_space_ref[i], lambda, matrix_solver, PICARD_TOL, PICARD_MAX_ITER,USE_ORTHO, USE_SHIFT,
-                             coeff_space_ref,i,DIMENSION_SUBSPACE))
+	  		     coeff_space_ref[i], lambda, matrix_solver, PICARD_TOL, PICARD_MAX_ITER, USE_ORTHO, USE_SHIFT,
+                             coeff_space_ref, i, DIMENSION_SUBSPACE))
           info("WARNING: Picard's method reached the maximum number of iterations.");
       }
     }
