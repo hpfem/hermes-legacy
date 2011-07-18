@@ -31,10 +31,12 @@ const char* mesh_file = "domain_square_quad_2_sym.mesh";     // Square domain wi
 
 int TARGET_EIGENFUNCTION = 3;                     // Desired eigenfunction: 1 for the first, 2 for the second, etc.
 
-int ITERATIVE_METHOD = 2;                         // 1 = Newton, 2 = Picard.
+int ITERATIVE_METHOD = 1;                         // 1 = Newton, 2 = Picard.
+const int USE_ORTHO = true;
+const int USE_SHIFT = false;
 
 int P_INIT = 2;                                   // Uniform polynomial degree of mesh elements.
-const int INIT_REF_NUM = 0;                       // Number of initial mesh refinements.
+const int INIT_REF_NUM = 1;                       // Number of initial mesh refinements.
 const double THRESHOLD = 0.2;                     // This is a quantitative parameter of the adapt(...) function and
                                                   // it has different meanings for various adaptive strategies (see below).
 const int STRATEGY = 0;                           // Adaptive strategy:
@@ -74,8 +76,6 @@ const double NEWTON_TOL = 1e-3;
 const int NEWTON_MAX_ITER = 10;
 const double PICARD_TOL = 1e-3;
 const int PICARD_MAX_ITER = 1000;
-const int USE_ORTHO = true;
-const int USE_SHIFT = false;
 
 // RECONSTRUCTION TECHNOLOGY:
 
@@ -294,14 +294,14 @@ int main(int argc, char* argv[])
       // Newton's method on the reference mesh for the first eigenfunction in the eigenspace.
       if(!solve_newton_eigen(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
 	  		     coeff_space_ref[0], lambda, matrix_solver, NEWTON_TOL, NEWTON_MAX_ITER))
-        info("WARNING: Newton's method reached the maximum number of iterations.");
+        warn("Newton's method reached the maximum number of iterations.");
       for (int i = 1; i < DIMENSION_SUBSPACE; i++) {  
         lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_space_ref[i], ndof_ref)
              / calc_mass_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[i], ndof_ref);
         if(!solve_newton_eigen_ortho(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
 	  		     coeff_space_ref[i], lambda, matrix_solver, PICARD_TOL, PICARD_MAX_ITER, USE_ORTHO,
                              coeff_space_ref, i, DIMENSION_SUBSPACE))
-          info("WARNING: Newton's method reached the maximum number of iterations.");
+          warn("Newton's method reached the maximum number of iterations.");
       }
     }
     else if (ITERATIVE_METHOD == 2) {
@@ -310,14 +310,14 @@ int main(int argc, char* argv[])
       // Picard's method on the reference mesh for the first eigenfunction in the eigenspace.
       if(!solve_picard_eigen(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
 	  		     coeff_space_ref[0], lambda, matrix_solver, PICARD_TOL, PICARD_MAX_ITER, USE_SHIFT))
-        info("WARNING: Picard's method reached the maximum number of iterations.");
+        warn("Picard's method reached the maximum number of iterations.");
       for (int i = 1; i < DIMENSION_SUBSPACE; i++) {  
         lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_space_ref[i], ndof_ref)
              / calc_mass_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[i], ndof_ref);
         if(!solve_picard_eigen_ortho(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
 	  		     coeff_space_ref[i], lambda, matrix_solver, PICARD_TOL, PICARD_MAX_ITER, USE_ORTHO, USE_SHIFT,
                              coeff_space_ref, i, DIMENSION_SUBSPACE))
-          info("WARNING: Picard's method reached the maximum number of iterations.");
+          warn("Picard's method reached the maximum number of iterations.");
       }
     }
     else {
