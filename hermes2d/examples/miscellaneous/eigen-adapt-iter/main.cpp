@@ -55,7 +55,7 @@ const int MESH_REGULARITY = -1;                   // Maximum allowed level of ha
                                                   // MESH_REGULARITY = 2 ... at most two-level hanging nodes, etc.
                                                   // Note that regular meshes are not supported, this is due to
                                                   // their notoriously bad performance.
-const double ERR_STOP = 5e-1;                     // Stopping criterion for adaptivity (rel. error tolerance between the
+const double ERR_STOP = 1e-1;                     // Stopping criterion for adaptivity (rel. error tolerance between the
 const double CONV_EXP = 1.0;                      // Default value is 1.0. This parameter influences the selection of
                                                   // cancidates in hp-adaptivity. See get_optimal_refinement() for details.
                                                   // fine mesh and coarse mesh solution in percent).
@@ -76,25 +76,28 @@ const int NEWTON_MAX_ITER = 100;
 const double PICARD_TOL = 1e-3;
 const double PICARD_ABSTOL = 1e-10;
 const int PICARD_MAX_ITER = 100;
-const int USE_SHIFT = 0;
+const bool USE_SHIFT = false;
 
 // ORTHOGONALITY:
 
 // The orthogonality technologies are used to converge to the eigenvalues and eigenfunctions in the target 
 // eigenspace. There are three possible settings:
-// 0. No orthogonality - the method could converges not to the target eigenfucntions
-// 1. Standard orthogonality -  all eigenpairs with eigenvalues smaller than the target eigenvalues are 
+// USE_ORTHO == false: No orthogonality - the method could converges not to the target eigenfucntions
+// USE_ORTHO == true AND USE_IMPROVED_ORTHO == false: Standard orthogonality -  
+//     all eigenpairs with eigenvalues smaller than the target eigenvalues are 
 //     also computed in order to make sure that the method converges to the correct ones, forcing, in the 
 //     iterative method, the computed eigenfunctions to be orthogonal to all eigenfunctions of smaller 
 //     eigenvalues. This method is robust but quite expensive, because a lot of unwanted eigenpairs are 
 //     computed
-// 2. Improved orthogonality - the method try to compute only the target eigenfunctions, in case that
+// SE_ORTHO == true AND USE_IMPROVED_ORTHO == true: Improved orthogonality - 
+//     the method try to compute only the target eigenfunctions, in case that
 //     unwanted eigenfunctions are computed, the method automatically discard them and keep all future
 //     computed eigenfunctions orthogonal to the unwanted. The value THRESHOLD_ORTHO is used to decide 
 //     wether a compute eigenfucntion is to keep or to discard. This method is also very robust and much more
 //     efficient.  
-const int USE_ORTHO = 2;
-const double THRESHOLD_ORTHO = 0.7; 
+const bool USE_ORTHO = true;
+const bool USE_IMPROVED_ORTHO = true;
+const double THRESHOLD_ORTHO = 0.5; 
 
 // RECONSTRUCTION TECHNOLOGY:
 
@@ -137,7 +140,7 @@ int main(int argc, char* argv[])
   }
   
   // Disable reconstruction if no orthogonalizations are used
-  if (USE_ORTHO == 0)
+  if (USE_ORTHO == false)
     RECONSTRUCTION_ON = false; 
 
   // Set the value of DIMENSION_SUBSPACE
@@ -319,7 +322,16 @@ int main(int argc, char* argv[])
     info("Initial guess for eigenvalue on reference mesh: %.12f", lambda);
 
     if (ITERATIVE_METHOD == 1) {
-      if (USE_ORTHO==2){
+      if (USE_ORTHO==false){
+        // No orthogonalization
+        lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_space_ref[TARGET_EIGENFUNCTION-1], ndof_ref)
+               / calc_mass_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[TARGET_EIGENFUNCTION-1], ndof_ref);
+        if(!solve_newton_eigen(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
+	  		     coeff_space_ref[TARGET_EIGENFUNCTION-1], lambda, matrix_solver, NEWTON_TOL,
+                             NEWTON_ABSTOL, NEWTON_MAX_ITER))
+        error("Newton's method failed.");
+      } 
+      else if (USE_IMPROVED_ORTHO) {
         // Improved orthogonality
         // Discarded eigenfunctions
         double** coeff_space_discard = new double*[DIMENSION_SUBSPACE];
@@ -404,7 +416,7 @@ int main(int argc, char* argv[])
         }
         delete [] coeff_space_prev;
       }
-      else if (USE_ORTHO==1){ // standard orthogonalization
+      else { // standard orthogonalization
         // Try to compute an approximation for the first eigenvalue in the target eigenspace
         for (int i = 0; i < DIMENSION_SUBSPACE; i++) {  
           lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_space_ref[i], ndof_ref)
@@ -416,20 +428,18 @@ int main(int argc, char* argv[])
           error("Newton's method failed.");
         }
       }
-      else if (USE_ORTHO==0){// No orthogonalization
-        lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_space_ref[TARGET_EIGENFUNCTION-1], ndof_ref)
-               / calc_mass_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[TARGET_EIGENFUNCTION-1], ndof_ref);
-        if(!solve_newton_eigen(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
-	  		     coeff_space_ref[TARGET_EIGENFUNCTION-1], lambda, matrix_solver, NEWTON_TOL,
-                             NEWTON_ABSTOL, NEWTON_MAX_ITER))
-        error("Newton's method failed.");
-      }
-      else {
-        error("Orthogonalization unknown.");
-      }
     }
     else if (ITERATIVE_METHOD == 2) {
-      if (USE_ORTHO==2){
+      if (USE_ORTHO==false){
+        // No orthogonalization
+        lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_space_ref[TARGET_EIGENFUNCTION-1], ndof_ref)
+               / calc_mass_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[TARGET_EIGENFUNCTION-1], ndof_ref);
+        if(!solve_picard_eigen(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
+	  		     coeff_space_ref[TARGET_EIGENFUNCTION-1], lambda, matrix_solver, PICARD_TOL, 
+                             PICARD_ABSTOL, PICARD_MAX_ITER, USE_SHIFT))
+          error("Picard's method failed.");
+      }
+      else if (USE_IMPROVED_ORTHO) {
         // Improved orthogonality
         // set of discarded eigenfunctions
         double** coeff_space_discard = new double*[DIMENSION_SUBSPACE];
@@ -511,7 +521,7 @@ int main(int argc, char* argv[])
         }
         delete [] coeff_space_prev;
       }
-      else if (USE_ORTHO==1){ // standard orthogonalization
+      else { // standard orthogonalization
         // Try to compute an approximation for the first eigenvalue in the target eigenspace
         for (int i = 0; i < DIMENSION_SUBSPACE; i++) {  
           lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_space_ref[i], ndof_ref)
@@ -522,17 +532,6 @@ int main(int argc, char* argv[])
                              coeff_space_ref,i,DIMENSION_SUBSPACE))
             error("Picard's method failed.");
         }
-      }
-      else if (USE_ORTHO==0){// No orthogonalization
-        lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_space_ref[TARGET_EIGENFUNCTION-1], ndof_ref)
-               / calc_mass_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ref[TARGET_EIGENFUNCTION-1], ndof_ref);
-        if(!solve_picard_eigen(ref_space, (UMFPackMatrix*)matrix_S_ref, (UMFPackMatrix*)matrix_M_ref, 
-	  		     coeff_space_ref[TARGET_EIGENFUNCTION-1], lambda, matrix_solver, PICARD_TOL, 
-                             PICARD_ABSTOL, PICARD_MAX_ITER, USE_SHIFT))
-          error("Picard's method failed.");
-      }
-      else {
-        error("Orthogonalization unknown.");
       }
     }
     else {
