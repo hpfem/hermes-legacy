@@ -32,9 +32,6 @@ const char* mesh_file = "domain_lshape_tria_nonsym.mesh";    // L-Shape domain w
 int TARGET_EIGENFUNCTION = 1;                     // Desired eigenfunction: 1 for the first, 2 for the second, etc.
 
 int ITERATIVE_METHOD = 1;                         // 1 = Newton, 2 = Picard.
-const int USE_ORTHO = true;                       // This should be always on, set to false only to show that 
-                                                  // the methods do not work without orthogonalization.
-const int USE_SHIFT = false;
 
 int P_INIT = 2;                                   // Uniform polynomial degree of mesh elements.
 const int INIT_REF_NUM = 1;                       // Number of initial mesh refinements.
@@ -77,6 +74,9 @@ const double NEWTON_TOL = 1e-3;
 const int NEWTON_MAX_ITER = 10;
 const double PICARD_TOL = 1e-3;
 const int PICARD_MAX_ITER = 1000;
+const int USE_ORTHO = true;                       // This should be always on, set to false only to show that 
+                                                  // the methods do not work without orthogonalization.
+const int USE_SHIFT = false;
 
 // RECONSTRUCTION TECHNOLOGY:
 
