@@ -20,8 +20,10 @@ void write_matrix_mm(const char* filename, Matrix* mat)
 
   // Calculate the number of nonzeros.
   int nz = 0;
-  for (int i = 0; i < ndof; i++) {
-    for (int j = 0; j <= i; j++) { 
+  for (int i = 0; i < ndof; i++) 
+  {
+    for (int j = 0; j <= i; j++) 
+    { 
       double tmp = mat->get(i, j);
       if (std::abs(tmp) > 1e-15) nz++;
     }
@@ -30,8 +32,10 @@ void write_matrix_mm(const char* filename, Matrix* mat)
   // Write the matrix in MatrixMarket format
   fprintf(out,"%%%%MatrixMarket matrix coordinate real symmetric\n");
   fprintf(out,"%d %d %d\n", ndof, ndof, nz);
-  for (int i = 0; i < ndof; i++) {
-    for (int j = 0; j <= i; j++) { 
+  for (int i = 0; i < ndof; i++) 
+  {
+    for (int j = 0; j <= i; j++) 
+    { 
       double tmp = mat->get(i, j);
       if (std::abs(tmp) > 1e-15) fprintf(out, "%d %d %24.15e\n", i + 1, j + 1, tmp);
     }
@@ -105,8 +109,10 @@ void create_augmented_linear_system(SparseMatrix* matrix_S_ref, SparseMatrix* ma
 
   // Fill the new Ai array.
   int count = 0;
-  for (int j=0; j < size; j++) {                                // Index of a column.
-    for (int i = ap[j]; i < ap[j + 1]; i++) {                   // Index of a row.
+  for (int j=0; j < size; j++)            // Index of a column.
+  {                                
+    for (int i = ap[j]; i < ap[j + 1]; i++)                     // Index of a row.
+      {
       new_Ai[count++] = ai[i];                                  // First size entries in each column are the same.
     }
     new_Ai[count++] = size;                                     // Accounting for last item in columns 0, 1, size-1.
@@ -116,8 +122,10 @@ void create_augmented_linear_system(SparseMatrix* matrix_S_ref, SparseMatrix* ma
   // Fill the new Ax array.  
   //double max = 0;
   count = 0;
-  for (int j=0; j < size; j++) {                                // Index of a column.
-    for (int i = ap[j]; i < ap[j + 1]; i++) {                   // Index of a row.
+  for (int j=0; j < size; j++)                                  // Index of a column.
+  {
+    for (int i = ap[j]; i < ap[j + 1]; i++)                     // Index of a row.
+      {
       new_Ax[count++] = ax_S[i] - lambda * ax_M[i];      // Block S minus lambda M
       //if (fabs(ax_S[i] - lambda * ax_M[i]) > 1e-10)
       //  warn("value[%d] = %.12f", i, ax_S[i] - lambda * ax_M[i]);
@@ -155,7 +163,7 @@ void create_augmented_linear_system(SparseMatrix* matrix_S_ref, SparseMatrix* ma
 
 bool solve_newton_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMatrix* matrix_M_ref, 
                         double* coeff_vec_ref, double &lambda, MatrixSolverType matrix_solver,
-                        double newton_tol, int newton_max_iter)
+                        double newton_tol, double newton_abstol, int newton_max_iter)
 {
   Hermes2D hermes2D;
 
@@ -169,10 +177,12 @@ bool solve_newton_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
   Solution ref_sln_prev;
   Solution::vector_to_solution(coeff_vec_ref, ref_space, &ref_sln_prev);
   bool success = true;
+  double res;
   int it = 1;
   do {
     // Check the number of iterations.
-    if (it >= newton_max_iter) {
+    if (it >= newton_max_iter) 
+    {
       success = false;
       info("Newton's iteration not successful, returning false.");
       break;
@@ -190,7 +200,8 @@ bool solve_newton_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
 
     // Solve the augmented matrix problem.
     //info("Solving augmented problem on reference mesh.");
-    if(!solver_augm->solve()) {
+    if(!solver_augm->solve()) 
+    {
       info("Matrix solver failed.\n");
       success = false;
       break;
@@ -200,12 +211,14 @@ bool solve_newton_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
     // Update the eigenfunction and eigenvalue.
     //info("Updating reference solution.");
     for (int i=0; i<ndof_ref; i++) coeff_vec_ref[i] += increment[i];
+    double lambda_old = lambda;
     lambda += increment[ndof_ref];
 
     // Calculate relative error of the increment.
     Solution ref_sln_new;
     Solution::vector_to_solution(coeff_vec_ref, ref_space, &ref_sln_new);
     newton_err_rel = hermes2D.calc_rel_error(&ref_sln_prev, &ref_sln_new, HERMES_H1_NORM) * 100;
+    res = fabs(lambda_old-lambda);
 
     // Updating reference solution.
     ref_sln_prev.copy(&ref_sln_new);
@@ -217,12 +230,12 @@ bool solve_newton_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
     //sview.show(&ref_sln_prev);
     //View::wait(HERMES_WAIT_KEYPRESS);
 
-    info("---- Newton iter %d, ndof %d, eigenvalue: %.12f, newton_err_rel %g%%", 
-         it++, ndof_ref, lambda, newton_err_rel);
+    info("---- Newton iter %d, ndof %d, eigenvalue: %.12f, newton_err_rel %g%%, newton_abs_rel %g", 
+         it++, ndof_ref, lambda, newton_err_rel, res);
     //info("Eigenvalue increment: %.12f", increment[ndof_ref]);
     //info("Eigenvalue: %.12f", lambda);
   }
-  while (newton_err_rel > newton_tol);
+  while ((newton_err_rel > newton_tol) and (res > newton_abstol));
 
   // Clean up.
   delete matrix_augm;
@@ -234,7 +247,7 @@ bool solve_newton_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
 
 bool solve_newton_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMatrix* matrix_M_ref, 
                               double* coeff_vec_ref, double &lambda, MatrixSolverType matrix_solver,
-                              double newton_tol, int newton_max_iter, bool use_ortho, 
+                              double newton_tol, double newton_abstol, int newton_max_iter, bool use_ortho, 
                               double** coeff_space_ortho_ref, int index, int dim_space)
 {
   Hermes2D hermes2D;
@@ -250,10 +263,12 @@ bool solve_newton_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
   Solution::vector_to_solution(coeff_vec_ref, ref_space, &ref_sln_prev);
   bool success = true;
   double inner;
+  double res;
   int it = 1;
   do {
     // Check the number of iterations.
-    if (it >= newton_max_iter) {
+    if (it >= newton_max_iter) 
+    {
       success = false;
       info("Newton's iteration not successful, returning false.");
       break;
@@ -271,7 +286,8 @@ bool solve_newton_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
 
     // Solve the augmented matrix problem.
     //info("Solving augmented problem on reference mesh.");
-    if(!solver_augm->solve()) {
+    if(!solver_augm->solve()) 
+    {
       info("Matrix solver failed.\n");
       success = false;
       break;
@@ -281,13 +297,20 @@ bool solve_newton_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
     // Update the eigenfunction and eigenvalue.
     //info("Updating reference solution.");
     for (int i=0; i<ndof_ref; i++) coeff_vec_ref[i] += increment[i];
+    double lambda_old = lambda;
     lambda += increment[ndof_ref];
+    //info("Increment: %.12f",increment[ndof_ref]);
 
     // orthogonalize
-    if (use_ortho == true) {
-      for (int j=0; j<index; j++){
+    if (use_ortho == true) 
+    {
+      for (int j=0; j<index; j++)
+      {
         inner = calc_inner_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ortho_ref[j], coeff_vec_ref, ndof_ref);
+        //info("inner with eigenfunction: %d %.12f",j,inner);
         for (int i=0; i<ndof_ref; i++) coeff_vec_ref[i] = coeff_vec_ref[i] - inner * coeff_space_ortho_ref[j][i];
+        inner = calc_inner_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ortho_ref[j], coeff_vec_ref, ndof_ref);
+        //info("inner with eigenfunction: %d %.12f",j,inner);
       }
     }
    
@@ -298,11 +321,13 @@ bool solve_newton_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
     lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_vec_ref, ndof_ref)
              / calc_mass_product((UMFPackMatrix*)matrix_M_ref, coeff_vec_ref, ndof_ref);
 
+
     // Calculate relative error of the increment.
     Solution ref_sln_new;
     Solution::vector_to_solution(coeff_vec_ref, ref_space, &ref_sln_new);
     //newton_err_rel = calc_rel_error(&ref_sln_prev, &ref_sln_new, HERMES_H1_NORM) * 100;
     newton_err_rel = hermes2D.calc_rel_error(&ref_sln_prev, &ref_sln_new, HERMES_H1_NORM) * 100;
+    res = fabs(lambda_old-lambda);
 
     // Updating reference solution.
     ref_sln_prev.copy(&ref_sln_new);
@@ -314,12 +339,12 @@ bool solve_newton_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
     //sview.show(&ref_sln_prev);
     //View::wait(HERMES_WAIT_KEYPRESS);
 
-    info("---- Newton iter %d, ndof %d, eigenvalue: %.12f, newton_err_rel %g%%", 
-         it++, ndof_ref, lambda, newton_err_rel);
+    info("---- Newton iter %d, ndof %d, eigenvalue: %.12f, newton_err_rel %g%%, newton_abs_rel %g", 
+         it++, ndof_ref, lambda, newton_err_rel, res);
     //info("Eigenvalue increment: %.12f", increment[ndof_ref]);
     //info("Eigenvalue: %.12f", lambda);
   }
-  while (newton_err_rel > newton_tol);
+  while ((newton_err_rel > newton_tol) and (res > newton_abstol));
 
   // Clean up.
   delete matrix_augm;
@@ -334,7 +359,7 @@ bool solve_newton_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
 // eigenvalue comes to be very close to the origin where the method tends to converge.
 bool solve_picard_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMatrix* matrix_M_ref, 
                         double* coeff_vec_ref, double &lambda, MatrixSolverType matrix_solver,
-                        double picard_tol, int picard_max_iter, bool use_shift)
+                        double picard_tol, double picard_abstol, int picard_max_iter, bool use_shift)
 {
   Hermes2D hermes2D;
 
@@ -347,7 +372,9 @@ bool solve_picard_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
   Solution::vector_to_solution(coeff_vec_ref, ref_space, &ref_sln_prev);
   bool success = true;
   double shift = 0.0;
-  if (use_shift == true) {
+  double res;
+  if (use_shift == true) 
+  {
     shift = lambda;
     // Construct shifted matrx.
     double *Sx = ((UMFPackMatrix*)matrix_S_ref)->get_Ax();
@@ -362,7 +389,8 @@ bool solve_picard_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
   int it = 1;
   do {
     // Check the number of iterations.
-    if (it >= picard_max_iter) {
+    if (it >= picard_max_iter) 
+    {
       success = false;
       info("Picard's iteration not successful, returning false.");
       break;
@@ -372,7 +400,8 @@ bool solve_picard_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
     for (int i=0; i<ndof_ref; i++) vec_lambda_MY->set(i, lambda*vec_MY[i]);
 
     // Solve the matrix problem.
-    if(!solver->solve()) {
+    if(!solver->solve()) 
+    {
       info("Matrix solver failed.\n");
       success = false;
       break;
@@ -386,6 +415,7 @@ bool solve_picard_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
     normalize((UMFPackMatrix*)matrix_M_ref, coeff_vec_ref, ndof_ref);
 
     // Update the eigenvalue.
+    double lambda_old = lambda;
     lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_vec_ref, ndof_ref)
              / calc_mass_product((UMFPackMatrix*)matrix_M_ref, coeff_vec_ref, ndof_ref);
 
@@ -393,14 +423,14 @@ bool solve_picard_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
     Solution ref_sln_new;
     Solution::vector_to_solution(coeff_vec_ref, ref_space, &ref_sln_new);
     picard_err_rel = hermes2D.calc_rel_error(&ref_sln_prev, &ref_sln_new, HERMES_H1_NORM) * 100;
-
+    res = fabs(lambda_old-lambda);
     // Updating reference solution.
     ref_sln_prev.copy(&ref_sln_new);
     
-    info("---- Picard iter %d, ndof %d, eigenvalue: %.12f, picard_err_rel %g%%", 
-         it++, ndof_ref, lambda+shift, picard_err_rel);
+    info("---- Picard iter %d, ndof %d, eigenvalue: %.12f, picard_err_rel %g%%,  picard_abs_rel %g", 
+         it++, ndof_ref, lambda+shift, picard_err_rel, res);
   }
-  while (picard_err_rel > picard_tol);
+  while ((picard_err_rel > picard_tol) and (res > picard_abstol));
   
   // Unshift lambda
   lambda = lambda+shift;
@@ -410,8 +440,8 @@ bool solve_picard_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMa
 
 bool solve_picard_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMatrix* matrix_M_ref, 
                               double* coeff_vec_ref, double &lambda, MatrixSolverType matrix_solver,
-                              double picard_tol, int picard_max_iter, bool use_ortho, bool use_shift, 
-                              double** coeff_space_ortho_ref, int index, int dim_space)
+                              double picard_tol, double picard_abstol, int picard_max_iter, bool use_ortho, 
+                              bool use_shift, double** coeff_space_ortho_ref, int index, int dim_space)
 {
   Hermes2D hermes2D;
 
@@ -424,7 +454,9 @@ bool solve_picard_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
   Solution::vector_to_solution(coeff_vec_ref, ref_space, &ref_sln_prev);
   bool success = true;
   double shift = 0.0;
-  if (use_shift == true) {
+  double res;
+  if (use_shift == true) 
+  {
     shift = lambda;
     // Construct shifted matrx.
     double *Sx = ((UMFPackMatrix*)matrix_S_ref)->get_Ax();
@@ -440,7 +472,8 @@ bool solve_picard_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
   int it = 1;
   do {
     // Check the number of iterations.
-    if (it >= picard_max_iter) {
+    if (it >= picard_max_iter) 
+    {
       success = false;
       info("Picard's iteration not successful, returning false.");
       break;
@@ -450,7 +483,8 @@ bool solve_picard_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
     for (int i=0; i<ndof_ref; i++) vec_lambda_MY->set(i, lambda*vec_MY[i]);
 
     // Solve the matrix problem.
-    if(!solver->solve()) {
+    if(!solver->solve()) 
+    {
       info("Matrix solver failed.\n");
       success = false;
       break;
@@ -461,8 +495,10 @@ bool solve_picard_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
     for (int i=0; i<ndof_ref; i++) coeff_vec_ref[i] = new_eigen_vec[i];
 
     // orthogonalize
-    if (use_ortho == true) {
-      for (int j=0; j<index; j++){
+    if (use_ortho == true) 
+    {
+      for (int j=0; j<index; j++)
+      {
         inner = calc_inner_product((UMFPackMatrix*)matrix_M_ref, coeff_space_ortho_ref[j], coeff_vec_ref, ndof_ref);
         for (int i=0; i<ndof_ref; i++) coeff_vec_ref[i] = coeff_vec_ref[i] - inner * coeff_space_ortho_ref[j][i];
       }
@@ -472,6 +508,7 @@ bool solve_picard_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
     normalize((UMFPackMatrix*)matrix_M_ref, coeff_vec_ref, ndof_ref);
 
     // Update the eigenvalue.
+    double lambda_old = lambda;
     lambda = calc_mass_product((UMFPackMatrix*)matrix_S_ref, coeff_vec_ref, ndof_ref)
              / calc_mass_product((UMFPackMatrix*)matrix_M_ref, coeff_vec_ref, ndof_ref);
 
@@ -479,14 +516,15 @@ bool solve_picard_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
     Solution ref_sln_new;
     Solution::vector_to_solution(coeff_vec_ref, ref_space, &ref_sln_new);
     picard_err_rel = hermes2D.calc_rel_error(&ref_sln_prev, &ref_sln_new, HERMES_H1_NORM) * 100;
+    res = fabs(lambda_old-lambda);
 
     // Updating reference solution.
     ref_sln_prev.copy(&ref_sln_new);
     
-    info("---- Picard iter %d, ndof %d, eigenvalue: %.12f, picard_err_rel %g%%", 
-         it++, ndof_ref, lambda+shift, picard_err_rel);
+    info("---- Picard iter %d, ndof %d, eigenvalue: %.12f, picard_err_rel %g%%,  picard_abs_rel %g", 
+         it++, ndof_ref, lambda+shift, picard_err_rel, res);
   }
-  while (picard_err_rel > picard_tol);
+  while ((picard_err_rel > picard_tol) and (res > picard_abstol));
   // Unshift lambda
   lambda = lambda-shift;
   return success;

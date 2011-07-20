@@ -43,11 +43,11 @@ void create_augmented_linear_system(SparseMatrix* matrix_S_ref, SparseMatrix* ma
 
 bool solve_newton_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMatrix* matrix_M_ref, 
                         double* coeff_vec_ref, double &lambda, MatrixSolverType matrix_solver,
-                        double newton_tol, int newton_max_iter);
+                        double newton_tol, double newton_abstol, int newton_max_iter);
 
 bool solve_newton_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMatrix* matrix_M_ref, 
                               double* coeff_vec_ref, double &lambda, MatrixSolverType matrix_solver,
-                              double newton_tol, int newton_max_iter, bool use_ortho, 
+                              double newton_tol, double newton_abstol, int newton_max_iter, bool use_ortho, 
                               double** coeff_space_ortho_ref, int index, int dim_space);
 
 // This method always converges to the eigenvalue closest to the value of the argument lambda. 
@@ -55,11 +55,11 @@ bool solve_newton_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMF
 // eigenvalue comes to be very close to the origin where the method tends to converge.
 bool solve_picard_eigen(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMatrix* matrix_M_ref, 
                         double* coeff_vec_ref, double &lambda, MatrixSolverType matrix_solver,
-                        double picard_tol, int picard_max_iter, bool use_shift);
+                        double picard_tol, double picard_abstol, int picard_max_iter, bool use_shift);
 
 bool solve_picard_eigen_ortho(Space* ref_space, UMFPackMatrix* matrix_S_ref, UMFPackMatrix* matrix_M_ref, 
                               double* coeff_vec_ref, double &lambda, MatrixSolverType matrix_solver,
-                              double picard_tol, int picard_max_iter, bool use_ortho, bool use_shift, 
+                              double picard_tol, double picard_abstol, int picard_max_iter, bool use_ortho, bool use_shift, 
                               double** coeff_space_ortho_ref, int index, int dim_space);
 
 
