@@ -60,5 +60,5 @@ You should see the following result:
 
 .. image:: 03-trilinos-timedep/1.png
    :align: center
-   :width: 400
+   :scale: 50%
    :alt: Sample result

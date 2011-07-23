@@ -27,7 +27,7 @@ that is initially split into four elements - two quadrilaterals and two curvilin
 
 .. image:: 01-mesh/simplemesh.png
    :align: center
-   :width: 512
+   :scale: 50%
    :alt: Sample finite element mesh.
 
 The mesh file `domain.mesh <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P01-linear/01-mesh/domain.mesh>`_ 
@@ -287,7 +287,7 @@ The class MeshView provides the method show() that displays a window showing the
 
 .. image:: 01-mesh/meshview2.png
    :align: center
-   :width: 420
+   :scale: 50%
    :alt: Image of the mesh created via the MeshView class.
 
 To see the graphical output, the main.cpp file should be finished with::

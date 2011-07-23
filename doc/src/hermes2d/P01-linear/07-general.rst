@@ -260,6 +260,5 @@ The output of this example is shown below:
 
 .. image:: 07-general/general.png
    :align: center
-   :width: 500
-   :height: 400
+   :scale: 50%
    :alt: Output of example 07-general.

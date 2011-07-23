@@ -16,7 +16,7 @@ adaptive hp-FEM:
 
 .. image:: intro/conv_dof.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: Typical convergence curves for adaptive linear FEM, quadratic FEM, and hp-FEM.
 
 The reader can see that the 
@@ -26,7 +26,7 @@ A similar effect can be observed in the CPU-time convergence graph:
 
 .. image:: intro/conv_cpu.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: Typical convergence curves for adaptive linear FEM, quadratic FEM, and hp-FEM.
 
 These convergence curves are typical representative examples, confirmed with
@@ -65,7 +65,7 @@ a fourth-order element.
 
 .. image:: intro/refinements.png
    :align: center
-   :height: 300
+   :scale: 50%
    :alt: Examples of hp-refinements.
 
 The number of allowed element refinements is implementation-dependent, but in general

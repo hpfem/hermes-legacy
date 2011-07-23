@@ -22,8 +22,7 @@ fourth quadrant. It is filled with air:
 
 .. image:: 04-hcurl/domain.png
    :align: center
-   :width: 490
-   :height: 490
+   :scale: 50%
    :alt: Computational domain.
 
 Boundary conditions: Combined essential and natural, see the 
@@ -185,14 +184,14 @@ Solution:
 
 .. image:: 04-hcurl/solution.png
    :align: center
-   :height: 420
+   :scale: 50%
    :alt: Solution.
 
 Final mesh (h-FEM with linear elements):
 
 .. image:: 04-hcurl/mesh-h1.png
    :align: center
-   :height: 390
+   :scale: 50%
    :alt: Final mesh (h-FEM with linear elements).
 
 Note that the polynomial order indicated corresponds to the tangential components 
@@ -203,27 +202,27 @@ Final mesh (h-FEM with quadratic elements):
 
 .. image:: 04-hcurl/mesh-h2.png
    :align: center
-   :height: 390
+   :scale: 50%
    :alt: Final mesh (h-FEM with quadratic elements).
 
 Final mesh (hp-FEM):
 
 .. image:: 04-hcurl/mesh-hp.png
    :align: center
-   :height: 390
+   :scale: 50%
    :alt: Final mesh (hp-FEM).
 
 DOF convergence graphs:
 
 .. image:: 04-hcurl/conv_dof.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: DOF convergence graph.
 
 CPU time convergence graphs:
 
 .. image:: 04-hcurl/conv_cpu.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: CPU convergence graph.
 

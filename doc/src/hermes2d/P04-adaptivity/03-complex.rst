@@ -26,7 +26,7 @@ is shown in the following picture:
 
 .. image:: 03-complex/domain.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: Domain.
 
 The computational domain is a rectangle of height 0.003 and width 0.004. 
@@ -110,7 +110,7 @@ Solution:
 
 .. image:: 03-complex/solution.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: Solution.
 
 Let us compare adaptive $h$-FEM with linear and quadratic elements and the $hp$-FEM.
@@ -119,21 +119,21 @@ Final mesh for $h$-FEM with linear elements: 18694 DOF, error = 1.02 \%
 
 .. image:: 03-complex/mesh-h1.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: Mesh.
 
 Final mesh for $h$-FEM with quadratic elements: 46038 DOF, error = 0.018 \%
 
 .. image:: 03-complex/mesh-h2.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: Mesh.
 
 Final mesh for $hp$-FEM: 4787 DOF, error = 0.00918 \%
 
 .. image:: 03-complex/mesh-hp.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: Mesh.
 
 Convergence graphs of adaptive h-FEM with linear elements, h-FEM with quadratic elements
@@ -141,6 +141,6 @@ and hp-FEM are shown below.
 
 .. image:: 03-complex/conv_compar_dof.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: DOF convergence graph.
 

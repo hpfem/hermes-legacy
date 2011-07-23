@@ -72,6 +72,6 @@ $A = 1$, $B = 1$ and $C = 20$ is shown below:
 
 .. image:: 04-05-06-bc/dirichlet.png
    :align: center
-   :width: 400
+   :scale: 50%
    :alt: Solution of the Dirichlet problem.
 

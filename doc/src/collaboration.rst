@@ -120,7 +120,7 @@ This will show you something like this:
 
   .. image:: hermes2d/img/intro/terminal-git.png
    :align: center
-   :width: 600
+   :scale: 50%
    :alt: Terminal screenshot
 
 If this is your first time, then you will see
@@ -211,7 +211,7 @@ You will see something like this:
 
   .. image:: hermes2d/img/intro/terminal-git-2.png
    :align: center
-   :width: 600
+   :scale: 50%
    :alt: Terminal screenshot
 
 The green font tells you that git has the latest 
@@ -229,7 +229,7 @@ you will see
 
   .. image:: hermes2d/img/intro/terminal-git-3.png
    :align: center
-   :width: 600
+   :scale: 50%
    :alt: Terminal screenshot
 
 Now you can proceed with "git commit" as described above. 

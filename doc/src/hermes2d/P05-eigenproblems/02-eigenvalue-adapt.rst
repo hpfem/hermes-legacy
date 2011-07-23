@@ -22,20 +22,20 @@ Solution on coarse mesh:
 
 .. image:: 02-eigenvalue-adapt/1.png
    :align: center
-   :width: 800
+   :scale: 50%
    :alt: Sample result
 
 Solution after first adaptivity step:
 
 .. image:: 02-eigenvalue-adapt/2.png
    :align: center
-   :width: 800
+   :scale: 50%
    :alt: Sample result
 
 Solution after second adaptivity step:
 
 .. image:: 02-eigenvalue-adapt/3.png
    :align: center
-   :width: 800
+   :scale: 50%
    :alt: Sample result
 

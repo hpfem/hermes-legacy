@@ -42,8 +42,7 @@ on the upper edge, and volumetric gravity force.
 
 .. image:: 08-system/elastsample.png
    :align: center
-   :width: 500
-   :height: 300
+   :scale: 50%
    :alt: Geometry and boundary conditions.
 
 In the plane-strain model of linear elasticity the goal is to determine the
@@ -299,7 +298,7 @@ displacements.
 
 .. image:: 08-system/mises.png
    :align: center
-   :width: 600
+   :scale: 50%
    :alt: Elastic stress plotted on deformed domain.
 
 

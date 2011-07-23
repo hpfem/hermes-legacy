@@ -12,7 +12,7 @@ the surrounding air temperature during one 24-hour cycle. The geometry is shown 
 
 .. image:: 01-implicit-euler/mesh.png
    :align: center
-   :width: 280
+   :scale: 50%
    :alt: Model geometry.
 
 We assume the standard heat transfer equation
@@ -217,7 +217,7 @@ Sample temperature distribution is shown below:
 
 .. image:: 01-implicit-euler/vitus1.png
    :align: center
-   :height: 500
+   :scale: 50%
    :alt: sample result
 
 

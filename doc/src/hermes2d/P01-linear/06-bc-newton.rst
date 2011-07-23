@@ -110,5 +110,5 @@ $\alpha = 5$, $T_{ext} = 50$, $A = 0$, $B = 0$ and $C = 20$ is shown below:
 
 .. image:: 04-05-06-bc/newton.png
    :align: center
-   :width: 400
+   :scale: 50%
    :alt: Solution of the Newton problem.

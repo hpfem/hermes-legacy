@@ -98,5 +98,5 @@ You should see the following result:
 
 .. image:: 01-trilinos-linear/1.png
    :align: center
-   :width: 800
+   :scale: 50%
    :alt: Sample result
