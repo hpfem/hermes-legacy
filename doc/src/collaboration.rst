@@ -107,7 +107,7 @@ home directory. Then adjust and save the following as
 Create a Local Branch
 ---------------------
 
-Change dir back to hermes/hermes1d/, hermes/hermes2d/ or hermes/hermes3d/
+Change dir back to hermes/hermes2d/ or hermes/hermes3d/
 where you were before. Whenever you want to do any changes, such as modify 
 an existing example or create a new one, always create a local branch -
 do not work in the master branch.

@@ -14,7 +14,7 @@ This document is organized as follows:
   install matrix solver packages and various optional packages. 
 * Section 3 explains how to use Git and Github, and how you can contribute to the project if interested.
 * Section 4 contains a tutorial to Hermes2D. Please read this tutorial first even if you are 
-  interested in Hermes3D or Hermes1D, since their usage is virtually the same. The tutorial 
+  interested in 1D or 3D problems, since the syntax is virtually the same. The tutorial 
   will walk you in small steps through the solution
   of linear, nonlinear, and time-dependent problems from various engineering and scientific areas, 
   using higher-order elements and adaptivity algorithms, and solving multiphysics coupled problems. 
@@ -25,14 +25,12 @@ This document is organized as follows:
   mechanics, electromagnetics, neutronics, quantum chemistry, ground-water flow, and others. 
 * Section 7 describes the usage of Hermes3D. Since it is very similar to Hermes2D, 
   we mostly focus on their differences.
-* Section 8 shows how to use Hermes1D. Again, we mainly point out where it differs
-  from Hermes2D.
+* Section 8 shows how to solve 1D problems using Hermes2D.
 
 This document is under continuous development. If you find bugs, typos, dead links 
 and such, please report them to one of the mailing lists for 
-`Hermes1D <http://groups.google.com/group/hermes1d/>`_,
-`Hermes2D <http://groups.google.com/group/hermes2d/>`_, or
-`Hermes3D <http://groups.google.com/group/hermes3d/>`_ -- thanks!
+`1D and 2D problems <http://groups.google.com/group/hermes2d/>`_, or
+`3D problems <http://groups.google.com/group/hermes3d/>`_ -- thanks!
 
 Introduction
 ------------
@@ -119,6 +117,17 @@ directory as well.
     src/hermes2d/examples/wave-equation.rst
     src/hermes2d/examples/miscellaneous.rst
     
+Hermes1D
+--------
+
+There is no separate Hermes1D library -- one-dimensional problems are solved using Hermes2D. 
+
+.. toctree::
+    :maxdepth: 1
+
+    src/hermes1d/examples.rst
+    src/hermes1d/quantum-notes.rst
+
 Hermes3D
 --------
 
@@ -130,13 +139,6 @@ Hermes3D
     src/hermes3d/benchmarks.rst
     src/hermes3d/examples.rst
 
-Hermes1D
---------
-
-.. toctree::
-    :maxdepth: 1
-
-    src/hermes1d/examples.rst
 
 
 
