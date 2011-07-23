@@ -87,13 +87,13 @@ illustrated in the following convergence comparisons.
 
 .. image:: 06-nonlinear/conv_dof_compar.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: DOF convergence graph for tutorial example 01-newton-adapt.
 
 (2) Convergence in CPU time (with and without Newton solve on coarse mesh):
 
 .. image:: 06-nonlinear/conv_cpu_compar.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: CPU convergence graph for tutorial example 01-newton-adapt.
 

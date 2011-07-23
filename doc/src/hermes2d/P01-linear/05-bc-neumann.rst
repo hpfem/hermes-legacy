@@ -8,7 +8,7 @@ Let us recall the domain and boundary markers from the previous example:
 
 .. image:: 04-05-06-bc/simplemesh.png
    :align: center
-   :width: 512
+   :scale: 50%
    :alt: Sample finite element mesh.
 
 We will solve the same equation 
@@ -114,5 +114,5 @@ $A = 1$, $B = 1$, $C = 20$ and $C_{flux} = 0$ is shown below:
 
 .. image:: 04-05-06-bc/neumann.png
    :align: center
-   :width: 400
+   :scale: 50%
    :alt: Solution of the Neumann problem.

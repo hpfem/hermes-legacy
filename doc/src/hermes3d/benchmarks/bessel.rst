@@ -186,4 +186,6 @@ Code for the weak forms:
 Solution:
 
 .. image:: bessel/bessel-sln.png
+   :scale: 50%
+
 

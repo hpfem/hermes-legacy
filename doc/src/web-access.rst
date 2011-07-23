@@ -5,8 +5,7 @@ Interactive Web Accessibility
 
 .. image:: hermes2d/img/intro/iphone_large.png
    :align: center
-   :width: 250
-   :height: 450
+   :scale: 50%
    :alt: Hermes in iPhone.
 
 See the `Hermes home page <http://hpfem.org/hermes/>`_ for more information. An overview of books, 

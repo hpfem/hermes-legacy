@@ -154,42 +154,42 @@ $\lambda_1 = 6.011956$
 
 .. image:: 01-eigenvalue/1.png
    :align: center
-   :width: 400
+   :scale: 50%
    :alt: Sample result
 
 $\lambda_2 = 10.206996$
 
 .. image:: 01-eigenvalue/2.png
    :align: center
-   :width: 400
+   :scale: 50%
    :alt: Sample result
 
 $\lambda_3 = 10.206996$
 
 .. image:: 01-eigenvalue/3.png
    :align: center
-   :width: 400
+   :scale: 50%
    :alt: Sample result
 
 $\lambda_4 = 14.402036$
 
 .. image:: 01-eigenvalue/4.png
    :align: center
-   :width: 400
+   :scale: 50%
    :alt: Sample result
 
 $\lambda_5 = 15.401239$
 
 .. image:: 01-eigenvalue/5.png
    :align: center
-   :width: 400
+   :scale: 50%
    :alt: Sample result
 
 $\lambda_6 = 15.401239$
 
 .. image:: 01-eigenvalue/6.png
    :align: center
-   :width: 400
+   :scale: 50%
    :alt: Sample result
 
 

@@ -90,12 +90,20 @@ Code for the exact solution and the weak forms:
 Convergence graphs:
 
 .. image:: fichera/fichera-conv.png
+   :scale: 50%
+
 
 .. image:: fichera/fichera-conv-time.png
+   :scale: 50%
+
 
 
 Solution and hp-mesh:
 
 .. image:: fichera/fichera-sln.png
+   :scale: 50%
+
 
 .. image:: fichera/fichera-order.png
+   :scale: 50%
+

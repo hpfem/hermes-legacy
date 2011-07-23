@@ -103,5 +103,5 @@ You should see the following result:
 
 .. image:: 02-trilinos-nonlinear/1.png
    :align: center
-   :width: 800
+   :scale: 50%
    :alt: Sample result

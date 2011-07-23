@@ -64,12 +64,12 @@ $v$ has a thin boundary layer along the boundary:
 
 .. image:: 02-system/solution_u.png
    :align: center
-   :height: 350
+   :scale: 50%
    :alt: Solution
 
 .. image:: 02-system/solution_v.png
    :align: center
-   :height: 350
+   :scale: 50%
    :alt: Solution
 
 Manufactured right-hand side
@@ -249,12 +249,12 @@ conventional (single-mesh) hp-FEM: **9,330 DOF** (4665 for each solution compone
 
 .. image:: 02-system/mesh_single.png
    :align: left
-   :width: 465
+   :scale: 50%
    :alt: Mesh
 
 .. image:: 02-system/mesh_single.png
    :align: right
-   :width: 465
+   :scale: 50%
    :alt: Mesh
 
 .. raw:: html
@@ -266,14 +266,12 @@ the multimesh hp-FEM: **1,723 DOF** (49 DOF for $u$ and $1,673$ for $v$).
 
 .. image:: 02-system/mesh_multi_u.png
    :align: left
-   :width: 465
-   :height: 400
+   :scale: 50%
    :alt: Mesh
 
 .. image:: 02-system/mesh_multi_v.png
    :align: right
-   :width: 465
-   :height: 400
+   :scale: 50%
    :alt: Mesh
 
 .. raw:: html
@@ -287,14 +285,12 @@ DOF convergence graphs:
 
 .. image:: 02-system/conv_dof.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50%
    :alt: DOF convergence graph.
 
 CPU time convergence graphs:
 
 .. image:: 02-system/conv_cpu.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50%
    :alt: CPU convergence graph.

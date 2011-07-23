@@ -30,8 +30,7 @@ graph is -1/2 which means first-order convergence, as predicted by theory.
 
 .. image:: intro/layer_h1.png
    :align: center
-   :width: 600
-   :height: 450
+   :scale: 50%
    :alt: Convergence graph.
 
 The next pair of convergence graphs corresponds to adaptive $h$-FEM with quadratic elements. 
@@ -40,8 +39,7 @@ predicted by theory.
 
 .. image:: intro/layer_h2.png
    :align: center
-   :width: 600
-   :height: 450
+   :scale: 50%
    :alt: Convergence graph.
 
 Note that one always should look at the end of the convergence curve, not at the 
@@ -60,8 +58,7 @@ convergence graph is the steeper the more one goes to the right:
 
 .. image:: intro/aniso-hp.png
    :align: center
-   :width: 600
-   :height: 450
+   :scale: 50%
    :alt: Convergence graph.
 
 While this is often the case with adaptive $hp$-FEM, there are 
@@ -88,8 +85,7 @@ This is shown in the figure below.
 
 .. image:: intro/layer-hp.png
    :align: center
-   :width: 600
-   :height: 450
+   :scale: 50%
    :alt: Convergence graph to the Layer benchmark.
 
 In problems with extremely strong singularities the difference between the 
@@ -99,6 +95,5 @@ following graph that belongs to the benchmark
 
  .. image:: intro/kellogg-conv.png
    :align: center
-   :width: 600
-   :height: 450
+   :scale: 50%
    :alt: Convergence graph to the Kellogg benchmark.

@@ -114,35 +114,35 @@ Solution and temporal error at t = 0.105 s:
 
 .. image:: 08-transient-time-only/Screenshot-1.png
    :align: center
-   :width: 800
+   :scale: 50%
    :alt: Sample screenshot
 
 Solution and temporal error at t = 0.305 s:
 
 .. image:: 08-transient-time-only/Screenshot-2.png
    :align: center
-   :width: 800
+   :scale: 50%
    :alt: Sample screenshot
 
 Solution and temporal error at t = 0.572 s:
 
 .. image:: 08-transient-time-only/Screenshot-3.png
    :align: center
-   :width: 800
+   :scale: 50%
    :alt: Sample screenshot
 
 Solution and temporal error at t = 0.797 s:
 
 .. image:: 08-transient-time-only/Screenshot-4.png
    :align: center
-   :width: 800
+    :scale: 50%
    :alt: Sample screenshot
 
 Solution and temporal error at t = 1.226 s:
 
 .. image:: 08-transient-time-only/Screenshot-5.png
    :align: center
-   :width: 800
+   :scale: 50%
    :alt: Sample screenshot
 
 
