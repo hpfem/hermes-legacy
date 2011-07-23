@@ -35,17 +35,19 @@ The mesh file `domain.mesh <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/
 looks as follows::
 
     a = 1.0
-    b = sqrt(2)/2
+    ma = -1.0
+    b = 0.70710678118654757
+    ab = 0.70710678118654757
 
     vertices = [
-      [ 0,  -a],    # vertex 0
-      [ a, -a ],    # vertex 1
-      [ -a, 0 ],    # vertex 2
+      [ 0,  ma],    # vertex 0
+      [ a, ma ],    # vertex 1
+      [ ma, 0 ],    # vertex 2
       [ 0, 0 ],     # vertex 3
       [ a, 0 ],     # vertex 4
-      [ -a, a ],    # vertex 5
+      [ ma, a ],    # vertex 5
       [ 0, a ],     # vertex 6
-      [ a*b, a*b ]  # vertex 7
+      [ ab, ab ]    # vertex 7
     ]
 
     elements = [
@@ -82,7 +84,7 @@ number, list of real numbers, or list of lists. The following are all
 valid definitions::
 
     # comments (starting with a hash)
-    var = 5.0 + cos(pi)                      # number
+    var = 5.0                                # number
     list = [ 1, 2, 3, 4, var ]               # list
     pairs = [ [1, 2], [1, var], [0, list] ]  # list of lists
 
