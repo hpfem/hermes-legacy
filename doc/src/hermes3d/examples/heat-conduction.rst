@@ -139,3 +139,5 @@ re-construct the load vector. The code needs to be implemented.
 Solution graph:
 
 .. image:: heat-conduction/heat-cond-sln.png
+   :scale: 50%
+
