@@ -107,7 +107,7 @@ home directory. Then adjust and save the following as
 Create a Local Branch
 ---------------------
 
-Change dir back to hermes/hermes1d/, hermes/hermes2d/ or hermes/hermes3d/
+Change dir back to hermes/hermes2d/ or hermes/hermes3d/
 where you were before. Whenever you want to do any changes, such as modify 
 an existing example or create a new one, always create a local branch -
 do not work in the master branch.
@@ -120,7 +120,7 @@ This will show you something like this:
 
   .. image:: hermes2d/img/intro/terminal-git.png
    :align: center
-   :width: 600
+   :scale: 50%
    :alt: Terminal screenshot
 
 If this is your first time, then you will see
@@ -211,7 +211,7 @@ You will see something like this:
 
   .. image:: hermes2d/img/intro/terminal-git-2.png
    :align: center
-   :width: 600
+   :scale: 50%
    :alt: Terminal screenshot
 
 The green font tells you that git has the latest 
@@ -229,7 +229,7 @@ you will see
 
   .. image:: hermes2d/img/intro/terminal-git-3.png
    :align: center
-   :width: 600
+   :scale: 50%
    :alt: Terminal screenshot
 
 Now you can proceed with "git commit" as described above. 

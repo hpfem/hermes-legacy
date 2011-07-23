@@ -40,22 +40,22 @@ arrows show its direction.
 
 .. image:: 05-space-hcurl/fn0.png
    :align: center
-   :width: 300
+   :scale: 50%
    :alt: Sample basis function
 
 .. image:: 05-space-hcurl/fn1.png
    :align: center
-   :width: 300
+   :scale: 50%
    :alt: Sample basis function
 
 .. image:: 05-space-hcurl/fn2.png
    :align: center
-   :width: 300
+   :scale: 50%
    :alt: Sample basis function
 
 .. image:: 05-space-hcurl/fn3.png
    :align: center
-   :width: 300
+   :scale: 50%
    :alt: Sample basis function
 
 The space H(curl) is implemented for both quadrilateral and triangular 

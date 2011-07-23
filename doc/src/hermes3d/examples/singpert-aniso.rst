@@ -32,13 +32,21 @@ a better initial mesh for adaptivity and  making convergence faster.
 Convergence graphs:
 
 .. image:: singpert-aniso/singpert-aniso-conv.png
+   :scale: 50%
+
 
 .. image:: singpert-aniso/singpert-aniso-conv-time.png
+   :scale: 50%
+
 
 
 Solution and hp-mesh:
 
 .. image:: singpert-aniso/singpert-aniso-sln.png
+   :scale: 50%
+
 
 .. image:: singpert-aniso/singpert-aniso-order.png
+   :scale: 50%
+
 

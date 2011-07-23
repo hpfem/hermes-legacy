@@ -1,0 +1,4 @@
+rm *~ 
+./moving-front-non-adapt
+python plot_error_history.py
+

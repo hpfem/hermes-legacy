@@ -24,7 +24,7 @@ equations), and (E) is the virtual *union mesh* that is used for assembling.
 
 .. image:: intro/multimesh.png
    :align: center
-   :width: 750
+   :scale: 50%
    :alt: Multimesh
 
 The union mesh is not constructed physically in the computer memory -- 
@@ -36,7 +36,7 @@ existing elements where this integration is performed:
 
 .. image:: intro/multimesh2.png
    :align: center
-   :width: 600
+   :scale: 50%
    :alt: Multimesh
 
 As a result, the multimesh discretization of the PDE system is *monolithic*

@@ -1,5 +1,5 @@
 NIST-10 (Interior Line Singularity)
-------------------
+-----------------------------------
 
 **Git reference:** Benchmark `10-interior-line-singularity <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/benchmarks-nist/10-interior-line-singularity>`_.
 

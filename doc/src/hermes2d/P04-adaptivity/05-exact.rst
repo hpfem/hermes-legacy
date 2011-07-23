@@ -38,6 +38,6 @@ Sample solution and mesh are shown below:
 
 .. image:: 05-exact/img.png
    :align: center
-   :width: 800
+   :scale: 50%
    :alt: Resulting solution and mesh
 

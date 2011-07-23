@@ -32,7 +32,7 @@ see something like
 
   .. image:: hermes2d/img/intro/firefox.png
    :align: center
-   :width: 600
+   :scale: 50%
    :alt: Firefox screenshot
 
 Click on the link "index.html" and you should see

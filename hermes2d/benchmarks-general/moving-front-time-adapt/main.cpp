@@ -55,7 +55,7 @@ double x_0 = 0.0;
 double x_1 = 10.0;
 double y_0 = -5.0;
 double y_1 = 5.0;
-double s = 2.0;
+double s = 10.0;
 double c = 1000.0;
 
 // Current time.
@@ -121,18 +121,19 @@ int main(int argc, char* argv[])
 
   // Time stepping loop:
   int ts = 1;
+  bool jacobian_changed = true;
   do 
   {
     // Perform one Runge-Kutta time step according to the selected Butcher's table.
     info("Runge-Kutta time step (t = %g, tau = %g, stages: %d).", 
          current_time, time_step, bt.get_size());
     bool verbose = true;
-    bool jacobian_changed = true;
     if (!runge_kutta.rk_time_step(current_time, time_step, &sln_time_prev, 
                                   &sln_time_new, &time_error_fn, jacobian_changed, verbose, 
                                   NEWTON_TOL, NEWTON_MAX_ITER)) {
       error("Runge-Kutta time step failed, try to decrease time step size.");
     }
+    jacobian_changed = false;
 
     // Set the current time to the exact solution.
     exact_sln.set_time(current_time + time_step);

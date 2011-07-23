@@ -1,4 +1,4 @@
 rm *~ 
-./P04-01-adapt
+./P04-01-intro
 python plot_graph.py &
 

@@ -446,5 +446,5 @@ Approximate solution $u$ for $\alpha = 4$:
 
 .. image:: 01-picard/solution.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: result for alpha = 4

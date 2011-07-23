@@ -15,7 +15,7 @@ The following figure shows a symmetric half of the domain $\Omega$
 
 .. image:: 01-intro/micromotor.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: Computational domain for the micromotor problem.
 
 The subdomain $\Omega_2$ represents the moving part of the domain and the area bounded by $\Gamma_2$
@@ -92,6 +92,7 @@ The first parameter ``CAND_LIST`` specifies which candidates are generated. In a
 
 .. image:: 01-intro/cand_list_quads.png
    :align: center
+   :scale: 50%
    :alt: Candidates generated for a given candidate list.
 
 The second parameter ``CONV_EXP`` is a convergence exponent used to calculate the score.
@@ -295,12 +296,12 @@ components, but specify that its derivatives should be used::
 
 .. image:: 01-intro/motor-sln.png
    :align: left
-   :height: 300
+   :scale: 50%
    :alt: Solution - electrostatic potential $\varphi$ (zoomed).
 
 .. image:: 01-intro/motor-grad.png
    :align: right
-   :height: 300
+   :scale: 50%
    :alt: Gradient of the solution $E = -\nabla\varphi$ and its magnitude (zoomed).
 
 .. raw:: html
@@ -309,7 +310,7 @@ components, but specify that its derivatives should be used::
 
 .. image:: 01-intro/motor-orders.png
    :align: center
-   :height: 300
+   :scale: 50%
    :alt: Polynomial orders of elements near singularities (zoomed).
 
 Convergence graphs of adaptive h-FEM with linear elements, h-FEM with quadratic elements
@@ -317,13 +318,13 @@ and hp-FEM are shown below.
 
 .. image:: 01-intro/conv_dof.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: DOF convergence graph for tutorial example 01-intro.
 
 The following graph shows convergence in terms of CPU time. 
 
 .. image:: 01-intro/conv_cpu.png
    :align: center
-   :height: 400
+   :scale: 50%
    :alt: CPU convergence graph for tutorial example 01-intro.
 

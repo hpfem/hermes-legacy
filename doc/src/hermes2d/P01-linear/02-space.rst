@@ -1,7 +1,8 @@
 Finite Element Space (02-space)
--------------------------
+-------------------------------
 
 .. popup:: '#p01-linear-02-space-tutorial'
+   ../../../_static/clapper.png
 
 **Git reference:** Tutorial example `02-space <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/02-space>`_. 
 
@@ -36,8 +37,7 @@ figure shows a higher-order edge function (left) and a higher-order bubble funct
 
 .. image:: 02-space/basisfn.jpg
    :align: center
-   :width: 600
-   :height: 200
+   :scale: 50%
    :alt: Fourth-order edge function  (left) and one of the fifth-order bubble functions (right).
 
 Higher-order basis functions can be defined in many different ways. 

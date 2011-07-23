@@ -39,6 +39,8 @@ the $3^{rd}$ equation of :eq:`elastostatics` represents the following:
 where $1 \le i, j, k, l \le 3$.
 
 .. image:: elasticity-cubit-hex/elasticity-cubit-hex-domain.png
+   :scale: 50%
+
 
 The domain of interest is a cube (of unit dimensions) with a hole at its center equipped with 
 zero Dirichlet boundary conditions: $u_1 = u_2 = u_3 = 0$ on all four boundary faces (${\Gamma}_u$) 
@@ -219,4 +221,6 @@ The following is the code for the weak forms::
 Solution graph:
 
 .. image:: elasticity-cubit-hex/elasticity-cubit-hex-solution.png
+   :scale: 50%
+
 

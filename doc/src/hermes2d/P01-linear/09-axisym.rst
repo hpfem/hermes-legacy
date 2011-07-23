@@ -11,7 +11,7 @@ cylindrical object shown in the following schematic picture:
 
 .. image:: 09-axisym/scheme.png
    :align: center
-   :width: 512
+   :scale: 50%
    :alt: Schematic picture.
 
 The symmetry axis of the object is aligned with the y-axis. The
@@ -130,13 +130,13 @@ below. We start with the stationary temperature distribution:
 
 .. image:: 09-axisym/solution.png
    :align: center
-   :width: 300
+   :scale: 50%
    :alt: Temperature.
 
 and the following figure shows the temperature gradient:
 
 .. image:: 09-axisym/gradient.png
    :align: center
-   :width: 300
+   :scale: 50%
    :alt: Temperature gradient.
 

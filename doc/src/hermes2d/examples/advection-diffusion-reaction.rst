@@ -1,5 +1,5 @@
 Advection-diffusion-reaction
-========
+============================
 
 .. toctree::
    :maxdepth: 2

@@ -455,7 +455,7 @@ The following figure shows the corresponding Paraview visualization:
 
 .. image:: 03-poisson/vtk.png
    :align: center
-   :width: 530
+   :scale: 50%
    :alt: Solution of the Poisson equation.
 
 
@@ -473,7 +473,7 @@ Hermes' built-in OpenGL visualization looks as follows:
 
 .. image:: 03-poisson/poisson.png
    :align: center
-   :width: 400
+   :scale: 50%
    :alt: Solution of the Poisson equation.
 
 Visualization quality
