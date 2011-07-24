@@ -54,7 +54,7 @@ double x_0 = 0.0;
 double x_1 = 10.0;
 double y_0 = -5.0;
 double y_1 = 5.0;
-double s = 20.0;
+double s = 10.0;
 double c = 1000.0;
 
 // Current time.
