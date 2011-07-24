@@ -5,6 +5,7 @@ add_subdirectory(smooth-aniso-y)
 add_subdirectory(lshape)
 add_subdirectory(layer-interior)
 add_subdirectory(layer-boundary)
+add_subdirectory(moving-front-non-adapt)
 add_subdirectory(moving-front-time-adapt)
 add_subdirectory(moving-front-space-adapt)
 # TODO: This does not work in Windows.
