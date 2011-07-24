@@ -116,6 +116,7 @@ int main(int argc, char* argv[])
   info("Exact error history will be saved to file err_exact_history.dat.");
 
   // Time stepping loop:
+  bool jacobian_changed = true;
   int ts = 1;
   do 
   {
@@ -123,12 +124,12 @@ int main(int argc, char* argv[])
     info("Runge-Kutta time step (t = %g, tau = %g, stages: %d).", 
          current_time, time_step, bt.get_size());
     bool verbose = true;
-    bool jacobian_changed = true;
     if (!runge_kutta.rk_time_step(current_time, time_step, &sln_time_prev, 
                                   &sln_time_new, jacobian_changed, verbose, 
                                   NEWTON_TOL, NEWTON_MAX_ITER)) {
       error("Runge-Kutta time step failed, try to decrease time step size.");
     }
+    jacobian_changed = false;
 
     // Set the current time to the exact solution.
     exact_sln.set_time(current_time + time_step);
