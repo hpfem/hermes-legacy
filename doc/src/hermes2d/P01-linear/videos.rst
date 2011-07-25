@@ -13,3 +13,14 @@ P01-linear/02-space Tutorial
 
 .. youtube:: 4i99iXh0Eek
 
+
+
+.. raw:: html
+
+   <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+
+P01-linear/03-poisson Tutorial
+==============================
+
+.. youtube:: L6mtj0NTIhQ
+

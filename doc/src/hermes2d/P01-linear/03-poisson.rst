@@ -1,6 +1,9 @@
 Poisson Equation (03-poisson)
 -----------------------------
 
+.. popup:: '#p01-linear-03-poisson-tutorial'
+   ../../../_static/clapper.png
+
 **Git reference:** Tutorial example `03-poisson <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/03-poisson>`_. 
 
 This example shows how to solve a simple PDE that describes stationary 
