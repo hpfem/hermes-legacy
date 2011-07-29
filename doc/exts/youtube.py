@@ -2,18 +2,8 @@ from docutils import nodes
 from docutils.parsers.rst import directives
 
 CODE = """\
-<object type="application/x-shockwave-flash"
-        width="%(width)s"
-        height="%(height)s"
-        align="center"
-        border="1"
-        hspace="15"
-        class="youtube-embed"
-        data="http://www.youtube.com/v/%(yid)s">
-    <param name="movie" value="http://www.youtube.com/v/%(yid)s"></param>
-    <param name="wmode" value="transparent"></param>%(extra)s
-    <param name="allowFullScreen" value="true"></param>
-</object>
+<iframe class="youtube-player" type="text/html" width="640" height="385" src="http://www.youtube.com/embed/%(yid)s" frameborder="0">
+</iframe>
 """
 
 PARAM = """\n    <param name="%s" value="%s"></param>"""
