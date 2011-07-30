@@ -49,7 +49,7 @@ const std::string BDY_LEFT = "Bdy_left", BDY_NEUMANN = "Bdy_neumann", BDY_NEWTON
 int main(int argc, char* argv[])
 {
   // Instantiate a class with global functions.
-  Hermes2D hermes2d;
+  Hermes2D hermes_2D;
 
   // Load the mesh.
   Mesh mesh;
@@ -58,21 +58,6 @@ int main(int argc, char* argv[])
 
   // Initial mesh refinements.
   for(int i = 0; i < INIT_REF_NUM; i++) mesh.refine_all_elements();
-
-/*
-  // Initialize boundary conditions.
-  BCTypes bc_types;
-  bc_types.add_bc_dirichlet(BDY_LEFT);
-  bc_types.add_bc_neumann(BDY_NEUMANN);
-  bc_types.add_bc_newton(BDY_NEWTON_COOLED);
-
-  // Enter Dirichlet boundary values.
-  BCValues bc_values_t;
-  bc_values_t.add_const(BDY_LEFT, 1.0);
-
-  BCValues bc_values_c;
-  bc_values_c.add_zero(BDY_LEFT);
-*/
 
   // Initialize boundary conditions.
   DefaultEssentialBCConst bc_t(BDY_LEFT, 1.0);
@@ -119,17 +104,16 @@ int main(int argc, char* argv[])
 
   // Project the initial condition on the FE space to obtain initial
   // coefficient vector for the Newton's method.
-  info("Projecting initial condition to obtain initial vector for the Newton's method.");
-  scalar* coeff_vec = new scalar[ndof];
-  OGProjection::project_global(Hermes::vector<Space *>(&tspace, &cspace), 
-                               Hermes::vector<MeshFunction *>(&t_prev_newton, &c_prev_newton), 
-                               coeff_vec, matrix_solver);
+  scalar* coeff_vec = new scalar[Space::get_num_dofs(Hermes::vector<Space *>(&tspace, &cspace))];
+  // Newton's vector is set to zero (no OG projection needed).
+  memset(coeff_vec, 0, ndof * sizeof(double));
 
   // Initialize views.
   ScalarView rview("Reaction rate", new WinGeom(0, 0, 800, 230));
 
   // Time stepping loop:
   double current_time = 0.0; 
+  char title[100];
   int num_time_steps = T_FINAL / time_step;
   for (int ts = 1; ts <= num_time_steps; ts++)
   {
@@ -137,62 +121,38 @@ int main(int argc, char* argv[])
     info("---- Time step %d, time = %g:", ts, current_time);
 
     // Update time-dependent essential BCs.
-    //if (current_time <= STARTUP_TIME) {
-    //  info("Updating time-dependent essential BC.");
-      Space::update_essential_bc_values(Hermes::vector<Space *>(&tspace, &cspace), current_time);
-    //}
+    info("Updating time-dependent essential BC.");
+    Space::update_essential_bc_values(Hermes::vector<Space *>(&tspace, &cspace), current_time);
 
-    if (NEWTON)
-    {
-      // Perform Newton's iteration.
-      info("Solving nonlinear problem:");
-      bool verbose = true;
-      bool jacobian_changed = true;
-      if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs, jacobian_changed,
-          NEWTON_TOL, NEWTON_MAX_ITER, verbose)) error("Newton's iteration failed.");
+    // Perform Newton's iteration.
+    info("Solving nonlinear problem:");
+    bool verbose = true;
+    bool jacobian_changed = true;
+    if (!hermes_2D.solve_newton(coeff_vec, &dp, solver, matrix, rhs, jacobian_changed,
+        NEWTON_TOL, NEWTON_MAX_ITER, verbose)) error("Newton's iteration failed.");
 
-      // Update previous time level solutions.
-      Solution::vector_to_solutions(coeff_vec, Hermes::vector<Space *>(&tspace, &cspace),
-                                    Hermes::vector<Solution *>(&t_prev_time_1, &c_prev_time_1));
-    }
-    else {
-      // Linear solve.
-      info("Assembling and solving linear problem.");
-      dp.assemble(matrix, rhs, false);
-      if(solver->solve())
-        Solution::vector_to_solutions(solver->get_solution(),
-                  Hermes::vector<Space *>(&tspace, &cspace),
-                  Hermes::vector<Solution *>(&t_prev_time_1, &c_prev_time_1));
-      else
-        error ("Matrix solver failed.\n");
-    }
-
+    // Update previous time level solutions.
+    t_prev_time_2.copy(&t_prev_time_1);
+    c_prev_time_2.copy(&c_prev_time_1);
+    Solution::vector_to_solutions(coeff_vec, Hermes::vector<Space *>(&tspace, &cspace), 
+                                  Hermes::vector<Solution *>(&t_prev_time_1, &c_prev_time_1));
 
     // Visualization.
-    DXDYFilterOmega omega_view(Hermes::vector<MeshFunction*>(&t_prev_newton, &c_prev_newton));
+    DXDYFilterOmega omega_view(Hermes::vector<MeshFunction*>(&t_prev_newton, &c_prev_newton));//, Le, beta, alpha);
     rview.set_min_max_range(0.0,2.0);
     char title[100];
     sprintf(title, "Reaction rate, t = %g", current_time);
     rview.set_title(title);
     rview.show(&omega_view);
 
-    // Update current time.
-    current_time += time_step;
+ }
 
-    // Store two time levels of previous solutions.
-    t_prev_time_2.copy(&t_prev_time_1);
-    c_prev_time_2.copy(&c_prev_time_1);
-    Solution::vector_to_solutions(coeff_vec, Hermes::vector<Space *>(&tspace, &cspace), 
-                                  Hermes::vector<Solution *>(&t_prev_time_1, &c_prev_time_1));
-
-  } 
-
-  // Cleanup.
+  // Clean up.
   delete [] coeff_vec;
   delete matrix;
   delete rhs;
   delete solver;
-  
+
   // Wait for all views to be closed.
   View::wait();
   return 0;
