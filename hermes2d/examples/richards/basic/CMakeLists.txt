@@ -4,12 +4,13 @@ endif(NOT H2D_REAL)
 
 project(basic)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp  definitions.cpp)
 include (${hermes2d_SOURCE_DIR}/CMake.common)
 set_common_target_properties(${PROJECT_NAME})
 
 if(WITH_TESTS)
-  add_subdirectory(tests)
+#  add_subdirectory(tests)
 endif(WITH_TESTS)
+
 
 
