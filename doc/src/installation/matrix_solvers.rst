@@ -11,7 +11,6 @@ Installation of Matrix Solvers
     matrix_solvers/superlu
     matrix_solvers/trilinos
     matrix_solvers/umfpack
-    matrix_solvers/videos
 
 
 
