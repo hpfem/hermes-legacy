@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
   info("Coordinate (5.0, 5.0) value = %lf", v_sln.get_pt_value(coord_x[2], coord_y[2]));
   info("Coordinate (7.0, 7.0) value = %lf", v_sln.get_pt_value(coord_x[3], coord_y[3]));
 
-  double t_value[8] = {0.212655, 0.000163, 0.000000, 0.000000, -0.793316, 0.007255, 0.000001, 0.000000};
+  double t_value[8] = {0.212657, 0.000163, 0.000000, 0.000000, -0.793257, 0.007255, 0.000001, 0.000000};
   bool success = true;
 
   for (int i = 0; i < 4; i++)
