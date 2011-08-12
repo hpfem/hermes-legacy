@@ -27,40 +27,17 @@ const int INIT_BDY_REF_NUM = 0;                   // Number of initial refinemen
 const int P_INIT = 3;                             // Initial polynomial degree.
 double time_step = 5e-3;                          // Time step.
 const double T_FINAL = 0.4;                       // Time interval length.
-const int TIME_INTEGRATION = 1;                   // 1... implicit Euler, 2... Crank-Nicolson.
 const double NEWTON_TOL = 1e-6;                   // Stopping criterion for the Newton's method.
 const int NEWTON_MAX_ITER = 100;                  // Maximum allowed number of Newton iterations.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
-
-// Choose one of the following time-integration methods, or define your own Butcher's table. The last number 
-// in the name of each method is its order. The one before last, if present, is the number of stages.
-// Explicit methods:
-//   Explicit_RK_1, Explicit_RK_2, Explicit_RK_3, Explicit_RK_4.
-// Implicit methods: 
-//   Implicit_RK_1, Implicit_Crank_Nicolson_2_2, Implicit_SIRK_2_2, Implicit_ESIRK_2_2, Implicit_SDIRK_2_2, 
-//   Implicit_Lobatto_IIIA_2_2, Implicit_Lobatto_IIIB_2_2, Implicit_Lobatto_IIIC_2_2, Implicit_Lobatto_IIIA_3_4, 
-//   Implicit_Lobatto_IIIB_3_4, Implicit_Lobatto_IIIC_3_4, Implicit_Radau_IIA_3_5, Implicit_SDIRK_5_4.
-// Embedded explicit methods:
-//   Explicit_HEUN_EULER_2_12_embedded, Explicit_BOGACKI_SHAMPINE_4_23_embedded, Explicit_FEHLBERG_6_45_embedded,
-//   Explicit_CASH_KARP_6_45_embedded, Explicit_DORMAND_PRINCE_7_45_embedded.
-// Embedded implicit methods:
-//   Implicit_SDIRK_CASH_3_23_embedded, Implicit_ESDIRK_TRBDF2_3_23_embedded, Implicit_ESDIRK_TRX2_3_23_embedded, 
-//   Implicit_SDIRK_BILLINGTON_3_23_embedded, Implicit_SDIRK_CASH_5_24_embedded, Implicit_SDIRK_CASH_5_34_embedded, 
-//   Implicit_DIRK_ISMAIL_7_45_embedded. 
-
-ButcherTableType butcher_table_type = Implicit_SDIRK_2_2;
-
 // For the definition of initial condition.
 int y_power = 10;
 
 int main(int argc, char* argv[])
 {
-  // Choose a Butcher's table or define your own.
-  ButcherTable bt(butcher_table_type);
-  if (bt.is_explicit()) info("Using a %d-stage explicit R-K method.", bt.get_size());
-  if (bt.is_diagonally_implicit()) info("Using a %d-stage diagonally implicit R-K method.", bt.get_size());
-  if (bt.is_fully_implicit()) info("Using a %d-stage fully implicit R-K method.", bt.get_size());
+  // Instantiate a class with global functions.
+  Hermes2D hermes2d;
 
   // Load the mesh.
   Mesh mesh;
@@ -69,7 +46,7 @@ int main(int argc, char* argv[])
 
   // Convert initial condition into a Solution.
   CustomInitialCondition u_time_prev(&mesh, y_power);
-  Solution u_time_new(&mesh);
+  //Solution u_time_new(&mesh);
   
   // Initial mesh refinements.
   for(int i = 0; i < INIT_GLOB_REF_NUM; i++) mesh.refine_all_elements();
@@ -85,48 +62,57 @@ int main(int argc, char* argv[])
 
   // Initialize the weak formulation.
   double current_time = 0;
-
-  CustomWeakFormRichardsRK wf;
+  CustomWeakFormRichardsIE wf(time_step, &u_time_prev);
 
   // Initialize the FE problem.
   DiscreteProblem dp(&wf, &space);
+
+  // Set up the solver, matrix, and rhs according to the solver selection.
+  SparseMatrix* matrix = create_matrix(matrix_solver);
+  Vector* rhs = create_vector(matrix_solver);
+  Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
+  solver->set_factorization_scheme(HERMES_REUSE_FACTORIZATION_COMPLETELY);
+
+  // Initial coefficient vector for the Newton's method.  
+  scalar* coeff_vec = new scalar[ndof];
+  memset(coeff_vec, 0, ndof*sizeof(scalar));
 
   // Initialize views.
   ScalarView view("", new WinGeom(0, 0, 600, 500));
   view.fix_scale_width(80);
 
-  // Initialize Runge-Kutta time stepping.
-  RungeKutta runge_kutta(&dp, &bt, matrix_solver);
-  
   // Time stepping:
   int ts = 1;
-  int nstep = (int)(T_FINAL/time_step + 0.5);
-  for(int ts = 1; ts <= nstep; ts++)
+  bool jacobian_changed = true;
+  do 
   {
-    // Perform one Runge-Kutta time step according to the selected Butcher's table.
-    info("Runge-Kutta time step (t = %g s, time step = %g s, stages: %d).", 
-         current_time, time_step, bt.get_size());
-    bool jacobian_changed = false;
-    bool verbose = true;
-    if (!runge_kutta.rk_time_step(current_time, time_step, &u_time_prev, 
-                                  &u_time_new, jacobian_changed, verbose)) 
-    {
-      error("Runge-Kutta time step failed, try to decrease time step size.");
-    }
+    info("---- Time step %d, time %3.5f s", ts, current_time);
 
-    // Show the new time level solution.
+    // Perform Newton's iteration.
+    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs, 
+        jacobian_changed)) error("Newton's iteration failed.");
+    jacobian_changed = false;
+
+    // Translate the resulting coefficient vector into the Solution sln.
+    Solution::vector_to_solution(coeff_vec, &space, &u_time_prev);
+
+    // Visualize the solution.
     char title[100];
     sprintf(title, "Time %3.2f s", current_time);
     view.set_title(title);
-    view.show(&u_time_new);
-
-    // Copy solution for the new time step.
-    u_time_prev.copy(&u_time_new);
+    view.show(&u_time_prev);
 
     // Increase current time and time step counter.
     current_time += time_step;
     ts++;
   }
+  while (current_time < T_FINAL);
+
+  // Cleaning up.
+  delete [] coeff_vec;
+  delete matrix;
+  delete rhs;
+  delete solver;
 
   // Wait for the view to be closed.
   View::wait();

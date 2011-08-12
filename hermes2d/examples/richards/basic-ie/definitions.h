@@ -59,21 +59,43 @@ public:
 
 /* Weak forms */
 
-class CustomWeakFormRichardsRK : public WeakForm
+class CustomWeakFormRichardsIE : public WeakForm
 {
 public:
-  CustomWeakFormRichardsRK();
+  CustomWeakFormRichardsIE(double time_step, Solution* u_time_prev);
 
 private:
+  // This form is custom since it contains previous time-level solution.
+  class CustomVectorFormVol : public WeakForm::VectorFormVol
+  {
+  public:
+    CustomVectorFormVol(int i, double time_step)
+          : WeakForm::VectorFormVol(i), time_step(time_step) {};
+
+    template<typename Real, typename Scalar>
+    Scalar vector_form_ie(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v,
+                          Geom<Real> *e, ExtData<Scalar> *ext) const;
+
+    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e,
+                         ExtData<scalar> *ext) const;
+
+    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, 
+                    ExtData<Ord> *ext) const;
+
+    virtual WeakForm::VectorFormVol* clone();
+
+    double time_step;
+  };
+
 
   class CustomFormMatrixFormVol : public WeakForm::MatrixFormVol
   {
   public:
-    CustomFormMatrixFormVol(int i, int j) 
-          : WeakForm::MatrixFormVol(i, j) {};
+    CustomFormMatrixFormVol(int i, int j, double time_step) 
+          : WeakForm::MatrixFormVol(i, j), time_step(time_step) {};
 
     template<typename Real, typename Scalar>
-    Scalar matrix_form_rk(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u,
+    Scalar matrix_form_ie(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u,
                           Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const;
 
     virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
@@ -84,16 +106,18 @@ private:
 
     virtual WeakForm::MatrixFormVol* clone();
 
+    double time_step;
+
   };
 
-  class CustomFormVectorFormVol1 : public WeakForm::VectorFormVol
+  class CustomResidualFormVol : public WeakForm::VectorFormVol
   {
   public:
-    CustomFormVectorFormVol1(int i)
-          : WeakForm::VectorFormVol(i) {};
+    CustomResidualFormVol(int i, double time_step)
+          : WeakForm::VectorFormVol(i), time_step(time_step) {};
 
     template<typename Real, typename Scalar>
-    Scalar vector_form_rk(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v,
+    Scalar vector_form_ie(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v,
                           Geom<Real> *e, ExtData<Scalar> *ext) const;
 
     virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e,
@@ -104,25 +128,7 @@ private:
 
     virtual WeakForm::VectorFormVol* clone();
 
-  };
-
-  class CustomFormVectorFormVol2 : public WeakForm::VectorFormVol
-  {
-  public:
-    CustomFormVectorFormVol2(int i)
-          : WeakForm::VectorFormVol(i) {};
-
-    template<typename Real, typename Scalar>
-    Scalar vector_form_rk(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v,
-                          Geom<Real> *e, ExtData<Scalar> *ext) const;
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e,
-                         ExtData<scalar> *ext) const;
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, 
-                    ExtData<Ord> *ext) const;
-
-    virtual WeakForm::VectorFormVol* clone();
+    double time_step;
 
   };
 

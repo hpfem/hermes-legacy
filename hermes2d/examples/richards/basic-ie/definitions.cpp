@@ -74,139 +74,105 @@ Ord CustomInitialCondition::ord(Ord x, Ord y) const
   return x*(100 - x)/2.5 * pow(y/100, y_power) - 1000;
 }
 
-CustomWeakFormRichardsRK::CustomWeakFormRichardsRK() : WeakForm(1)
+CustomWeakFormRichardsIE::CustomWeakFormRichardsIE(double time_step, Solution* u_time_prev) : WeakForm(1)
 {
   // Jacobian volumetric part.
-  add_matrix_form(new CustomFormMatrixFormVol(0, 0));
+  add_matrix_form(new CustomFormMatrixFormVol(0, 0, time_step));
 
   // Residual - volumetric.
-  add_vector_form(new CustomFormVectorFormVol1(0));
-  //add_vector_form(new CustomFormVectorFormVol2(0));
+  add_vector_form(new CustomResidualFormVol(0, time_step));
+  //CustomVectorFormVol* vec_form_vol = new CustomVectorFormVol(0, time_step);
+  //vec_form_vol->ext.push_back(u_time_prev);
+  //add_vector_form(vec_form_vol);
 }
 
+
 template<typename Real, typename Scalar>
-Scalar CustomWeakFormRichardsRK::CustomFormMatrixFormVol::matrix_form_rk(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u,
+Scalar CustomWeakFormRichardsIE::CustomVectorFormVol::vector_form_ie(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v,
+                                                                     Geom<Real> *e, ExtData<Scalar> *ext) const 
+{
+  Func<double>* temp_prev_time = ext->fn[0];
+  return -C(temp_prev_time->val[i]) * int_u_v<double, scalar>(n, wt, temp_prev_time, v) / time_step;
+}
+
+scalar CustomWeakFormRichardsIE::CustomVectorFormVol::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e,
+                                                            ExtData<scalar> *ext) const 
+{
+  return vector_form_ie<double, scalar>(n, wt, u_ext, v, e, ext);
+}
+
+Ord CustomWeakFormRichardsIE::CustomVectorFormVol::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
+{
+  return Ord(10);
+}
+
+WeakForm::VectorFormVol* CustomWeakFormRichardsIE::CustomVectorFormVol::clone() 
+{
+  return new CustomVectorFormVol(*this);
+}
+
+
+template<typename Real, typename Scalar>
+Scalar CustomWeakFormRichardsIE::CustomFormMatrixFormVol::matrix_form_ie(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u,
                                                                          Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const 
 {
   Scalar result = 0;
-  Func<Scalar>* h_prev_newton = u_ext[0];
   for (int i = 0; i < n; i++)
   {
-    Scalar C2 = C(h_prev_newton->val[i]) * C(h_prev_newton->val[i]);
-    Scalar a1_1 = -(dKdh(h_prev_newton->val[i]) * C(h_prev_newton->val[i]) - K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i])) / C2;
-    Scalar a1_2 = -(K(h_prev_newton->val[i]) / C(h_prev_newton->val[i]));
-    Scalar a2_1 = (dKdh(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) + K(h_prev_newton->val[i]) * ddCdhh(h_prev_newton->val[i])) / C2
-                   - K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) * 2 * C(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) / (C2 * C2);
-    Scalar a2_2 = K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) / C2;
-    Scalar a3_1 = (ddKdhh(h_prev_newton->val[i]) * C(h_prev_newton->val[i]) - dKdh(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i])) / C2;
-    Scalar a3_2 = dKdh(h_prev_newton->val[i]) / C(h_prev_newton->val[i]);
-
-    result += wt[i] * (a1_1 * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]) * v->val[i] 
-                       + a1_2 * (v->dx[i] * v->dx[i] + v->dy[i] * v->dy[i]) 
-                       + a2_1 * (u->dx[i] * u->dx[i] + u->dy[i] * u->dy[i]) * v->val[i] * v->val[i] 
-                       + a2_2 * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]) * v->val[i] * 2
-                       + a3_1 * u->dy[i] * v->val[i] * v->val[i]
-                       + a3_2 * v->dy[i] * v->val[i] * v->val[i]
-                      );
-
+    result += wt[i] * ( C(u->val[i]) * u->val[i] * v->val[i] / time_step
+                      + K(u->val[i]) * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i])
+                      - dKdh(u->val[i]) * u->dy[i] * v->val[i]);
   }
   return result;
 }
 
-scalar CustomWeakFormRichardsRK::CustomFormMatrixFormVol::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
+scalar CustomWeakFormRichardsIE::CustomFormMatrixFormVol::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
                                                                 Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
 {
-  return matrix_form_rk<double, scalar>(n, wt, u_ext, u, v, e, ext);
+  return matrix_form_ie<double, scalar>(n, wt, u_ext, u, v, e, ext);
 }
 
-Ord CustomWeakFormRichardsRK::CustomFormMatrixFormVol::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, 
+Ord CustomWeakFormRichardsIE::CustomFormMatrixFormVol::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, 
                                                            Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
 {
   return Ord(10);
 }
 
-WeakForm::MatrixFormVol* CustomWeakFormRichardsRK::CustomFormMatrixFormVol::clone() 
+WeakForm::MatrixFormVol* CustomWeakFormRichardsIE::CustomFormMatrixFormVol::clone() 
 {
   return new CustomFormMatrixFormVol(*this);
 }
 
 
 template<typename Real, typename Scalar>
-Scalar CustomWeakFormRichardsRK::CustomFormVectorFormVol1::vector_form_rk(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v,
-                                                                         Geom<Real> *e, ExtData<Scalar> *ext) const 
+Scalar CustomWeakFormRichardsIE::CustomResidualFormVol::vector_form_ie(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v,
+                                                                       Geom<Real> *e, ExtData<Scalar> *ext) const 
 {
   Scalar result = 0;
   Func<Scalar>* h_prev_newton = u_ext[0];
   for (int i = 0; i < n; i++)
   {
-    result += wt[i] * 
-              (- (K(h_prev_newton->val[i]) / C(h_prev_newton->val[i])) * (h_prev_newton->dx[i] * v->dx[i] + h_prev_newton->dy[i] * v->dy[i])
-               + (K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i])) / (C(h_prev_newton->val[i]) * C(h_prev_newton->val[i])) 
-               * (h_prev_newton->dx[i] * h_prev_newton->dx[i] + h_prev_newton->dy[i] * h_prev_newton->dy[i]) * v->val[i]
-               + (dKdh(h_prev_newton->val[i]) / C(h_prev_newton->val[i])) * h_prev_newton->dy[i] * v->val[i]);
-
+    result += wt[i] * ( C(h_prev_newton->val[i]) * h_prev_newton->val[i] * v->val[i] / time_step
+                      + K(h_prev_newton->val[i]) * (h_prev_newton->dx[i] * v->dx[i] + h_prev_newton->dy[i] * v->dy[i])
+                      - dKdh(h_prev_newton->val[i]) * h_prev_newton->dy[i] * v->val[i]);
   }
   return result;
 }
 
-scalar CustomWeakFormRichardsRK::CustomFormVectorFormVol1::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e,
-                                                                ExtData<scalar> *ext) const 
+scalar CustomWeakFormRichardsIE::CustomResidualFormVol::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e,
+                                                              ExtData<scalar> *ext) const 
 {
-  return vector_form_rk<double, scalar>(n, wt, u_ext, v, e, ext);
+  return vector_form_ie<double, scalar>(n, wt, u_ext, v, e, ext);
 }
 
-Ord CustomWeakFormRichardsRK::CustomFormVectorFormVol1::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
-{
-  return Ord(10);
-}
-
-WeakForm::VectorFormVol* CustomWeakFormRichardsRK::CustomFormVectorFormVol1::clone() 
-{
-  return new CustomFormVectorFormVol1(*this);
-}
-
-
-template<typename Real, typename Scalar>
-Scalar CustomWeakFormRichardsRK::CustomFormVectorFormVol2::vector_form_rk(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v,
-                                                                         Geom<Real> *e, ExtData<Scalar> *ext) const 
-{
-  Scalar result = 0;
-  Func<double>* h_prev_newton = u_ext[0];
-  for (int i = 0; i < n; i++)
-  {
-    Scalar C2 = C(h_prev_newton->val[i]) * C(h_prev_newton->val[i]);
-    Scalar a1_1 = -(dKdh(h_prev_newton->val[i]) * C(h_prev_newton->val[i]) - K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i])) / C2;
-    Scalar a1_2 = -(K(h_prev_newton->val[i]) / C(h_prev_newton->val[i]));
-    Scalar a2_1 = (dKdh(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) + K(h_prev_newton->val[i]) * ddCdhh(h_prev_newton->val[i])) / C2
-                   - K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) * 2 * C(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) / (C2 * C2);
-    Scalar a2_2 = K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) / C2;
-    Scalar a3_1 = (ddKdhh(h_prev_newton->val[i]) * C(h_prev_newton->val[i]) - dKdh(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i])) / C2;
-    Scalar a3_2 = dKdh(h_prev_newton->val[i]) / C(h_prev_newton->val[i]);
-
-    result += wt[i] * (a1_1 * (h_prev_newton->dx[i] * v->dx[i] + h_prev_newton->dy[i] * v->dy[i]) * v->val[i] 
-                       + a1_2 * (v->dx[i] * v->dx[i] + v->dy[i] * v->dy[i]) 
-                       + a2_1 * (h_prev_newton->dx[i] * h_prev_newton->dx[i] + h_prev_newton->dy[i] * h_prev_newton->dy[i]) * v->val[i] * v->val[i] 
-                       + a2_2 * (h_prev_newton->dx[i] * v->dx[i] + h_prev_newton->dy[i] * v->dy[i]) * v->val[i] * 2
-                       + a3_1 * h_prev_newton->dy[i] * v->val[i] * v->val[i]
-                       + a3_2 * v->dy[i] * v->val[i] * v->val[i]
-                      );
-
-  }
-  return result;
-}
-
-scalar CustomWeakFormRichardsRK::CustomFormVectorFormVol2::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e,
-                                                                ExtData<scalar> *ext) const 
-{
-  return vector_form_rk<double, scalar>(n, wt, u_ext, v, e, ext);
-}
-
-Ord CustomWeakFormRichardsRK::CustomFormVectorFormVol2::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
+Ord CustomWeakFormRichardsIE::CustomResidualFormVol::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
 {
   return Ord(10);
 }
 
-WeakForm::VectorFormVol* CustomWeakFormRichardsRK::CustomFormVectorFormVol2::clone() 
+WeakForm::VectorFormVol* CustomWeakFormRichardsIE::CustomResidualFormVol::clone() 
 {
-  return new CustomFormVectorFormVol2(*this);
+  return new CustomResidualFormVol(*this);
 }
+
+
