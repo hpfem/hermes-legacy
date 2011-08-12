@@ -20,6 +20,9 @@ scalar C(double h);
 // dC/dh (Gardner).
 scalar dCdh(double h);
 
+// ddC/dhh (Gardner).
+scalar ddCdhh(double h);
+
 /* Custom non-constant Dirichlet condition */
 
 class CustomDirichletCondition : public EssentialBoundaryCondition 

@@ -36,6 +36,13 @@ scalar dCdh(double h)
   else return 0;    
 }
 
+scalar ddCdhh(double h)
+{
+  if (h < 0) return alpha * alpha * (theta_s - theta_r) * alpha * exp(alpha * h);
+  else return 0;    
+}
+
+
 /* Custom non-constant Dirichlet condition */
 
 EssentialBoundaryCondition::EssentialBCValueType CustomDirichletCondition::get_value_type() const
@@ -74,7 +81,7 @@ CustomWeakFormRichardsRK::CustomWeakFormRichardsRK() : WeakForm(1)
 
   // Residual - volumetric.
   add_vector_form(new CustomFormVectorFormVol1(0));
-  add_vector_form(new CustomFormVectorFormVol2(0));
+  //add_vector_form(new CustomFormVectorFormVol2(0));
 }
 
 template<typename Real, typename Scalar>
@@ -85,11 +92,23 @@ Scalar CustomWeakFormRichardsRK::CustomFormMatrixFormVol::matrix_form_rk(int n, 
   Func<Scalar>* h_prev_newton = u_ext[0];
   for (int i = 0; i < n; i++)
   {
-    result += wt[i] * (-1./C(h_prev_newton->val[i])) * 
-                      (K(h_prev_newton->val[i]) * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i])
-                       + dKdh(h_prev_newton->val[i]) * u->val[i] * (h_prev_newton->dx[i]*v->dx[i] + h_prev_newton->dy[i]*v->dy[i])
-                       - dKdh(h_prev_newton->val[i]) * u->dy[i] * v->val[i]
-                       - ddKdhh(h_prev_newton->val[i]) * u->val[i] * h_prev_newton->dy[i] * v->val[i])/C(h_prev_newton->val[i]);
+    Scalar C2 = C(h_prev_newton->val[i]) * C(h_prev_newton->val[i]);
+    Scalar a1_1 = -(dKdh(h_prev_newton->val[i]) * C(h_prev_newton->val[i]) - K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i])) / C2;
+    Scalar a1_2 = -(K(h_prev_newton->val[i]) / C(h_prev_newton->val[i]));
+    Scalar a2_1 = (dKdh(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) + K(h_prev_newton->val[i]) * ddCdhh(h_prev_newton->val[i])) / C2
+                   - K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) * 2 * C(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) / (C2 * C2);
+    Scalar a2_2 = K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) / C2;
+    Scalar a3_1 = (ddKdhh(h_prev_newton->val[i]) * C(h_prev_newton->val[i]) - dKdh(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i])) / C2;
+    Scalar a3_2 = dKdh(h_prev_newton->val[i]) / C(h_prev_newton->val[i]);
+
+    result += wt[i] * (a1_1 * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]) * v->val[i] 
+                       + a1_2 * (v->dx[i] * v->dx[i] + v->dy[i] * v->dy[i]) 
+                       + a2_1 * (u->dx[i] * u->dx[i] + u->dy[i] * u->dy[i]) * v->val[i] * v->val[i] 
+                       + a2_2 * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]) * v->val[i] * 2
+                       + a3_1 * u->dy[i] * v->val[i] * v->val[i]
+                       + a3_2 * v->dy[i] * v->val[i] * v->val[i]
+                      );
+
   }
   return result;
 }
@@ -120,11 +139,12 @@ Scalar CustomWeakFormRichardsRK::CustomFormVectorFormVol1::vector_form_rk(int n,
   Func<Scalar>* h_prev_newton = u_ext[0];
   for (int i = 0; i < n; i++)
   {
-    result += wt[i] * (-1./C(h_prev_newton->val[i])) * 
-                      (K(h_prev_newton->val[i]) * (h_prev_newton->dx[i] * v->dx[i] + h_prev_newton->dy[i] * v->dy[i])
-                       + dKdh(h_prev_newton->val[i]) * h_prev_newton->val[i] * (h_prev_newton->dx[i]*v->dx[i] + h_prev_newton->dy[i]*v->dy[i])
-                       - dKdh(h_prev_newton->val[i]) * h_prev_newton->dy[i] * v->val[i]
-                       - ddKdhh(h_prev_newton->val[i]) * h_prev_newton->val[i] * h_prev_newton->dy[i] * v->val[i]);
+    result += wt[i] * 
+              (- (K(h_prev_newton->val[i]) / C(h_prev_newton->val[i])) * (h_prev_newton->dx[i] * v->dx[i] + h_prev_newton->dy[i] * v->dy[i])
+               + (K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i])) / (C(h_prev_newton->val[i]) * C(h_prev_newton->val[i])) 
+               * (h_prev_newton->dx[i] * h_prev_newton->dx[i] + h_prev_newton->dy[i] * h_prev_newton->dy[i]) * v->val[i]
+               + (dKdh(h_prev_newton->val[i]) / C(h_prev_newton->val[i])) * h_prev_newton->dy[i] * v->val[i]);
+
   }
   return result;
 }
@@ -154,9 +174,23 @@ Scalar CustomWeakFormRichardsRK::CustomFormVectorFormVol2::vector_form_rk(int n,
   Func<double>* h_prev_newton = u_ext[0];
   for (int i = 0; i < n; i++)
   {
-    result += wt[i] * (-1./C(h_prev_newton->val[i])) * 
-                      (K(h_prev_newton->val[i]) * (h_prev_newton->dx[i] * v->dx[i] + h_prev_newton->dy[i] * v->dy[i])
-                       - dKdh(h_prev_newton->val[i]) * h_prev_newton->dy[i] * v->val[i]);
+    Scalar C2 = C(h_prev_newton->val[i]) * C(h_prev_newton->val[i]);
+    Scalar a1_1 = -(dKdh(h_prev_newton->val[i]) * C(h_prev_newton->val[i]) - K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i])) / C2;
+    Scalar a1_2 = -(K(h_prev_newton->val[i]) / C(h_prev_newton->val[i]));
+    Scalar a2_1 = (dKdh(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) + K(h_prev_newton->val[i]) * ddCdhh(h_prev_newton->val[i])) / C2
+                   - K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) * 2 * C(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) / (C2 * C2);
+    Scalar a2_2 = K(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i]) / C2;
+    Scalar a3_1 = (ddKdhh(h_prev_newton->val[i]) * C(h_prev_newton->val[i]) - dKdh(h_prev_newton->val[i]) * dCdh(h_prev_newton->val[i])) / C2;
+    Scalar a3_2 = dKdh(h_prev_newton->val[i]) / C(h_prev_newton->val[i]);
+
+    result += wt[i] * (a1_1 * (h_prev_newton->dx[i] * v->dx[i] + h_prev_newton->dy[i] * v->dy[i]) * v->val[i] 
+                       + a1_2 * (v->dx[i] * v->dx[i] + v->dy[i] * v->dy[i]) 
+                       + a2_1 * (h_prev_newton->dx[i] * h_prev_newton->dx[i] + h_prev_newton->dy[i] * h_prev_newton->dy[i]) * v->val[i] * v->val[i] 
+                       + a2_2 * (h_prev_newton->dx[i] * v->dx[i] + h_prev_newton->dy[i] * v->dy[i]) * v->val[i] * 2
+                       + a3_1 * h_prev_newton->dy[i] * v->val[i] * v->val[i]
+                       + a3_2 * v->dy[i] * v->val[i] * v->val[i]
+                      );
+
   }
   return result;
 }
