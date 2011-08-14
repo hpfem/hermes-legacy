@@ -1,9 +1,8 @@
 #include "hermes2d.h"
-#include "function/function.h"
-#include "runge_kutta.h"
 #include "weakform/weakform.h"
 #include "integrals/h1.h"
 #include "boundaryconditions/essential_bcs.h"
+#include "weakform_library/weakforms_h1.h"
 
 // K (Gardner).
 scalar K(double h);
@@ -25,36 +24,34 @@ scalar ddCdhh(double h);
 
 /* Custom non-constant Dirichlet condition */
 
-class CustomDirichletCondition : public EssentialBoundaryCondition 
+class CustomEssentialBCNonConst : public EssentialBoundaryCondition 
 {
 public:
-  CustomDirichletCondition(Hermes::vector<std::string> markers, double y_power)       
-        : EssentialBoundaryCondition(markers), y_power(y_power) {};
+  CustomEssentialBCNonConst(std::string marker, double y_power)       
+        : EssentialBoundaryCondition(Hermes::vector<std::string>(marker)), y_power(y_power) {};
 
-  virtual EssentialBoundaryCondition::EssentialBCValueType get_value_type() const; 
+  virtual EssentialBCValueType get_value_type() const;
 
-  virtual scalar value(double x, double y, double n_x, double n_y, double t_x, double t_y) const; 
+  virtual double value(double x, double y, double n_x, double n_y, 
+                       double t_x, double t_y) const;
 
-  protected:
-    double y_power;
+  double y_power;
 };
 
-/* Initial condition */
+/* Initial condition for the Newton's method */
 
 class CustomInitialCondition : public ExactSolutionScalar
 {
 public:
-  CustomInitialCondition(Mesh* mesh, double y_power) 
-        : ExactSolutionScalar(mesh), y_power(y_power) {};
+  CustomInitialCondition(Mesh* mesh, double y_power) : ExactSolutionScalar(mesh), y_power(y_power) {};
+
+  virtual double value(double x, double y) const;
 
   virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const;
 
-  virtual scalar value (double x, double y) const;
-
   virtual Ord ord(Ord x, Ord y) const;
 
-  protected:
-    double y_power;
+  double y_power;
 };
 
 /* Weak forms */

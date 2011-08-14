@@ -1,6 +1,9 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
 #include "definitions.h"
+#include "function/function.h"
+
+using namespace RefinementSelectors;
 
 //  This example solves a simple version of the time-dependent
 //  Richard's equation using the backward Euler method in time 
@@ -32,7 +35,7 @@ const int NEWTON_MAX_ITER = 100;                  // Maximum allowed number of N
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 // For the definition of initial condition.
-int y_power = 10;
+const double y_power = 10.0;
 
 int main(int argc, char* argv[])
 {
@@ -44,21 +47,20 @@ int main(int argc, char* argv[])
   H2DReader mloader;
   mloader.load("square.mesh", &mesh);
 
-  // Convert initial condition into a Solution.
-  CustomInitialCondition u_time_prev(&mesh, y_power);
-  //Solution u_time_new(&mesh);
-  
   // Initial mesh refinements.
   for(int i = 0; i < INIT_GLOB_REF_NUM; i++) mesh.refine_all_elements();
 
   // Initialize boundary conditions.
-  CustomDirichletCondition bc_essential(Hermes::vector<std::string>("Bdy"), y_power);
+  CustomEssentialBCNonConst bc_essential("Bdy", y_power);
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.
   H1Space space(&mesh, &bcs, P_INIT);
   int ndof = Space::get_num_dofs(&space);
   info("ndof = %d.", ndof);
+
+  // Convert initial condition into a Solution.
+  CustomInitialCondition u_time_prev(&mesh, y_power);
 
   // Initialize the weak formulation.
   double current_time = 0;
@@ -71,11 +73,11 @@ int main(int argc, char* argv[])
   SparseMatrix* matrix = create_matrix(matrix_solver);
   Vector* rhs = create_vector(matrix_solver);
   Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
-  solver->set_factorization_scheme(HERMES_REUSE_FACTORIZATION_COMPLETELY);
 
   // Initial coefficient vector for the Newton's method.  
-  scalar* coeff_vec = new scalar[ndof];
-  memset(coeff_vec, 0, ndof*sizeof(scalar));
+  info("Projecting initial solution on the FE mesh.");
+  scalar* coeff_vec = new scalar[Space::get_num_dofs(&space)];
+  OGProjection::project_global(&space, &u_time_prev, coeff_vec, matrix_solver); 
 
   // Initialize views.
   ScalarView view("", new WinGeom(0, 0, 600, 500));

@@ -45,33 +45,33 @@ scalar ddCdhh(double h)
 
 /* Custom non-constant Dirichlet condition */
 
-EssentialBoundaryCondition::EssentialBCValueType CustomDirichletCondition::get_value_type() const
+EssentialBoundaryCondition::EssentialBCValueType CustomEssentialBCNonConst::get_value_type() const
 { 
   return EssentialBoundaryCondition::BC_FUNCTION; 
 }
 
-scalar CustomDirichletCondition::value(double x, double y, double n_x, double n_y, 
-                                       double t_x, double t_y) const 
+double CustomEssentialBCNonConst::value(double x, double y, double n_x, double n_y, 
+                                        double t_x, double t_y) const 
 {
-  return x*(100 - x)/2.5 * pow(y/100, y_power) - 1000;
+  return x*(100. - x)/2.5 * pow(y/100., y_power) - 1000.;
 }
 
 /* Custom Initial condition */
 
 void CustomInitialCondition::derivatives (double x, double y, scalar& dx, scalar& dy) const 
 {
-  dx = (100 - 2*x)/2.5 * pow(y/100, y_power);
-  dy = x*(100 - x)/2.5 * pow(y/100, y_power - 1) * 1./100;
+  dx = (100. - 2*x)/2.5 * pow(y/100., y_power);
+  dy = x*(100. - x)/2.5 * pow(y/100., y_power - 1) * 1./100.;
 }
 
-scalar CustomInitialCondition::value (double x, double y) const 
+double CustomInitialCondition::value (double x, double y) const 
 {
-  return x*(100 - x)/2.5 * pow(y/100, y_power) - 1000;
+  return x*(100. - x)/2.5 * pow(y/100., y_power) - 1000.;
 }
 
 Ord CustomInitialCondition::ord(Ord x, Ord y) const 
 {
-  return x*(100 - x)/2.5 * pow(y/100, y_power) - 1000;
+  return Ord(10);
 }
 
 CustomWeakFormRichardsIE::CustomWeakFormRichardsIE(double time_step, Solution* u_time_prev) : WeakForm(1)
@@ -81,9 +81,9 @@ CustomWeakFormRichardsIE::CustomWeakFormRichardsIE(double time_step, Solution* u
 
   // Residual - volumetric.
   add_vector_form(new CustomResidualFormVol(0, time_step));
-  //CustomVectorFormVol* vec_form_vol = new CustomVectorFormVol(0, time_step);
-  //vec_form_vol->ext.push_back(u_time_prev);
-  //add_vector_form(vec_form_vol);
+  CustomVectorFormVol* vec_form_vol = new CustomVectorFormVol(0, time_step);
+  vec_form_vol->ext.push_back(u_time_prev);
+  add_vector_form(vec_form_vol);
 }
 
 
