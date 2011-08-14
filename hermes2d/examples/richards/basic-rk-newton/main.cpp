@@ -1,10 +1,12 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
 #include "definitions.h"
+#include "function/function.h"
 
-//  This example solves a simple version of the time-dependent
-//  Richard's equation using the backward Euler method in time 
-//  combined with the Newton's method in each time step.
+using namespace RefinementSelectors;
+
+//  This example solves the Tracy problem with arbitrary Runge-Kutta 
+//  methods in time. 
 //
 //  PDE: C(h)dh/dt - div(K(h)grad(h)) - (dK/dh)*(dh/dy) = 0
 //  where K(h) = K_S*exp(alpha*h)                          for h < 0,
@@ -15,7 +17,12 @@
 //  Domain: square (0, 100)^2.
 //
 //  BC: Dirichlet, given by the initial condition.
-//  IC: See the function init_cond().
+//  IC: Flat in all elements except the top layer, within this 
+//      layer the solution rises linearly to match the Dirichlet condition.
+//
+//  NOTE: The pressure head 'h' is between -1000 and 0. For convenience, we
+//        increase it by an offset H_OFFSET = 1000. In this way we can start
+//        from a zero coefficient vector.
 //
 //  The following parameters can be changed:
 
@@ -23,15 +30,17 @@
 //#define CONSTITUTIVE_GENUCHTEN
 
 const int INIT_GLOB_REF_NUM = 3;                  // Number of initial uniform mesh refinements.
-const int INIT_BDY_REF_NUM = 0;                   // Number of initial refinements towards boundary.
-const int P_INIT = 3;                             // Initial polynomial degree.
-double time_step = 5e-3;                          // Time step.
+const int INIT_REF_NUM_BDY = 5;                   // Number of initial refinements towards boundary.
+const int P_INIT = 4;                             // Initial polynomial degree.
+double time_step = 5e-4;                          // Time step.
 const double T_FINAL = 0.4;                       // Time interval length.
-const int TIME_INTEGRATION = 1;                   // 1... implicit Euler, 2... Crank-Nicolson.
-const double NEWTON_TOL = 1e-6;                   // Stopping criterion for the Newton's method.
-const int NEWTON_MAX_ITER = 100;                  // Maximum allowed number of Newton iterations.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
+
+// Newton's method.
+const double NEWTON_TOL = 1e-6;                   // Stopping criterion for the Newton's method.
+const int NEWTON_MAX_ITER = 100;                  // Maximum allowed number of Newton iterations.
+const double DAMPING_COEFF = 1.0;
 
 // Choose one of the following time-integration methods, or define your own Butcher's table. The last number 
 // in the name of each method is its order. The one before last, if present, is the number of stages.
@@ -48,11 +57,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 //   Implicit_SDIRK_CASH_3_23_embedded, Implicit_ESDIRK_TRBDF2_3_23_embedded, Implicit_ESDIRK_TRX2_3_23_embedded, 
 //   Implicit_SDIRK_BILLINGTON_3_23_embedded, Implicit_SDIRK_CASH_5_24_embedded, Implicit_SDIRK_CASH_5_34_embedded, 
 //   Implicit_DIRK_ISMAIL_7_45_embedded. 
-
 ButcherTableType butcher_table_type = Implicit_SDIRK_2_2;
-
-// For the definition of initial condition.
-int y_power = 10;
 
 int main(int argc, char* argv[])
 {
@@ -62,20 +67,20 @@ int main(int argc, char* argv[])
   if (bt.is_diagonally_implicit()) info("Using a %d-stage diagonally implicit R-K method.", bt.get_size());
   if (bt.is_fully_implicit()) info("Using a %d-stage fully implicit R-K method.", bt.get_size());
 
+  // Instantiate a class with global functions.
+  Hermes2D hermes2d;
+
   // Load the mesh.
   Mesh mesh;
   H2DReader mloader;
   mloader.load("square.mesh", &mesh);
 
-  // Convert initial condition into a Solution.
-  CustomInitialCondition u_time_prev(&mesh, y_power);
-  Solution u_time_new(&mesh);
-  
   // Initial mesh refinements.
   for(int i = 0; i < INIT_GLOB_REF_NUM; i++) mesh.refine_all_elements();
+  mesh.refine_towards_boundary("Top", INIT_REF_NUM_BDY);
 
   // Initialize boundary conditions.
-  CustomDirichletCondition bc_essential(Hermes::vector<std::string>("Bdy"), y_power);
+  CustomEssentialBCNonConst bc_essential(Hermes::vector<std::string>("Bottom", "Right", "Top", "Left"));
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.
@@ -83,50 +88,74 @@ int main(int argc, char* argv[])
   int ndof = Space::get_num_dofs(&space);
   info("ndof = %d.", ndof);
 
-  // Initialize the weak formulation.
-  double current_time = 0;
+  // Initial condition vector is the zero vector. This is why we
+  // use the H_OFFSET. 
+  scalar* coeff_vec = new scalar[ndof];
+  memset(coeff_vec, 0, ndof*sizeof(double));
 
-  CustomWeakFormRichardsRK wf;
-
-  // Initialize the FE problem.
-  DiscreteProblem dp(&wf, &space);
+  // Convert initial condition into a Solution.
+  Solution h_time_prev, h_time_new;
+  Solution::vector_to_solution(coeff_vec, &space, &h_time_prev);
 
   // Initialize views.
   ScalarView view("", new WinGeom(0, 0, 600, 500));
   view.fix_scale_width(80);
 
+  // Visualize the initial condition.
+  view.show(&h_time_prev);
+
+  // Initialize the weak formulation.
+  CustomWeakFormRichardsRK wf(time_step, &h_time_prev);
+
+  // Initialize the FE problem.
+  DiscreteProblem dp(&wf, &space);
+
+  // Set up the solver, matrix, and rhs according to the solver selection.
+  SparseMatrix* matrix = create_matrix(matrix_solver);
+  Vector* rhs = create_vector(matrix_solver);
+  Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
+
   // Initialize Runge-Kutta time stepping.
   RungeKutta runge_kutta(&dp, &bt, matrix_solver);
-  
+
   // Time stepping:
+  double current_time = 0;
   int ts = 1;
-  int nstep = (int)(T_FINAL/time_step + 0.5);
-  for(int ts = 1; ts <= nstep; ts++)
+  do 
   {
+    info("---- Time step %d, time %3.5f s", ts, current_time);
+
     // Perform one Runge-Kutta time step according to the selected Butcher's table.
     info("Runge-Kutta time step (t = %g s, time step = %g s, stages: %d).", 
          current_time, time_step, bt.get_size());
-    bool jacobian_changed = false;
+    bool jacobian_changed = true;
     bool verbose = true;
-    if (!runge_kutta.rk_time_step(current_time, time_step, &u_time_prev, 
-                                  &u_time_new, jacobian_changed, verbose)) 
+    if (!runge_kutta.rk_time_step(current_time, time_step, &h_time_prev, 
+                                  &h_time_new, jacobian_changed, verbose)) 
     {
       error("Runge-Kutta time step failed, try to decrease time step size.");
     }
 
-    // Show the new time level solution.
+    // Visualize the solution.
     char title[100];
     sprintf(title, "Time %3.2f s", current_time);
     view.set_title(title);
-    view.show(&u_time_new);
+    view.show(&h_time_prev);
 
     // Copy solution for the new time step.
-    u_time_prev.copy(&u_time_new);
+    h_time_prev.copy(&h_time_new);
 
     // Increase current time and time step counter.
     current_time += time_step;
     ts++;
   }
+  while (current_time < T_FINAL);
+
+  // Cleaning up.
+  delete [] coeff_vec;
+  delete matrix;
+  delete rhs;
+  delete solver;
 
   // Wait for the view to be closed.
   View::wait();

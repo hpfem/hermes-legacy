@@ -38,10 +38,10 @@ public:
 
 /* Weak forms */
 
-class CustomWeakFormRichardsIE : public WeakForm
+class CustomWeakFormRichardsRK : public WeakForm
 {
 public:
-  CustomWeakFormRichardsIE(double time_step, Solution* h_time_prev);
+  CustomWeakFormRichardsRK(double time_step, Solution* h_time_prev);
 
 private:
 

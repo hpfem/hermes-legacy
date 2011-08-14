@@ -10,10 +10,10 @@ elements = [
 ]
 
 boundaries = [
-  [ 0, 1, "Bdy" ],
-  [ 1, 2, "Bdy" ],
-  [ 2, 3, "Bdy" ],
-  [ 3, 0, "Bdy" ]
+  [ 0, 1, "Bottom" ],
+  [ 1, 2, "Right" ],
+  [ 2, 3, "Top" ],
+  [ 3, 0, "Left" ]
 ]
 
 
