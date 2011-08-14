@@ -7,7 +7,8 @@ using namespace RefinementSelectors;
 
 //  This example solves a simple version of the time-dependent
 //  Richard's equation using the backward Euler method in time 
-//  combined with the Newton's method in each time step.
+//  combined with the Newton's method in each time step. The example 
+//  has a exact solution (see paper by Tracy).
 //
 //  PDE: C(h)dh/dt - div(K(h)grad(h)) - (dK/dh)*(dh/dy) = 0
 //  where K(h) = K_S*exp(alpha*h)                          for h < 0,
@@ -31,7 +32,7 @@ using namespace RefinementSelectors;
 //#define CONSTITUTIVE_GENUCHTEN
 
 const int INIT_GLOB_REF_NUM = 3;                  // Number of initial uniform mesh refinements.
-const int INIT_BDY_REF_NUM = 0;                   // Number of initial refinements towards boundary.
+const int INIT_REF_NUM_BDY = 5;                   // Number of initial refinements towards boundary.
 const int P_INIT = 4;                             // Initial polynomial degree.
 double time_step = 5e-4;                          // Time step.
 const double T_FINAL = 0.4;                       // Time interval length.
@@ -55,9 +56,10 @@ int main(int argc, char* argv[])
 
   // Initial mesh refinements.
   for(int i = 0; i < INIT_GLOB_REF_NUM; i++) mesh.refine_all_elements();
+  mesh.refine_towards_boundary("Top", INIT_REF_NUM_BDY);
 
   // Initialize boundary conditions.
-  CustomEssentialBCNonConst bc_essential("Bdy");
+  CustomEssentialBCNonConst bc_essential(Hermes::vector<std::string>("Bottom", "Right", "Top", "Left"));
   EssentialBCs bcs(&bc_essential);
 
   // Create an H1 space with default shapeset.

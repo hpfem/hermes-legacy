@@ -27,8 +27,8 @@ scalar ddCdhh(double h);
 class CustomEssentialBCNonConst : public EssentialBoundaryCondition 
 {
 public:
-  CustomEssentialBCNonConst(std::string marker)       
-        : EssentialBoundaryCondition(Hermes::vector<std::string>(marker)) {};
+  CustomEssentialBCNonConst(Hermes::vector<std::string>(markers))       
+        : EssentialBoundaryCondition(markers) {};
 
   virtual EssentialBCValueType get_value_type() const;
 
