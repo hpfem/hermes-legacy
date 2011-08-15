@@ -165,7 +165,7 @@ int main(int argc, char* argv[])
 
     //
     H2DReader *hloader = new H2DReader();
-    hloader->load_str(buffer, &mesh);
+    hloader->load(buffer, &mesh);
     ret = dump_compare(mesh, file_name_dump);
     delete hloader;
     free(buffer);

@@ -30,12 +30,6 @@ H2DReader::~H2DReader()
 {
 }
 
-void H2DReader::load_str(const char* mesh_str, Mesh *mesh)
-{
-  std::istringstream s(mesh_str);
-  this->load_stream(s, mesh, "");
-}
-
 //// load_nurbs ////////////////////////////////////////////////////////////////////////////////////
 
 Nurbs* H2DReader::load_nurbs(Mesh *mesh, MeshData *m, int id, Node** en, int &p1, int &p2)
@@ -160,16 +154,11 @@ Nurbs* H2DReader::load_nurbs(Mesh *mesh, MeshData *m, int id, Node** en, int &p1
 
 bool H2DReader::load(const char *filename, Mesh *mesh)
 {
-  // Both load_str and load_stream are unnecessary. Remove them??		
-	
+  // Check if file exists
   std::ifstream s(filename);
   if (!s.good()) error("Mesh file not found.");
-  return this->load_stream(s, mesh, filename);
-}
-
-bool H2DReader::load_stream(std::istream &is, Mesh *mesh,
-        const char *filename)
-{
+  s.close();
+  
   int i, j, k, n;
   Node* en;
   bool debug = false;
