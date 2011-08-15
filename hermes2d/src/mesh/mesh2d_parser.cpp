@@ -27,7 +27,7 @@ void MeshData::strip(std::string& str)
 	for (size_t i = 0; i < str.length(); i++)
 	{
 		//if (str[i] != ' ' && str[i] != '\t' && str[i] != '[' && str[i] != ']' && str[i] != '{' && str[i] != '}' && str[i] != '"')
-		if (str[i] != '\t' && str[i] != '[' && str[i] != ']' && str[i] != '{' && str[i] != '}' && str[i] != '"')
+		if (str[i] != '\t' && str[i] != '[' && str[i] != ']' && str[i] != '{' && str[i] != '}')
 		{
 			if (str[i] == ',' || str[i] == ';')
 				temp.append("\t");
@@ -69,10 +69,13 @@ std::string MeshData::restore(std::string &str)
 
 	for (size_t i = 0; i < str.length(); i++)
 	{
-		if (str[i] == ';')
-			temp.append(1,' ');
-		else
-			temp.append(1,str[i]);
+		if (str[i] != '"')
+		{	
+			if (str[i] == ';')
+				temp.append(1,' ');
+			else
+				temp.append(1,str[i]);
+		}		
 	}
 
 	str.assign(temp);
@@ -88,7 +91,7 @@ void MeshData::parse_mesh(void)
 	std::string dummy_str;
 	
 	std::ifstream inFile(mesh_file_.c_str());
-	std::string line, word, temp_word;
+	std::string line, word, temp_word, next_word;
 
 	int counter(0);
 	bool isVert(false), isElt(false), isBdy(false), isCurv(false), isRef(false), isVar(false);
@@ -337,7 +340,16 @@ void MeshData::parse_mesh(void)
 						if (istr >> dummy_dbl)
 						{
 							curv_third.push_back(atof(word.c_str()));
-							
+						}
+						else
+						{	
+							curv_third.push_back(atof(vars_[restore(word)][0].c_str()));
+						}
+
+						stream >> next_word;
+
+						if (next_word == "")
+						{
 							curv_nurbs.push_back(false);
 
 							curv_inner_pts.push_back("none");
@@ -346,15 +358,16 @@ void MeshData::parse_mesh(void)
 							counter += 2;
 						}
 						else
-						{	
-							curv_third.push_back(atof(vars_[restore(word)][0].c_str()));
-							curv_nurbs.push_back(true);
-						}	
+						{
+							curv_nurbs.push_back(true);	
+						}
 					}
 					else if (counter%5 == 3)
-						curv_inner_pts.push_back(restore(word));
-					else
+					{	
+						curv_inner_pts.push_back(restore(next_word));
 						curv_knots.push_back(restore(word));
+						++counter;
+					}
 
 					++counter;
 				}
