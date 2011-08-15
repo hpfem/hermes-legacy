@@ -110,11 +110,6 @@ int main(int argc, char* argv[])
   // Initialize the FE problem.
   DiscreteProblem dp(&wf, &space);
 
-  // Set up the solver, matrix, and rhs according to the solver selection.
-  SparseMatrix* matrix = create_matrix(matrix_solver);
-  Vector* rhs = create_vector(matrix_solver);
-  Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
-
   // Initialize Runge-Kutta time stepping.
   RungeKutta runge_kutta(&dp, &bt, matrix_solver);
 
@@ -153,9 +148,6 @@ int main(int argc, char* argv[])
 
   // Cleaning up.
   delete [] coeff_vec;
-  delete matrix;
-  delete rhs;
-  delete solver;
 
   // Wait for the view to be closed.
   View::wait();
