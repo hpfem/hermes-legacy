@@ -5,10 +5,8 @@
 
 using namespace RefinementSelectors;
 
-//  This example solves a simple version of the time-dependent
-//  Richard's equation using the backward Euler method in time 
-//  combined with the Newton's method in each time step. The example 
-//  has a exact solution (see paper by Tracy).
+//  This example is similar to basic-ie-newton except it uses the 
+//  Picard's method in each time step (not Newton's method).
 //
 //  PDE: C(h)dh/dt - div(K(h)grad(h)) - (dK/dh)*(dh/dy) = 0
 //  where K(h) = K_S*exp(alpha*h)                          for h < 0,

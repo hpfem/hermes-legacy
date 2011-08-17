@@ -67,7 +67,9 @@ double CustomEssentialBCNonConst::value(double x, double y, double n_x, double n
 CustomWeakFormRichardsIE::CustomWeakFormRichardsIE(double time_step, Solution* h_time_prev) : WeakForm(1)
 {
   // Jacobian volumetric part.
-  add_matrix_form(new CustomJacobianFormVol(0, 0, time_step));
+  CustomJacobianFormVol* jac_form_vol = new CustomJacobianFormVol(0, 0, time_step);
+  jac_form_vol->ext.push_back(h_time_prev);
+  add_matrix_form(jac_form_vol);
 
   // Residual - volumetric.
   CustomResidualFormVol* res_form_vol = new CustomResidualFormVol(0, time_step);
@@ -80,10 +82,12 @@ double CustomWeakFormRichardsIE::CustomJacobianFormVol::value(int n, double *wt,
 {
   double result = 0;
   Func<double>* h_prev_newton = u_ext[0];
+  Func<double>* h_prev_time = ext->fn[0];
   for (int i = 0; i < n; i++)
   {
     double h_val_i = h_prev_newton->val[i] - H_OFFSET;
-    result += wt[i] * (   dCdh(h_val_i) * u->val[i] * h_prev_newton->val[i] * v->val[i] + C(h_val_i) * u->val[i] * v->val[i] 
+    result += wt[i] * (   dCdh(h_val_i) * u->val[i] * (h_prev_newton->val[i] - h_prev_time->val[i]) 
+                          * v->val[i] + C(h_val_i) * u->val[i] * v->val[i] 
 			  + dKdh(h_val_i) * u->val[i] * (h_prev_newton->dx[i] * v->dx[i] 
 							 + h_prev_newton->dy[i] * v->dy[i]) * time_step
                         + K(h_val_i) * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]) * time_step

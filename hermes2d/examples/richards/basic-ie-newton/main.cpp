@@ -7,8 +7,10 @@ using namespace RefinementSelectors;
 
 //  This example solves a simple version of the time-dependent
 //  Richard's equation using the backward Euler method in time 
-//  combined with the Newton's method in each time step. The example 
-//  has a exact solution (see paper by Tracy).
+//  combined with the Newton's method in each time step. It describes
+//  infiltration into an initially dry soil. The example has a exact 
+//  solution that is given in terms of a Fourier series (see a paper 
+//  by Tracy). The exact solution is not used here.
 //
 //  PDE: C(h)dh/dt - div(K(h)grad(h)) - (dK/dh)*(dh/dy) = 0
 //  where K(h) = K_S*exp(alpha*h)                          for h < 0,
