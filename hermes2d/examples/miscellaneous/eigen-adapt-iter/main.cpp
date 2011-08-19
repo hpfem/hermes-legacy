@@ -645,6 +645,17 @@ int main(int argc, char* argv[])
     graph_dof.add_values(Space::get_num_dofs(&space), err_est_rel);
     graph_dof.save("conv_dof_est.dat");
 
+    // Visualize the projection.
+    info("Plotting projection of reference solution to new coarse mesh.");
+    char title[100];
+    sprintf(title, "Coarse mesh projection");
+    sview.set_title(title);
+    sview.show_mesh(false);
+    sview.show(&sln);
+    sprintf(title, "Coarse mesh, step %d", as);
+    oview.set_title(title);
+    oview.show(&space);
+
     // If err_est too large, adapt the mesh.
     if (err_est_rel < ERR_STOP) done = true;
     else 
@@ -660,17 +671,6 @@ int main(int argc, char* argv[])
 
     //delete ref_space->get_mesh();
     delete ref_space;
-
-    // Visualize the projection.
-    info("Plotting projection of reference solution to new coarse mesh.");
-    char title[100];
-    sprintf(title, "Coarse mesh projection");
-    sview.set_title(title);
-    sview.show_mesh(false);
-    sview.show(&sln);
-    sprintf(title, "Coarse mesh, step %d", as);
-    oview.set_title(title);
-    oview.show(&space);
 
     // Increase the counter of performed adaptivity steps.
     if (done == false) as++;
