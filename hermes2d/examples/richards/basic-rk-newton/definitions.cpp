@@ -67,10 +67,14 @@ double CustomEssentialBCNonConst::value(double x, double y, double n_x, double n
 CustomWeakFormRichardsRK::CustomWeakFormRichardsRK(double time_step, Solution* h_time_prev) : WeakForm(1)
 {
   // Jacobian volumetric part.
-  add_matrix_form(new CustomJacobianFormVol(0, 0, time_step));
+  CustomJacobianFormVol* jac_form_vol = new CustomJacobianFormVol(0, 0, time_step);
+  jac_form_vol->ext.push_back(h_time_prev);
+  add_matrix_form(jac_form_vol);
 
   // Residual - volumetric.
-  add_vector_form(new CustomResidualFormVol(0, time_step));
+  CustomResidualFormVol* res_form_vol = new CustomResidualFormVol(0, time_step);
+  res_form_vol->ext.push_back(h_time_prev);
+  add_vector_form(res_form_vol);
 }
 
 double CustomWeakFormRichardsRK::CustomJacobianFormVol::value(int n, double *wt, Func<double> *u_ext[], Func<double> *u, 
@@ -81,12 +85,15 @@ double CustomWeakFormRichardsRK::CustomJacobianFormVol::value(int n, double *wt,
   for (int i = 0; i < n; i++)
   {
     double h_val_i = h_prev_newton->val[i] - H_OFFSET;
+
     double C2 =  C(h_val_i) * C(h_val_i);
     double a1_1 = (dKdh(h_val_i) * C(h_val_i) - dCdh(h_val_i) * K(h_val_i)) / C2;
     double a1_2 = K(h_val_i) / C(h_val_i);
-    double a2_1 = (dKdh(h_val_i) * dCdh(h_val_i) + K(h_val_i) * ddCdhh(h_val_i)) / C2 
-                  - 2 * K(h_val_i) * C(h_val_i) * dCdh(h_val_i) * dCdh(h_val_i) / (C2 * C2);
+
+    double a2_1 = ((dKdh(h_val_i) * dCdh(h_val_i) + K(h_val_i) * ddCdhh(h_val_i)) * C2 
+                  - 2 * K(h_val_i) * C(h_val_i) * dCdh(h_val_i) * dCdh(h_val_i)) / (C2 * C2);
     double a2_2 = 2 * K(h_val_i) * dCdh(h_val_i) / C2;   
+
     double a3_1 = (ddKdhh(h_val_i) * C(h_val_i) - dKdh(h_val_i) * dCdh(h_val_i)) / C2;
     double a3_2 = dKdh(h_val_i) / C(h_val_i);
 
@@ -98,7 +105,7 @@ double CustomWeakFormRichardsRK::CustomJacobianFormVol::value(int n, double *wt,
                                             + u->dy[i] * h_prev_newton->dy[i]) * time_step 
                         + a3_1 * u->val[i] * v->val[i] * h_prev_newton->dy[i] * time_step   
                         + a3_2 * v->val[i] * u->dy[i] * time_step
-                      );
+                      ) / 10;
   }
   return result;
 }
@@ -130,7 +137,7 @@ scalar CustomWeakFormRichardsRK::CustomResidualFormVol::value(int n, double *wt,
                         + r2 * v->val[i] * (h_prev_newton->dx[i] * h_prev_newton->dx[i] 
                                           + h_prev_newton->dy[i] * h_prev_newton->dy[i]) * time_step
                         + r3 * v->val[i] * h_prev_newton->dy[i] * time_step
-                      );
+                      ) / 10;
   }
   return result;
 }
