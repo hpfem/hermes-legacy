@@ -79,7 +79,6 @@ const int PICARD_MAX_ITER = 100;
 const bool USE_SHIFT = false;
 
 // ORTHOGONALITY:
-
 // The orthogonality technologies are used to converge to the eigenvalues and eigenfunctions in the target 
 // eigenspace. There are three possible settings:
 // USE_ORTHO == false: No orthogonality - the method could converges not to the target eigenfucntions
@@ -100,7 +99,6 @@ const bool USE_IMPROVED_ORTHO = true;
 const double THRESHOLD_ORTHO = 0.5; 
 
 // RECONSTRUCTION TECHNOLOGY:
-
 // The reconstruction technology makes possible to follow the target eigenfunction, no matter how the continuous
 // eigenspace is splitted by the discretization. This is possible by computing an approximation of all discrete
 // eigenfunctions, corresponding to a basis of eigenfunctions for the continuous eigenspace that contains 
@@ -117,13 +115,11 @@ int FIRST_INDEX_EIGENSPACE = 1;                   // Index of the first eigenfun
                                                   // that contains the eigenfunction of index TARGET_EIGENFUNCTION            
 
 // ORTHOGONALIZATION TECHNOLOGY:
-
 // The orthogonalization technology ensures that the iterative methods converge to the eigenfunction
 // of index TARGET_EIGENFUNCTION. This is possible by computing an approximation of all discrete
 // eigenfunctions of index less or equal to TARGET_EIGENFUNCTION. So in practise if TARGET_EIGENFUNCTION = 3, then
-// also the eigenfunctions of indeces 1 and 2 are computed on each adapted mesh.
+// also the eigenfunctions of indices 1 and 2 are computed on each adapted mesh.
 // The value of DIMENSION_SUBSPACE is set automatically in the code.
-int DIMENSION_SUBSPACE = 0;              	  
 
 // Main function.
 int main(int argc, char* argv[])
@@ -141,6 +137,7 @@ int main(int argc, char* argv[])
     RECONSTRUCTION_ON = false; 
 
   // Set the value of DIMENSION_SUBSPACE
+  int DIMENSION_SUBSPACE = 0;              	  
   if (RECONSTRUCTION_ON) 
   {
     DIMENSION_SUBSPACE = FIRST_INDEX_EIGENSPACE + DIMENSION_TARGET_EIGENSPACE - 1;
