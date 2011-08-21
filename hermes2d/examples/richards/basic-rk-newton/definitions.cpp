@@ -59,7 +59,7 @@ EssentialBoundaryCondition::EssentialBCValueType CustomEssentialBCNonConst::get_
 double CustomEssentialBCNonConst::value(double x, double y, double n_x, double n_y, 
                                         double t_x, double t_y) const 
 {
-  return x*(100. - x)/2.5 * y/100 - 1000. + H_OFFSET;
+  return x*(100 - x)/2.5 * pow(y/100, 10) - 1000 + H_OFFSET;
 }
 
 /* Custom weak forms */
@@ -67,7 +67,9 @@ double CustomEssentialBCNonConst::value(double x, double y, double n_x, double n
 CustomWeakFormRichardsRK::CustomWeakFormRichardsRK(double time_step, Solution* h_time_prev) : WeakForm(1)
 {
   // Jacobian volumetric part.
-  add_matrix_form(new CustomJacobianFormVol(0, 0, time_step));
+  CustomJacobianFormVol* jac_form_vol = new CustomJacobianFormVol(0, 0, time_step);
+  jac_form_vol->ext.push_back(h_time_prev);
+  add_matrix_form(jac_form_vol);
 
   // Residual - volumetric.
   CustomResidualFormVol* res_form_vol = new CustomResidualFormVol(0, time_step);
@@ -83,13 +85,27 @@ double CustomWeakFormRichardsRK::CustomJacobianFormVol::value(int n, double *wt,
   for (int i = 0; i < n; i++)
   {
     double h_val_i = h_prev_newton->val[i] - H_OFFSET;
-    result -= wt[i] * (   
-			  dKdh(h_val_i) * u->val[i] * (h_prev_newton->dx[i] * v->dx[i] 
-							 + h_prev_newton->dy[i] * v->dy[i]) * time_step
-                        + K(h_val_i) * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]) * time_step
-			- ddKdhh(h_val_i) * u->val[i] * h_prev_newton->dy[i] * v->val[i] * time_step
-                        - dKdh(h_val_i) * u->dy[i] * v->val[i] * time_step
-		      );
+
+    double C2 =  C(h_val_i) * C(h_val_i);
+    double a1_1 = (dKdh(h_val_i) * C(h_val_i) - dCdh(h_val_i) * K(h_val_i)) / C2;
+    double a1_2 = K(h_val_i) / C(h_val_i);
+
+    double a2_1 = ((dKdh(h_val_i) * dCdh(h_val_i) + K(h_val_i) * ddCdhh(h_val_i)) * C2 
+                  - 2 * K(h_val_i) * C(h_val_i) * dCdh(h_val_i) * dCdh(h_val_i)) / (C2 * C2);
+    double a2_2 = 2 * K(h_val_i) * dCdh(h_val_i) / C2;   
+
+    double a3_1 = (ddKdhh(h_val_i) * C(h_val_i) - dKdh(h_val_i) * dCdh(h_val_i)) / C2;
+    double a3_2 = dKdh(h_val_i) / C(h_val_i);
+
+    result += wt[i] * ( - a1_1 * u->val[i] * (h_prev_newton->dx[i] * v->dx[i] + h_prev_newton->dy[i] * v->dy[i]) * time_step
+                        - a1_2 * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]) * time_step
+                        + a2_1 * u->val[i] * v->val[i] * (h_prev_newton->dx[i] * h_prev_newton->dx[i] 
+                                                        + h_prev_newton->dy[i] * h_prev_newton->dy[i]) * time_step 
+                        + a2_2 * v->val[i] * (u->dx[i] * h_prev_newton->dx[i] 
+                                            + u->dy[i] * h_prev_newton->dy[i]) * time_step 
+                        + a3_1 * u->val[i] * v->val[i] * h_prev_newton->dy[i] * time_step   
+                        + a3_2 * v->val[i] * u->dy[i] * time_step
+                      ) / 10;
   }
   return result;
 }
@@ -110,14 +126,18 @@ scalar CustomWeakFormRichardsRK::CustomResidualFormVol::value(int n, double *wt,
 {
   double result = 0;
   Func<double>* h_prev_newton = u_ext[0];
-  Func<double>* h_prev_time = ext->fn[0];
   for (int i = 0; i < n; i++)
   {
     double h_val_i = h_prev_newton->val[i] - H_OFFSET;
-    result -= wt[i] * (   
-                        + K(h_val_i) * (h_prev_newton->dx[i] * v->dx[i] + h_prev_newton->dy[i] * v->dy[i]) * time_step
-                        - dKdh(h_val_i) * h_prev_newton->dy[i] * v->val[i] * time_step
-                      );
+    double r1 = (K(h_val_i) / C(h_val_i));
+    double r2 = K(h_val_i) * dCdh(h_val_i) / (C(h_val_i) * C(h_val_i));
+    double r3 = dKdh(h_val_i) / C(h_val_i);
+
+    result += wt[i] * ( - r1 * (h_prev_newton->dx[i] * v->dx[i] + h_prev_newton->dy[i] * v->dy[i]) * time_step
+                        + r2 * v->val[i] * (h_prev_newton->dx[i] * h_prev_newton->dx[i] 
+                                          + h_prev_newton->dy[i] * h_prev_newton->dy[i]) * time_step
+                        + r3 * v->val[i] * h_prev_newton->dy[i] * time_step
+                      ) / 10;
   }
   return result;
 }
