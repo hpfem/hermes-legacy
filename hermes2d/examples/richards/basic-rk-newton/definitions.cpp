@@ -135,7 +135,7 @@ scalar CustomWeakFormRichardsRK::CustomResidualFormVol::value(int n, double *wt,
                         + r2 * v->val[i] * (h_prev_newton->dx[i] * h_prev_newton->dx[i] 
                                           + h_prev_newton->dy[i] * h_prev_newton->dy[i])
                         + r3 * v->val[i] * h_prev_newton->dy[i]
-                      ) / 10;
+                      );
   }
   return result;
 }

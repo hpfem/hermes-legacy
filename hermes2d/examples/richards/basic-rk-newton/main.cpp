@@ -38,7 +38,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Newton's method.
-const double NEWTON_TOL = 1e-6;                   // Stopping criterion for the Newton's method.
+const double NEWTON_TOL = 1e-5;                   // Stopping criterion for the Newton's method.
 const int NEWTON_MAX_ITER = 1000;                 // Maximum allowed number of Newton iterations.
 const double DAMPING_COEFF = 1.0;
 
