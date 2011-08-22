@@ -102,7 +102,7 @@ double CustomWeakFormRichardsIEPicard::CustomJacobian::value(int n, double *wt, 
 Ord CustomWeakFormRichardsIEPicard::CustomJacobian::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, 
                                                         Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
 {
-  return Ord(20);
+  return Ord(10);
 }
 
 WeakForm::MatrixFormVol* CustomWeakFormRichardsIEPicard::CustomJacobian::clone() 
@@ -133,7 +133,7 @@ scalar CustomWeakFormRichardsIEPicard::CustomResidual::value(int n, double *wt, 
 Ord CustomWeakFormRichardsIEPicard::CustomResidual::ord(int n, double *wt, Func<Ord> *u_ext[], 
                                                                Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
 {
-  return Ord(20);
+  return Ord(10);
 }
 
 WeakForm::VectorFormVol* CustomWeakFormRichardsIEPicard::CustomResidual::clone() 

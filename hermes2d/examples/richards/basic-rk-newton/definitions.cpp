@@ -111,7 +111,7 @@ double CustomWeakFormRichardsRK::CustomJacobianFormVol::value(int n, double *wt,
 Ord CustomWeakFormRichardsRK::CustomJacobianFormVol::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, 
                                                          Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
 {
-  return Ord(20);
+  return Ord(10);
 }
 
 WeakForm::MatrixFormVol* CustomWeakFormRichardsRK::CustomJacobianFormVol::clone() 
@@ -142,7 +142,7 @@ scalar CustomWeakFormRichardsRK::CustomResidualFormVol::value(int n, double *wt,
 
 Ord CustomWeakFormRichardsRK::CustomResidualFormVol::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
 {
-  return Ord(20);
+  return Ord(10);
 }
 
 WeakForm::VectorFormVol* CustomWeakFormRichardsRK::CustomResidualFormVol::clone() 

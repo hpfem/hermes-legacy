@@ -31,7 +31,7 @@ using namespace RefinementSelectors;
 
 const int INIT_GLOB_REF_NUM = 3;                  // Number of initial uniform mesh refinements.
 const int INIT_REF_NUM_BDY = 5;                   // Number of initial refinements towards boundary.
-const int P_INIT = 4;                             // Initial polynomial degree.
+const int P_INIT = 2;                             // Initial polynomial degree.
 double time_step = 5e-4;                          // Time step.
 const double T_FINAL = 0.4;                       // Time interval length.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
@@ -39,7 +39,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 
 // Newton's method.
 const double NEWTON_TOL = 1e-6;                   // Stopping criterion for the Newton's method.
-const int NEWTON_MAX_ITER = 100;                  // Maximum allowed number of Newton iterations.
+const int NEWTON_MAX_ITER = 1000;                 // Maximum allowed number of Newton iterations.
 const double DAMPING_COEFF = 1.0;
 
 // Choose one of the following time-integration methods, or define your own Butcher's table. The last number 
@@ -57,7 +57,7 @@ const double DAMPING_COEFF = 1.0;
 //   Implicit_SDIRK_CASH_3_23_embedded, Implicit_ESDIRK_TRBDF2_3_23_embedded, Implicit_ESDIRK_TRX2_3_23_embedded, 
 //   Implicit_SDIRK_BILLINGTON_3_23_embedded, Implicit_SDIRK_CASH_5_24_embedded, Implicit_SDIRK_CASH_5_34_embedded, 
 //   Implicit_DIRK_ISMAIL_7_45_embedded. 
-ButcherTableType butcher_table_type = Implicit_RK_1;
+ButcherTableType butcher_table_type = Implicit_SDIRK_2_2;
 
 int main(int argc, char* argv[])
 {
