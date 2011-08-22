@@ -103,7 +103,7 @@ double CustomWeakFormRichardsRK::CustomJacobianFormVol::value(int n, double *wt,
                                             + u->dy[i] * h_prev_newton->dy[i]) 
                         + a3_1 * u->val[i] * v->val[i] * h_prev_newton->dy[i]   
                         + a3_2 * v->val[i] * u->dy[i]
-                      ) / 10;
+                      );
   }
   return result;
 }
