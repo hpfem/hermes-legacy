@@ -57,7 +57,7 @@ const double DAMPING_COEFF = 1.0;
 //   Implicit_SDIRK_CASH_3_23_embedded, Implicit_ESDIRK_TRBDF2_3_23_embedded, Implicit_ESDIRK_TRX2_3_23_embedded, 
 //   Implicit_SDIRK_BILLINGTON_3_23_embedded, Implicit_SDIRK_CASH_5_24_embedded, Implicit_SDIRK_CASH_5_34_embedded, 
 //   Implicit_DIRK_ISMAIL_7_45_embedded. 
-ButcherTableType butcher_table_type = Implicit_SDIRK_2_2;
+ButcherTableType butcher_table_type = Implicit_RK_1;
 
 int main(int argc, char* argv[])
 {
@@ -96,16 +96,17 @@ int main(int argc, char* argv[])
   // Convert initial condition into a Solution.
   Solution h_time_prev, h_time_new;
   Solution::vector_to_solution(coeff_vec, &space, &h_time_prev);
+  delete [] coeff_vec;
 
   // Initialize views.
-  ScalarView view("", new WinGeom(0, 0, 600, 500));
+  ScalarView view("Initial condition", new WinGeom(0, 0, 600, 500));
   view.fix_scale_width(80);
 
   // Visualize the initial condition.
   view.show(&h_time_prev);
 
   // Initialize the weak formulation.
-  CustomWeakFormRichardsRK wf(time_step, &h_time_prev);
+  CustomWeakFormRichardsRK wf;
 
   // Initialize the FE problem.
   DiscreteProblem dp(&wf, &space);
@@ -125,11 +126,21 @@ int main(int argc, char* argv[])
          current_time, time_step, bt.get_size());
     bool jacobian_changed = true;
     bool verbose = true;
+    double damping_coeff = 1.0;
+    double max_allowed_residual_norm = 1e10;
     if (!runge_kutta.rk_time_step(current_time, time_step, &h_time_prev, 
-                                  &h_time_new, jacobian_changed, verbose)) 
+                                  &h_time_new, jacobian_changed, verbose,
+                                  NEWTON_TOL, NEWTON_MAX_ITER, damping_coeff,
+                                  max_allowed_residual_norm)) 
     {
       error("Runge-Kutta time step failed, try to decrease time step size.");
     }
+
+    // Copy solution for the new time step.
+    h_time_prev.copy(&h_time_new);
+
+    // Increase current time.
+    current_time += time_step;
 
     // Visualize the solution.
     char title[100];
@@ -137,17 +148,10 @@ int main(int argc, char* argv[])
     view.set_title(title);
     view.show(&h_time_prev);
 
-    // Copy solution for the new time step.
-    h_time_prev.copy(&h_time_new);
-
-    // Increase current time and time step counter.
-    current_time += time_step;
+    // Increase time step counter.
     ts++;
   }
   while (current_time < T_FINAL);
-
-  // Cleaning up.
-  delete [] coeff_vec;
 
   // Wait for the view to be closed.
   View::wait();
