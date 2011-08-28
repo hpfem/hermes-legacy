@@ -1,39 +1,17 @@
 #define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
-#include "definitions.h"
+#include "../definitions.h"
 #include "function/function.h"
 
 using namespace RefinementSelectors;
 
-//  This example is similar to basic-ie-newton except it uses the 
-//  Picard's method in each time step (not Newton's method).
-//
-//  PDE: C(h)dh/dt - div(K(h)grad(h)) - (dK/dh)*(dh/dy) = 0
-//  where K(h) = K_S*exp(alpha*h)                          for h < 0,
-//        K(h) = K_S                                       for h >= 0,
-//        C(h) = alpha*(theta_s - theta_r)*exp(alpha*h)    for h < 0,
-//        C(h) = alpha*(theta_s - theta_r)                 for h >= 0.
-//
-//  Domain: square (0, 100)^2.
-//
-//  BC: Dirichlet, given by the initial condition.
-//  IC: Flat in all elements except the top layer, within this 
-//      layer the solution rises linearly to match the Dirichlet condition.
-//
-//  NOTE: The pressure head 'h' is between -1000 and 0. For convenience, we
-//        increase it by an offset H_OFFSET = 1000. In this way we can start
-//        from a zero coefficient vector.
-//
-//  The following parameters can be changed:
-
-// If this is defined, use van Genuchten's constitutive relations, otherwise use Gardner's.
-//#define CONSTITUTIVE_GENUCHTEN
+// This test makes sure that example "richards/basic-ie-picard" works correctly.
 
 const int INIT_GLOB_REF_NUM = 3;                  // Number of initial uniform mesh refinements.
 const int INIT_REF_NUM_BDY = 5;                   // Number of initial refinements towards boundary.
 const int P_INIT = 2;                             // Initial polynomial degree.
 double time_step = 5e-4;                          // Time step.
-const double T_FINAL = 0.4;                       // Time interval length.
+const double T_FINAL = 4*time_step + 1e-5;;       // Time interval length.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
@@ -50,7 +28,7 @@ int main(int argc, char* argv[])
   // Load the mesh.
   Mesh mesh;
   H2DReader mloader;
-  mloader.load("square.mesh", &mesh);
+  mloader.load("../square.mesh", &mesh);
 
   // Initial mesh refinements.
   for(int i = 0; i < INIT_GLOB_REF_NUM; i++) mesh.refine_all_elements();
@@ -75,13 +53,6 @@ int main(int argc, char* argv[])
   Solution::vector_to_solution(coeff_vec, &space, &h_time_prev);
   Solution::vector_to_solution(coeff_vec, &space, &h_iter_prev);
 
-  // Initialize views.
-  ScalarView view("", new WinGeom(0, 0, 600, 500));
-  view.fix_scale_width(80);
-
-  // Visualize the initial condition.
-  view.show(&h_time_prev);
-
   // Initialize the weak formulation.
   double current_time = 0;
   CustomWeakFormRichardsIEPicard wf(time_step, &h_time_prev, &h_iter_prev);
@@ -100,12 +71,6 @@ int main(int argc, char* argv[])
     hermes2d.solve_picard(&wf, &space, &h_iter_prev, matrix_solver, PICARD_TOL, 
                           PICARD_MAX_ITER, verbose);
 
-    // Visualize the solution.
-    char title[100];
-    sprintf(title, "Time %3.2f s", current_time);
-    view.set_title(title);
-    view.show(&h_time_prev);
-
     // Save the next time level solution.
     h_time_prev.copy(&h_iter_prev);
 
@@ -115,8 +80,28 @@ int main(int argc, char* argv[])
   }
   while (current_time < T_FINAL);
 
-  // Wait for the view to be closed.
-  View::wait();
-  return 0;
+  info("Coordinate (  0,   0) value = %lf", h_time_prev.get_pt_value(0.0, 0.0));
+  info("Coordinate ( 25,  25) value = %lf", h_time_prev.get_pt_value(25.0, 25.0));
+  info("Coordinate ( 50,  50) value = %lf", h_time_prev.get_pt_value(50.0, 50.0));
+  info("Coordinate ( 75,  75) value = %lf", h_time_prev.get_pt_value(75.0, 75.0));
+  info("Coordinate (100, 100) value = %lf", h_time_prev.get_pt_value(100.0, 100.0));
+
+  double coor_x_y[5] = {0.0, 25.0, 50.0, 75.0, 100.0};
+  double value[5] = {0.000000, 0.052635, 3.981605, 90.197838, 0.000000};
+  bool success = true;
+  for (int i = 0; i < 5; i++)
+  {
+    if (fabs(value[i] - h_time_prev.get_pt_value(coor_x_y[i], coor_x_y[i])) > 1E-6) 
+      success = false;
+  }
+
+  if (success) {
+    printf("Success!\n");
+    return ERR_SUCCESS;
+  }
+  else {
+    printf("Failure!\n");
+    return ERR_FAILURE;
+  }
 }
 

@@ -5,7 +5,7 @@
 
 using namespace RefinementSelectors;
 
-// This test makes sure that example "richards" works correctly.
+// This test makes sure that example "richards/basic-ie-newton" works correctly.
 
 const int INIT_GLOB_REF_NUM = 3;                  // Number of initial uniform mesh refinements.
 const int INIT_REF_NUM_BDY = 5;                   // Number of initial refinements towards boundary.
