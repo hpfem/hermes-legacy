@@ -129,13 +129,6 @@ int main(int argc, char* argv[])
 
   // Create a refinement selector.
   H1ProjBasedSelector selector(CAND_LIST, CONV_EXP, H2DRS_DEFAULT_ORDER);
-
-  // Visualize initial condition.
-  char title[100];
-  ScalarView view("Initial condition", new WinGeom(0, 0, 440, 350));
-  OrderView ordview("Initial mesh", new WinGeom(445, 0, 410, 350));
-  view.show(&h_time_prev);
-  ordview.show(&space);
   
   // Time stepping loop.
   double current_time = 0; int ts = 1;
@@ -221,16 +214,6 @@ int main(int argc, char* argv[])
           // Increase the counter of performed adaptivity steps.
           as++;
       }
-      
-      // Visualize the solution and mesh.
-      char title[100];
-      sprintf(title, "Solution, time %g", current_time);
-      view.set_title(title);
-      view.show_mesh(false);
-      view.show(&h_time_new);
-      sprintf(title, "Mesh, time %g", current_time);
-      ordview.set_title(title);
-      ordview.show(&space);
 
       // Clean up.
       delete adaptivity;
