@@ -11,7 +11,7 @@ const int INIT_GLOB_REF_NUM = 3;                  // Number of initial uniform m
 const int INIT_REF_NUM_BDY = 5;                   // Number of initial refinements towards boundary.
 const int P_INIT = 2;                             // Initial polynomial degree.
 double time_step = 5e-4;                          // Time step.
-const double T_FINAL = 4*time_step + 1e-5;;       // Time interval length.
+const double T_FINAL = 4*time_step + 1e-4;        // Time interval length.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
