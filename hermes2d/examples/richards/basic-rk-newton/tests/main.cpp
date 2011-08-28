@@ -16,12 +16,35 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Newton's method.
-const double NEWTON_TOL = 1e-6;                   // Stopping criterion for the Newton's method.
-const int NEWTON_MAX_ITER = 100;                 // Maximum allowed number of Newton iterations.
+const double NEWTON_TOL = 1e-5;                   // Stopping criterion for the Newton's method.
+const int NEWTON_MAX_ITER = 1000;                 // Maximum allowed number of Newton iterations.
 const double DAMPING_COEFF = 1.0;
+
+// Choose one of the following time-integration methods, or define your own Butcher's table. The last number 
+// in the name of each method is its order. The one before last, if present, is the number of stages.
+// Explicit methods:
+//   Explicit_RK_1, Explicit_RK_2, Explicit_RK_3, Explicit_RK_4.
+// Implicit methods: 
+//   Implicit_RK_1, Implicit_Crank_Nicolson_2_2, Implicit_SIRK_2_2, Implicit_ESIRK_2_2, Implicit_SDIRK_2_2, 
+//   Implicit_Lobatto_IIIA_2_2, Implicit_Lobatto_IIIB_2_2, Implicit_Lobatto_IIIC_2_2, Implicit_Lobatto_IIIA_3_4, 
+//   Implicit_Lobatto_IIIB_3_4, Implicit_Lobatto_IIIC_3_4, Implicit_Radau_IIA_3_5, Implicit_SDIRK_5_4.
+// Embedded explicit methods:
+//   Explicit_HEUN_EULER_2_12_embedded, Explicit_BOGACKI_SHAMPINE_4_23_embedded, Explicit_FEHLBERG_6_45_embedded,
+//   Explicit_CASH_KARP_6_45_embedded, Explicit_DORMAND_PRINCE_7_45_embedded.
+// Embedded implicit methods:
+//   Implicit_SDIRK_CASH_3_23_embedded, Implicit_ESDIRK_TRBDF2_3_23_embedded, Implicit_ESDIRK_TRX2_3_23_embedded, 
+//   Implicit_SDIRK_BILLINGTON_3_23_embedded, Implicit_SDIRK_CASH_5_24_embedded, Implicit_SDIRK_CASH_5_34_embedded, 
+//   Implicit_DIRK_ISMAIL_7_45_embedded. 
+ButcherTableType butcher_table_type = Implicit_SDIRK_2_2;
 
 int main(int argc, char* argv[])
 {
+  // Choose a Butcher's table or define your own.
+  ButcherTable bt(butcher_table_type);
+  if (bt.is_explicit()) info("Using a %d-stage explicit R-K method.", bt.get_size());
+  if (bt.is_diagonally_implicit()) info("Using a %d-stage diagonally implicit R-K method.", bt.get_size());
+  if (bt.is_fully_implicit()) info("Using a %d-stage fully implicit R-K method.", bt.get_size());
+
   // Instantiate a class with global functions.
   Hermes2D hermes2d;
 
@@ -49,49 +72,51 @@ int main(int argc, char* argv[])
   memset(coeff_vec, 0, ndof*sizeof(double));
 
   // Convert initial condition into a Solution.
-  Solution h_time_prev;
+  Solution h_time_prev, h_time_new;
   Solution::vector_to_solution(coeff_vec, &space, &h_time_prev);
+  delete [] coeff_vec;
 
   // Initialize the weak formulation.
-  double current_time = 0;
-  CustomWeakFormRichardsIE wf(time_step, &h_time_prev);
+  CustomWeakFormRichardsRK wf;
 
   // Initialize the FE problem.
   DiscreteProblem dp(&wf, &space);
 
-  // Set up the solver, matrix, and rhs according to the solver selection.
-  SparseMatrix* matrix = create_matrix(matrix_solver);
-  Vector* rhs = create_vector(matrix_solver);
-  Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
+  // Initialize Runge-Kutta time stepping.
+  RungeKutta runge_kutta(&dp, &bt, matrix_solver);
 
   // Time stepping:
+  double current_time = 0;
   int ts = 1;
   do 
   {
     info("---- Time step %d, time %3.5f s", ts, current_time);
 
-    // Perform Newton's iteration.
-    bool verbose = true;
+    // Perform one Runge-Kutta time step according to the selected Butcher's table.
+    info("Runge-Kutta time step (t = %g s, time step = %g s, stages: %d).", 
+         current_time, time_step, bt.get_size());
     bool jacobian_changed = true;
-    bool residual_as_function = false;
-    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs, jacobian_changed,
-                               NEWTON_TOL, NEWTON_MAX_ITER, verbose, residual_as_function, 
-                               DAMPING_COEFF)) error("Newton's iteration failed.");
+    bool verbose = true;
+    double damping_coeff = 1.0;
+    double max_allowed_residual_norm = 1e10;
+    if (!runge_kutta.rk_time_step(current_time, time_step, &h_time_prev, 
+                                  &h_time_new, jacobian_changed, verbose,
+                                  NEWTON_TOL, NEWTON_MAX_ITER, damping_coeff,
+                                  max_allowed_residual_norm)) 
+    {
+      error("Runge-Kutta time step failed, try to decrease time step size.");
+    }
 
-    // Translate the resulting coefficient vector into the Solution sln.
-    Solution::vector_to_solution(coeff_vec, &space, &h_time_prev);
+    // Copy solution for the new time step.
+    h_time_prev.copy(&h_time_new);
 
-    // Increase current time and time step counter.
+    // Increase current time.
     current_time += time_step;
+
+    // Increase time step counter.
     ts++;
   }
   while (current_time < T_FINAL);
-
-  // Cleaning up.
-  delete [] coeff_vec;
-  delete matrix;
-  delete rhs;
-  delete solver;
 
   info("Coordinate (  0,   0) value = %lf", h_time_prev.get_pt_value(0.0, 0.0));
   info("Coordinate ( 25,  25) value = %lf", h_time_prev.get_pt_value(25.0, 25.0));
@@ -100,7 +125,7 @@ int main(int argc, char* argv[])
   info("Coordinate (100, 100) value = %lf", h_time_prev.get_pt_value(100.0, 100.0));
 
   double coor_x_y[5] = {0.0, 25.0, 50.0, 75.0, 100.0};
-  double value[5] = {0.000000, 0.052635, 3.981605, 90.197838, 0.000000};
+  double value[5] = {0.000000, 0.005529, 1.694636, 98.825517, 0.000000};
   bool success = true;
   for (int i = 0; i < 5; i++)
   {
