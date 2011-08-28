@@ -87,13 +87,13 @@ double CustomWeakFormRichardsIE::CustomJacobianFormVol::value(int n, double *wt,
   {
     double h_val_i = h_prev_newton->val[i] - H_OFFSET;
     result += wt[i] * (   dCdh(h_val_i) * u->val[i] * (h_prev_newton->val[i] - h_prev_time->val[i]) 
-                          * v->val[i] + C(h_val_i) * u->val[i] * v->val[i] 
-			  + dKdh(h_val_i) * u->val[i] * (h_prev_newton->dx[i] * v->dx[i] 
-							 + h_prev_newton->dy[i] * v->dy[i]) * time_step
+                        * v->val[i] + C(h_val_i) * u->val[i] * v->val[i] 
+                        + dKdh(h_val_i) * u->val[i] * (h_prev_newton->dx[i] * v->dx[i] 
+                        + h_prev_newton->dy[i] * v->dy[i]) * time_step
                         + K(h_val_i) * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]) * time_step
-			- ddKdhh(h_val_i) * u->val[i] * h_prev_newton->dy[i] * v->val[i] * time_step
+                        - ddKdhh(h_val_i) * u->val[i] * h_prev_newton->dy[i] * v->val[i] * time_step
                         - dKdh(h_val_i) * u->dy[i] * v->val[i] * time_step
-		      );
+                      );
   }
   return result;
 }
