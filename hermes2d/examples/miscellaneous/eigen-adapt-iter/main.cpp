@@ -22,14 +22,14 @@ using Hermes::EigenSolver;
 //  The following parameters can be changed:
 
 // Select one of the mesh files below.
-//const char* mesh_file = "domain_square_quad_1_sym.mesh";     // Square domain with one single element (symmetric).
+const char* mesh_file = "domain_square_quad_1_sym.mesh";     // Square domain with one single element (symmetric).
 //const char* mesh_file = "domain_square_quad_2_sym.mesh";     // Square domain with four quad elements (symmetric).
-const char* mesh_file = "domain_lshape_quad_sym.mesh";       // L-Shape domain with quadrilateral mesh (symmetric). 
+//const char* mesh_file = "domain_lshape_quad_sym.mesh";       // L-Shape domain with quadrilateral mesh (symmetric). 
 //const char* mesh_file = "domain_square_quad_2_nonsym.mesh";  // Square domain with four quad elements (non-symmetric).
 //const char* mesh_file = "domain_square_tria_nonsym.mesh";    // Square domain with triangular mesh    (non-symmetric).
 //const char* mesh_file = "domain_lshape_tria_nonsym.mesh";    // L-Shape domain with triangular mesh   (non-symmetric).  
 
-int TARGET_EIGENFUNCTION = 1;                     // Desired eigenfunction: 1 for the first, 2 for the second, etc.
+int TARGET_EIGENFUNCTION = 3;                     // Desired eigenfunction: 1 for the first, 2 for the second, etc.
 
 int ITERATIVE_METHOD = 1;                         // 1 = Newton, 2 = Picard.
 
@@ -78,6 +78,10 @@ const double PICARD_ABSTOL = 1e-10;
 const int PICARD_MAX_ITER = 100;
 const bool USE_SHIFT = false;
 
+/*********************************************************************************************************
+                          ADVANCED SETTINGS
+*********************************************************************************************************/
+
 // ORTHOGONALITY:
 // The orthogonality technologies are used to converge to the eigenvalues and eigenfunctions in the target 
 // eigenspace. There are three possible settings:
@@ -88,14 +92,14 @@ const bool USE_SHIFT = false;
 //     iterative method, the computed eigenfunctions to be orthogonal to all eigenfunctions of smaller 
 //     eigenvalues. This method is robust but quite expensive, because a lot of unwanted eigenpairs are 
 //     computed
-// SE_ORTHO == true AND USE_IMPROVED_ORTHO == true: Improved orthogonality - 
+// USE_ORTHO == true AND USE_IMPROVED_ORTHO == true: Improved orthogonality - 
 //     the method try to compute only the target eigenfunctions, in case that
 //     unwanted eigenfunctions are computed, the method automatically discard them and keep all future
 //     computed eigenfunctions orthogonal to the unwanted. The value THRESHOLD_ORTHO is used to decide 
 //     wether a compute eigenfucntion is to keep or to discard. This method is also very robust and much more
 //     efficient.  
 const bool USE_ORTHO = true;
-const bool USE_IMPROVED_ORTHO = true;
+const bool USE_IMPROVED_ORTHO = false;
 const double THRESHOLD_ORTHO = 0.5; 
 
 // RECONSTRUCTION TECHNOLOGY:
@@ -105,13 +109,13 @@ const double THRESHOLD_ORTHO = 0.5;
 // the eigenfunction of index TARGET_EIGENFUNCTION, and thencomputing an linear interpolation of those.
 // So in practise if the continuous eigenspace has dimensions 2, then the eigenfunction of index TARGET_EIGENFUNCTION
 // and another eigenfunction are computed on each adapted mesh.
-bool RECONSTRUCTION_ON = true;                    // Use eigenfunction reconstruction.
+bool RECONSTRUCTION_ON = false;                    // Use eigenfunction reconstruction.
 
 // Dimension of the continuous eigenspace that contains the eigenfunction of index TARGET_EIGENFUNCTION. 
 // If the actual number of dimensions of the continuous eigenspace is unknown, an upperbound of it is also enough.
 int DIMENSION_TARGET_EIGENSPACE = 1;  
 
-int FIRST_INDEX_EIGENSPACE = 1;                   // Index of the first eigenfunction in the continuous eigenspace 
+int FIRST_INDEX_EIGENSPACE = TARGET_EIGENFUNCTION;// Index of the first eigenfunction in the continuous eigenspace 
                                                   // that contains the eigenfunction of index TARGET_EIGENFUNCTION            
 
 // ORTHOGONALIZATION TECHNOLOGY:
@@ -120,6 +124,10 @@ int FIRST_INDEX_EIGENSPACE = 1;                   // Index of the first eigenfun
 // eigenfunctions of index less or equal to TARGET_EIGENFUNCTION. So in practise if TARGET_EIGENFUNCTION = 3, then
 // also the eigenfunctions of indices 1 and 2 are computed on each adapted mesh.
 // The value of DIMENSION_SUBSPACE is set automatically in the code.
+
+/*********************************************************************************************************
+                          END OF ADVANCED SETTINGS
+*********************************************************************************************************/
 
 // Main function.
 int main(int argc, char* argv[])
