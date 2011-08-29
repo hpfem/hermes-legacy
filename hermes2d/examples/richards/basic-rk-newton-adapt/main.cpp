@@ -247,16 +247,6 @@ int main(int argc, char* argv[])
           as++;
       }
       
-      // Visualize the solution and mesh.
-      char title[100];
-      sprintf(title, "Solution, time %g", current_time);
-      view.set_title(title);
-      view.show_mesh(false);
-      view.show(&h_time_new);
-      sprintf(title, "Mesh, time %g", current_time);
-      ordview.set_title(title);
-      ordview.show(&space);
-
       // Clean up.
       delete adaptivity;
       delete ref_space;
@@ -264,6 +254,16 @@ int main(int argc, char* argv[])
         delete h_time_new.get_mesh();
     }
     while (done == false);
+
+    // Visualize the solution and mesh.
+    char title[100];
+    sprintf(title, "Solution, time %g", current_time);
+    view.set_title(title);
+    view.show_mesh(false);
+    view.show(&h_time_new);
+    sprintf(title, "Mesh, time %g", current_time);
+    ordview.set_title(title);
+    ordview.show(&space);
 
     // Copy last reference solution into h_time_prev.
     h_time_prev.copy(&h_time_new);
