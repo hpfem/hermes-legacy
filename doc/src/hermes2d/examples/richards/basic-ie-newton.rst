@@ -44,7 +44,7 @@ The corresponding weak formulation reads
 Defining weak forms
 ~~~~~~~~~~~~~~~~~~~
 
-The weak formulation is a combination of default and custom weak forms::
+The weak formulation is a combination of custom Jacobian and Residual weak forms::
 
     CustomWeakFormRichardsIE::CustomWeakFormRichardsIE(double time_step, Solution* h_time_prev) : WeakForm(1)
     {

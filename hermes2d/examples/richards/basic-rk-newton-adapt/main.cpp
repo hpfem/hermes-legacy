@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
   // Visualize initial condition.
   char title[100];
   ScalarView view("Initial condition", new WinGeom(0, 0, 440, 350));
-  OrderView ordview("Initial mesh", new WinGeom(445, 0, 410, 350));
+  OrderView ordview("Initial mesh", new WinGeom(445, 0, 440, 350));
   view.show(&h_time_prev);
   ordview.show(&space);
 
