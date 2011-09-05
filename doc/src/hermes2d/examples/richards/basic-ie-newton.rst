@@ -18,7 +18,7 @@ We assume the time-dependent Richard's equation
 .. math::
     :label: richards-basic-ie-newton
 
-       C(h) \frac{\partial h}{\partial t} - \nabla \cdot (K(h) \nabla h) - K'(h) \frac{\partial h}{\partial t}= 0
+       C(h) \frac{\partial h}{\partial t} - \nabla \cdot (K(h) \nabla h) - K'(h) \frac{\partial h}{\partial z}= 0
 
 where $C$ and $K$ are given functions of the unknown pressure head $h$, $\bm{x}=(x,z)$ are spatial coordinates, and $t$ is time. 
 
@@ -39,7 +39,7 @@ The corresponding weak formulation reads
 
 .. math::
 
-     \int_{\Omega} C(h) \frac{\partial h}{\partial t} v d\bm{x} + \int_{\Omega} K(h) \nabla h \cdot \nabla v d\bm{x} - \int_{\Omega} K'(h) \frac{\partial h}{\partial t} v d\bm{x} = 0.
+     \int_{\Omega} C(h) \frac{\partial h}{\partial t} v d\bm{x} + \int_{\Omega} K(h) \nabla h \cdot \nabla v d\bm{x} - \int_{\Omega} K'(h) \frac{\partial h}{\partial z} v d\bm{x} = 0.
 
 Defining weak forms
 ~~~~~~~~~~~~~~~~~~~
