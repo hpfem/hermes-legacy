@@ -9,7 +9,7 @@ If you are using a Debian-based system, install the required libraries first:
 .. sourcecode::
     .
 
-    apt-get install cmake g++ gfortran freeglut3-dev libsuitesparse-dev libglew1.5-dev python-dev python-numpy python-scipy cython python-matplotlib
+    apt-get install cmake g++ gfortran freeglut3-dev libsuitesparse-dev libglew1.5-dev python-dev python-numpy python-scipy cython python-matplotlib libxerces-c-dev xsdcxx
 
 .. latexcode::
     .
