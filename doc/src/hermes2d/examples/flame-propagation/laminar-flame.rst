@@ -12,9 +12,10 @@ describing a very simple flame propagation model (laminar flame, no fluid mechan
 The computational domain shown below contains in the middle a narrow portion (cooling rods) 
 whose purpose is to slow down the chemical reaction:
 
-.. image:: laminar-flame/domain.png
+.. figure:: laminar-flame/domain.png
    :align: center
-   :width: 760
+   :scale: 60% 
+   :figclass: align-center
    :alt: computational domain
 
 The equations for the temperature $T$ and species concentration $Y$ have the form
@@ -149,23 +150,27 @@ Sample results
 
 A few snapshots of the reaction rate $\omega$ at various times are shown below:
 
-.. image:: laminar-flame/sol1.png
+.. figure:: laminar-flame/sol1.png
    :align: center
-   :width: 800
+   :scale: 60% 
+   :figclass: align-center
    :alt: solution
 
-.. image:: laminar-flame/sol2.png
+.. figure:: laminar-flame/sol2.png
    :align: center
-   :width: 800
+   :scale: 60% 
+   :figclass: align-center
    :alt: solution
 
-.. image:: laminar-flame/sol3.png
+.. figure:: laminar-flame/sol3.png
    :align: center
-   :width: 800
+   :scale: 60% 
+   :figclass: align-center
    :alt: solution
 
-.. image:: laminar-flame/sol4.png
+.. figure:: laminar-flame/sol4.png
    :align: center
-   :width: 800
+   :scale: 60% 
+   :figclass: align-center
    :alt: solution
 

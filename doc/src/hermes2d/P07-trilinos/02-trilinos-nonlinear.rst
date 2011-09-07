@@ -55,12 +55,22 @@ can be used as in the previous example::
 Initializing NOX
 ~~~~~~~~~~~~~~~~
 
-::
+.. sourcecode::
+    .
 
     // Initialize the NOX solver with the vector "coeff_vec".
     info("Initializing NOX.");
     NoxSolver nox_solver(&dp2, message_type, "GMRES", "Newton", ls_tolerance, "", flag_absresid, abs_resid, 
                          flag_relresid, rel_resid, max_iters);
+    nox_solver.set_init_sln(coeff_vec);
+
+.. latexcode::
+    .
+
+    // Initialize the NOX solver with the vector "coeff_vec".
+    info("Initializing NOX.");
+    NoxSolver nox_solver(&dp2, message_type, "GMRES", "Newton", ls_tolerance, "", flag_absresid,
+                         abs_resid, flag_relresid, rel_resid, max_iters);
     nox_solver.set_init_sln(coeff_vec);
 
 Setting a preconditioner
@@ -80,28 +90,48 @@ Setting a preconditioner
 Calling NOX
 ~~~~~~~~~~~
 
-::
+.. sourcecode::
+    .
 
-  // Solve the nonlinear problem using NOX.
-  info("Assembling by DiscreteProblem, solving by NOX.");
-  Solution sln2;
-  if (nox_solver.solve())
-  {
-    Solution::vector_to_solution(nox_solver.get_solution(), &space, &sln2);
-    info("Number of nonlin iterations: %d (norm of residual: %g)", 
-         nox_solver.get_num_iters(), nox_solver.get_residual());
-    info("Total number of iterations in linsolver: %d (achieved tolerance in the last step: %g)", 
-         nox_solver.get_num_lin_iters(), nox_solver.get_achieved_tol());
-  }
-  else
-    error("NOX failed.");
+    // Solve the nonlinear problem using NOX.
+    info("Assembling by DiscreteProblem, solving by NOX.");
+    Solution sln2;
+    if (nox_solver.solve())
+    {
+      Solution::vector_to_solution(nox_solver.get_solution(), &space, &sln2);
+      info("Number of nonlin iterations: %d (norm of residual: %g)", 
+           nox_solver.get_num_iters(), nox_solver.get_residual());
+      info("Total number of iterations in linsolver: %d (achieved tolerance in the last step: %g)", 
+           nox_solver.get_num_lin_iters(), nox_solver.get_achieved_tol());
+    }
+    else
+      error("NOX failed.");
+
+.. latexcode::
+    .
+
+    // Solve the nonlinear problem using NOX.
+    info("Assembling by DiscreteProblem, solving by NOX.");
+    Solution sln2;
+    if (nox_solver.solve())
+    {
+      Solution::vector_to_solution(nox_solver.get_solution(), &space, &sln2);
+      info("Number of nonlin iterations: %d (norm of residual: %g)", 
+           nox_solver.get_num_iters(), nox_solver.get_residual());
+      info("Total number of iterations in linsolver: %d (achieved tolerance in the last
+           step: %g)", 
+           nox_solver.get_num_lin_iters(), nox_solver.get_achieved_tol());
+    }
+    else
+      error("NOX failed.");
 
 Sample results
 ~~~~~~~~~~~~~~
 
 You should see the following result:
 
-.. image:: 02-trilinos-nonlinear/1.png
+.. figure:: 02-trilinos-nonlinear/1.png
    :align: center
-   :scale: 50%
+   :scale: 70% 
+   :figclass: align-center
    :alt: Sample result

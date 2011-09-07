@@ -10,9 +10,10 @@ This example solves adaptively the pressure field in an apartment, that is
 caused by a harmonic local acoustics source. The geometry and initial 
 mesh are shown below.
 
-.. image:: apartment/init_mesh.png
+.. figure:: apartment/init_mesh.png
    :align: center
-   :width: 600  
+   :scale: 60% 
+   :figclass: align-center
    :alt: Domain.
 
 Equation solved: 
@@ -35,15 +36,17 @@ Sample results
 
 Pressure distribution:
 
-.. image:: apartment/apartment-sol.png
-   :width: 600   
+.. figure:: apartment/apartment-sol.png
+   :scale: 60% 
+   :figclass: align-center 
    :align: center 	
    :alt: Apartment - final solution.
 
 Final mesh:
 
-.. image:: apartment/apartment-orders.png
-   :width: 600   
+.. figure:: apartment/apartment-orders.png
+   :scale: 60% 
+   :figclass: align-center  
    :align: center 	
    :alt: Apartment - final mesh.
 

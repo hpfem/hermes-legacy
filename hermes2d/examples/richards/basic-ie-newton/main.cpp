@@ -30,12 +30,9 @@ using namespace RefinementSelectors;
 //
 //  The following parameters can be changed:
 
-// If this is defined, use van Genuchten's constitutive relations, otherwise use Gardner's.
-//#define CONSTITUTIVE_GENUCHTEN
-
 const int INIT_GLOB_REF_NUM = 3;                  // Number of initial uniform mesh refinements.
 const int INIT_REF_NUM_BDY = 5;                   // Number of initial refinements towards boundary.
-const int P_INIT = 4;                             // Initial polynomial degree.
+const int P_INIT = 2;                             // Initial polynomial degree.
 double time_step = 5e-4;                          // Time step.
 const double T_FINAL = 0.4;                       // Time interval length.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
@@ -108,7 +105,7 @@ int main(int argc, char* argv[])
     bool jacobian_changed = true;
     bool residual_as_function = false;
     if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs, jacobian_changed,
-			       NEWTON_TOL, NEWTON_MAX_ITER, verbose, residual_as_function, 
+                               NEWTON_TOL, NEWTON_MAX_ITER, verbose, residual_as_function, 
                                DAMPING_COEFF)) error("Newton's iteration failed.");
 
     // Translate the resulting coefficient vector into the Solution sln.

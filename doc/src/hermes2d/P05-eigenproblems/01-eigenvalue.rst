@@ -26,20 +26,44 @@ Dirichlet boundary conditions.
 Input parameters
 ~~~~~~~~~~~~~~~~
 
-Most input parameters are self-explanatory, such as::
+Most input parameters are self-explanatory, such as:
+
+.. sourcecode::
+    .
 
     const int NUMBER_OF_EIGENVALUES = 50;             // Desired number of eigenvalues.
     const int P_INIT = 4;                             // Uniform polynomial degree of mesh elements.
     const int INIT_REF_NUM = 3;                       // Number of initial mesh refinements.
 
-The parameter TARGET_VALUE is specific to the PySparse library::
+.. latexcode::
+    .
+
+    const int NUMBER_OF_EIGENVALUES = 50;             // Desired number of eigenvalues.
+    const int P_INIT = 4;                             // Uniform polynomial degree of mesh
+                                                      // elements.
+    const int INIT_REF_NUM = 3;                       // Number of initial mesh refinements.
+
+The parameter TARGET_VALUE is specific to the PySparse library:
+
+.. sourcecode::
+    .
 
     const double TARGET_VALUE = 2.0;                  // PySparse parameter: Eigenvalues in the vicinity of this number will be computed. 
+
+.. latexcode::
+    .
+
+    const double TARGET_VALUE = 2.0;               // PySparse parameter: Eigenvalues in
+                                                   // the vicinity of this number will be
+                                                   // computed. 
 
 Weak forms
 ~~~~~~~~~~
 
-The matrix weak forms on the right- and left-hand side are standard::
+The matrix weak forms on the right- and left-hand side are standard:
+
+.. sourcecode::
+    .
 
     WeakFormEigenLeft::WeakFormEigenLeft() : WeakForm(1) 
     {
@@ -49,7 +73,7 @@ The matrix weak forms on the right- and left-hand side are standard::
 
     template<typename Real, typename Scalar>
     Scalar WeakFormEigenLeft::MatrixFormPotential::matrix_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, 
-							       Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const 
+				                   Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const 
     {
       Scalar result = 0;
       for (int i = 0; i < n; i++) 
@@ -62,13 +86,13 @@ The matrix weak forms on the right- and left-hand side are standard::
     }
 
     scalar WeakFormEigenLeft::MatrixFormPotential::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-							 Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+		                                   Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
     {
       return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
     }
 
     Ord WeakFormEigenLeft::MatrixFormPotential::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, 
-						    Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
+			                        Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
     {
       return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
     }
@@ -79,6 +103,49 @@ The matrix weak forms on the right- and left-hand side are standard::
       add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 0));
     }
 
+.. latexcode::
+    .
+
+    WeakFormEigenLeft::WeakFormEigenLeft() : WeakForm(1) 
+    {
+      add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0));
+      add_matrix_form(new MatrixFormPotential(0, 0));
+    }
+
+    template<typename Real, typename Scalar>
+    Scalar WeakFormEigenLeft::MatrixFormPotential::matrix_form(int n, double *wt,
+                              Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, 
+                              Geom<Real> *e, ExtData<Scalar> *ext) const 
+    {
+      Scalar result = 0;
+      for (int i = 0; i < n; i++) 
+      {
+	Real x = e->x[i];
+	Real y = e->y[i];
+	result += wt[i] * (x*x + y*y) * u->val[i] * v->val[i];
+      }
+      return result;
+    }
+
+    scalar WeakFormEigenLeft::MatrixFormPotential::value(int n, double *wt, Func<scalar>
+                              *u_ext[], Func<double> *u, Func<double> *v, 
+                              Geom<double> *e, ExtData<scalar> *ext) const 
+    {
+      return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
+    }
+
+    Ord WeakFormEigenLeft::MatrixFormPotential::ord(int n, double *wt, 
+                           Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, 
+                           Geom<Ord> *e, ExtData<Ord> *ext) const 
+    {
+      return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
+    }
+
+
+    WeakFormEigenRight::WeakFormEigenRight() : WeakForm(1) 
+    {
+      add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 0));
+    }
 
 
 Initialization and assembling of matrices
@@ -152,44 +219,50 @@ eigenvalues:
 
 $\lambda_1 = 6.011956$
 
-.. image:: 01-eigenvalue/1.png
+.. figure:: 01-eigenvalue/1.png
    :align: center
-   :scale: 50%
+   :scale: 40% 
+   :figclass: align-center
    :alt: Sample result
 
 $\lambda_2 = 10.206996$
 
-.. image:: 01-eigenvalue/2.png
+.. figure:: 01-eigenvalue/2.png
    :align: center
-   :scale: 50%
+   :scale: 40% 
+   :figclass: align-center
    :alt: Sample result
 
 $\lambda_3 = 10.206996$
 
-.. image:: 01-eigenvalue/3.png
+.. figure:: 01-eigenvalue/3.png
    :align: center
-   :scale: 50%
+   :scale: 40% 
+   :figclass: align-center
    :alt: Sample result
 
 $\lambda_4 = 14.402036$
 
-.. image:: 01-eigenvalue/4.png
+.. figure:: 01-eigenvalue/4.png
    :align: center
-   :scale: 50%
+   :scale: 40% 
+   :figclass: align-center
    :alt: Sample result
 
 $\lambda_5 = 15.401239$
 
-.. image:: 01-eigenvalue/5.png
+.. figure:: 01-eigenvalue/5.png
    :align: center
-   :scale: 50%
+   :scale: 40% 
+   :figclass: align-center
    :alt: Sample result
 
 $\lambda_6 = 15.401239$
 
-.. image:: 01-eigenvalue/6.png
+.. figure:: 01-eigenvalue/6.png
    :align: center
-   :scale: 50%
+   :scale: 40% 
+   :figclass: align-center
    :alt: Sample result
 
 

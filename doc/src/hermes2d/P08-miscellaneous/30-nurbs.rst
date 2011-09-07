@@ -71,9 +71,10 @@ Snippet from the file domain-1.mesh::
 
 Result:
 
-.. image:: 30-nurbs/1.png
+.. figure:: 30-nurbs/1.png
    :align: center
-   :width: 500
+   :scale: 50% 
+   :figclass: align-center
    :alt: NURBS with one control point.
 
 **Two inner control points**
@@ -98,9 +99,10 @@ Snippet from the file domain-3.mesh::
 
 Result:
 
-.. image:: 30-nurbs/2.png
+.. figure:: 30-nurbs/2.png
    :align: center
-   :width: 500
+   :scale: 50% 
+   :figclass: align-center
    :alt: NURBS with two control points.
 
 
@@ -127,9 +129,10 @@ Snippet from the file domain-2.mesh::
 
 Result:
 
-.. image:: 30-nurbs/3.png
+.. figure:: 30-nurbs/3.png
    :align: center
-   :width: 500
+   :scale: 50% 
+   :figclass: align-center
    :alt: NURBS with three control points.
 
 

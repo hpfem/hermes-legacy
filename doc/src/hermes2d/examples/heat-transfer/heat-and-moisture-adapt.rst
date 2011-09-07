@@ -236,22 +236,25 @@ does not have a significant influence on the overall accuracy in the energy norm
 
 Solution and mesh at t = 10 days:
 
-.. image:: heat-and-moisture-adapt/1.png
+.. figure:: heat-and-moisture-adapt/1.png
    :align: center
-   :width: 800
+   :scale: 50% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 Solution and mesh at t = 20 days:
 
-.. image:: heat-and-moisture-adapt/2.png
+.. figure:: heat-and-moisture-adapt/2.png
    :align: center
-   :width: 800
+   :scale: 50% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 Solution and mesh at t = 50 days:
 
-.. image:: heat-and-moisture-adapt/3.png
+.. figure:: heat-and-moisture-adapt/3.png
    :align: center
-   :width: 800
+   :scale: 50% 
+   :figclass: align-center
    :alt: Sample screenshot
 

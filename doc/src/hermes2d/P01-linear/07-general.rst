@@ -20,7 +20,8 @@ We solve a linear second-order equation of the form
 
 .. math::
 
-         -\frac{\partial}{\partial x}\left(a_{11}(x,y)\frac{\partial u}{\partial x}\right) - \frac{\partial}{\partial x}\left(a_{12}(x,y)\frac{\partial u}{\partial y}\right) - \frac{\partial}{\partial y}\left(a_{21}(x,y)\frac{\partial u}{\partial x}\right) - \frac{\partial}{\partial y}\left(a_{22}(x,y)\frac{\partial u}{\partial y}\right) + a_1(x,y)\frac{\partial u}{\partial x} + a_{21}(x,y)\frac{\partial u}{\partial y} + a_0(x,y)u - rhs(x,y) = 0,
+         -\frac{\partial}{\partial x}\left(a_{11}(x,y)\frac{\partial u}{\partial x}\right) - \frac{\partial}{\partial x}\left(a_{12}(x,y)\frac{\partial u}{\partial y}\right) - \frac{\partial}{\partial y}\left(a_{21}(x,y)\frac{\partial u}{\partial x}\right) - \frac{\partial}{\partial y}\left(a_{22}(x,y)\frac{\partial u}{\partial y}\right) + a_1(x,y)\frac{\partial u}{\partial x} \\
+         + a_{21}(x,y)\frac{\partial u}{\partial y} + a_0(x,y)u - rhs(x,y) = 0,
 
 in a square domain $\Omega = (-1, 1)^2$. The equation is equipped with Dirichlet 
 boundary conditions 
@@ -61,9 +62,21 @@ The constructor just passes the boundary marker::
     { 
     }
 
-Next we tell that the value returned will be a function (i.e., not a constant)::
+Next we tell that the value returned will be a function (i.e., not a constant):
+
+.. sourcecode::
+    .
 
     inline EssentialBoundaryCondition::EssentialBCValueType CustomEssentialBCNonConst::get_value_type() const 
+    { 
+      return EssentialBoundaryCondition::BC_FUNCTION; 
+    }
+
+.. latexcode::
+    .
+
+    inline EssentialBoundaryCondition::EssentialBCValueType CustomEssentialBCNonConst::
+                                       get_value_type() const 
     { 
       return EssentialBoundaryCondition::BC_FUNCTION; 
     }
@@ -148,10 +161,36 @@ vector form, and a surface vector form that is due to the Neumann boundary condi
     };
 
 Let us look, for example, at the volumetric matrix form. First we define 
-its value::
+its value:
+
+.. sourcecode::
+    .
 
     scalar CustomWeakFormGeneral::MatrixFormVolGeneral::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
 							      Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
+    {
+      scalar result = 0;
+      for (int i=0; i < n; i++) {
+	double x = e->x[i];
+	double y = e->y[i];
+	result += (a_11(x, y) * u->dx[i] * v->dx[i] +
+		   a_12(x, y) * u->dy[i] * v->dx[i] +
+		   a_21(x, y) * u->dx[i] * v->dy[i] +
+		   a_22(x, y) * u->dy[i] * v->dy[i] +
+		   a_1(x, y) * u->dx[i] * v->val[i] +
+		   a_2(x, y) * u->dy[i] * v->val[i] +
+		   a_0(x, y) * u->val[i] * v->val[i]) * wt[i];
+      }
+      return result;
+    }
+
+.. latexcode::
+    .
+
+    scalar CustomWeakFormGeneral::MatrixFormVolGeneral::value(int n, double *wt, 
+                                  Func<scalar> *u_ext[], Func<double> *u, 
+                                  Func<double> *v, Geom<double> *e,
+                                  ExtData<scalar> *ext) const 
     {
       scalar result = 0;
       for (int i=0; i < n; i++) {
@@ -175,12 +214,27 @@ coefficients defined by the user, **the user has to tell what quadrature order s
 Setting the quadrature order manually
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To do this, the user needs to redefine the purely virtual method ord()::
+To do this, the user needs to redefine the purely virtual method ord():
+
+.. sourcecode::
+    .
 
     Ord CustomWeakFormGeneral::MatrixFormVolGeneral::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, 
 							 Geom<Ord> *e, ExtData<Ord> *ext) const 
     {
       // Returning the sum of the polynomial degrees of the basis and test function plus two.
+      return u->val[0] * v->val[0] * e->x[0] * e->x[0]; 
+    }
+
+.. latexcode::
+    .
+
+    Ord CustomWeakFormGeneral::MatrixFormVolGeneral::ord(int n, double *wt, Func<Ord> 
+                               *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e, 
+                               ExtData<Ord> *ext) const 
+    {
+      // Returning the sum of the polynomial degrees of the basis and test function plus
+      // two.
       return u->val[0] * v->val[0] * e->x[0] * e->x[0]; 
     }
 
@@ -204,8 +258,10 @@ matrix_form()
     Scalar matrix_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u,
                        Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const;
 
-with the body
-::
+with the body:
+
+.. sourcecode::
+    .
 
     template<typename Real, typename Scalar>
     Scalar CustomWeakFormGeneral::MatrixFormVolGeneral::matrix_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u,
@@ -226,8 +282,33 @@ with the body
       return result;
     }
 
-The methods value() and ord() would be defined at once::
-::
+.. latexcode::
+    .
+
+    template<typename Real, typename Scalar>
+    Scalar CustomWeakFormGeneral::MatrixFormVolGeneral::matrix_form(int n, double *wt,
+                                  Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v,
+                                  Geom<Real> *e, ExtData<Scalar> *ext) const
+    {
+      Scalar result = 0;
+      for (int i=0; i < n; i++) {
+	Real x = e->x[i];
+	Real y = e->y[i];
+	result += (a_11(x, y) * u->dx[i] * v->dx[i] +
+		   a_12(x, y) * u->dy[i] * v->dx[i] +
+		   a_21(x, y) * u->dx[i] * v->dy[i] +
+		   a_22(x, y) * u->dy[i] * v->dy[i] +
+		   a_1(x, y) * u->dx[i] * v->val[i] +
+		   a_2(x, y) * u->dy[i] * v->val[i] +
+		   a_0(x, y) * u->val[i] * v->val[i]) * wt[i];
+      }
+      return result;
+    }
+
+The methods value() and ord() would be defined at once:
+
+.. sourcecode::
+    .
 
     scalar CustomWeakFormGeneral::MatrixFormVolGeneral::value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
 							      Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
@@ -235,11 +316,34 @@ The methods value() and ord() would be defined at once::
       return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
     }
 
+.. latexcode::
+    .
+
+    scalar CustomWeakFormGeneral::MatrixFormVolGeneral::value(int n, double *wt,
+                                  Func<scalar> *u_ext[], Func<double> *u, 
+                                  Func<double> *v, Geom<double> *e,
+                                  ExtData<scalar> *ext) const 
+    {
+      return matrix_form<double, scalar>(n, wt, u_ext, u, v, e, ext);
+    }
+
 and 
-::
+
+.. sourcecode::
+    .
 
     Ord CustomWeakFormGeneral::MatrixFormVolGeneral::ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, 
 							 Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
+    {
+      return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
+    }
+
+.. latexcode::
+    .
+
+    Ord CustomWeakFormGeneral::MatrixFormVolGeneral::ord(int n, double *wt, Func<Ord>
+                               *u_ext[], Func<Ord> *u, Func<Ord> *v, Geom<Ord> *e,
+                               ExtData<Ord> *ext) const 
     {
       return matrix_form<Ord, Ord>(n, wt, u_ext, u, v, e, ext);
     }
@@ -258,7 +362,8 @@ Sample result
 
 The output of this example is shown below:
 
-.. image:: 07-general/general.png
+.. figure:: 07-general/general.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Output of example 07-general.

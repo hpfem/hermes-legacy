@@ -38,10 +38,10 @@ Exact solution
 Sample solution
 ~~~~~~~~~~~~~~~
 
-.. image:: benchmark-smooth-iso/sol_3d_view.png
+.. figure:: benchmark-smooth-iso/sol_3d_view.png
    :align: center
-   :width: 500
-   :height: 300
+   :scale: 40% 
+   :figclass: align-center
    :alt: Solution.
 
 Convergence comparisons
@@ -55,40 +55,40 @@ Convergence graphs for all cases are shown at the end of this section.
 
 Final mesh (h-FEM, p=1): 27469 DOF, error 0.39173795799476 %
 
-.. image:: benchmark-smooth-iso/mesh-h1.png
+.. figure:: benchmark-smooth-iso/mesh-h1.png
    :align: center
-   :width: 500
-   :height: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh
 
 Final mesh (h-FEM, p=2): 39185 DOF, error 0.0022127484879974 %
 
-.. image:: benchmark-smooth-iso/mesh-h2.png
+.. figure:: benchmark-smooth-iso/mesh-h2.png
    :align: center
-   :width: 500
-   :height: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh
 
 Final mesh (hp-FEM): 49 DOF, error 4.2775412425017e-05 %
 
-.. image:: benchmark-smooth-iso/mesh-hp.png
+.. figure:: benchmark-smooth-iso/mesh-hp.png
    :align: center
-   :width: 500
-   :height: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh
 
 DOF convergence graphs:
 
-.. image:: benchmark-smooth-iso/conv_dof.png
+.. figure:: benchmark-smooth-iso/conv_dof.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU time convergence graphs:
 
-.. image:: benchmark-smooth-iso/conv_cpu.png
+.. figure:: benchmark-smooth-iso/conv_cpu.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.

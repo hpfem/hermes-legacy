@@ -17,10 +17,20 @@ Default constant essential boundary conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We already met a default essential boundary condition in the previous example 
-`03-poisson <http://hpfem.org/hermes/doc/src/hermes2d/P01-linear/03-poisson.html>`_::
+`03-poisson <http://hpfem.org/hermes/doc/src/hermes2d/P01-linear/03-poisson.html>`_:
+
+.. sourcecode::
+    .
 
     // Initialize essential boundary conditions.
     DefaultEssentialBCConst bc_essential(Hermes::vector<std::string>("Bottom", "Inner", "Outer", "Left"), FIXED_BDY_TEMP);
+
+.. latexcode::
+    .
+
+    // Initialize essential boundary conditions.
+    DefaultEssentialBCConst bc_essential(Hermes::vector<std::string>("Bottom", "Inner",
+                                                 "Outer", "Left"), FIXED_BDY_TEMP);
 
 This one assigned a constant value FIXED_BDY_TEMP to all boundary edges with the markers 
 "Bottom", "Inner", "Outer" or "Left". 
@@ -54,7 +64,10 @@ Custom essential boundary conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Custom essential conditions can be created by subclassing the abstract class
-EssentialBoundaryCondition::
+EssentialBoundaryCondition:
+
+.. sourcecode::
+    .
 
     class HERMES_API EssentialBoundaryCondition
     {
@@ -78,6 +91,53 @@ EssentialBoundaryCondition::
       /// Represents a function prescribed on the boundary. Gets the boundary point coordinate as well as the 
       /// normal and tangential vectors.
       virtual scalar value(double x, double y, double n_x, double n_y, double t_x, double t_y) const = 0;
+
+      /// Special case of a constant function.
+      scalar value_const;
+
+      /// Sets the current time for time-dependent boundary conditions.
+      void set_current_time(double time);
+      double get_current_time() const;
+
+    protected:
+      /// Current time.
+      double current_time;
+
+      // Markers.
+      Hermes::vector<std::string> markers;
+
+      // Friend class.
+      friend class EssentialBCs;
+      friend class Space;
+    };
+
+.. latexcode::
+    .
+
+    class HERMES_API EssentialBoundaryCondition
+    {
+    public:
+      /// Default constructor.
+      EssentialBoundaryCondition(Hermes::vector<std::string> markers);
+      EssentialBoundaryCondition(std::string marker);
+
+      /// Virtual destructor.
+      virtual ~EssentialBoundaryCondition();
+
+      /// Types of description of boundary values, either a function (callback), or a
+      /// constant.
+      enum EssentialBCValueType {
+	BC_FUNCTION,
+	BC_CONST
+      };
+
+      /// Pure virtual function reporting the type of the essential boundary condition.
+      virtual EssentialBCValueType get_value_type() const = 0;
+
+      /// Represents a function prescribed on the boundary. Gets the boundary point
+      /// coordinate as well as the normal and tangential vectors.
+      virtual scalar value(double x, double y, double n_x, double n_y, double t_x,
+                           double t_y) const = 0;
 
       /// Special case of a constant function.
       scalar value_const;

@@ -6,9 +6,10 @@ Neumann BC (05-bc-neumann)
 
 Let us recall the domain and boundary markers from the previous example:
 
-.. image:: 04-05-06-bc/simplemesh.png
+.. figure:: 04-05-06-bc/simplemesh.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Sample finite element mesh.
 
 We will solve the same equation 
@@ -86,7 +87,10 @@ The header of the custom form CustomWeakFormPoissonNeumann is defined in
                                    HermesFunction* surf_src_term);
     };
 
-and its constructor in `definitions.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P01-linear/05-bc-neumann/definitions.cpp>`_::
+and its constructor in `definitions.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P01-linear/05-bc-neumann/definitions.cpp>`_:
+
+.. sourcecode::
+    .
 
     CustomWeakFormPoissonNeumann::CustomWeakFormPoissonNeumann(std::string mat_al, HermesFunction* lambda_al,
                                                                std::string mat_cu, HermesFunction* lambda_cu,
@@ -106,13 +110,38 @@ and its constructor in `definitions.cpp <http://git.hpfem.org/hermes.git/blob/HE
       add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(0, bdy_heat_flux, surf_src_term));
     };
 
+.. latexcode::
+    .
+
+    CustomWeakFormPoissonNeumann::CustomWeakFormPoissonNeumann(std::string mat_al,
+                                  HermesFunction* lambda_al, std::string mat_cu,
+                                  HermesFunction* lambda_cu, HermesFunction* 
+                                  vol_src_term, std::string bdy_heat_flux, 
+                                  HermesFunction* surf_src_term)
+                                  : WeakForm(1)
+    {
+      // Jacobian forms - volumetric.
+      add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_al, lambda_al));
+      add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_cu, lambda_cu));
+
+      // Residual forms - volumetric.
+      add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_al, lambda_al));
+      add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_cu, lambda_cu));
+      add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, vol_src_term));
+
+      // Residual forms - surface.
+      add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(0, bdy_heat_flux,
+                                            surf_src_term));
+    };
+
 Sample results
 ~~~~~~~~~~~~~~
 
 The output for the parameters $C_{src} = 3000$, $\lambda_{Al} = 236$, $\lambda_{Cu} = 386$,
 $A = 1$, $B = 1$, $C = 20$ and $C_{flux} = 0$ is shown below:
 
-.. image:: 04-05-06-bc/neumann.png
+.. figure:: 04-05-06-bc/neumann.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution of the Neumann problem.

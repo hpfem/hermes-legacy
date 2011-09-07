@@ -21,9 +21,10 @@ pressure with the standard (continuous) Taylor-Hood elements is shown.
 The computational domain is a rectangular channel containing a 
 circular obstacle: 
 
-.. image:: img-circular-obstacle/domain.png
+.. figure:: img-circular-obstacle/domain.png
    :align: center
-   :width: 760
+   :scale: 45% 
+   :figclass: align-center
    :alt: computational domain
 
 The circle is defined via NURBS. Its radius and position, as well as some additional 
@@ -114,7 +115,10 @@ Calculating initial coefficient vector for the Newton's method
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 After registering weak forms and initializing the DiscreteProblem, if NEWTON == true 
-we calculate the initial coefficient vector $\bfY_0$ for the Newton's method::
+we calculate the initial coefficient vector $\bfY_0$ for the Newton's method:
+
+.. sourcecode::
+    .
 
     // Project the initial condition on the FE space to obtain initial
     // coefficient vector for the Newton's method.
@@ -124,6 +128,21 @@ we calculate the initial coefficient vector $\bfY_0$ for the Newton's method::
       OGProjection::project_global(Hermes::vector<Space *>(&xvel_space, &yvel_space, &p_space),
 		     Hermes::vector<MeshFunction *>(&xvel_prev_time, &yvel_prev_time, &p_prev_time),
 		     coeff_vec, matrix_solver,
+		     Hermes::vector<ProjNormType>(vel_proj_norm, vel_proj_norm, p_proj_norm));
+    }
+
+.. latexcode::
+    .
+
+    // Project the initial condition on the FE space to obtain initial
+    // coefficient vector for the Newton's method.
+    scalar* coeff_vec = new scalar[Space::get_num_dofs(Hermes::vector<Space *>(&xvel_space,
+                                          &yvel_space, &p_space))];
+    if (NEWTON) {
+      info("Projecting initial condition to obtain initial vector for the Newton's method.");
+      OGProjection::project_global(Hermes::vector<Space *>(&xvel_space, &yvel_space, &p_space),
+		     Hermes::vector<MeshFunction *>(&xvel_prev_time, &yvel_prev_time, 
+                     &p_prev_time), coeff_vec, matrix_solver,
 		     Hermes::vector<ProjNormType>(vel_proj_norm, vel_proj_norm, p_proj_norm));
     }
 
@@ -142,65 +161,76 @@ should definitely use the option (3).
 
 Time t = 10 s:
 
-.. image:: img-circular-obstacle/sol_no_newton_10.png
+.. figure:: img-circular-obstacle/sol_no_newton_10.png
    :align: center
-   :width: 840
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution
 
-.. image:: img-circular-obstacle/sol_newton_10.png
+.. figure:: img-circular-obstacle/sol_newton_10.png
    :align: center
-   :width: 840
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution
 
-.. image:: img-circular-obstacle/sol_l2_newton_10.png
+.. figure:: img-circular-obstacle/sol_l2_newton_10.png
    :align: center
-   :width: 840
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution
 
 Time t = 15 s:
 
-.. image:: img-circular-obstacle/sol_no_newton_15.png
+.. figure:: img-circular-obstacle/sol_no_newton_15.png
    :align: center
-   :width: 840
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution
 
-.. image:: img-circular-obstacle/sol_newton_15.png
+.. figure:: img-circular-obstacle/sol_newton_15.png
    :align: center
-   :width: 840
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution
 
-.. image:: img-circular-obstacle/sol_l2_newton_15.png
+.. figure:: img-circular-obstacle/sol_l2_newton_15.png
    :align: center
-   :width: 840
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution
 
 Time t = 21 s:
 
-.. image:: img-circular-obstacle/sol_no_newton_20.png
+.. figure:: img-circular-obstacle/sol_no_newton_20.png
    :align: center
-   :width: 840
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution
 
-.. image:: img-circular-obstacle/sol_newton_20.png
+.. figure:: img-circular-obstacle/sol_newton_20.png
    :align: center
-   :width: 840
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution
 
-.. image:: img-circular-obstacle/sol_l2_newton_20.png
+.. figure:: img-circular-obstacle/sol_l2_newton_20.png
    :align: center
-   :width: 840
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution
 
 Snapshot of a continuous pressure approximation (t = 20 s):
 
-.. image:: img-circular-obstacle/p_no_newton_20.png
+.. figure:: img-circular-obstacle/p_no_newton_20.png
    :align: center
-   :width: 840
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution
 
 Snapshot of a discontinuous pressure approximation (t = 20 s):
 
-.. image:: img-circular-obstacle/p_l2_newton_20.png
+.. figure:: img-circular-obstacle/p_l2_newton_20.png
    :align: center
-   :width: 840
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution

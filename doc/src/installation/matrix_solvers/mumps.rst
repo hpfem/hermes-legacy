@@ -4,6 +4,10 @@ Mumps
 .. popup:: '#'
    ../../../_static/clapper.png
 
+.. only:: latex
+
+    `Tutorial Video <http://hpfem.org/hermes/doc/src/installation/matrix_solvers/videos.html#>`_. 
+
 .. _MUMPS home page: http://graal.ens-lyon.fr/MUMPS/index.php
 .. _solvers repository: https://github.com/hpfem/solvers
 .. _manual: https://github.com/hpfem/solvers/raw/master/manuals/MUMPS_4.9.2.pdf
@@ -12,12 +16,24 @@ Linux
 ~~~~~
 
 Download the software package from the `solvers repository`_ and unpack 
-it in some temporary directory::
-  
-  wget https://github.com/downloads/hpfem/solvers/mumps-4.9.2.spkg --no-check-certificate
-  tar -jxvf mumps-4.9.2.spkg
-  rm mumps-4.9.2.spkg
-  cd mumps-4.9.2
+it in some temporary directory:
+
+.. sourcecode::
+   .  
+
+   wget https://github.com/downloads/hpfem/solvers/mumps-4.9.2.spkg --no-check-certificate
+   tar -jxvf mumps-4.9.2.spkg
+   rm mumps-4.9.2.spkg
+   cd mumps-4.9.2
+
+.. latexcode::
+   .  
+
+   wget https://github.com/downloads/hpfem/solvers/mumps-4.9.2.spkg
+   --no-check-certificate
+   tar -jxvf mumps-4.9.2.spkg
+   rm mumps-4.9.2.spkg
+   cd mumps-4.9.2
 
 In order to install the library into say ``~/solvers/mumps`` (you may choose any
 path you like, provided that you have write access to it; the target directory 

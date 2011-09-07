@@ -81,19 +81,19 @@ where $C_{anion}$ is a constant and equals anion concentration. Apparently
 for IPMC, the initial spatial concentration of anions and cations are equal.
 The inital configuration is shown:
 
-.. image:: example-np/IPMC.png
+.. figure:: example-np/IPMC.png
 	:align: center
-	:width: 377
-	:height: 173
+        :scale: 50% 
+        :figclass: align-center
 	:alt: Initial configuration of IPMC.
 
 The purploe dots are mobile cations. When a voltage is applied, the anions
 drift:
 
-.. image:: example-np/IPMC_bent.png
+.. figure:: example-np/IPMC_bent.png
 	:align: center
-	:width: 385
-	:height: 290
+        :scale: 50% 
+        :figclass: align-center
 	:alt: Bent IPMC
 
 Images reference: 
@@ -106,10 +106,10 @@ To solve equations :eq:`nernstplanck` and :eq:`poisson` boundary conditions must
 When solving in 2D, just a cross section is considered. The boundaries are
 shown in: 
 
-.. image:: example-np/IPMC_schematic.png
+.. figure:: example-np/IPMC_schematic.png
 	:align: center
-	:width: 409 
-	:height: 140
+        :scale: 50% 
+        :figclass: align-center
 	:alt: IPMC boundaries
 
 For Nernst-Planck equation :eq:`nernstplanck`, all the boundaries have the same, insulation
@@ -333,8 +333,10 @@ Sample results (non-adaptive)
 
 The following figure shows the calculated concentration $C$ inside the IPMC.
 
-.. image:: example-np/nonadapt_conc.png
+.. figure:: example-np/nonadapt_conc.png
 	:align: center
+        :scale: 50% 
+        :figclass: align-center
 	:alt: Calculated concentration
 
 As it can be seen, the concentration is rather uniform in the middle of domain. In fact, most of the
@@ -342,7 +344,9 @@ concentration gradient is near the electrodes, within 5...10% of the total thick
 
 The voltage inside the IPMC forms as follows:
 
-.. image:: example-np/nonadapt_phi.png
+.. figure:: example-np/nonadapt_phi.png
+        :scale: 50% 
+        :figclass: align-center
 	:align: center
 	:alt: Calculated voltage inside the IPMC
 

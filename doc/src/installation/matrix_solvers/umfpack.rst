@@ -31,12 +31,24 @@ Find more about :ref:`ref-usage-umfpack`.
 Using the special Hermes/Femhub package
 ```````````````````````````````````````
 Download the software package from the `solvers repository`_ and unpack 
-it in some temporary directory::
-  
-  wget https://github.com/downloads/hpfem/solvers/umfpack-5.5.1.spkg --no-check-certificate
-  tar -jxvf umfpack-5.5.1.spkg
-  rm umfpack-5.5.1.spkg
-  cd umfpack-5.5.1
+it in some temporary directory:
+
+.. sourcecode::
+   .
+
+   wget https://github.com/downloads/hpfem/solvers/umfpack-5.5.1.spkg --no-check-certificate
+   tar -jxvf umfpack-5.5.1.spkg
+   rm umfpack-5.5.1.spkg
+   cd umfpack-5.5.1
+
+.. latexcode::
+   .
+
+   wget https://github.com/downloads/hpfem/solvers/umfpack-5.5.1.spkg 
+   --no-check-certificate
+   tar -jxvf umfpack-5.5.1.spkg
+   rm umfpack-5.5.1.spkg
+   cd umfpack-5.5.1
 
 In order to install the library into say ``~/solvers/umfpack`` (you may choose any
 path you like, provided that you have write access to it; the target directory 

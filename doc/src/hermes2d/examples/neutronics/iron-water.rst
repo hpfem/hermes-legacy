@@ -45,9 +45,10 @@ A uniform volumetric source is placed in water in the lower-left corner
 of the domain, surrounded with a layer of water, a layer of iron, and finally
 another layer of water:
 
-.. image:: example-iron-water/iron-water.png
+.. figure:: example-iron-water/iron-water.png
    :align: center
-   :width: 400
+   :scale: 65% 
+   :figclass: align-center
    :alt: Schematic picture for the iron-water example.
 
 The unknown is the neutron flux $\Phi(x, y)$. The values of the diffusion coefficient 
@@ -61,44 +62,46 @@ Sample results
 
 Solution:
 
-.. image:: example-iron-water/iron-water-sol.png
+.. figure:: example-iron-water/iron-water-sol.png
    :align: center
-   :width: 600
+   :scale: 50%
    :alt: Solution to the iron-water example.
 
 
 Final mesh (h-FEM with linear elements):
 
-.. image:: example-iron-water/iron-water-mesh-h1.png
+.. figure:: example-iron-water/iron-water-mesh-h1.png
    :align: center
-   :width: 440
+   :scale: 40%
    :alt: Final finite element mesh for the iron-water example (h-FEM with linear elements).
 
 Final mesh (h-FEM with quadratic elements):
 
-.. image:: example-iron-water/iron-water-mesh-h2.png
+.. figure:: example-iron-water/iron-water-mesh-h2.png
    :align: center
-   :width: 440
+   :scale: 40%
    :alt: Final finite element mesh for the iron-water example (h-FEM with quadratic elements).
 
 Final mesh (hp-FEM):
 
-.. image:: example-iron-water/iron-water-mesh-hp.png
+.. figure:: example-iron-water/iron-water-mesh-hp.png
    :align: center
-   :width: 440
+   :scale: 40%
    :alt: Final finite element mesh for the iron-water example (hp-FEM).
 
 DOF convergence graphs:
 
-.. image:: example-iron-water/conv_dof.png
+.. figure:: example-iron-water/conv_dof.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph for example iron-water.
 
 CPU time convergence graphs:
 
-.. image:: example-iron-water/conv_cpu.png
+.. figure:: example-iron-water/conv_cpu.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph for example iron-water.
 

@@ -4,9 +4,18 @@ Linux
 Download and compilation
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you are using a Debian-based system, install the required libraries first:: 
+If you are using a Debian-based system, install the required libraries first:
+
+.. sourcecode::
+    .
 
     apt-get install cmake g++ gfortran freeglut3-dev libsuitesparse-dev libglew1.5-dev python-dev python-numpy python-scipy cython python-matplotlib
+
+.. latexcode::
+    .
+
+    apt-get install cmake g++ gfortran freeglut3-dev libsuitesparse-dev libglew1.5-dev 
+    python-dev python-numpy python-scipy cython python-matplotlib
 
 (Note: cmake has to be at least version 2.6 or later, matplotlib has to be at
 least 0.98.5.2 or higher.)
@@ -91,9 +100,19 @@ file and add the following::
 (and any other option that you would like to change, see CMakeLists.txt for the
 whole list).
 
-You can also easily generate it from a script (e.g. a debian/rules file) by::
+You can also easily generate it from a script (e.g. a debian/rules file) by:
+
+.. sourcecode::
+    .
 
     python -c 'print "set(H2D_COMPLEX no)\nset(WITH_EXAMPLES no)\nset(WITH_TUTORIAL no)\nset(WITH_PYTHON yes)\nset(WITH_GLUT no)\nset(WITH_UTIL no)"' > CMake.vars
+
+.. latexcode::
+    .
+
+    python -c 'print "set(H2D_COMPLEX no)\nset(WITH_EXAMPLES no)
+    \nset(WITH_TUTORIAL no)\nset(WITH_PYTHON yes)\nset(WITH_GLUT no)
+    \nset(WITH_UTIL no)"' > CMake.vars
 
 If you are on OS X, you have to disable GLUT as the glut library is not easily
 installable on OS X. To do so, just put the following line into your

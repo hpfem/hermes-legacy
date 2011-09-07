@@ -82,17 +82,27 @@ This list works for 32-bit version of Hermes.
     - Open it using your version of MSVC (newer versions will automatically convert the solution file).
     - Now build the python project (default one) and from the same directory copy python26_d.lib to dependencies\\lib and python26_d.dll to dependencies\\bin.
     - Copy Python.h from Python-2.6.5\\Include\\ to dependencies\\include. This is for the Python library.
-    - Download Python MSI installer http://www.python.org/ftp/python/2.6.5/python-2.6.5.msi ( http://www.python.org/ftp/python/2.6.5/python-2.6.5.amd64.msi for AMD64.
+    - Download Python MSI installer http://www.python.org/ftp/python/2.6.5/python-2.6.5.msi ( http://www.python.org/ftp/python/2.6.5/python-2.6.5.amd64.msi for AMD64. 
     - Install Python. You can install it into the same directory where you copied the downloaded source.
 	- Add the path to python.exe to your PATH environment variable.
-    - Open a command prompt, execute python, and you will see something like::
+    - Open a command prompt, execute python, and you will see something like:
 
-          python.exe
-          Python 2.6.5 (r27:82500, Jan 20 2011, 18:55:31) [MSC v.1600 32 bit (Intel)] on win32
-		  >>>
+    .. sourcecode::
+       .
 
+       python.exe
+       Python 2.6.5 (r27:82500, Jan 20 2011, 18:55:31) [MSC v.1600 32 bit (Intel)] on win32
+       >>>
+   
+     If you have Cygwin installed again, make sure you are running the Windows Python. 
 
-		If you have Cygwin installed again, make sure you are running the Windows Python. 
+    .. latexcode::
+       .
+
+       python.exe
+       Python 2.6.5 (r27:82500, Jan 20 2011, 18:55:31) [MSC v.1600 32 bit (Intel)]
+       on win32
+       >>>
  
     - Numpy(ver-1.4.1)
 
@@ -172,7 +182,8 @@ This list works for 32-bit version of Hermes.
   - AntTweakBar (optional)
 
     - If a directive ENABLE_VIEWER_GUI is *not* used, this step can be skipped.
-    - Download a modified version 1.1.3 of AntTweakView (http://hpfem.org/downloads/AntTweakBar.1.1.3.modified.tar.gz) and unpack it. 
+    - Download a modified version 1.1.3 of AntTweakView 
+    (http://hpfem.org/downloads/AntTweakBar.1.1.3.modified.tar.gz) and unpack it. 
     - Open SLN file in MSVC and compile it.
     - Copy 'AntTweakBar.dll', 'AntTweakBar.h', and 'AntTweakBar.lib' to 'bin', 'include', and 'lib' dependency directories respectively.
 	
@@ -183,7 +194,8 @@ This list works for 32-bit version of Hermes.
     - Zlib
 
       - Download sources of version 1.2.3 (http://sourceforge.net/projects/libpng/files/) and unpack them.
-      - Open 'my_zlib_root/projects/visualc6/zlib.dsw' (Visual C++ 6 Solution File) in MSVC08 and let MSVC to convert it and save the .sln file 
+      - Open 'my_zlib_root/projects/visualc6/zlib.dsw' (Visual C++ 6 Solution File) in MSVC08 and
+        let MSVC to convert it and save the .sln file 
           (MSVC10 user can open the .sln file).
       - Switch a configuration to 'Release DLL' in Configuration Manager. 
       - Build project 'zlib': this will create DLL/LIB files in 'my_zlib_root/projects/visual6/Win32_DLL_Release'.
@@ -242,7 +254,8 @@ This list works for 32-bit version of Hermes.
         ::
 
             PROJECT(Exodusii)
-            SET(NETCDF_INCLUDE_DIR "my_netcdf_root/libsrc4")    # add this line; 
+            SET(NETCDF_INCLUDE_DIR "my_netcdf_root/libsrc4")    
+            # add this line; 
 
         be sure to use a slash '/' instead of a backslash '\\'. 
 

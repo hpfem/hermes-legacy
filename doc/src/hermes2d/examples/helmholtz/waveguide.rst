@@ -92,8 +92,8 @@ which is the Helmholtz equation.
 
 Parallel plate waveguide is the simplest type of guide that supports TM (transversal magnetic) and TE (transversal electric) modes. This kind of guide allows also TEM (transversal electric and magnetic) mode.
 
-.. image:: waveguide/waveguide.png
-   :scale: 50 %   
+.. figure:: waveguide/waveguide.png
+   :scale: 40 %   
    :align: center 	
    :alt: Parallel plate waveguide geometry
 	
@@ -209,13 +209,13 @@ There are three possible types of boundary conditions:
 Sample results
 ~~~~~~~~~~~~~~
 
-.. image:: waveguide/real_part.png
-   :scale: 80 %   
+.. figure:: waveguide/real_part.png
+   :scale: 60 %   
    :align: center 	
    :alt: Parallel plate waveguide geometry
 
-.. image:: waveguide/imaginary_part.png
-   :scale: 80 %   
+.. figure:: waveguide/imaginary_part.png
+   :scale: 60 %   
    :align: center 	
    :alt: Parallel plate waveguide geometry
 

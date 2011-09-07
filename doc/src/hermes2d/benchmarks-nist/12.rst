@@ -53,9 +53,10 @@ Sample solution
 Solution for $\omega_C = 3 \pi /2$,  $(x_{W}, y_{W}) = (0, -3/4)$,  $r_{0} = 3/4$, 
 $\alpha_{W} = 200$,  $(x_{P}, y_{P}) = (\sqrt{5} / 4, -1/4)$,  $\epsilon = 1/100$:
 
-.. image:: nist-12/solution.png
+.. figure:: nist-12/solution.png
    :align: center
-   :width: 600
+   :scale: 60% 
+   :figclass: align-center
    :alt: Solution.
 
 Comparison of h-FEM (p=1), h-FEM (p=2) and hp-FEM with anisotropic refinements
@@ -63,39 +64,42 @@ Comparison of h-FEM (p=1), h-FEM (p=2) and hp-FEM with anisotropic refinements
 
 Final mesh (h-FEM, p=1, anisotropic refinements):
 
-.. image:: nist-12/mesh_h1_aniso.png
+.. figure:: nist-12/mesh_h1_aniso.png
    :align: center
-   :width: 450
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (h-FEM, p=2, anisotropic refinements):
 
-.. image:: nist-12/mesh_h2_aniso.png
+.. figure:: nist-12/mesh_h2_aniso.png
    :align: center
-   :width: 450
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (hp-FEM, h-anisotropic refinements):
 
-.. image:: nist-12/mesh_hp_anisoh.png
+.. figure:: nist-12/mesh_hp_anisoh.png
    :align: center
-   :width: 450
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh.
 
 DOF convergence graphs:
 
-.. image:: nist-12/conv_dof_aniso.png
+.. figure:: nist-12/conv_dof_aniso.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
 
-.. image:: nist-12/conv_cpu_aniso.png
+.. figure:: nist-12/conv_cpu_aniso.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 
 hp-FEM with h-aniso and hp-aniso refinements
@@ -103,31 +107,33 @@ hp-FEM with h-aniso and hp-aniso refinements
 
 Final mesh (hp-FEM, h-anisotropic refinements):
 
-.. image:: nist-12/mesh_hp_anisoh.png
+.. figure:: nist-12/mesh_hp_anisoh.png
    :align: center
-   :width: 450
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (hp-FEM, hp-anisotropic refinements):
 
-.. image:: nist-12/mesh_hp_aniso.png
+.. figure:: nist-12/mesh_hp_aniso.png
    :align: center
-   :width: 450
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh.
 
 DOF convergence graphs:
 
-.. image:: nist-12/conv_dof_hp.png
+.. figure:: nist-12/conv_dof_hp.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
 
-.. image:: nist-12/conv_cpu_hp.png
+.. figure:: nist-12/conv_cpu_hp.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 

@@ -119,7 +119,10 @@ Defining weak forms
 ~~~~~~~~~~~~~~~~~~~
 
 The weak forms are custom because of the external function 
-(previous iteration level solution) that needs to be used::
+(previous iteration level solution) that needs to be used:
+
+.. sourcecode::
+    .
 
     // NOTE: The linear problem in each step of the Picard's 
     //       method is solved using the Newton's method.
@@ -193,6 +196,109 @@ The weak forms are custom because of the external function
 	  {
 	    result += wt[i] * lambda->value(ext->fn[0]->val[i]) 
 			    * (u_ext[0]->dx[i] * v->dx[i] + u_ext[0]->dy[i] * v->dy[i]);
+	    result += wt[i] * f->value(e->x[i], e->y[i]) * v->val[i];
+	  }
+	  return result;
+	}
+
+	virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
+			Geom<Ord> *e, ExtData<Ord> *ext) const 
+	{
+	  Ord result = 0;
+	  for (int i = 0; i < n; i++) 
+	  {
+	    result += wt[i] * lambda->value(ext->fn[0]->val[i]) * (u_ext[0]->dx[i] 
+			    * v->dx[i] + u_ext[0]->dy[i] * v->dy[i]);
+	    result += wt[i] * f->value(e->x[i], e->y[i]) * v->val[i];
+	  }
+	  return result;
+	}
+
+	private:
+	  HermesFunction* lambda;
+	  HermesFunction* f;
+      };
+    };
+
+.. latexcode::
+    .
+
+    // NOTE: The linear problem in each step of the Picard's 
+    //       method is solved using the Newton's method.
+
+    class CustomWeakFormPicard : public WeakForm
+    {
+    public:
+      CustomWeakFormPicard(Solution* prev_iter_sln, HermesFunction* lambda, 
+                           HermesFunction* f): WeakForm(1)
+      {
+	// Jacobian (custom because of the external function).
+	CustomJacobian* matrix_form = new CustomJacobian(0, 0, lambda);
+	matrix_form->ext.push_back(prev_iter_sln);
+	add_matrix_form(matrix_form);
+
+	// Residual (custom because of the external function).
+	CustomResidual* vector_form = new CustomResidual(0, lambda, f);
+	vector_form->ext.push_back(prev_iter_sln);
+	add_vector_form(vector_form);
+      };
+
+    private:
+      class CustomJacobian : public WeakForm::MatrixFormVol
+      {
+      public:
+	CustomJacobian(int i, int j, HermesFunction* lambda) : WeakForm::
+                       MatrixFormVol(i, j), lambda(lambda)
+	{ 
+	}
+
+	virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], 
+                             Func<double> *u, Func<double> *v,
+                             Geom<double> *e, ExtData<scalar> *ext) const 
+	{
+	  scalar result = 0;
+	  for (int i = 0; i < n; i++) 
+	  {
+	    result += wt[i] * lambda->value(ext->fn[0]->val[i]) 
+			    * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]);
+	  }
+	  return result;
+	}
+
+	virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, 
+                        Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const 
+	{
+	  Ord result = 0;
+	  for (int i = 0; i < n; i++) 
+	  {
+	    result += wt[i] * lambda->value(ext->fn[0]->val[i]) 
+	              * (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]);
+	  }
+	  return result;
+	}
+
+	protected:
+	  HermesFunction* lambda;
+      };
+
+      class CustomResidual : public WeakForm::VectorFormVol
+      {
+      public:
+	CustomResidual(int i, HermesFunction* lambda, HermesFunction* f) 
+	  : WeakForm::VectorFormVol(i), lambda(lambda), f(f) 
+	{ 
+	}
+
+	virtual scalar value(int n, double *wt, Func<scalar> *u_ext[],
+			     Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) 
+                             const 
+	{
+	  scalar result = 0;
+	  for (int i = 0; i < n; i++) 
+	  {
+	    result += wt[i] * lambda->value(ext->fn[0]->val[i]) 
+			    * (u_ext[0]->dx[i] * v->dx[i] + u_ext[0]->dy[i] 
+                            * v->dy[i]);
 	    result += wt[i] * f->value(e->x[i], e->y[i]) * v->val[i];
 	  }
 	  return result;
@@ -444,7 +550,8 @@ Sample results
 
 Approximate solution $u$ for $\alpha = 4$: 
 
-.. image:: 01-picard/solution.png
+.. figure:: 01-picard/solution.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: result for alpha = 4

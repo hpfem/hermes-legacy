@@ -18,9 +18,10 @@ Equation solved: Laplace equation
 
 Domain of interest:
 
-.. image:: benchmark-lshape/domain.png
+.. figure:: benchmark-lshape/domain.png
    :align: center
-   :width: 470
+   :scale: 50% 
+   :figclass: align-center
    :alt: Computational domain.
 
 Exact solution
@@ -41,10 +42,10 @@ Nonconstant Dirichlet, matching the exact solution.
 Sample solution
 ~~~~~~~~~~~~~~~
 
-.. image:: benchmark-lshape/sol_3d_view.png
+.. figure:: benchmark-lshape/sol_3d_view.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Convergence comparisons
@@ -52,40 +53,40 @@ Convergence comparisons
 
 Final mesh (h-FEM with linear elements):
 
-.. image:: benchmark-lshape/mesh-h1.png
+.. figure:: benchmark-lshape/mesh-h1.png
    :align: center
-   :width: 500
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: Final mesh (h-FEM with linear elements).
 
 Final mesh (h-FEM with quadratic elements):
 
-.. image:: benchmark-lshape/mesh-h2.png
+.. figure:: benchmark-lshape/mesh-h2.png
    :align: center
-   :width: 500
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: Final mesh (h-FEM with quadratic elements).
 
 Final mesh (hp-FEM):
 
-.. image:: benchmark-lshape/mesh-hp.png
+.. figure:: benchmark-lshape/mesh-hp.png
    :align: center
-   :width: 500
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: Final mesh (hp-FEM).
 
 DOF convergence graphs:
 
-.. image:: benchmark-lshape/conv_dof.png
+.. figure:: benchmark-lshape/conv_dof.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU time convergence graphs:
 
-.. image:: benchmark-lshape/conv_cpu.png
+.. figure:: benchmark-lshape/conv_cpu.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.

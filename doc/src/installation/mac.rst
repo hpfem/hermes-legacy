@@ -95,9 +95,16 @@ whole list).
 
 You can also easily generate it from a script (e.g. a debian/rules file) by:
 
-::
+.. sourcecode::
+    .
 
     python -c 'print "set(H2D_COMPLEX no)\nset(WITH_EXAMPLES no)\nset(WITH_TUTORIAL no)\nset(WITH_PYTHON yes)\nset(WITH_GLUT no)\nset(WITH_UTIL no)"' > CMake.vars
+
+.. latexcode::
+    .
+
+    python -c 'print "set(H2D_COMPLEX no)\nset(WITH_EXAMPLES no)\nset(WITH_TUTORIAL no)
+    \nset(WITH_PYTHON yes)\nset(WITH_GLUT no)\nset(WITH_UTIL no)"' > CMake.vars
 
 
 For development, it is good to say (in global CMake.vars)::

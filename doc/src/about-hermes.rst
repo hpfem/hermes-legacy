@@ -14,9 +14,10 @@ that use the functionality provided by the library, but for
 those who prefer to use a graphical interface, there is 
 `Agros2D <http://hpfem.org/agros2d/>`_. 
 
-.. image:: img/agros.png
+.. figure:: img/agros.png
+   :align: center 
    :scale: 50 %   
-   :align: center 	
+   :figclass: align-center
    :alt: Agros snapshot.
 
 Hermes is loaded with modern finite element technology and its user base is 
