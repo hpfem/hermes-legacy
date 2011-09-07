@@ -11,9 +11,10 @@ point singularities in the interior of the domain. The domain is the rectangle s
 the numbered regions indicate the areas of different material constants.
 
 
-.. image:: nist-05/battery_domain.png
+.. figure:: nist-05/battery_domain.png
    :align: center
-   :width: 250
+   :scale: 25% 
+   :figclass: align-center
    :alt: Domain.
 
 Equation solved: 
@@ -97,10 +98,10 @@ Boundary condition parameters
 Sample solution
 ~~~~~~~~~~~~~~~
 
-.. image:: nist-05/solution-3d.png
+.. figure:: nist-05/solution-3d.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Comparison of h-FEM (p=1), h-FEM (p=2) and hp-FEM with anisotropic refinements
@@ -108,39 +109,42 @@ Comparison of h-FEM (p=1), h-FEM (p=2) and hp-FEM with anisotropic refinements
 
 Final mesh (h-FEM, p=1, anisotropic refinements):
 
-.. image:: nist-05/mesh_h1_aniso.png
+.. figure:: nist-05/mesh_h1_aniso.png
    :align: center
-   :width: 450
+   :scale: 30% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (h-FEM, p=2, anisotropic refinements):
 
-.. image:: nist-05/mesh_h2_aniso.png
+.. figure:: nist-05/mesh_h2_aniso.png
    :align: center
-   :width: 450
+   :scale: 30% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (hp-FEM, h-anisotropic refinements):
 
-.. image:: nist-05/mesh_hp_anisoh.png
+.. figure:: nist-05/mesh_hp_anisoh.png
    :align: center
-   :width: 450
+   :scale: 30% 
+   :figclass: align-center
    :alt: Final mesh.
 
 DOF convergence graphs:
 
-.. image:: nist-05/conv_dof_aniso.png
+.. figure:: nist-05/conv_dof_aniso.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
 
-.. image:: nist-05/conv_cpu_aniso.png
+.. figure:: nist-05/conv_cpu_aniso.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 
 hp-FEM with iso, h-aniso and hp-aniso refinements
@@ -148,39 +152,42 @@ hp-FEM with iso, h-aniso and hp-aniso refinements
 
 Final mesh (hp-FEM, isotropic refinements):
 
-.. image:: nist-05/mesh_hp_iso.png
+.. figure:: nist-05/mesh_hp_iso.png
    :align: center
-   :width: 450
+   :scale: 30% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (hp-FEM, h-anisotropic refinements):
 
-.. image:: nist-05/mesh_hp_anisoh.png
+.. figure:: nist-05/mesh_hp_anisoh.png
    :align: center
-   :width: 450
+   :scale: 30% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (hp-FEM, hp-anisotropic refinements):
 
-.. image:: nist-05/mesh_hp_aniso.png
+.. figure:: nist-05/mesh_hp_aniso.png
    :align: center
-   :width: 450
+   :scale: 30% 
+   :figclass: align-center
    :alt: Final mesh.
 
 DOF convergence graphs:
 
-.. image:: nist-05/conv_dof_hp.png
+.. figure:: nist-05/conv_dof_hp.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
 
-.. image:: nist-05/conv_cpu_hp.png
+.. figure:: nist-05/conv_cpu_hp.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 
 

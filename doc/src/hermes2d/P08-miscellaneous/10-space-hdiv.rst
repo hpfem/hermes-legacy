@@ -40,24 +40,28 @@ its basis functions:
 Sample edge functions of polynomial degrees 1, 2, 3, and 4 
 corresponding to a boundary edge are shown below:
 
-.. image:: 10-space-hdiv/fn0.png
+.. figure:: 10-space-hdiv/fn0.png
    :align: center
-   :width: 300
+   :scale: 40% 
+   :figclass: align-center
    :alt: Sample basis function
 
-.. image:: 10-space-hdiv/fn1.png
+.. figure:: 10-space-hdiv/fn1.png
    :align: center
-   :width: 300
+   :scale: 40% 
+   :figclass: align-center
    :alt: Sample basis function
 
-.. image:: 10-space-hdiv/fn2.png
+.. figure:: 10-space-hdiv/fn2.png
    :align: center
-   :width: 300
+   :scale: 40% 
+   :figclass: align-center
    :alt: Sample basis function
 
-.. image:: 10-space-hdiv/fn3.png
+.. figure:: 10-space-hdiv/fn3.png
    :align: center
-   :width: 300
+   :scale: 40% 
+   :figclass: align-center
    :alt: Sample basis function
 
 So far the space H(div) only can be used with quadrilateral elements.

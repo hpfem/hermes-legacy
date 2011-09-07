@@ -28,18 +28,20 @@ both of which are related to a 2D problem with known exact solution. The first p
 graphs corresponds to adaptive $h$-FEM with linear elements. The slope on the log-log
 graph is -1/2 which means first-order convergence, as predicted by theory. 
 
-.. image:: intro/layer_h1.png
+.. figure:: intro/layer_h1.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Convergence graph.
 
 The next pair of convergence graphs corresponds to adaptive $h$-FEM with quadratic elements. 
 The slope on the log-log graph is -1, which means that the convergence is quadratic as 
 predicted by theory.
 
-.. image:: intro/layer_h2.png
+.. figure:: intro/layer_h2.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Convergence graph.
 
 Note that one always should look at the end of the convergence curve, not at the 
@@ -56,9 +58,10 @@ It is predicted by theory that adaptive $hp$-FEM should attain
 exponential convergence rate. This means that the slope of the
 convergence graph is the steeper the more one goes to the right:
 
-.. image:: intro/aniso-hp.png
+.. figure:: intro/aniso-hp.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Convergence graph.
 
 While this is often the case with adaptive $hp$-FEM, there are 
@@ -83,9 +86,10 @@ slightly less than the exact one, but during adaptivity
 they quickly converge together and become virtually identical. 
 This is shown in the figure below.
 
-.. image:: intro/layer-hp.png
+.. figure:: intro/layer-hp.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Convergence graph to the Layer benchmark.
 
 In problems with extremely strong singularities the difference between the 
@@ -93,7 +97,8 @@ exact and estimated error can be significant. This is illustrated in the
 following graph that belongs to the benchmark 
 `nist-11 <http://hpfem.org/hermes/doc/src/hermes2d/nist/nist-11.html>`_.
 
- .. image:: intro/kellogg-conv.png
+ .. figure:: intro/kellogg-conv.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Convergence graph to the Kellogg benchmark.

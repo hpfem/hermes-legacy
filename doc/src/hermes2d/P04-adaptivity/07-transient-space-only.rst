@@ -97,36 +97,41 @@ Sample results
 
 Initial condition and initial mesh:
 
-.. image:: 07-transient-space-only/1.png
+.. figure:: 07-transient-space-only/1.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 Solution and mesh at t = 0.5:
 
-.. image:: 07-transient-space-only/2.png
+.. figure:: 07-transient-space-only/2.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 Solution and mesh at t = 1.0:
 
-.. image:: 07-transient-space-only/3.png
+.. figure:: 07-transient-space-only/3.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 Solution and mesh at t = 1.5:
 
-.. image:: 07-transient-space-only/4.png
+.. figure:: 07-transient-space-only/4.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 Solution and mesh at t = 2.0:
 
-.. image:: 07-transient-space-only/5.png
+.. figure:: 07-transient-space-only/5.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Sample screenshot
 

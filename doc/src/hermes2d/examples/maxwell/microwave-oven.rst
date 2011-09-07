@@ -10,9 +10,10 @@ This example solves adaptively the electric field in a simplified microwave oven
 The waves are generated using a harmonic surface current on the right-most edge.
 (Such small cavity is present in every microwave oven). 
 
-.. image:: microwave-oven/maxwell-waveguide.png
+.. figure:: microwave-oven/maxwell-waveguide.png
    :align: center
-   :width: 450
+   :scale: 50% 
+   :figclass: align-center
    :alt: Domain.
 
 Equation solved: time-harmonic Maxwell's equations. 
@@ -42,10 +43,10 @@ Material parameters
 Sample solution
 ~~~~~~~~~~~~~~~
 
-.. image:: microwave-oven/solution.png
+.. figure:: microwave-oven/solution.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Comparison of h-FEM (p=1), h-FEM (p=2) and hp-FEM with anisotropic refinements
@@ -53,38 +54,41 @@ Comparison of h-FEM (p=1), h-FEM (p=2) and hp-FEM with anisotropic refinements
 
 Final mesh (h-FEM, p=1, anisotropic refinements):
 
-.. image:: microwave-oven/mesh_h1_aniso.png
+.. figure:: microwave-oven/mesh_h1_aniso.png
    :align: center
-   :width: 450
+   :scale: 50% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (h-FEM, p=2, anisotropic refinements):
 
-.. image:: microwave-oven/mesh_h2_aniso.png
+.. figure:: microwave-oven/mesh_h2_aniso.png
    :align: center
-   :width: 450
+   :scale: 50% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (hp-FEM, h-anisotropic refinements):
 
-.. image:: microwave-oven/mesh_hp_aniso.png
+.. figure:: microwave-oven/mesh_hp_aniso.png
    :align: center
-   :width: 450
+   :scale: 50% 
+   :figclass: align-center
    :alt: Final mesh.
 
 DOF convergence graphs:
 
-.. image:: microwave-oven/conv_dof_aniso.png
+.. figure:: microwave-oven/conv_dof_aniso.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
 
-.. image:: microwave-oven/conv_cpu_aniso.png
+.. figure:: microwave-oven/conv_cpu_aniso.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 

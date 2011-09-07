@@ -2,6 +2,10 @@
 Hermes Documentation
 ====================
 
+.. raw:: latex
+ 
+   \floatplacement{figure}{H}
+
 Thank you for your interest in Hermes!
 
 Hermes is a C++ library for rapid development of adaptive *hp*-FEM and *hp*-DG solvers.

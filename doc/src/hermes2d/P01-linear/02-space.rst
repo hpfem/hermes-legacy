@@ -6,6 +6,10 @@ Finite Element Space (02-space)
 
 **Git reference:** Tutorial example `02-space <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/02-space>`_. 
 
+.. only:: latex
+
+    `Tutorial Video <http://hpfem.org/hermes/doc/src/hermes2d/P01-linear/01-mesh/videos.html#p01-linear02-space-tutorial>`_. 
+
 Hermes follows the mathematical concept of FEM closely -- after creating a mesh,
 in the next step one needs to construct a finite element space on it.
 
@@ -35,9 +39,10 @@ edge functions with mesh edges, and bubble functions with element interiors. The
 figure shows a higher-order edge function (left) and a higher-order bubble function 
 (right). 
 
-.. image:: 02-space/basisfn.jpg
+.. figure:: 02-space/basisfn.jpg
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Fourth-order edge function  (left) and one of the fifth-order bubble functions (right).
 
 Higher-order basis functions can be defined in many different ways. 

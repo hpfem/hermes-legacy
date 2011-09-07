@@ -17,9 +17,18 @@ The CubicSpline class is a descendant of HermesFunction. It is initialized
 with a sequence of points and function values at these points. As solution 
 values are passed into the spline, one has to be careful to define it 
 on a sufficiently wide range of values. In this concrete example, 
-we use the points::
+we use the points:
+
+.. sourcecode::
+    .
 
     Hermes::vector<double> lambda_pts(-2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0);
+
+.. latexcode::
+    .
+
+    Hermes::vector<double> lambda_pts(-2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5,
+                                      3.0, 4.0, 5.0);
 
 For simplicity, we use a macro 
 
@@ -29,10 +38,18 @@ For simplicity, we use a macro
 
 to fill a Hermes::vector of the values,
 
-::
+.. sourcecode::
+    .
 
     Hermes::vector<double> lambda_val;
     for (unsigned int i = 0; i < lambda_pts.size(); i++) lambda_val.push_back(lambda_macro(lambda_pts[i]));
+
+.. latexcode::
+    .
+
+    Hermes::vector<double> lambda_val;
+    for (unsigned int i = 0; i < lambda_pts.size(); i++) 
+        lambda_val.push_back(lambda_macro(lambda_pts[i]));
 
 but in practice of course the values can be arbitrary. To finish the 
 spline, one needs to provide two extra conditions, which can 
@@ -56,10 +73,19 @@ if this happens::
     bool extrapolate_der_left = true;
     bool extrapolate_der_right = true;
 
-Then the constructor of the CubicSpline class is called::
+Then the constructor of the CubicSpline class is called:
 
-  CubicSpline lambda(lambda_pts, lambda_val, bc_left, bc_right, first_der_left, first_der_right,
-                     extrapolate_der_left, extrapolate_der_right);
+.. sourcecode::
+    .
+
+    CubicSpline lambda(lambda_pts, lambda_val, bc_left, bc_right, first_der_left, first_der_right,
+                       extrapolate_der_left, extrapolate_der_right);
+
+.. latexcode::
+    .
+
+    CubicSpline lambda(lambda_pts, lambda_val, bc_left, bc_right, first_der_left,
+                       first_der_right, extrapolate_der_left, extrapolate_der_right);
  
 Plotting the spline for visual control
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

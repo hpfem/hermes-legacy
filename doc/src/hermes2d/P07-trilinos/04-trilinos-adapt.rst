@@ -33,7 +33,10 @@ better iniial vector. This is waiting for someone to implement.
 Initializing NOX on reference mesh
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In each adaptivity step we initialize a new NOX solver and preconditioner::
+In each adaptivity step we initialize a new NOX solver and preconditioner:
+
+.. sourcecode::
+    .
 
     // Initialize NOX solver.
     NoxSolver solver(&dp, message_type, "GMRES", "Newton", ls_tolerance, "", flag_absresid, abs_resid, 
@@ -47,11 +50,29 @@ In each adaptivity step we initialize a new NOX solver and preconditioner::
       else solver.set_precond("ML");
     }
 
+.. latexcode::
+    .
+
+    // Initialize NOX solver.
+    NoxSolver solver(&dp, message_type, "GMRES", "Newton", ls_tolerance, "", flag_absresid,
+                     abs_resid, flag_relresid, rel_resid, max_iters);
+
+    // Select preconditioner.
+    RCP<Precond> pc = rcp(new MlPrecond("sa"));
+    if (PRECOND)
+    {
+      if (JFNK) solver.set_precond(pc);
+      else solver.set_precond("ML");
+    }
+
 Assembling and solving on reference mesh
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The fine mesh problem is solved and the solution coefficient vector converted
-into a Solution. Skipping info outputs and visualization this reads::
+into a Solution. Skipping info outputs and visualization this reads:
+
+.. sourcecode::
+    .
 
     info("Assembling by DiscreteProblem, solving by NOX.");
     solver.set_init_sln(coeff_vec);
@@ -60,6 +81,22 @@ into a Solution. Skipping info outputs and visualization this reads::
       info("Number of nonlin iterations: %d (norm of residual: %g)", 
         solver.get_num_iters(), solver.get_residual());
       info("Total number of iterations in linsolver: %d (achieved tolerance in the last step: %g)", 
+        solver.get_num_lin_iters(), solver.get_achieved_tol());
+    }
+    else
+      error("NOX failed.");
+
+.. latexcode::
+    .
+
+    info("Assembling by DiscreteProblem, solving by NOX.");
+    solver.set_init_sln(coeff_vec);
+    if (solver.solve()) {
+      Solution::vector_to_solution(solver.get_solution(), ref_space, &ref_sln);
+      info("Number of nonlin iterations: %d (norm of residual: %g)", 
+        solver.get_num_iters(), solver.get_residual());
+      info("Total number of iterations in linsolver: %d (achieved tolerance in the last 
+           step: %g)", 
         solver.get_num_lin_iters(), solver.get_achieved_tol());
     }
     else

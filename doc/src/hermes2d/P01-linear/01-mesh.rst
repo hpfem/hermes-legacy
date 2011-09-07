@@ -6,6 +6,10 @@ Finite Element Mesh (01-mesh)
 
 **Git reference:** Tutorial example `01-mesh <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/01-mesh>`_. 
 
+.. only:: latex
+
+    `Tutorial Video <http://hpfem.org/hermes/doc/src/hermes2d/P01-linear/01-mesh/videos.html#>`_. 
+
 Every finite element computation starts with partitioning the domain
 into a finite element mesh. Hermes uses (possibly curvilinear) triangles and 
 quadrilaterals that can be combined. This is very useful since 
@@ -26,9 +30,10 @@ Hermes2D mesh file format
 This tutorial example assumes an L-shaped domain consisting of two materials (Copper and Aluminum),
 that is initially split into four elements - two quadrilaterals and two curvilinear triangles:
 
-.. image:: 01-mesh/simplemesh.png
+.. figure:: 01-mesh/simplemesh.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Sample finite element mesh.
 
 The mesh file `domain.mesh <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutorial/P01-linear/01-mesh/domain.mesh>`_ 
@@ -193,7 +198,10 @@ Geometry rescaling
 
 In some situations, such as when using dimensionless form of the governing equations, 
 it may be useful to rescale the domain in the x- and y-directions. This is done 
-as follows::
+as follows:
+
+.. sourcecode::
+    .
 
     // Optional rescaling of mesh (all vertex x- and y-coordinates are 
     // divided by x_ref and y_ref, respectively). Mesh with curved edges 
@@ -204,6 +212,20 @@ as follows::
     else {
       info("Mesh scaled by the factors of %g and %g in the x- and y- direction, respectively.", x_ref, y_ref);
     }
+
+.. latexcode::
+    .
+
+    // Optional rescaling of mesh (all vertex x- and y-coordinates are 
+    // divided by x_ref and y_ref, respectively). Mesh with curved edges 
+    // cannot be rescaled. So to try this feature, comment out the "curves" 
+    // section in the mesh file.
+    double x_ref = 2.0, y_ref = 3.0;
+    if(!mesh.rescale(x_ref, y_ref)) info("Mesh was not rescaled.");
+    else (
+      info("Mesh scaled by the factors of %g and %g in the x- and y- direction, 
+      respectively.", x_ref, y_ref);
+    )
 
 Manual mesh refinements
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -288,9 +310,10 @@ The following code illustrates how to visualize the mesh using the MeshView clas
 
 The class MeshView provides the method show() that displays a window showing the mesh:
 
-.. image:: 01-mesh/meshview2.png
+.. figure:: 01-mesh/meshview2.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Image of the mesh created via the MeshView class.
 
 To see the graphical output, the main.cpp file should be finished with::

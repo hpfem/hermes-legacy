@@ -20,22 +20,25 @@ any pair of linearly independent vectors from the two-dimensional subspace.
 
 Solution on coarse mesh:
 
-.. image:: 02-eigenvalue-adapt/1.png
+.. figure:: 02-eigenvalue-adapt/1.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Sample result
 
 Solution after first adaptivity step:
 
-.. image:: 02-eigenvalue-adapt/2.png
+.. figure:: 02-eigenvalue-adapt/2.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Sample result
 
 Solution after second adaptivity step:
 
-.. image:: 02-eigenvalue-adapt/3.png
+.. figure:: 02-eigenvalue-adapt/3.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Sample result
 

@@ -40,9 +40,10 @@ Exact solution has been obtained by the method of characteristics, but it cannot
 
 For illustration purposes, the plots below were produced by the Matlab script `plotu.m <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks-general/stabilized-advection-reaction/exact/plotu.m>`_ from file `sol_101x101.map <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks-general/stabilized-advection-reaction/exact/sol_100x100.map>`_, which contains the solution values on a uniform grid of :math:`101\times101` points in :math:`\Omega`. 
 
-.. image:: benchmark-stabilized-advection-reaction/exact_complete.png
+.. figure:: benchmark-stabilized-advection-reaction/exact_complete.png
    :align: center
-   :width: 1000
+   :scale: 70% 
+   :figclass: align-center
    :alt: Exact solution.
 
  
@@ -53,7 +54,8 @@ According to the classical theory, the advection term in eq. :eq:`eq-adv-rea` pr
 
 .. figure:: benchmark-stabilized-advection-reaction/cg1/sln_and_mesh.png
    :align: center
-   :width: 1000
+   :scale: 70% 
+   :figclass: align-center
    :alt: Continuous Galerkin approximation.
    
    Solution by the continuous Galerkin method without stabilization.
@@ -133,25 +135,28 @@ Streamline upwind Petrov-Galerkin
 h-adaptivity, P = 1 uniformly
 '''''''''''''''''''''''''''''
 
-.. image:: benchmark-stabilized-advection-reaction/supgh1/sln_and_mesh.png
+.. figure:: benchmark-stabilized-advection-reaction/supgh1/sln_and_mesh.png
    :align: center
-   :width: 1000
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final solution and mesh.
    
 h-adaptivity, P = 2 uniformly
 '''''''''''''''''''''''''''''
 
-.. image:: benchmark-stabilized-advection-reaction/supgh2/sln_and_mesh.png
+.. figure:: benchmark-stabilized-advection-reaction/supgh2/sln_and_mesh.png
    :align: center
-   :width: 1000
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final solution and mesh.
    
 hp-adaptivity
 '''''''''''''''''''''''''''''
 
-.. image:: benchmark-stabilized-advection-reaction/supghp/sln_and_mesh.png
+.. figure:: benchmark-stabilized-advection-reaction/supghp/sln_and_mesh.png
    :align: center
-   :width: 1000
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final solution and mesh.
 
 Discontinuous Galerkin
@@ -160,25 +165,28 @@ Discontinuous Galerkin
 h-adaptivity, P = 0 uniformly
 '''''''''''''''''''''''''''''
 
-.. image:: benchmark-stabilized-advection-reaction/dgh0/sln_and_mesh.png
+.. figure:: benchmark-stabilized-advection-reaction/dgh0/sln_and_mesh.png
    :align: center
-   :width: 1000
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final solution and mesh.
    
 h-adaptivity, P = 1 uniformly
 '''''''''''''''''''''''''''''
 
-.. image:: benchmark-stabilized-advection-reaction/dgh1/sln_and_mesh.png
+.. figure:: benchmark-stabilized-advection-reaction/dgh1/sln_and_mesh.png
    :align: center
-   :width: 1000
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final solution and mesh.
    
 hp-adaptivity
 '''''''''''''''''''''''''''''
 
-.. image:: benchmark-stabilized-advection-reaction/dghp/sln_and_mesh.png
+.. figure:: benchmark-stabilized-advection-reaction/dghp/sln_and_mesh.png
    :align: center
-   :width: 1000
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final solution and mesh.
 
 
@@ -195,14 +203,16 @@ Below we compare the convergence of the various adaptive methods using two metri
     
   where the weighting function has been chosen as in [HRS00]_: :math:`w(x,y) = \sin(\pi x/2)\;` for :math:`\;(x,y)\in [0,1]\times {1}`.
   
-  .. image:: benchmark-stabilized-advection-reaction/conv_outfl_dof.png
+  .. figure:: benchmark-stabilized-advection-reaction/conv_outfl_dof.png
      :align: center
-     :width: 912
+     :scale: 50% 
+     :figclass: align-center
      :alt: Convergence comparison - DOF. 
                              
-  .. image:: benchmark-stabilized-advection-reaction/conv_outfl_cpu.png
+  .. figure:: benchmark-stabilized-advection-reaction/conv_outfl_cpu.png
      :align: center
-     :width: 912
+     :scale: 50% 
+     :figclass: align-center
      :alt: Convergence comparison - CPU.
   
 * Relative :math:`L^2(\Omega)` error w.r.t. the exact (semi-analytic) solution:
@@ -213,14 +223,16 @@ Below we compare the convergence of the various adaptive methods using two metri
 
   In order to calculate this quantity, the exact solution has been evaluated at the :math:`(50+51)\times (50+51)` nodal points of the two-dimensional `50`\ :sup:`th`-order Gauss quadrature rule with Kronrod extension and saved together with the corresponding quadrature weights to file `sol_GaussKronrod50.map <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/benchmarks-general/stabilized-advection-reaction/exact/sol_GaussKronrod50.map>`_. There is a class ``SemiAnalyticSolution`` responsible for loading the file and repeatedly calculating the norm, but be warned that since the latter operation involves a call to ``Solution::get_pt_value``, computation of this metric considerably prolongates each adaptation step (particularly when there are many small low-order elements).
   
-  .. image:: benchmark-stabilized-advection-reaction/conv_ex_dof.png
+  .. figure:: benchmark-stabilized-advection-reaction/conv_ex_dof.png
      :align: center
-     :width: 912
+     :scale: 50% 
+     :figclass: align-center
      :alt: Convergence comparison - DOF.
      
-  .. image:: benchmark-stabilized-advection-reaction/conv_ex_cpu.png
+  .. figure:: benchmark-stabilized-advection-reaction/conv_ex_cpu.png
      :align: center
-     :width: 912
+     :scale: 50% 
+     :figclass: align-center
      :alt: Convergence comparison - CPU.
 
 References

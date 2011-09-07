@@ -76,7 +76,10 @@ we refer `here <http://trilinos.sandia.gov/packages/docs/r5.0/packages/teuchos/d
 Calling NOX
 ~~~~~~~~~~~
 
-Now we are ready to call the NOX solver to assemble the discrete problem and solve it::
+Now we are ready to call the NOX solver to assemble the discrete problem and solve it:
+
+.. sourcecode::
+    .
 
     // Assemble and solve using NOX.
     Solution sln2;
@@ -91,12 +94,30 @@ Now we are ready to call the NOX solver to assemble the discrete problem and sol
     }
     else error("NOX failed");
 
+.. latexcode::
+    .
+
+    // Assemble and solve using NOX.
+    Solution sln2;
+    if (nox_solver.solve())
+    {
+      Solution::vector_to_solution(nox_solver.get_solution(), &space, &sln2);
+
+      info("Number of nonlin iterations: %d (norm of residual: %g)", 
+        nox_solver.get_num_iters(), nox_solver.get_residual());
+      info("Total number of iterations in linsolver: %d (achieved tolerance in the last 
+           step: %g)", 
+        nox_solver.get_num_lin_iters(), nox_solver.get_achieved_tol());
+    }
+    else error("NOX failed");
+
 Sample results
 ~~~~~~~~~~~~~~
 
 You should see the following result:
 
-.. image:: 01-trilinos-linear/1.png
+.. figure:: 01-trilinos-linear/1.png
    :align: center
-   :scale: 50%
+   :scale: 70% 
+   :figclass: align-center
    :alt: Sample result

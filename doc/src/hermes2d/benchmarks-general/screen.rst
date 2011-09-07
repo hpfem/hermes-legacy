@@ -20,9 +20,10 @@ Equation solved: Time-harmonic Maxwell's equations
 Domain of interest is the square $(-1,1)^2$ missing the edge that connects the center with 
 the midpoint of the left side. It is filled with air:
 
-.. image:: benchmark-screen/domain.png
+.. figure:: benchmark-screen/domain.png
    :align: center
-   :width: 490
+   :scale: 100% 
+   :figclass: align-center
    :alt: Computational domain.
 
 Boundary conditions
@@ -41,30 +42,34 @@ Sample solution
 
 Real part of $E_1$:
 
-.. image:: benchmark-screen/sol1.png
+.. figure:: benchmark-screen/sol1.png
    :align: center
-   :width: 510
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Real part of $E_2$:
 
-.. image:: benchmark-screen/sol2.png
+.. figure:: benchmark-screen/sol2.png
    :align: center
-   :width: 510
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Imaginary part of $E_1$:
 
-.. image:: benchmark-screen/sol3.png
+.. figure:: benchmark-screen/sol3.png
    :align: center
-   :width: 510
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Imaginary part of $E_2$:
 
-.. image:: benchmark-screen/sol4.png
+.. figure:: benchmark-screen/sol4.png
    :align: center
-   :width: 510
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Convergence comparisons
@@ -72,9 +77,10 @@ Convergence comparisons
 
 Final mesh (h-FEM with linear elements):
 
-.. image:: benchmark-screen/mesh-h1.png
+.. figure:: benchmark-screen/mesh-h1.png
    :align: center
-   :width: 460
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh (h-FEM with linear elements).
 
 Note that the polynomial order indicated corresponds to the tangential components 
@@ -83,30 +89,34 @@ of approximation on element interfaces, not to polynomial degrees inside the ele
 
 Final mesh (h-FEM with quadratic elements):
 
-.. image:: benchmark-screen/mesh-h2.png
+.. figure:: benchmark-screen/mesh-h2.png
    :align: center
-   :width: 460
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh (h-FEM with quadratic elements).
 
 Final mesh (hp-FEM):
 
-.. image:: benchmark-screen/mesh-hp.png
+.. figure:: benchmark-screen/mesh-hp.png
    :align: center
-   :width: 460
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh (hp-FEM).
 
 DOF convergence graphs:
 
-.. image:: benchmark-screen/conv_dof.png
+.. figure:: benchmark-screen/conv_dof.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU time convergence graphs:
 
-.. image:: benchmark-screen/conv_cpu.png
+.. figure:: benchmark-screen/conv_cpu.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
    
    

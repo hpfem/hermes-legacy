@@ -9,9 +9,10 @@ Problem description
 This example solves adaptively the pressure field in a 3D axisymmetric model 
 of a harmonic acoustic horn. The geometry and initial mesh are shown below.
 
-.. image:: horn-axisym/domain.png
+.. figure:: horn-axisym/domain.png
    :align: center
-   :width: 400  
+   :scale: 50% 
+   :figclass: align-center
    :alt: Domain.
 
 Equation solved: 
@@ -32,7 +33,7 @@ the main.cpp file for concrete values.
 Sample results
 ~~~~~~~~~~~~~~
 
-.. image:: horn-axisym/screenshot.png
+.. figure:: horn-axisym/screenshot.png
    :scale: 80 %   
    :align: center 	
    :alt: Axisymmetrix horn results.

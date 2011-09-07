@@ -17,9 +17,10 @@ Our domain is a bracket loaded on its top edge and fixed to the wall:
 
 The dimensions are L = 0.7 m, T = 0.1 m and the force $f = 10^3$ N.
 
-.. image:: example-bracket/bracket.png
+.. figure:: example-bracket/bracket.png
    :align: center
-   :width: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Computational domain for the elastic bracket problem.
 
 Sample results
@@ -28,14 +29,16 @@ Sample results
 The following figures show the two meshes and their polynomial
 degrees after several adaptive steps: 
 
-.. image:: example-bracket/sys-xorders.png
+.. figure:: example-bracket/sys-xorders.png
    :align: center
-   :width: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: $x$ displacement -- mesh and polynomial degrees.
 
-.. image:: example-bracket/sys-yorders.png
+.. figure:: example-bracket/sys-yorders.png
    :align: center
-   :width: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: $y$ displacement -- mesh and polynomial degrees.
 
 Note that the meshes are slightly different, not only in
@@ -47,27 +50,31 @@ Convergence comparison
 Convergence graphs of adaptive h-FEM with linear elements, h-FEM with quadratic elements
 and hp-FEM are shown below.
 
-.. image:: example-bracket/conv_dof.png
+.. figure:: example-bracket/conv_dof.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph for tutorial example 11-adapt-system.
 
 The following graph shows convergence in terms of CPU time. 
 
-.. image:: example-bracket/conv_cpu.png
+.. figure:: example-bracket/conv_cpu.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph for example bracket
 
 Comparison of the multimesh and single-mesh hp-FEM: 
 
-.. image:: example-bracket/conv_compar_dof.png
+.. figure:: example-bracket/conv_compar_dof.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: comparison of multimesh and single mesh hp-FEM
 
-.. image:: example-bracket/conv_compar_cpu.png
+.. figure:: example-bracket/conv_compar_cpu.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: comparison of multimesh and single mesh hp-FEM
 

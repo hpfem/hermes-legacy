@@ -35,7 +35,7 @@ Reference to the Hermes open-source project:
 
 Underlying algorithms (hanging nodes, adaptivity, shape functions):
 
-:: 
+::
 
     @Article{Hermes-hanging-nodes,
       author = {P. Solin, J. Cerveny, I. Dolezel},
@@ -46,7 +46,8 @@ Underlying algorithms (hanging nodes, adaptivity, shape functions):
       pages = {117 - 132}
     }
 
-::
+.. sourcecode::
+    .
 
     @Article{Hermes-adaptivity,
       author = {P. Solin, D. Andrs, J. Cerveny, M. Simko},
@@ -57,7 +58,21 @@ Underlying algorithms (hanging nodes, adaptivity, shape functions):
       pages = {3086-3094}
     }
 
-:: 
+.. latexcode::
+    .
+
+    @Article{Hermes-adaptivity,
+      author = {P. Solin, D. Andrs, J. Cerveny, M. Simko},
+      title = {PDE-Independent Adaptive hp-FEM Based on Hierarchic Extension of
+      Finite Element Spaces},
+      journal = {J. Comput. Appl. Math.},
+      year = {2010},
+      volume = {233},
+      pages = {3086-3094}
+    }
+
+.. sourcecode::
+   .
 
     @Article{Hermes-shape-functions,
       author = {P. Solin, T. Vejchodsky},
@@ -68,9 +83,23 @@ Underlying algorithms (hanging nodes, adaptivity, shape functions):
       pages = {1374 - 1394}
     } 
 
+.. latexcode::
+    .
+
+    @Article{Hermes-shape-functions,
+      author = {P. Solin, T. Vejchodsky},
+      title = {Higher-Order Finite Elements Based on Generalized Eigenfunctions of
+      the Laplacian},
+      journal = {Int. J. Numer. Methods Engrg},
+      year = {2007},
+      volume = {73},
+      pages = {1374 - 1394}
+    } 
+
 Multimesh hp-FEM and selected applications:
 
-::
+.. sourcecode::
+   .
 
     @Article{Hermes-multiphysics,
       author = {P. Solin, L. Dubcova, J. Kruis},
@@ -81,7 +110,21 @@ Multimesh hp-FEM and selected applications:
       pages = {3103-3112}
     } 
 
-:: 
+.. latexcode::
+    .
+
+    @Article{Hermes-multiphysics,
+      author = {P. Solin, L. Dubcova, J. Kruis,
+      title = {Adaptive hp-FEM with Dynamical Meshes for Transient Heat and Moisture
+      Transfer Problems},
+      journal = {J. Comput. Appl. Math},
+      year = {2010},
+      volume = {233},
+      pages = {3103-3112}
+    } 
+
+.. sourcecode::
+   . 
 
     @Article{Hermes-solid-mechanics,
       author = {P. Solin, J. Cerveny, L. Dubcova, D. Andrs},
@@ -92,7 +135,21 @@ Multimesh hp-FEM and selected applications:
       year = {2009}
     } 
 
-::
+.. latexcode::
+    .
+
+    @Article{Hermes-solid-mechanics,
+      author = {P. Solin, J. Cerveny, L. Dubcova, D. Andrs},
+      title = {Monolithic Discretization of Linear Thermoelasticity Problems via 
+      Adaptive Multimesh hp-FEM},
+      journal = {J. Comput. Appl. Math},
+      status = {published online},
+      doi = {doi 10.1016/j.cam.2009.08.092},
+      year = {2009}
+    } 
+
+.. sourcecode::
+   .
 
     @Article{Hermes-electromagnetics,
       author = {L. Dubcova, P. Solin, J. Cerveny, P. Kus},
@@ -103,7 +160,21 @@ Multimesh hp-FEM and selected applications:
       pages = {23 - 40}
     }
 
-::
+.. latexcode::
+    .
+
+    @Article{Hermes-electromagnetics,
+      author = {L. Dubcova, P. Solin, J. Cerveny, P. Kus},
+      title = {Space and Time Adaptive Two-Mesh hp-FEM for Transient Microwave Heating
+      Problems},
+      journal = {Electromagnetics},
+      year = {2010},
+      volume = {30},
+      pages = {23 - 40}
+    }
+
+.. sourcecode::
+   .
 
     @Article{Hermes-fluid-mechanics,
       author = {P. Solin, J. Cerveny, L. Dubcova, I. Dolezel},
@@ -114,6 +185,24 @@ Multimesh hp-FEM and selected applications:
       pages = {677 - 680}
     }
 
-Other papers that may be still closer to what you need can be found in the `publications section  <http://hpfem.org/publications/>`_ of the hp-FEM group home page or on `Pavel Solin's home page <http://hpfem.org/~pavel>`_.
+.. latexcode::
+    .
 
- 
+    @Article{Hermes-fluid-mechanics,
+      author = {P. Solin, J. Cerveny, L. Dubcova, I. Dolezel},
+      title = {Multi-Mesh hp-FEM for Thermally Conductive Incompressible Flow},
+      journal = {Proceedings of ECCOMAS Conference COUPLED PROBLEMS 2007 (M. Papadrakakis,
+      E. Onate, B. Schrefler Eds.), CIMNE, Barcelona},
+      year = {2007},
+      pages = {677 - 680}
+    }
+
+.. only:: html
+
+   Other papers that may be still closer to what you need can be found in the `publications section  <http://hpfem.org/publications/>`_ of the hp-FEM group home page or on `Pavel Solin's home page <http://hpfem.org/~pavel>`_.
+
+.. only:: latex 
+
+      Other papers that may be still closer to what you need can be found in the `publications section  
+      <http://hpfem.org/publications/>`_ of the hp-FEM group home page or on `Pavel Solin's home page 
+      <http://hpfem.org/~pavel>`_.

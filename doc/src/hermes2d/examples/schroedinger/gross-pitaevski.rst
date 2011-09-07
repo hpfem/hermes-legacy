@@ -30,22 +30,25 @@ Sample results
 
 Snapshot 1:
 
-.. image:: gross-pitaevski/sol_1.png
+.. figure:: gross-pitaevski/sol_1.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution
 
 Snapshot 2:
 
-.. image:: gross-pitaevski/sol_2.png
+.. figure:: gross-pitaevski/sol_2.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution
 
 Snapshot 3:
 
-.. image:: gross-pitaevski/sol_3.png
+.. figure:: gross-pitaevski/sol_3.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution
 

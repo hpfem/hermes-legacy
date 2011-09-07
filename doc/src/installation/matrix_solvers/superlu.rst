@@ -4,6 +4,10 @@ SuperLU
 .. popup:: '#superlu-matrix-solver'
    ../../../_static/clapper.png
 
+.. only:: latex
+
+    `Tutorial Video <http://hpfem.org/hermes/doc/src/installation/matrix_solvers/videos.html#superlu-matrix-solver>`_. 
+
 .. _SuperLU home page: http://crd.lbl.gov/~xiaoye/SuperLU/
 .. _solvers repository: https://github.com/hpfem/solvers
 .. _manual: https://github.com/hpfem/solvers/raw/master/manuals/SuperLU.pdf
@@ -121,12 +125,24 @@ The multithreaded library can take advantage of modern multi-core
 machines by computing the numerical factorization in parallel. The latest version 
 specifically tuned for Hermes is available in the 
 `solvers repository`_ and you may download and unpack it using the
-following commands::
+following commands:
 
-  wget https://github.com/downloads/hpfem/solvers/superlu_mt-2.0.spkg --no-check-certificate
-  tar -jxvf superlu_mt-2.0.spkg
-  rm superlu_mt-2.0.spkg
-  cd superlu_mt-2.0
+.. sourcecode::
+   .
+
+   wget https://github.com/downloads/hpfem/solvers/superlu_mt-2.0.spkg --no-check-certificate
+   tar -jxvf superlu_mt-2.0.spkg
+   rm superlu_mt-2.0.spkg
+   cd superlu_mt-2.0
+
+.. latexcode::
+   .
+
+   wget https://github.com/downloads/hpfem/solvers/superlu_mt-2.0.spkg
+   --no-check-certificate
+   tar -jxvf superlu_mt-2.0.spkg
+   rm superlu_mt-2.0.spkg
+   cd superlu_mt-2.0
 
 (the list of changes made to the original distribution from `SuperLU home page`_
 in order to make it compatible with Hermes may be found in src/MODIFICATIONS).

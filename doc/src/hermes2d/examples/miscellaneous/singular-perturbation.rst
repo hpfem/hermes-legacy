@@ -19,9 +19,10 @@ important to perform initial refinements towards the boundary, thus providing a 
 initial mesh for adaptivity. One does not have to do this, but then the convergence is slower. 
 The solution is shown in the following figure:
 
-.. image:: example-singular-perturbation/sol_3d_view.png
+.. figure:: example-singular-perturbation/sol_3d_view.png
    :align: center
-   :width: 500
+   :scale: 40% 
+   :figclass: align-center
    :alt: Domain.
 
 Below we show meshes obtained using various types of adaptivity. The meshes do not correspond to 
@@ -31,53 +32,59 @@ Convergence graphs for all cases are shown at the end of this section.
 
 Final mesh (h-FEM, p=1, anisotropic refinements): 34833 DOF, error 0.3495973568992 %
 
-.. image:: example-singular-perturbation/mesh-h1-aniso.png
+.. figure:: example-singular-perturbation/mesh-h1-aniso.png
    :align: center
-   :width: 500
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh
 
 Final mesh (h-FEM, p=2, anisotropic refinements): 37097 DOF, error 0.014234904418008 %
 
-.. image:: example-singular-perturbation/mesh-h2-aniso.png
+.. figure:: example-singular-perturbation/mesh-h2-aniso.png
    :align: center
-   :width: 500
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh
 
 Final mesh (hp-FEM, anisotropic refinements): 6821 DOF, error 7.322784149253e-05 %
 
-.. image:: example-singular-perturbation/mesh-hp-aniso.png
+.. figure:: example-singular-perturbation/mesh-hp-aniso.png
    :align: center
-   :width: 500
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh
 
 DOF convergence graphs for h-FEM with linear and quadratic elements and the hp-FEM (anisotropic 
 refinements enabled):
 
-.. image:: example-singular-perturbation/conv_dof_compar.png
+.. figure:: example-singular-perturbation/conv_dof_compar.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 Corresponding CPU time convergence graphs:
 
-.. image:: example-singular-perturbation/conv_cpu_compar.png
+.. figure:: example-singular-perturbation/conv_cpu_compar.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 
 And at the end let us compare hp-FEM with isotropic and anisotropic refinements:
 
-.. image:: example-singular-perturbation/conv_dof_hp.png
+.. figure:: example-singular-perturbation/conv_dof_hp.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 Corresponding CPU time convergence graphs:
 
-.. image:: example-singular-perturbation/conv_cpu_hp.png
+.. figure:: example-singular-perturbation/conv_cpu_hp.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 
 When using h-FEM, this difference becomes much larger. This is left for the reader

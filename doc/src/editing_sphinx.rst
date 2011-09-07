@@ -30,9 +30,10 @@ can be used as well.
 This will open a new tab or window where you will
 see something like 
 
-  .. image:: hermes2d/img/intro/firefox.png
+  .. figure:: hermes2d/img/intro/firefox.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Firefox screenshot
 
 Click on the link "index.html" and you should see
@@ -58,6 +59,7 @@ A PostScript file can be generated with
 ::
 
     make all-ps
+
 
 
 

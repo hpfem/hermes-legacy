@@ -24,9 +24,10 @@ in a two-dimensional cross-section containing a conductor and an iron object.
 Note: in 2D this is a scalar problem. A sketch of the computational domain 
 is shown in the following picture:
 
-.. image:: 03-complex/domain.png
+.. figure:: 03-complex/domain.png
    :align: center
-   :scale: 50%
+   :scale: 80% 
+   :figclass: align-center
    :alt: Domain.
 
 The computational domain is a rectangle of height 0.003 and width 0.004. 
@@ -40,7 +41,10 @@ elsewhere.
 Complex-valued weak forms
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The weak formulation consists entirely of default forms::
+The weak formulation consists entirely of default forms:
+
+.. sourcecode::
+    .
 
     class CustomWeakForm : public WeakForm
     { 
@@ -67,6 +71,43 @@ The weak formulation consists entirely of default forms::
       };
     };
 
+.. latexcode::
+    .
+
+    class CustomWeakForm : public WeakForm
+    { 
+    public:
+      CustomWeakForm(std::string mat_air,  double mu_air,
+		     std::string mat_iron, double mu_iron, double gamma_iron,
+		     std::string mat_wire, double mu_wire, scalar j_ext, double omega)
+      : WeakForm(1) 
+      {
+	scalar ii =  cplx(0.0, 1.0);
+
+	// Jacobian.
+	add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_air,  new 
+                        HermesFunction(1.0/mu_air)));
+	add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_iron, new
+                        HermesFunction(1.0/mu_iron)));
+	add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_wire, new
+                        HermesFunction(1.0/mu_wire)));
+	add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 0, mat_iron, new
+                        HermesFunction(ii * omega * gamma_iron)));
+
+	// Residual.
+	add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_air, new
+                        HermesFunction(1.0/mu_air)));
+	add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_iron, new
+                        HermesFunction(1.0/mu_iron)));
+	add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_wire, new
+                        HermesFunction(1.0/mu_wire)));
+	add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, mat_wire, new
+                        HermesFunction(-j_ext)));
+	add_vector_form(new WeakFormsH1::DefaultResidualVol(0, mat_iron, new
+                        HermesFunction(ii * omega * gamma_iron)));
+      };
+    };
+
 Initializing the AztecOO matrix solver
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -89,7 +130,8 @@ When using AztecOO, we need to select an iterative method and preconditioner::
 Here, "iterative_method" and "preconditioner" have been defined at the 
 beginning of the file main.cpp as
 
-::
+.. sourcecode::
+    .
 
     const char* iterative_method = "gmres";           // Name of the iterative method employed by AztecOO (ignored
                                                       // by the other solvers). 
@@ -99,6 +141,22 @@ beginning of the file main.cpp as
                                                       // Possibilities: none, jacobi, neumann, least-squares, or a
                                                       // preconditioner from IFPACK (see solver/aztecoo.h)
 
+.. latexcode::
+    .
+
+    const char* iterative_method = "gmres";           // Name of the iterative method
+                                                      // employed by AztecOO (ignored
+                                                      // by the other solvers). 
+                                                      // Possibilities: gmres, cg, cgs,
+                                                      // tfqmr, bicgstab.
+    
+    const char* preconditioner = "least-squares";     // Name of the preconditioner
+                                                      // employed by AztecOO (ignored by
+                                                      // the other solvers).
+                                                      // Possibilities: none, jacobi,
+                                                      // neumann, least-squares, or a
+                                                      // preconditioner from IFPACK 
+                                                      // (see solver/aztecoo.h)
 
 Otherwise everything works in the same way as in example 
 `01-intro <http://hpfem.org/hermes/doc/src/hermes2d/adaptivity/intro.html>'_.
@@ -108,39 +166,44 @@ Sample results
 
 Solution:
 
-.. image:: 03-complex/solution.png
+.. figure:: 03-complex/solution.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Let us compare adaptive $h$-FEM with linear and quadratic elements and the $hp$-FEM.
 
 Final mesh for $h$-FEM with linear elements: 18694 DOF, error = 1.02 \%
 
-.. image:: 03-complex/mesh-h1.png
+.. figure:: 03-complex/mesh-h1.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Mesh.
 
 Final mesh for $h$-FEM with quadratic elements: 46038 DOF, error = 0.018 \%
 
-.. image:: 03-complex/mesh-h2.png
+.. figure:: 03-complex/mesh-h2.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Mesh.
 
 Final mesh for $hp$-FEM: 4787 DOF, error = 0.00918 \%
 
-.. image:: 03-complex/mesh-hp.png
+.. figure:: 03-complex/mesh-hp.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Mesh.
 
 Convergence graphs of adaptive h-FEM with linear elements, h-FEM with quadratic elements
 and hp-FEM are shown below.
 
-.. image:: 03-complex/conv_compar_dof.png
+.. figure:: 03-complex/conv_compar_dof.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 

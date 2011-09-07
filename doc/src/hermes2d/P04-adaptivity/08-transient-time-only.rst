@@ -75,11 +75,29 @@ Adapting the time step
 There are many ways to do this, let us show a very simple one here. We
 define two tolerances for the relative temporal error: TIME_TOL_UPPER
 and TIME_TOL_LOWER. If the time step exceeds the former, then the time 
-step is decreased and vice versa. The code is very simple::
+step is decreased and vice versa. The code is very simple:
+
+.. sourcecode::
+    .
 
     if (rel_err_time > TIME_TOL_UPPER) {
       info("rel_err_time above upper limit %g%% -> decreasing time step from %g to %g and repeating time step.", 
            TIME_TOL_UPPER, time_step, time_step * TIME_STEP_DEC_RATIO);
+      time_step *= TIME_STEP_DEC_RATIO;
+      continue;
+    }
+    if (rel_err_time < TIME_TOL_LOWER) {
+      info("rel_err_time = below lower limit %g%% -> increasing time step from %g to %g", 
+           TIME_TOL_UPPER, time_step, time_step * TIME_STEP_INC_RATIO);
+      time_step *= TIME_STEP_INC_RATIO;
+    }
+
+.. latexcode::
+    .
+
+    if (rel_err_time > TIME_TOL_UPPER) {
+      info("rel_err_time above upper limit %g%% -> decreasing time step from %g to %g and
+           repeating time step.", TIME_TOL_UPPER, time_step, time_step * TIME_STEP_DEC_RATIO);
       time_step *= TIME_STEP_DEC_RATIO;
       continue;
     }
@@ -112,37 +130,42 @@ Sample results
 
 Solution and temporal error at t = 0.105 s:
 
-.. image:: 08-transient-time-only/Screenshot-1.png
+.. figure:: 08-transient-time-only/Screenshot-1.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 Solution and temporal error at t = 0.305 s:
 
-.. image:: 08-transient-time-only/Screenshot-2.png
+.. figure:: 08-transient-time-only/Screenshot-2.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 Solution and temporal error at t = 0.572 s:
 
-.. image:: 08-transient-time-only/Screenshot-3.png
+.. figure:: 08-transient-time-only/Screenshot-3.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 Solution and temporal error at t = 0.797 s:
 
-.. image:: 08-transient-time-only/Screenshot-4.png
+.. figure:: 08-transient-time-only/Screenshot-4.png
    :align: center
-    :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 Solution and temporal error at t = 1.226 s:
 
-.. image:: 08-transient-time-only/Screenshot-5.png
+.. figure:: 08-transient-time-only/Screenshot-5.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 

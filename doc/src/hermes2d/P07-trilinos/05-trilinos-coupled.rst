@@ -19,7 +19,10 @@ Weak formulation
 ~~~~~~~~~~~~~~~~
 
 The code is the same as in example 19 until the definition of the weak formulation, where we
-use diagonal blocks of the Jacobian for preconditioning::
+use diagonal blocks of the Jacobian for preconditioning:
+
+.. sourcecode::
+    .
 
     // Initialize weak formulation.
     WeakForm wf(2, JFNK ? true : false);
@@ -42,18 +45,60 @@ use diagonal blocks of the Jacobian for preconditioning::
     wf.add_vector_form(1, callback(newton_linear_form_1), HERMES_ANY, 
                        Hermes::Tuple<MeshFunction*>(&c_prev_time_1, &c_prev_time_2, &omega));
 
+.. latexcode::
+    .
+
+    // Initialize weak formulation.
+    WeakForm wf(2, JFNK ? true : false);
+    if (!JFNK || (JFNK && PRECOND == 1))
+    {
+      wf.add_matrix_form(0, 0, callback(newton_bilinear_form_0_0), HERMES_NONSYM, HERMES_ANY,
+                         &omega_dt);
+      wf.add_matrix_form_surf(0, 0, callback(newton_bilinear_form_0_0_surf), 3);
+      wf.add_matrix_form(1, 1, callback(newton_bilinear_form_1_1), HERMES_NONSYM, HERMES_ANY,
+                         &omega_dc);
+      wf.add_matrix_form(0, 1, callback(newton_bilinear_form_0_1), HERMES_NONSYM, HERMES_ANY,
+                         &omega_dc);
+      wf.add_matrix_form(1, 0, callback(newton_bilinear_form_1_0), HERMES_NONSYM, HERMES_ANY,
+                         &omega_dt);
+    }
+    else if (PRECOND == 2)
+    {
+      wf.add_matrix_form(0, 0, callback(precond_0_0));
+      wf.add_matrix_form(1, 1, callback(precond_1_1));
+    }
+    wf.add_vector_form(0, callback(newton_linear_form_0), HERMES_ANY, 
+                       Hermes::Tuple<MeshFunction*>(&t_prev_time_1, &t_prev_time_2, &omega));
+    wf.add_vector_form_surf(0, callback(newton_linear_form_0_surf), 3);
+    wf.add_vector_form(1, callback(newton_linear_form_1), HERMES_ANY, 
+                       Hermes::Tuple<MeshFunction*>(&c_prev_time_1, &c_prev_time_2, &omega));
+
 Calculating initial condition for NOX
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Next we project the initial conditions to obtain an initial coefficient vector for NOX::
+Next we project the initial conditions to obtain an initial coefficient vector for NOX:
 
-  // Project the functions "t_prev_time_1" and "c_prev_time_1" on the FE space 
-  // in order to obtain initial vector for NOX. 
-  info("Projecting initial solutions on the FE meshes.");
-  scalar* coeff_vec = new scalar[ndof];
-  OGProjection::project_global(Hermes::Tuple<Space *>(t_space, c_space), 
+.. sourcecode::
+    .
+
+    // Project the functions "t_prev_time_1" and "c_prev_time_1" on the FE space 
+    // in order to obtain initial vector for NOX. 
+    info("Projecting initial solutions on the FE meshes.");
+    scalar* coeff_vec = new scalar[ndof];
+    OGProjection::project_global(Hermes::Tuple<Space *>(t_space, c_space), 
                                        Hermes::Tuple<MeshFunction*>(&t_prev_time_1, &c_prev_time_1),
                                        coeff_vec);
+
+.. latexcode::
+    .
+
+    // Project the functions "t_prev_time_1" and "c_prev_time_1" on the FE space 
+    // in order to obtain initial vector for NOX. 
+    info("Projecting initial solutions on the FE meshes.");
+    scalar* coeff_vec = new scalar[ndof];
+    OGProjection::project_global(Hermes::Tuple<Space *>(t_space, c_space), 
+                                 Hermes::Tuple<MeshFunction*>(&t_prev_time_1,
+                                 &c_prev_time_1), coeff_vec);
 
 Initializing DiscreteProblem, NOX, and preconditioner
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -89,49 +134,103 @@ Output flags are set as follows::
 Time stepping loop
 ~~~~~~~~~~~~~~~~~~
 
-The time stepping loop is as usual::
+The time stepping loop is as usual:
 
-  // Time stepping loop:
-  double total_time = 0.0;
-  cpu_time.tick_reset();
-  for (int ts = 1; total_time <= T_FINAL; ts++)
-  {
-    info("---- Time step %d, t = %g s", ts, total_time + TAU);
+.. sourcecode::
+    .
 
-    cpu_time.tick(HERMES_SKIP);
-    solver.set_init_sln(coeff_vec);
-    if (solver.solve())
+    // Time stepping loop:
+    double total_time = 0.0;
+    cpu_time.tick_reset();
+    for (int ts = 1; total_time <= T_FINAL; ts++)
     {
-      Solution::vector_to_solutions(solver.get_solution(), Hermes::Tuple<Space *>(t_space, c_space), 
-                Hermes::Tuple<Solution *>(&t_prev_newton, &c_prev_newton));
+      info("---- Time step %d, t = %g s", ts, total_time + TAU);
 
-      cpu_time.tick();
-      info("Number of nonlin iterations: %d (norm of residual: %g)",
-          solver.get_num_iters(), solver.get_residual());
-      info("Total number of iterations in linsolver: %d (achieved tolerance in the last step: %g)",
-          solver.get_num_lin_iters(), solver.get_achieved_tol());
-
-      // Time measurement.
       cpu_time.tick(HERMES_SKIP);
+      solver.set_init_sln(coeff_vec);
+      if (solver.solve())
+      {
+        Solution::vector_to_solutions(solver.get_solution(), Hermes::Tuple<Space *>(t_space, c_space), 
+                  Hermes::Tuple<Solution *>(&t_prev_newton, &c_prev_newton));
 
-      // Visualization.
-      DXDYFilter omega_view(omega_fn, Hermes::Tuple<MeshFunction*>(&t_prev_newton, &c_prev_newton));
-      rview.set_min_max_range(0.0,2.0);
-      rview.show(&omega_view);
-      cpu_time.tick(HERMES_SKIP);
+        cpu_time.tick();
+        info("Number of nonlin iterations: %d (norm of residual: %g)",
+            solver.get_num_iters(), solver.get_residual());
+        info("Total number of iterations in linsolver: %d (achieved tolerance in the last step: %g)",
+            solver.get_num_lin_iters(), solver.get_achieved_tol());
+
+        // Time measurement.
+        cpu_time.tick(HERMES_SKIP);
+
+        // Visualization.
+        DXDYFilter omega_view(omega_fn, Hermes::Tuple<MeshFunction*>(&t_prev_newton, &c_prev_newton));
+        rview.set_min_max_range(0.0,2.0);
+        rview.show(&omega_view);
+        cpu_time.tick(HERMES_SKIP);
 			
-      // Skip visualization time.
+        // Skip visualization time.
+        cpu_time.tick(HERMES_SKIP);
+
+        // Update global time.
+        total_time += TAU;
+
+        // Saving solutions for the next time step.
+        t_prev_time_2.copy(&t_prev_time_1);
+        c_prev_time_2.copy(&c_prev_time_1);
+        t_prev_time_1 = t_prev_newton;
+        c_prev_time_1 = c_prev_newton;
+      }
+      else
+        error("NOX failed.");
+
+.. latexcode::
+    .
+
+    // Time stepping loop:
+    double total_time = 0.0;
+    cpu_time.tick_reset();
+    for (int ts = 1; total_time <= T_FINAL; ts++)
+    {
+      info("---- Time step %d, t = %g s", ts, total_time + TAU);
+
       cpu_time.tick(HERMES_SKIP);
+      solver.set_init_sln(coeff_vec);
+      if (solver.solve())
+      {
+        Solution::vector_to_solutions(solver.get_solution(), Hermes::Tuple<Space *>
+                  (t_space, c_space), Hermes::Tuple<Solution *>(&t_prev_newton,
+                  &c_prev_newton));
 
-      // Update global time.
-      total_time += TAU;
+        cpu_time.tick();
+        info("Number of nonlin iterations: %d (norm of residual: %g)",
+            solver.get_num_iters(), solver.get_residual());
+        info("Total number of iterations in linsolver: %d (achieved tolerance in the last
+             step: %g)",
+            solver.get_num_lin_iters(), solver.get_achieved_tol());
 
-      // Saving solutions for the next time step.
-      t_prev_time_2.copy(&t_prev_time_1);
-      c_prev_time_2.copy(&c_prev_time_1);
-      t_prev_time_1 = t_prev_newton;
-      c_prev_time_1 = c_prev_newton;
-    }
-    else
-      error("NOX failed.");
+        // Time measurement.
+        cpu_time.tick(HERMES_SKIP);
+
+        // Visualization.
+        DXDYFilter omega_view(omega_fn, Hermes::Tuple<MeshFunction*>(&t_prev_newton,
+                              &c_prev_newton));
+        rview.set_min_max_range(0.0,2.0);
+        rview.show(&omega_view);
+        cpu_time.tick(HERMES_SKIP);
+			
+        // Skip visualization time.
+        cpu_time.tick(HERMES_SKIP);
+
+        // Update global time.
+        total_time += TAU;
+
+        // Saving solutions for the next time step.
+        t_prev_time_2.copy(&t_prev_time_1);
+        c_prev_time_2.copy(&c_prev_time_1);
+        t_prev_time_1 = t_prev_newton;
+        c_prev_time_1 = c_prev_newton;
+      }
+      else
+        error("NOX failed.");
+
 
