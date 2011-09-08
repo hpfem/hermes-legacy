@@ -33,6 +33,7 @@ latex_preamble = r"""
 \usepackage{fancyvrb}
 \usepackage{color}
 \usepackage{float}
+\usepackage{bm}
 \let\origfigure=\figure
 \renewenvironment{figure}[6]{
 \origfigure[H]}

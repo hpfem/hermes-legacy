@@ -65,14 +65,14 @@ Sample results
 
 Solution at t = 0.01 s:
 
-.. image:: basic-ie-newton/basic-ie-newton-0.01s.png
+.. image:: basic-ie-newton/basic-ie-newton-0-01s.png
    :align: center
    :scale: 80%
    :alt: sample result
 
 Solution at t = 0.03 s:
 
-.. image:: basic-ie-newton/basic-ie-newton-0.03s.png
+.. image:: basic-ie-newton/basic-ie-newton-0-03s.png
    :align: center
    :scale: 80%
    :alt: sample result
