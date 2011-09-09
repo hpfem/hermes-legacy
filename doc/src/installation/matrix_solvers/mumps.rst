@@ -1,13 +1,6 @@
 Mumps
 -----
 
-.. popup:: '#'
-   ../../../_static/clapper.png
-
-.. only:: latex
-
-    `Tutorial Video <http://hpfem.org/hermes/doc/src/installation/matrix_solvers/videos.html#>`_. 
-
 .. _MUMPS home page: http://graal.ens-lyon.fr/MUMPS/index.php
 .. _solvers repository: https://github.com/hpfem/solvers
 .. _manual: https://github.com/hpfem/solvers/raw/master/manuals/MUMPS_4.9.2.pdf
@@ -28,7 +21,7 @@ or newer, you can use the Synaptic package manager for that, or type::
 for the sequential version and
 ::
 
-sudo apt-get install libmumps-4.9.2 libmumps-dev
+   sudo apt-get install libmumps-4.9.2 libmumps-dev
    
 for the parallel one.
 
@@ -47,6 +40,13 @@ Find more about :ref:`ref-usage-mumps`.
 
 Using the special Hermes/Femhub package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. popup:: '#'
+   ../../../_static/clapper.png
+
+.. only:: latex
+
+    `Tutorial Video <http://hpfem.org/hermes/doc/src/installation/matrix_solvers/videos.html#>`_. 
 
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory:

@@ -1,13 +1,6 @@
 SuperLU
 --------
 
-.. popup:: '#superlu-matrix-solver'
-   ../../../_static/clapper.png
-
-.. only:: latex
-
-    `Tutorial Video <http://hpfem.org/hermes/doc/src/installation/matrix_solvers/videos.html#superlu-matrix-solver>`_. 
-
 .. _SuperLU home page: http://crd.lbl.gov/~xiaoye/SuperLU/
 .. _solvers repository: https://github.com/hpfem/solvers
 .. _manual: https://github.com/hpfem/solvers/raw/master/manuals/SuperLU.pdf
@@ -45,6 +38,13 @@ Find more about :ref:`ref-usage-superlu`.
 
 Using the special Hermes/Femhub package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. popup:: '#superlu-matrix-solver'
+   ../../../_static/clapper.png
+
+.. only:: latex
+
+    `Tutorial Video <http://hpfem.org/hermes/doc/src/installation/matrix_solvers/videos.html#superlu-matrix-solver>`_. 
 
 Sequential
 ``````````
