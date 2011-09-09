@@ -15,6 +15,31 @@ PETSc
 Linux
 ~~~~~
 
+Using standard Debian packages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Install packages `libpetsc3.1` and `libpetsc3.1-dev`. 
+Newer version may be available. In Ubuntu 6.06 (Dapper)
+or newer, you can use the Synaptic package manager for that, or type::
+
+   sudo apt-get install libpetsc3.1 libpetsc3.1-dev
+
+Now go to the directory with Hermes. Create the file CMake.vars with the
+following line (or append to the existing one)::
+
+  set(WITH_PETSC YES)
+
+Finally execute::
+  
+  rm CMakeCache.txt
+  cmake .
+  make
+
+Find more about :ref:`ref-usage-petsc`.
+
+Using the special Hermes/Femhub package
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory:
 

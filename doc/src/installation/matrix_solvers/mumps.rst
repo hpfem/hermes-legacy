@@ -15,6 +15,39 @@ Mumps
 Linux
 ~~~~~
 
+Using standard Debian packages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For sequential version, install packages `libmumps-seq-4.9.2` and `libmumps-seq-dev`. 
+For parallel version, install `libmumps-4.9.2` and `libmumps-dev`. Newer versions 
+may be available. In Ubuntu 6.06 (Dapper)
+or newer, you can use the Synaptic package manager for that, or type::
+
+   sudo apt-get install libmumps-seq-4.9.2 libmumps-seq-dev
+
+for the sequential version and
+::
+
+sudo apt-get install libmumps-4.9.2 libmumps-dev
+   
+for the parallel one.
+
+Now go to the directory with Hermes. Create the file CMake.vars with the
+following line (or append to the existing one)::
+
+  set(WITH_MUMPS YES)
+
+Finally execute::
+  
+  rm CMakeCache.txt
+  cmake .
+  make
+
+Find more about :ref:`ref-usage-mumps`.
+
+Using the special Hermes/Femhub package
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory:
 

@@ -8,6 +8,27 @@ Trilinos
 Linux
 ~~~~~
 
+Using standard Debian packages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Install packages `libtrilinos` and `libtrilinos-dev`. In Ubuntu 6.06 (Dapper)
+or newer, you can use the Synaptic package manager for that, or type::
+
+   sudo apt-get install libtrilinos libtrilinos-dev
+
+Now go to the directory with Hermes. Create the file CMake.vars with the
+following line (or append to the existing one)::
+
+  set(WITH_TRILINOS YES)
+
+Finally execute::
+  
+  rm CMakeCache.txt
+  cmake .
+  make
+
+Find more about :ref:`ref-usage-trilinos`.
+
 Using the special Hermes/Femhub package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
