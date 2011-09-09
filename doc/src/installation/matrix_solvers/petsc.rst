@@ -1,13 +1,6 @@
 PETSc
 -----
 
-.. popup:: '#petsc-matrix-solver'
-   ../../../_static/clapper.png
-
-.. only:: latex
-
-    `Tutorial Video <http://hpfem.org/hermes/doc/src/installation/matrix_solvers/videos.html#petsc-matrix-solver>`_. 
-
 .. _PETSc home page: http://www.mcs.anl.gov/petsc/
 .. _solvers repository: https://github.com/hpfem/solvers
 .. _manual: https://github.com/hpfem/solvers/raw/master/manuals/petsc.pdf
@@ -39,6 +32,13 @@ Find more about :ref:`ref-usage-petsc`.
 
 Using the special Hermes/Femhub package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. popup:: '#petsc-matrix-solver'
+   ../../../_static/clapper.png
+
+.. only:: latex
+
+    `Tutorial Video <http://hpfem.org/hermes/doc/src/installation/matrix_solvers/videos.html#petsc-matrix-solver>`_. 
 
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory:
