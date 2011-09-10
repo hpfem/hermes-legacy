@@ -52,6 +52,11 @@ it in some temporary directory:
    rm trilinos-10.6.2.spkg
    cd trilinos-10.6.2
 
+You can enable or disable various components of Trilinos in the script ``standalone_install``.
+For example, if you do not want to enable PyTrilinos, change the corresponding line to::
+
+   -D Trilinos_ENABLE_PyTrilinos:BOOL=OFF \
+
 In order to install the library into say ``~/solvers/trilinos`` (you may choose any
 path you like, provided that you have write access to it; the target directory 
 will be created if it doesn't exist), type now into the terminal::
