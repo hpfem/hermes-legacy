@@ -1,17 +1,17 @@
 Mumps Matrix Solver
 ==============================
 
-.. youtube:: 9LBeSsL_x7Y
+.. youtube:: oiuWQbutkMo
 
 
 .. raw:: html
 
    <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
-Petsc Matrix Solver
+PETSc Matrix Solver
 ==============================
 
-.. youtube:: zpV-8PR0CoY
+.. youtube:: vr0cRW6KUpc
 
 
 .. raw:: html
@@ -22,6 +22,29 @@ SuperLU Matrix Solver
 ==============================
 
 
-.. youtube:: I76Sui_FMMs
+.. youtube:: YOOxazJHB5g
+
+.. raw:: html
+
+   <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+
+Trilinos Matrix Solver
+==============================
 
 
+.. youtube:: 7TWsPlFA_XE
+
+.. raw:: html
+
+   <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+
+
+UMFpack Matrix Solver
+==============================
+
+
+.. youtube:: P-5ohCHQVOY
+
+.. raw:: html
+
+   <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>

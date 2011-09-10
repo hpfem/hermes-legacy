@@ -44,6 +44,7 @@ Using the special Hermes/Femhub package
 .. popup:: '#'
    ../../../_static/clapper.png
 
+
 .. only:: latex
 
     `Tutorial Video <http://hpfem.org/hermes/doc/src/installation/matrix_solvers/videos.html#>`_. 
@@ -116,6 +117,6 @@ Using MUMPS in Hermes
 ~~~~~~~~~~~~~~~~~~~~~
 
 After the installation has been completed, you may select  ``SOLVER_MUMPS`` as the matrix solver for your finite element problem, as detailed
-in the `Poisson tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-1/poisson.html>`__, or use
+in the `Poisson tutorial <http://hpfem.org/hermes/doc/src/hermes2d/P01-linear/03-poisson.html>`__, or use
 it just to solve a standalone matrix problem :math:`Ax = b` as in the 
-`Using Matrix Solvers tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-5/matrix_solvers.html>`__.
+`Using Matrix Solvers tutorial <http://hpfem.org/hermes/doc/src/hermes2d/P08-miscellaneous/35-matrix-solvers.html>`__.
