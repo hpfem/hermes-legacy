@@ -3,7 +3,8 @@ from docutils.parsers.rst import directives
 
 CODE = """
 
-<p><b><a href="javascript:doNothing()" onClick="popupHandle=popup(%(name)s)"><img src="%(depth)s" width=60 height=60>Watch the Video</a></b></p>
+<p><b><a href="javascript:doNothing()" onClick="popupHandle=popup(%(name)s)"><img src="%(depth)s" width=60 height=60 align=left>Watch the Video</a></b></p>
+</br>
 
 """
 

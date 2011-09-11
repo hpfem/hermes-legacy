@@ -32,6 +32,9 @@ Find more about :ref:`ref-usage-trilinos`.
 Using the special Hermes/Femhub package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. popup:: '#trilinos-matrix-solver'
+   ../../../_static/clapper.png
+
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory:
 
@@ -206,8 +209,8 @@ Using TRILINOS in Hermes
 
 You may now select either ``SOLVER_AMESOS`` as the direct matrix solver or 
 ``SOLVER_AZTECOO`` as the iterative matrix solver for your finite element problem, as detailed
-in the `Poisson tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-1/poisson.html>`__, or use
+in the `Poisson tutorial <http://http://hpfem.org/hermes/doc/src/hermes2d/P01-linear/03-poisson.html>`__, or use
 it just to solve a standalone matrix problem :math:`Ax = b` as in the 
-`Using Matrix Solvers tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-5/matrix_solvers.html>`__.
+`Using Matrix Solvers tutorial <http://hpfem.org/hermes/doc/src/hermes2d/P08-miscellaneous/35-matrix-solvers.html>`__.
 Note that Trilinos is also required for using the advanced nonlinear solver ``NOX`` (see e.g. the 
-`Trilinos - Nonlinear tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-6/nonlinear.html>`__).
+`Trilinos - Nonlinear tutorial <http://hpfem.org/hermes/doc/src/hermes2d/P07-trilinos/02-trilinos-nonlinear.html>`__).

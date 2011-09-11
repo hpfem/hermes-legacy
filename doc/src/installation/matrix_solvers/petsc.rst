@@ -103,6 +103,6 @@ Using PETSC in Hermes
 ~~~~~~~~~~~~~~~~~~~~~
 
 You may now select ``SOLVER_PETSC`` as the matrix solver for your finite element problem, as detailed
-in the `Poisson tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-1/poisson.html>`__, or use
+in the `Poisson tutorial <http://hpfem.org/hermes/doc/src/hermes2d/P01-linear/03-poisson.html>`__, or use
 it just to solve a standalone matrix problem :math:`Ax = b` as in the 
-`Using Matrix Solvers tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-5/matrix_solvers.html>`__.
+`Using Matrix Solvers tutorial <http://hpfem.org/hermes/doc/src/hermes2d/P08-miscellaneous/35-matrix-solvers.html>`__.
