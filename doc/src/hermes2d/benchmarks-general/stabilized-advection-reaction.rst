@@ -23,15 +23,12 @@ Boundary conditions: Dirichlet, prescribed on the inflow parts of the domain bou
 
 .. math:: 
     :label: bc-adv-rea
-    :nowrap:
 
-    $$
     \begin{cases}
     0 & \mbox{ for } (x = 0 \land 0.5 < y \leq 1)\,\lor\,(0.5<x\leq 1 \land y = 0),\\
     1 & \mbox{ for } (x = 0 \land 0 < y \leq 0.5)\,\lor\,(0 \leq x\leq 0.5 \land y = 0),\\
     \sin^2(\pi y) & \mbox{ for } x = 1 \land 0\leq y \leq 1.
     \end{cases}
-    $$
 
 Exact solution
 ~~~~~~~~~~~~~~
