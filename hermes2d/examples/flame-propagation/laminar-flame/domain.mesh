@@ -28,22 +28,22 @@ elements = [
 ]
 
 boundaries = [
-  [  0,  1, "Bdy_neumann" ],
-  [  1,  5, "Bdy_newton_cooled" ],
-  [  4,  0, "Bdy_left" ],
-  [  2,  3, "Bdy_neumann" ],
-  [  3,  7, "Bdy_neumann" ],
-  [  6,  2, "Bdy_newton_cooled" ],
-  [  8,  4, "Bdy_left" ],
-  [  5,  6, "Bdy_newton_cooled" ],
-  [ 10,  9, "Bdy_newton_cooled" ],
-  [  7, 11, "Bdy_neumann" ],
-  [  9, 13, "Bdy_newton_cooled" ],
-  [ 13, 12, "Bdy_neumann" ],
-  [ 12,  8, "Bdy_left" ],
-  [ 11, 15, "Bdy_neumann" ],
-  [ 15, 14, "Bdy_neumann" ],
-  [ 14, 10, "Bdy_newton_cooled" ]
+  [ 0, 1, "Neumann" ],
+  [ 1, 5, "Cooled" ],
+  [ 4, 0, "Left" ],
+  [ 2, 3, "Neumann" ],
+  [ 3, 7, "Neumann" ],
+  [ 6, 2, "Cooled" ],
+  [ 8, 4, "Left" ],
+  [ 5, 6, "Cooled" ],
+  [ 10, 9, "Cooled" ],
+  [ 7, 11, "Neumann" ],
+  [ 9, 13, "Cooled" ],
+  [ 13, 12, "Neumann" ],
+  [ 12, 8, "Left" ],
+  [ 11, 15, "Neumann" ],
+  [ 15, 14, "Neumann" ],
+  [ 14, 10, "Cooled" ]
 ]
 
 refinements = [
