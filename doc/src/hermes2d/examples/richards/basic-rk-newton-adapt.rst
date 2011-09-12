@@ -60,24 +60,24 @@ Solution and mesh at t = 0.0005 s:
 
 .. image:: basic-rk-newton-adapt/solution-0-0005s.png 
    :align: center
-   :scale: 80%
+   :scale: 40%
    :alt: sample result
 
 .. image:: basic-rk-newton-adapt/mesh-0-0005s.png
    :align: center
-   :scale: 80%
+   :scale: 40%
    :alt: sample result
 
 Solution and mesh at t = 0.0015 s:
 
 .. image:: basic-rk-newton-adapt/solution-0-0015s.png 
    :align: center
-   :scale: 80%
+   :scale: 40%
    :alt: sample result
 
 .. image:: basic-rk-newton-adapt/mesh-0-0015s.png
    :align: center
-   :scale: 80%
+   :scale: 40%
    :alt: sample result
 
 
