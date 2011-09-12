@@ -39,7 +39,6 @@ void OGProjection::project_internal(Hermes::vector<Space *> spaces, WeakForm* wf
   delete matrix;
   delete rhs;
   delete dp;
-  //delete wf;
 }
 
 void OGProjection::project_global(Hermes::vector<Space *> spaces, Hermes::vector<MeshFunction*> source_meshfns,
@@ -50,6 +49,8 @@ void OGProjection::project_global(Hermes::vector<Space *> spaces, Hermes::vector
 
   // define temporary projection weak form
   WeakForm* proj_wf = new WeakForm(n);
+  ProjectionMatrixFormVol** matrix_form = new ProjectionMatrixFormVol*[n];
+  ProjectionVectorFormVol** vector_form = new ProjectionVectorFormVol*[n];
   int found[100];
   for (int i = 0; i < 100; i++) found[i] = 0;
   for (int i = 0; i < n; i++)
@@ -67,13 +68,13 @@ void OGProjection::project_global(Hermes::vector<Space *> spaces, Hermes::vector
     }
     else norm = proj_norms[i];
 
-    // FIXME - memory leak - create Projection class and encapsulate this function project_global(...)
-    // maybe in more general form
     found[i] = 1;
     // Jacobian.
-    proj_wf->add_matrix_form(new ProjectionMatrixFormVol(i, i, norm));
+	matrix_form[i] = new ProjectionMatrixFormVol(i, i, norm);
+	proj_wf->add_matrix_form(matrix_form[i]);
     // Residual.
-    proj_wf->add_vector_form(new ProjectionVectorFormVol(i, source_meshfns[i], norm));
+    vector_form[i] = new ProjectionVectorFormVol(i, source_meshfns[i], norm);
+	proj_wf->add_vector_form(vector_form[i]);
   }
   for (int i=0; i < n; i++)
   {
@@ -85,6 +86,13 @@ void OGProjection::project_global(Hermes::vector<Space *> spaces, Hermes::vector
   }
 
   project_internal(spaces, proj_wf, target_vec, matrix_solver);
+  for (int i = 0; i < n; i++)
+  {
+	delete vector_form[i];
+	delete matrix_form[i];
+  }
+	delete [] vector_form;
+	delete [] matrix_form;
   
   delete proj_wf;
 }
