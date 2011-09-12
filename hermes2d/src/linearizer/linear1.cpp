@@ -842,6 +842,8 @@ void Linearizer::process_solution(MeshFunction* sln, int item, double eps, doubl
       process_edge(iv[i], iv[e[0]->next_vert(i)], e[0]->en[i]->marker);
   }
 
+  trav.finish();	
+
   /*
   delete [] id2id;
   */
@@ -873,6 +875,8 @@ void Linearizer::process_solution(MeshFunction* sln, int item, double eps, doubl
               ydisp->set_quad_2d(old_quad_y); }
 
   // clean up
+  delete [] meshes;
+  delete [] trfs;
   ::free(hash_table);
   ::free(info);
 }

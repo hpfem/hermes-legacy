@@ -299,6 +299,11 @@ bool Adapt::adapt(Hermes::vector<RefinementSelectors::Selector *> refinement_sel
   // since space changed, assign dofs:
   Space::assign_dofs(this->spaces);
 
+  for(int i = 0; i<max_id; i++)
+		delete [] idx[i];
+  delete [] idx;
+ 
+
   return done;
 }
 
