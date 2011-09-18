@@ -89,6 +89,6 @@ You should see the following result:
 
 .. figure:: 03-trilinos-timedep/1.png
    :align: center
-   :scale: 40% 
+   :scale: 35% 
    :figclass: align-center
    :alt: Sample result

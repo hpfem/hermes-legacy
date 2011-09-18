@@ -210,12 +210,12 @@ Sample results
 ~~~~~~~~~~~~~~
 
 .. figure:: waveguide/real_part.png
-   :scale: 60 %   
+   :scale: 65 %   
    :align: center 	
    :alt: Parallel plate waveguide geometry
 
 .. figure:: waveguide/imaginary_part.png
-   :scale: 60 %   
+   :scale: 65 %   
    :align: center 	
    :alt: Parallel plate waveguide geometry
 

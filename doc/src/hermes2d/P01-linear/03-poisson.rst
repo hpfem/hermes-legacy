@@ -557,7 +557,7 @@ Hermes' built-in OpenGL visualization looks as follows:
 
 .. figure:: 03-poisson/poisson.png
    :align: center
-   :scale: 50% 
+   :scale: 40% 
    :figclass: align-center
    :alt: Solution of the Poisson equation.
 

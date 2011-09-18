@@ -67,7 +67,7 @@ Solution for mode 1:
 
 .. figure:: nist-03/solution-v.png
    :align: center
-   :scale: 55% 
+   :scale: 50% 
    :figclass: align-center
    :alt: Solution-v.
 

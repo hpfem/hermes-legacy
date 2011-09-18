@@ -29,25 +29,25 @@ Sample basis functions:
 
 .. figure:: 15-space-l2/fn0.png
    :align: center
-   :scale: 50% 
+   :scale: 45% 
    :figclass: align-center
    :alt: Sample basis function
 
 .. figure:: 15-space-l2/fn1.png
    :align: center
-   :scale: 50% 
+   :scale: 45% 
    :figclass: align-center
    :alt: Sample basis function
 
 .. figure:: 15-space-l2/fn2.png
    :align: center
-   :scale: 50% 
+   :scale: 45% 
    :figclass: align-center
    :alt: Sample basis function
 
 .. figure:: 15-space-l2/fn3.png
    :align: center
-   :scale: 50% 
+   :scale: 45% 
    :figclass: align-center
    :alt: Sample basis function
 
@@ -55,6 +55,6 @@ The projection (note that this is a discontinuous function):
 
 .. figure:: 15-space-l2/sol.png
    :align: center
-   :scale: 50% 
+   :scale: 45% 
    :figclass: align-center
    :alt: Projection

@@ -132,6 +132,6 @@ You should see the following result:
 
 .. figure:: 02-trilinos-nonlinear/1.png
    :align: center
-   :scale: 70% 
+   :scale: 75% 
    :figclass: align-center
    :alt: Sample result

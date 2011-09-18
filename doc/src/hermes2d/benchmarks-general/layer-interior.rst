@@ -90,7 +90,7 @@ DOF convergence graphs:
 
 .. figure:: benchmark-layer-interior/conv_dof.png
    :align: center
-   :scale: 50% 
+   :scale: 55% 
    :figclass: align-center
    :alt: DOF convergence graph.
 
@@ -98,6 +98,6 @@ CPU time convergence graphs:
 
 .. figure:: benchmark-layer-interior/conv_cpu.png
    :align: center
-   :scale: 50% 
+   :scale: 55% 
    :figclass: align-center
    :alt: CPU convergence graph.

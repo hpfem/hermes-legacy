@@ -200,7 +200,7 @@ DOF convergence graphs (hp-FEM):
 
 .. figure:: benchmark-layer-boundary/conv_compar_dof_hp.png
    :align: center
-   :scale: 50% 
+   :scale: 55% 
    :figclass: align-center
    :alt: DOF convergence graph.
 
@@ -208,7 +208,7 @@ CPU convergence graphs (hp-FEM):
 
 .. figure:: benchmark-layer-boundary/conv_compar_cpu_hp.png
    :align: center
-   :scale: 50% 
+   :scale: 55% 
    :figclass: align-center
    :alt: CPU convergence graph.
 

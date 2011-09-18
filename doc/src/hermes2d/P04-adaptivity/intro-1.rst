@@ -16,7 +16,7 @@ adaptive hp-FEM:
 
 .. figure:: intro/conv_dof.png
    :align: center
-   :scale: 50% 
+   :scale: 60% 
    :figclass: align-center
    :alt: Typical convergence curves for adaptive linear FEM, quadratic FEM, and hp-FEM.
 
@@ -27,7 +27,7 @@ A similar effect can be observed in the CPU-time convergence graph:
 
 .. figure:: intro/conv_cpu.png
    :align: center
-   :scale: 50% 
+   :scale: 60% 
    :figclass: align-center
    :alt: Typical convergence curves for adaptive linear FEM, quadratic FEM, and hp-FEM.
 

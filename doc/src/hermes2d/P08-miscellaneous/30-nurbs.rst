@@ -131,7 +131,7 @@ Result:
 
 .. figure:: 30-nurbs/3.png
    :align: center
-   :scale: 50% 
+   :scale: 45% 
    :figclass: align-center
    :alt: NURBS with three control points.
 

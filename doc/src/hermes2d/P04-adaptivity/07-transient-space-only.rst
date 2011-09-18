@@ -99,7 +99,7 @@ Initial condition and initial mesh:
 
 .. figure:: 07-transient-space-only/1.png
    :align: center
-   :scale: 60% 
+   :scale: 75% 
    :figclass: align-center
    :alt: Sample screenshot
 
@@ -107,7 +107,7 @@ Solution and mesh at t = 0.5:
 
 .. figure:: 07-transient-space-only/2.png
    :align: center
-   :scale: 60% 
+   :scale: 75% 
    :figclass: align-center
    :alt: Sample screenshot
 
@@ -115,7 +115,7 @@ Solution and mesh at t = 1.0:
 
 .. figure:: 07-transient-space-only/3.png
    :align: center
-   :scale: 60% 
+   :scale: 75% 
    :figclass: align-center
    :alt: Sample screenshot
 
@@ -123,7 +123,7 @@ Solution and mesh at t = 1.5:
 
 .. figure:: 07-transient-space-only/4.png
    :align: center
-   :scale: 60% 
+   :scale: 75% 
    :figclass: align-center
    :alt: Sample screenshot
 
@@ -131,7 +131,7 @@ Solution and mesh at t = 2.0:
 
 .. figure:: 07-transient-space-only/5.png
    :align: center
-   :scale: 60% 
+   :scale: 75% 
    :figclass: align-center
    :alt: Sample screenshot
 

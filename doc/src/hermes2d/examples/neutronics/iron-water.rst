@@ -47,7 +47,7 @@ another layer of water:
 
 .. figure:: example-iron-water/iron-water.png
    :align: center
-   :scale: 65% 
+   :scale: 40% 
    :figclass: align-center
    :alt: Schematic picture for the iron-water example.
 

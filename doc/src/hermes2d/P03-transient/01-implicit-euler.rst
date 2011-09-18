@@ -12,7 +12,7 @@ the surrounding air temperature during one 24-hour cycle. The geometry is shown 
 
 .. figure:: 01-implicit-euler/mesh.png
    :align: center
-   :scale: 35% 
+   :scale: 30% 
    :figclass: align-center
    :alt: Model geometry.
 
