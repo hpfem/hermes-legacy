@@ -15,7 +15,7 @@ The following figure shows a symmetric half of the domain $\Omega$
 
 .. figure:: 01-intro/micromotor.png
    :align: center
-   :scale: 60% 
+   :scale: 55% 
    :figclass: align-center
    :alt: Computational domain for the micromotor problem.
 
@@ -380,7 +380,7 @@ and hp-FEM are shown below.
 
 .. figure:: 01-intro/conv_dof.png
    :align: center
-   :scale: 50% 
+   :scale: 60% 
    :figclass: align-center
    :alt: DOF convergence graph for tutorial example 01-intro.
 
@@ -388,7 +388,7 @@ The following graph shows convergence in terms of CPU time.
 
 .. figure:: 01-intro/conv_cpu.png
    :align: center
-   :scale: 50% 
+   :scale: 60% 
    :figclass: align-center
    :alt: CPU convergence graph for tutorial example 01-intro.
 

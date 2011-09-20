@@ -240,7 +240,7 @@ DOF convergence graphs:
 
 .. figure:: benchmark-neutronics-2-group-adapt/conv_dof_hp.png
    :align: center
-   :scale: 50% 
+   :scale: 55% 
    :figclass: align-center
    :alt: DOF convergence graph.
 
@@ -248,6 +248,6 @@ CPU convergence graphs:
 
 .. figure:: benchmark-neutronics-2-group-adapt/conv_cpu_hp.png
    :align: center
-   :scale: 50% 
+   :scale: 55% 
    :figclass: align-center
    :alt: CPU convergence graph.

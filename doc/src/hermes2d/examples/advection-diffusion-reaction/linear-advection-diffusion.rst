@@ -26,7 +26,7 @@ Solution for $\epsilon = 0.01$. Note - view selected to show the boundary layer:
 
 .. figure:: example-linear-advection-diffusion/solution.png
    :align: center
-   :scale:30% 
+   :scale: 50% 
    :figclass: align-center
    :alt: Solution.
 
@@ -43,7 +43,7 @@ prevent the solution from oscillating:
 
 .. figure:: example-linear-advection-diffusion/sol_init.png
    :align: center
-   :scale: 40% 
+   :scale: 50% 
    :figclass: align-center
    :alt: Solution.
 
@@ -53,7 +53,7 @@ can be suppressed by applying the multiscale stabilization (STABILIZATION_ON = t
 
 .. figure:: example-linear-advection-diffusion/sol_init_2.png
    :align: center
-   :scale: 50% 
+   :scale: 55% 
    :figclass: align-center
    :alt: Solution.
 

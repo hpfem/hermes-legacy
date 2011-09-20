@@ -38,7 +38,7 @@ Sample solution and mesh are shown below:
 
 .. figure:: 05-exact/img.png
    :align: center
-   :scale: 70% 
+   :scale: 100% 
    :figclass: align-center
    :alt: Resulting solution and mesh
 

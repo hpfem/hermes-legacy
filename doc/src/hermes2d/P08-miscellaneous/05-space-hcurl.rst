@@ -40,25 +40,25 @@ arrows show its direction.
 
 .. figure:: 05-space-hcurl/fn0.png
    :align: center
-   :scale: 40% 
+   :scale: 35% 
    :figclass: align-center
    :alt: Sample basis function
 
 .. figure:: 05-space-hcurl/fn1.png
    :align: center
-   :scale: 40% 
+   :scale: 35% 
    :figclass: align-center
    :alt: Sample basis function
 
 .. figure:: 05-space-hcurl/fn2.png
    :align: center
-   :scale: 40% 
+   :scale: 35% 
    :figclass: align-center
    :alt: Sample basis function
 
 .. figure:: 05-space-hcurl/fn3.png
    :align: center
-   :scale: 40% 
+   :scale: 35% 
    :figclass: align-center
    :alt: Sample basis function
 

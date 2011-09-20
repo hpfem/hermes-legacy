@@ -42,25 +42,25 @@ corresponding to a boundary edge are shown below:
 
 .. figure:: 10-space-hdiv/fn0.png
    :align: center
-   :scale: 40% 
+   :scale: 35% 
    :figclass: align-center
    :alt: Sample basis function
 
 .. figure:: 10-space-hdiv/fn1.png
    :align: center
-   :scale: 40% 
+   :scale: 35% 
    :figclass: align-center
    :alt: Sample basis function
 
 .. figure:: 10-space-hdiv/fn2.png
    :align: center
-   :scale: 40% 
+   :scale: 35% 
    :figclass: align-center
    :alt: Sample basis function
 
 .. figure:: 10-space-hdiv/fn3.png
    :align: center
-   :scale: 40% 
+   :scale: 35% 
    :figclass: align-center
    :alt: Sample basis function
 

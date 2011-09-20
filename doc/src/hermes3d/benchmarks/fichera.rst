@@ -127,11 +127,11 @@ Convergence graphs:
 Solution and hp-mesh:
 
 .. figure:: fichera/fichera-sln.png
-   :scale: 50% 
+   :scale: 40% 
    :figclass: align-center
 
 
 .. figure:: fichera/fichera-order.png
-   :scale: 50% 
+   :scale: 40% 
    :figclass: align-center
 

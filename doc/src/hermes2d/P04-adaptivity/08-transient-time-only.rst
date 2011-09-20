@@ -132,7 +132,7 @@ Solution and temporal error at t = 0.105 s:
 
 .. figure:: 08-transient-time-only/Screenshot-1.png
    :align: center
-   :scale: 60% 
+   :scale: 70% 
    :figclass: align-center
    :alt: Sample screenshot
 
@@ -140,7 +140,7 @@ Solution and temporal error at t = 0.305 s:
 
 .. figure:: 08-transient-time-only/Screenshot-2.png
    :align: center
-   :scale: 60% 
+   :scale: 70% 
    :figclass: align-center
    :alt: Sample screenshot
 
@@ -148,7 +148,7 @@ Solution and temporal error at t = 0.572 s:
 
 .. figure:: 08-transient-time-only/Screenshot-3.png
    :align: center
-   :scale: 60% 
+   :scale: 70% 
    :figclass: align-center
    :alt: Sample screenshot
 
@@ -156,7 +156,7 @@ Solution and temporal error at t = 0.797 s:
 
 .. figure:: 08-transient-time-only/Screenshot-4.png
    :align: center
-   :scale: 60% 
+   :scale: 70% 
    :figclass: align-center
    :alt: Sample screenshot
 
@@ -164,7 +164,7 @@ Solution and temporal error at t = 1.226 s:
 
 .. figure:: 08-transient-time-only/Screenshot-5.png
    :align: center
-   :scale: 60% 
+   :scale: 70% 
    :figclass: align-center
    :alt: Sample screenshot
 

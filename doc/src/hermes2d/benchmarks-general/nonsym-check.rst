@@ -76,7 +76,7 @@ DOF convergence graphs:
 
 .. figure:: nonsym-check/conv_dof_aniso.png
    :align: center
-   :scale: 50% 
+   :scale: 55% 
    :figclass: align-center
    :alt: DOF convergence graph.
 
@@ -84,7 +84,7 @@ CPU time convergence graphs:
 
 .. figure:: nonsym-check/conv_cpu_aniso.png
    :align: center
-   :scale: 50% 
+   :scale: 55% 
    :figclass: align-center
    :alt: CPU convergence graph.
 

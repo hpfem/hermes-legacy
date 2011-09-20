@@ -184,7 +184,7 @@ Solution and hp-mesh:
     :figclass: align-center
 
 .. figure:: layer-interior/layer-order.png
-    :scale: 75% 
+    :scale: 50% 
     :figclass: align-center
 
 

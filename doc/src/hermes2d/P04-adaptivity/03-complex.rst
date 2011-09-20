@@ -178,7 +178,7 @@ Final mesh for $h$-FEM with linear elements: 18694 DOF, error = 1.02 \%
 
 .. figure:: 03-complex/mesh-h1.png
    :align: center
-   :scale: 50% 
+   :scale: 45% 
    :figclass: align-center
    :alt: Mesh.
 
@@ -186,7 +186,7 @@ Final mesh for $h$-FEM with quadratic elements: 46038 DOF, error = 0.018 \%
 
 .. figure:: 03-complex/mesh-h2.png
    :align: center
-   :scale: 50% 
+   :scale: 45% 
    :figclass: align-center
    :alt: Mesh.
 
@@ -194,7 +194,7 @@ Final mesh for $hp$-FEM: 4787 DOF, error = 0.00918 \%
 
 .. figure:: 03-complex/mesh-hp.png
    :align: center
-   :scale: 50% 
+   :scale: 45% 
    :figclass: align-center
    :alt: Mesh.
 
@@ -203,7 +203,7 @@ and hp-FEM are shown below.
 
 .. figure:: 03-complex/conv_compar_dof.png
    :align: center
-   :scale: 50% 
+   :scale: 45% 
    :figclass: align-center
    :alt: DOF convergence graph.
 

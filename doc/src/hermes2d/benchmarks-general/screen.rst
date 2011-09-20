@@ -22,7 +22,7 @@ the midpoint of the left side. It is filled with air:
 
 .. figure:: benchmark-screen/domain.png
    :align: center
-   :scale: 100% 
+   :scale: 60% 
    :figclass: align-center
    :alt: Computational domain.
 
@@ -79,7 +79,7 @@ Final mesh (h-FEM with linear elements):
 
 .. figure:: benchmark-screen/mesh-h1.png
    :align: center
-   :scale: 40% 
+   :scale: 45% 
    :figclass: align-center
    :alt: Final mesh (h-FEM with linear elements).
 
@@ -91,7 +91,7 @@ Final mesh (h-FEM with quadratic elements):
 
 .. figure:: benchmark-screen/mesh-h2.png
    :align: center
-   :scale: 40% 
+   :scale: 45% 
    :figclass: align-center
    :alt: Final mesh (h-FEM with quadratic elements).
 
@@ -99,7 +99,7 @@ Final mesh (hp-FEM):
 
 .. figure:: benchmark-screen/mesh-hp.png
    :align: center
-   :scale: 40% 
+   :scale: 45% 
    :figclass: align-center
    :alt: Final mesh (hp-FEM).
 
@@ -107,7 +107,7 @@ DOF convergence graphs:
 
 .. figure:: benchmark-screen/conv_dof.png
    :align: center
-   :scale: 50% 
+   :scale: 55% 
    :figclass: align-center
    :alt: DOF convergence graph.
 
@@ -115,7 +115,7 @@ CPU time convergence graphs:
 
 .. figure:: benchmark-screen/conv_cpu.png
    :align: center
-   :scale: 50% 
+   :scale: 55% 
    :figclass: align-center
    :alt: CPU convergence graph.
    

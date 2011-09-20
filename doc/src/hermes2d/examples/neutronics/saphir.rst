@@ -19,7 +19,7 @@ The domain of interest is a 96 x 86 cm rectangle consisting of five regions:
 
 .. figure:: example-saphir/saphir.png
    :align: center
-   :scale: 60% 
+   :scale: 35%
    :figclass: align-center
    :alt: Schematic picture for the saphir example.
 
