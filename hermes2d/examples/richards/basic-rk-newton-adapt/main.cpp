@@ -7,12 +7,6 @@ using namespace RefinementSelectors;
 
 //  This example uses adaptivity with dynamical meshes to solve
 //  the Tracy problem with arbitrary Runge-Kutta methods in time. 
-<<<<<<< HEAD
-//  The user-defined flag ADAPTIVE_TIME_STEP_ON decides whether 
-//  adaptivity in space will be done or not. If so, an embedded
-//  R-K method must be used. 
-=======
->>>>>>> upstream/master
 //
 //  PDE: C(h)dh/dt - div(K(h)grad(h)) - (dK/dh)*(dh/dy) = 0
 //  where K(h) = K_S*exp(alpha*h)                          for h < 0,
@@ -72,23 +66,11 @@ const int MESH_REGULARITY = -1;                   // Maximum allowed level of ha
                                                   // their notoriously bad performance.
 const double CONV_EXP = 1.0;                      // Default value is 1.0. This parameter influences the selection of
                                                   // candidates in hp-adaptivity. See get_optimal_refinement() for details.
-<<<<<<< HEAD
-const double ERR_STOP = 1.0;                      // Stopping criterion for adaptivity (rel. error tolerance between the
-=======
 const double ERR_STOP = 0.5;                      // Stopping criterion for adaptivity (rel. error tolerance between the
->>>>>>> upstream/master
                                                   // fine mesh and coarse mesh solution in percent).
 const int NDOF_STOP = 60000;                      // Adaptivity process stops when the number of degrees of freedom grows
                                                   // over this limit. This is to prevent h-adaptivity to go on forever.
 
-<<<<<<< HEAD
-// Temporal adaptivity.
-bool ADAPTIVE_TIME_STEP_ON = false;               // This flag decides whether adaptive time stepping will be done.
-                                                  // The methods for the adaptive and fixed-step versions are set
-                                                  // below. An embedded method must be used with adaptive time stepping. 
-
-=======
->>>>>>> upstream/master
 // Newton's method
 const double NEWTON_TOL = 5e-5;                   // Stopping criterion for the Newton's method.
 const int NEWTON_MAX_ITER = 100;                  // Maximum allowed number of Newton iterations.
@@ -108,11 +90,7 @@ const int NEWTON_MAX_ITER = 100;                  // Maximum allowed number of N
 //   Implicit_SDIRK_CASH_3_23_embedded, Implicit_ESDIRK_TRBDF2_3_23_embedded, Implicit_ESDIRK_TRX2_3_23_embedded, 
 //   Implicit_SDIRK_BILLINGTON_3_23_embedded, Implicit_SDIRK_CASH_5_24_embedded, Implicit_SDIRK_CASH_5_34_embedded, 
 //   Implicit_DIRK_ISMAIL_7_45_embedded. 
-<<<<<<< HEAD
-ButcherTableType butcher_table_type = Implicit_SDIRK_CASH_3_23_embedded;
-=======
 ButcherTableType butcher_table_type = Implicit_SDIRK_2_2;
->>>>>>> upstream/master
 
 int main(int argc, char* argv[])
 {
@@ -125,15 +103,6 @@ int main(int argc, char* argv[])
   if (bt.is_diagonally_implicit()) info("Using a %d-stage diagonally implicit R-K method.", bt.get_size());
   if (bt.is_fully_implicit()) info("Using a %d-stage fully implicit R-K method.", bt.get_size());
 
-<<<<<<< HEAD
-  // Turn off adaptive time stepping if R-K method is not embedded.
-  if (bt.is_embedded() == false && ADAPTIVE_TIME_STEP_ON == true) {
-    warn("R-K method not embedded, turning off adaptive time stepping.");
-    ADAPTIVE_TIME_STEP_ON = false;
-  }
-
-=======
->>>>>>> upstream/master
   // Load the mesh.
   Mesh mesh, basemesh;
   H2DReader mloader;
@@ -175,11 +144,6 @@ int main(int argc, char* argv[])
   // Visualize initial condition.
   char title[100];
   ScalarView view("Initial condition", new WinGeom(0, 0, 440, 350));
-<<<<<<< HEAD
-  OrderView ordview("Initial mesh", new WinGeom(445, 0, 410, 350));
-  view.show(&h_time_prev);
-  ordview.show(&space);
-=======
   OrderView ordview("Initial mesh", new WinGeom(445, 0, 440, 350));
   view.show(&h_time_prev);
   ordview.show(&space);
@@ -190,7 +154,6 @@ int main(int argc, char* argv[])
   // Time measurement.
   TimePeriod cpu_time;
   cpu_time.tick();
->>>>>>> upstream/master
   
   // Time stepping loop.
   double current_time = 0; int ts = 1;
@@ -208,10 +171,6 @@ int main(int argc, char* argv[])
                 space.set_uniform_order(P_INIT);
                 break;
         case 3: mesh.unrefine_all_elements();
-<<<<<<< HEAD
-                //space.adjust_element_order(-1, P_INIT);
-=======
->>>>>>> upstream/master
                 space.adjust_element_order(-1, -1, P_INIT, P_INIT);
                 break;
         default: error("Wrong global derefinement method.");
@@ -234,12 +193,9 @@ int main(int argc, char* argv[])
       // Initialize discrete problem on reference mesh.
       DiscreteProblem dp(&wf, ref_space);
 
-<<<<<<< HEAD
-=======
       // Time measurement.
       cpu_time.tick();
 
->>>>>>> upstream/master
       // Initialize Runge-Kutta time stepping.
       RungeKutta runge_kutta(&dp, &bt, matrix_solver);
 
@@ -272,12 +228,9 @@ int main(int argc, char* argv[])
       info("ndof_coarse: %d, ndof_ref: %d, err_est_rel: %g%%", 
            Space::get_num_dofs(&space), Space::get_num_dofs(ref_space), err_est_rel_total);
 
-<<<<<<< HEAD
-=======
       // Time measurement.
       cpu_time.tick();
 
->>>>>>> upstream/master
       // If err_est too large, adapt the mesh.
       if (err_est_rel_total < ERR_STOP) done = true;
       else 
@@ -300,15 +253,12 @@ int main(int argc, char* argv[])
     }
     while (done == false);
 
-<<<<<<< HEAD
-=======
     // Add entry to DOF and CPU convergence graphs.
     graph_dof.add_values(current_time, Space::get_num_dofs(&space));
     graph_dof.save("conv_dof_est.dat");
     graph_cpu.add_values(current_time, cpu_time.accumulated());
     graph_cpu.save("conv_cpu_est.dat");
 
->>>>>>> upstream/master
     // Visualize the solution and mesh.
     char title[100];
     sprintf(title, "Solution, time %g", current_time);
