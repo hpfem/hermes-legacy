@@ -4,16 +4,16 @@ Mac OS
 Download and compilation
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Known issues**: Hermes has built-in OpenGL visualization based on FreeGlut, but this package 
+**Known issues**: Hermes-Legacy has built-in OpenGL visualization based on FreeGlut, but this package 
 comes with certain installation difficulties. If you encounter Glut-related problems, set 
-H2D_WITH_GLUT to NO in Cmake.vars, build Hermes without Glut, and use VTK output for visualization. 
+H2D_WITH_GLUT to NO in Cmake.vars, build Hermes-Legacy without Glut, and use VTK output for visualization. 
 For some reason tutorial example 34-remote-computing, the corresponding test, and the test 
 views/zoom-to-fit do not compile (as of November 24, 2010). We work on these problems as time 
 permits. 
 
 **Step 1**: Make sure you have XCode installed. This should be on the installation 
 disks which came with your Mac. XCode contains the GNU compilers, make 
-and many other things which are required to build Hermes.
+and many other things which are required to build Hermes-Legacy.
 
 **Step 2**: Download and install MacPython version 2.6 using the disk image for 
 your version of OSX at http://www.python.org/download/releases/2.6.5/. 
@@ -41,32 +41,27 @@ libraries and applications on your Mac) by doing the following:
   (d) If you don't already have cmake installed, do 
       'sudo port install cmake'.
 
-**Step 4**: Get the Hermes source code as described at the beginning of the Linux section
+**Step 4**: Get the Hermes-Legacy source code as described at the beginning of the Linux section
 above. Change to the directory where you want 
-to download the Hermes source and clone the git repository either
-from the hpfem.org server::
+to download the Hermes-Legacy source and clone the git repository from Github::
 
-    git clone http://git.hpfem.org/git/hermes.git
+    git clone git://github.com/hpfem/hermes-legacy.git
 
-or from Github::
-
-    git clone git://github.com/hpfem/hermes.git
-
-These two repositories are synchronized. For more advanced users we recommend 
+For more advanced users we recommend 
 to create a free account at Github (if you do not have one yet), fork the 
-Hermes repository, and then clone your Github copy of Hermes to your local computer. 
+Hermes-Legacy repository, and then clone your Github copy of Hermes-Legacy to your local computer. 
 This will establish links between your local copy and the master repository, and 
-you’ll become part of the Hermes network at Github.
+you’ll become part of the Hermes-Legacy network at Github.
 
-**Step 5**: Configure and build Hermes by changing dir to 'hermes/', 
+**Step 5**: Configure and build Hermes-Legacy by changing dir to 'hermes-legacy/', 
 and then typing 'cmake .' and 'make'.
 If you have more than one CPU, you can use 'make -jN' where N is the 
-number of CPUs of your computer. To set the location where Hermes 
+number of CPUs of your computer. To set the location where Hermes-Legacy 
 will be installed, pass the -DCMAKE_INSTALL_PREFIX=<your location> 
 flag to cmake (i.e. to install in /usr/local, replace the cmake 
 command above with 'cmake -DCMAKE_INSTALL_PREFIX=/usr/local .').
 
-**Step 6**: Install Hermes by doing 'make install'.
+**Step 6**: Install Hermes-Legacy by doing 'make install'.
 
 Tests
 ~~~~~

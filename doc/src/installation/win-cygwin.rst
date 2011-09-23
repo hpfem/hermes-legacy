@@ -17,4 +17,4 @@ Download and install the Linux emulator Cygwin from `here <http://www.cygwin.com
     cmake, gcc4, gfortran, git, gitk, libX11-devel, libXext-devel, libXt-devel, libXt,
     libXext, make, m4, openssl-devel, perl, python, wget, xextproto.
 
-Then download and build Hermes as described in the Linux section above.
+Then download and build Hermes-Legacy as described in the Linux section above.

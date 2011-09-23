@@ -21,23 +21,19 @@ If you are using a Debian-based system, install the required libraries first:
 least 0.98.5.2 or higher.)
 
 There are multiple ways to obtain the source code. The simplest one 
-is to clone the Git repository either from the hpfem.org server::
-
-    git clone http://git.hpfem.org/git/hermes.git
-
-or from Github::
+is to clone the Git repository from Github::
   
-    git clone git://github.com/hpfem/hermes.git
+    git clone git://github.com/hpfem/hermes-legacy.git
 
-These two repositories are synchronized. For more advanced users we recommend to 
+For more advanced users we recommend to 
 create a free account at `Github <http://github.com>`_ (if you do not have one yet),
-fork the `Hermes repository <http://github.com/hpfem/hermes>`_, and then clone your 
-Github copy of Hermes to your local computer. This will establish links between
-your local copy and the master repository, and you'll become part of the Hermes 
+fork the `Hermes-legacy repository <http://github.com/hpfem/hermes-legacy>`_, and then clone your 
+Github copy of Hermes-Legacy to your local computer. This will establish links between
+your local copy and the master repository, and you'll become part of the Hermes-Legacy 
 network at Github.
 
-Once you have a local copy of the Hermes repository on your computer, change dir 
-to hermes/. There you will find a CMakeLists.txt file that contains the lines
+Once you have a local copy of the Hermes-Legacy repository on your computer, change dir 
+to hermes-legacy/. There you will find a CMakeLists.txt file that contains the lines
 ::
 
     # Testing.
@@ -137,8 +133,8 @@ In Eclipse:
     - Keep "Copy projects into workspace" unchecked.
 
 
-Install Hermes
-~~~~~~~~~~~~~~
+Install Hermes-Legacy
+~~~~~~~~~~~~~~~~~~~~~
 
 ::
 

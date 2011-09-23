@@ -1,6 +1,6 @@
-====================
-Hermes Documentation
-====================
+==================================
+Hermes Documentation (Legacy Code)
+==================================
 
 .. raw:: latex
  
@@ -8,7 +8,25 @@ Hermes Documentation
 
 Thank you for your interest in Hermes!
 
-Hermes is a C++ library for rapid development of adaptive *hp*-FEM and *hp*-DG solvers.
+Hermes is a C++ library for rapid development of adaptive *hp*-FEM and *hp*-DG solvers. You are 
+viewing documentation for the **legacy code**. 
+
+Version 1.0 is available
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Hermes version 1.0 is now available in separate 
+repositories for the library itself, the tutorial, and examples. To obtain the source codes,
+type::
+
+    git clone http://git.hpfem.org/git/hermes.git
+    git clone http://git.hpfem.org/git/hermes-tutorial.git
+    git clone http://git.hpfem.org/git/hermes-examples.git
+
+Each of these repositories contains a folder doc/ with Sphinx documentation. To build 
+the docs, type "make html" in that folder. 
+
+Documentation for the legacy code (continued)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This document is organized as follows: 
 
