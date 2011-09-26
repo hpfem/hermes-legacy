@@ -34,7 +34,10 @@ the initial condition on the coarse mesh::
     InitialSolutionHeatTransfer init_sln(&mesh);
     OGProjection::project_global(&space, &init_sln, coeff_vec_coarse, matrix_solver);
 
-Then we solve the problem on the coarse mesh::
+Then we solve the problem on the coarse mesh:
+
+.. sourcecode::
+    .
 
     // Newton's loop on the coarse mesh. This is done to obtain a good
     // starting point for the Newton's method on the reference mesh.
@@ -43,6 +46,18 @@ Then we solve the problem on the coarse mesh::
     bool jacobian_changed = true;
     if (!hermes2d.solve_newton(coeff_vec_coarse, &dp_coarse, solver_coarse, matrix_coarse, rhs_coarse,
         jacobian_changed, NEWTON_TOL_COARSE, NEWTON_MAX_ITER, verbose)) error("Newton's iteration failed.");
+
+.. latexcode::
+    .
+
+    // Newton's loop on the coarse mesh. This is done to obtain a good
+    // starting point for the Newton's method on the reference mesh.
+    info("Solving on coarse mesh:");
+    bool verbose = true;
+    bool jacobian_changed = true;
+    if (!hermes2d.solve_newton(coeff_vec_coarse, &dp_coarse, solver_coarse, matrix_coarse,
+        rhs_coarse, jacobian_changed, NEWTON_TOL_COARSE, NEWTON_MAX_ITER, verbose)) 
+        error("Newton's iteration failed.");
 
 The resulting coefficient vector is translated into a coarse mesh solution::
 
@@ -58,7 +73,10 @@ This step is quite important since the reference space is large, and the
 quality of the initial coefficient vector matters a lot. In the first 
 adaptivity step, we use the coarse mesh solution (that's why we have 
 computed it), and in all other steps we use the previous fine mesh 
-solution::
+solution:
+
+.. sourcecode::
+   .
 
     // Calculate initial coefficient vector on the reference mesh.
     scalar* coeff_vec = new scalar[Space::get_num_dofs(ref_space)];
@@ -75,6 +93,25 @@ solution::
       OGProjection::project_global(ref_space, &ref_sln, coeff_vec, matrix_solver);
     }
 
+.. latexcode::
+   .
+
+    // Calculate initial coefficient vector on the reference mesh.
+    scalar* coeff_vec = new scalar[Space::get_num_dofs(ref_space)];
+    if (as == 1)
+    {
+      // In the first step, project the coarse mesh solution.
+      info("Projecting coarse mesh solution to obtain initial vector on new fine mesh.");
+      OGProjection::project_global(ref_space, &sln, coeff_vec, matrix_solver);
+    }
+    else
+    {
+      // In all other steps, project the previous fine mesh solution.
+      info("Projecting previous fine mesh solution to obtain initial vector on new fine 
+      mesh.");
+      OGProjection::project_global(ref_space, &ref_sln, coeff_vec, matrix_solver);
+    }
+
 Sample results
 ~~~~~~~~~~~~~~
 
@@ -85,15 +122,17 @@ illustrated in the following convergence comparisons.
 
 (1) Convergence in the number of DOF (with and without Newton solve on the new coarse mesh):
 
-.. image:: 06-nonlinear/conv_dof_compar.png
+.. figure:: 06-nonlinear/conv_dof_compar.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph for tutorial example 01-newton-adapt.
 
 (2) Convergence in CPU time (with and without Newton solve on coarse mesh):
 
-.. image:: 06-nonlinear/conv_cpu_compar.png
+.. figure:: 06-nonlinear/conv_cpu_compar.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph for tutorial example 01-newton-adapt.
 

@@ -8,19 +8,62 @@ Trilinos
 Linux
 ~~~~~
 
+<<<<<<< HEAD
 .. popup:: '#trilinos-matrix-solver'
    ../../../_static/clapper.png
+=======
+Using standard Debian packages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Install packages `libtrilinos` and `libtrilinos-dev`. In Ubuntu 6.06 (Dapper)
+or newer, you can use the Synaptic package manager for that, or type::
+
+   sudo apt-get install libtrilinos libtrilinos-dev
+
+Now go to the directory with Hermes. Create the file CMake.vars with the
+following line (or append to the existing one)::
+
+  set(WITH_TRILINOS YES)
+
+Finally execute::
+  
+  rm CMakeCache.txt
+  cmake .
+  make
+
+Find more about :ref:`ref-usage-trilinos`.
+>>>>>>> upstream/master
 
 Using the special Hermes/Femhub package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. popup:: '#trilinos-matrix-solver'
+   ../../../_static/clapper.png
+
 Download the software package from the `solvers repository`_ and unpack 
-it in some temporary directory::
+it in some temporary directory:
+
+.. sourcecode::
+   .
   
-  wget https://github.com/downloads/hpfem/solvers/trilinos-10.6.2.spkg --no-check-certificate
-  tar -jxvf trilinos-10.6.2.spkg
-  rm trilinos-10.6.2.spkg
-  cd trilinos-10.6.2
+   wget https://github.com/downloads/hpfem/solvers/trilinos-10.6.2.spkg --no-check-certificate
+   tar -jxvf trilinos-10.6.2.spkg
+   rm trilinos-10.6.2.spkg
+   cd trilinos-10.6.2
+
+.. latexcode::
+   .
+  
+   wget https://github.com/downloads/hpfem/solvers/trilinos-10.6.2.spkg
+   --no-check-certificate
+   tar -jxvf trilinos-10.6.2.spkg
+   rm trilinos-10.6.2.spkg
+   cd trilinos-10.6.2
+
+You can enable or disable various components of Trilinos in the script ``standalone_install``.
+For example, if you do not want to enable PyTrilinos, change the corresponding line to::
+
+   -D Trilinos_ENABLE_PyTrilinos:BOOL=OFF \
 
 In order to install the library into say ``~/solvers/trilinos`` (you may choose any
 path you like, provided that you have write access to it; the target directory 
@@ -171,8 +214,8 @@ Using TRILINOS in Hermes
 
 You may now select either ``SOLVER_AMESOS`` as the direct matrix solver or 
 ``SOLVER_AZTECOO`` as the iterative matrix solver for your finite element problem, as detailed
-in the `Poisson tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-1/poisson.html>`__, or use
+in the `Poisson tutorial <http://http://hpfem.org/hermes/doc/src/hermes2d/P01-linear/03-poisson.html>`__, or use
 it just to solve a standalone matrix problem :math:`Ax = b` as in the 
-`Using Matrix Solvers tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-5/matrix_solvers.html>`__.
+`Using Matrix Solvers tutorial <http://hpfem.org/hermes/doc/src/hermes2d/P08-miscellaneous/35-matrix-solvers.html>`__.
 Note that Trilinos is also required for using the advanced nonlinear solver ``NOX`` (see e.g. the 
-`Trilinos - Nonlinear tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-6/nonlinear.html>`__).
+`Trilinos - Nonlinear tutorial <http://hpfem.org/hermes/doc/src/hermes2d/P07-trilinos/02-trilinos-nonlinear.html>`__).

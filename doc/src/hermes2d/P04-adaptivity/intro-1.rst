@@ -14,9 +14,10 @@ This is illustrated in the following graphs that compare typical convergences
 of adaptive FEM with linear elements, adaptive FEM with quadratic elements, and 
 adaptive hp-FEM:
 
-.. image:: intro/conv_dof.png
+.. figure:: intro/conv_dof.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Typical convergence curves for adaptive linear FEM, quadratic FEM, and hp-FEM.
 
 The reader can see that the 
@@ -24,9 +25,10 @@ linear FEM would need in the order of 1,000,000,000,000,000,000 degrees of freed
 (DOF) to reach a level of accuracy where the hp-FEM is with less than 10,000 DOF. 
 A similar effect can be observed in the CPU-time convergence graph:
 
-.. image:: intro/conv_cpu.png
+.. figure:: intro/conv_cpu.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Typical convergence curves for adaptive linear FEM, quadratic FEM, and hp-FEM.
 
 These convergence curves are typical representative examples, confirmed with
@@ -63,9 +65,10 @@ in low-order FEM, since every element can be refined in many different ways.
 The following figure shows several illustrative refinement candidates for 
 a fourth-order element.
 
-.. image:: intro/refinements.png
+.. figure:: intro/refinements.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Examples of hp-refinements.
 
 The number of allowed element refinements is implementation-dependent, but in general

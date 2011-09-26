@@ -40,9 +40,10 @@ two-dimensional elastic body shown in the following figure. The lower edge has
 fixed displacements and the body is loaded with both an external force acting 
 on the upper edge, and volumetric gravity force. 
 
-.. image:: 08-system/elastsample.png
+.. figure:: 08-system/elastsample.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Geometry and boundary conditions.
 
 In the plane-strain model of linear elasticity the goal is to determine the
@@ -141,7 +142,9 @@ the weak formulation for this problem is implemented as follows::
     };
 
 where 
-::
+
+.. sourcecode::
+    .
 
     CustomWeakFormLinearElasticity::CustomWeakFormLinearElasticity(double E, double nu, double rho_g,
 								   std::string surface_force_bdy, double f0, 
@@ -168,6 +171,43 @@ where
       add_vector_form(new WeakFormsH1::DefaultVectorFormVol(1, HERMES_ANY, new HermesFunction(-rho_g)));
       // Surface force (second component).
       add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(1, surface_force_bdy, new HermesFunction(-f1))); 
+    }
+
+.. latexcode::
+    .
+
+    CustomWeakFormLinearElasticity::CustomWeakFormLinearElasticity(double E, double nu,
+                                    double rho_g, std::string surface_force_bdy,
+                                    double f0, double f1) : WeakForm(2)
+    {
+      double lambda = (E * nu) / ((1 + nu) * (1 - 2*nu));
+      double mu = E / (2*(1 + nu));
+
+      // Jacobian.
+      add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_0_0(0, 0, lambda, mu));
+      add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_0_1(0, 1, lambda, mu));
+      add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_1_1(1, 1, lambda, mu));
+
+      // Residual - first equation.
+      add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_0_0(0, HERMES_ANY,
+                                               lambda, mu));
+      add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_0_1(0, HERMES_ANY,
+                                               lambda, mu));
+      // Surface force (first component).
+      add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(0, surface_force_bdy,
+                                            new HermesFunction(-f0))); 
+
+      // Residual - second equation.
+      add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_0(1, HERMES_ANY,
+                                               lambda, mu));
+      add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_1(1, HERMES_ANY,
+                                               lambda, mu));
+      // Gravity loading in the second vector component.
+      add_vector_form(new WeakFormsH1::DefaultVectorFormVol(1, HERMES_ANY,
+                                       new HermesFunction(-rho_g)));
+      // Surface force (second component).
+      add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(1, surface_force_bdy,
+                                            new HermesFunction(-f1))); 
     }
 
 The block index $i$, $j$ means that the bilinear form takes basis functions from 
@@ -296,9 +336,10 @@ Here the fourth and fifth parameters are the displacement components used to
 distort the domain geometry, and the sixth parameter is a scaling factor to multiply the 
 displacements. 
 
-.. image:: 08-system/mises.png
+.. figure:: 08-system/mises.png
    :align: center
-   :scale: 50%
+   :scale: 55% 
+   :figclass: align-center
    :alt: Elastic stress plotted on deformed domain.
 
 

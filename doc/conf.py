@@ -24,12 +24,20 @@ sys.path.append(os.path.abspath('exts'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.pngmath', 'math_dollar', 'youtube', 'popup']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.pngmath', 'math_dollar', 'youtube', 'popup', 'sourcecode', 'latexcode']
 
 latex_preamble = r"""
 \usepackage{dsfont}
 \usepackage{braket}
 \usepackage{slashed}
+\usepackage{fancyvrb}
+\usepackage{color}
+\usepackage{float}
+\usepackage{bm}
+\let\origfigure=\figure
+\renewenvironment{figure}[6]{
+\origfigure[H]}
+{\endlist}
 \def\degrees{^\circ}
 \def\d{{\rm d}}
 
@@ -71,6 +79,14 @@ latex_preamble = r"""
 
 
 %\def\back{\!\!\!\!\!\!\!\!\!\!}
+\def\PY{}
+\def\PYZcb{}
+\def\PYZob{}
+\def\PYZus{}
+\def\PYZbs{}
+\def\PYZpc{}
+\def\PYZti{}
+\def\PYZsh{}
 \def\back{}
 \def\col#1#2{\left(\matrix{#1#2}\right)}
 \def\row#1#2{\left(\matrix{#1#2}\right)}

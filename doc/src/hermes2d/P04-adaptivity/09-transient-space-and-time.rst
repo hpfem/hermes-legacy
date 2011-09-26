@@ -30,23 +30,26 @@ Sample results
 
 Solution, mesh, temporal error, and spatial error at t = 0.05 s:
 
-.. image:: 09-transient-space-and-time/Screenshot-9.png
+.. figure:: 09-transient-space-and-time/Screenshot-9.png
    :align: center
-   :scale: 50%
+   :scale: 75% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 Solution, mesh, temporal error, and spatial error at t = 0.53 s:
 
-.. image:: 09-transient-space-and-time/Screenshot-10.png
+.. figure:: 09-transient-space-and-time/Screenshot-10.png
    :align: center
-   :scale: 50%
+   :scale: 75% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 Solution, mesh, temporal error, and spatial error at t = 0.83 s:
 
-.. image:: 09-transient-space-and-time/Screenshot-11.png
+.. figure:: 09-transient-space-and-time/Screenshot-11.png
    :align: center
-   :scale: 50%
+   :scale: 75% 
+   :figclass: align-center
    :alt: Sample screenshot
 
 

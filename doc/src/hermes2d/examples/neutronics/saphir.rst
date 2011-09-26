@@ -17,9 +17,10 @@ neutron diffusion approximation
 
 The domain of interest is a 96 x 86 cm rectangle consisting of five regions:
 
-.. image:: example-saphir/saphir.png
+.. figure:: example-saphir/saphir.png
    :align: center
-   :width: 400
+   :scale: 35%
+   :figclass: align-center
    :alt: Schematic picture for the saphir example.
 
 The unknown is the neutron flux $\Phi(x, y)$. The values of the diffusion coefficient 
@@ -35,44 +36,49 @@ Sample results
 
 Solution:
 
-.. image:: example-saphir/saphir-sol.png
+.. figure:: example-saphir/saphir-sol.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution to the saphir example.
 
 Final mesh (h-FEM with linear elements):
 
-.. image:: example-saphir/saphir-mesh-h1.png
+.. figure:: example-saphir/saphir-mesh-h1.png
    :align: center
-   :width: 440
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final finite element mesh for the saphir example (h-FEM with linear elements).
 
 Final mesh (h-FEM with quadratic elements):
 
-.. image:: example-saphir/saphir-mesh-h2.png
+.. figure:: example-saphir/saphir-mesh-h2.png
    :align: center
-   :width: 440
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final finite element mesh for the saphir example (h-FEM with quadratic elements).
 
 Final mesh (hp-FEM):
 
-.. image:: example-saphir/saphir-mesh-hp.png
+.. figure:: example-saphir/saphir-mesh-hp.png
    :align: center
-   :width: 440
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final finite element mesh for the saphir example (hp-FEM).
 
 DOF convergence graphs:
 
-.. image:: example-saphir/conv_dof.png
+.. figure:: example-saphir/conv_dof.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph for example saphir.
 
 CPU time convergence graphs:
 
-.. image:: example-saphir/conv_cpu.png
+.. figure:: example-saphir/conv_cpu.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph for example saphir.
 

@@ -1,0 +1,7 @@
+rm *~ 
+./basic-rk-newton-adapt
+<<<<<<< HEAD
+=======
+python plot_graph.py
+>>>>>>> upstream/master
+

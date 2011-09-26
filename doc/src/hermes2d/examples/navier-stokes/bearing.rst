@@ -13,15 +13,17 @@ Sample results
 
 Velocity, time t = 700 s:
 
-.. image:: img-bearing/vel.png
+.. figure:: img-bearing/vel.png
    :align: center
-   :scale: 80 %
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution-velocity
 
 Pressure, time t = 700 s:
 
-.. image:: img-bearing/pressure.png
+.. figure:: img-bearing/pressure.png
    :align: center
-   :scale: 80 %
+   :scale: 50% 
+   :figclass: align-center
    :alt: solution-pressure
 

@@ -24,33 +24,37 @@ and right edges of $\Omega$.
 
 Solution for $\epsilon = 0.01$. Note - view selected to show the boundary layer:
 
-.. image:: example-linear-advection-diffusion/solution.png
+.. figure:: example-linear-advection-diffusion/solution.png
    :align: center
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Initial mesh for automatic adaptivity: 
 
-.. image:: example-linear-advection-diffusion/mesh_init.png
+.. figure:: example-linear-advection-diffusion/mesh_init.png
    :align: center
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: Mesh.
 
 This mesh is not fine enough in the boundary layer region to 
 prevent the solution from oscillating:
 
-.. image:: example-linear-advection-diffusion/sol_init.png
+.. figure:: example-linear-advection-diffusion/sol_init.png
    :align: center
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Here we use the same view as for the solution above. 
 As you can see, this approximation is not very close to the final solution. The oscillations 
 can be suppressed by applying the multiscale stabilization (STABILIZATION_ON = true):
 
-.. image:: example-linear-advection-diffusion/sol_init_2.png
+.. figure:: example-linear-advection-diffusion/sol_init_2.png
    :align: center
-   :height: 400
+   :scale: 55% 
+   :figclass: align-center
    :alt: Solution.
 
 Automatic adaptivity can sometimes
@@ -68,31 +72,34 @@ Let us compare adaptive $h$-FEM with linear and quadratic elements and the $hp$-
 
 Final mesh for $h$-FEM with linear elements: 57495 DOF, error = 0.66 \%
 
-.. image:: example-linear-advection-diffusion/mesh-h1.png
+.. figure:: example-linear-advection-diffusion/mesh-h1.png
    :align: center
-   :height: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Mesh.
 
 Final mesh for $h$-FEM with quadratic elements: 4083 DOF, error = 0.37 \%
 
-.. image:: example-linear-advection-diffusion/mesh-h2.png
+.. figure:: example-linear-advection-diffusion/mesh-h2.png
    :align: center
-   :height: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Mesh.
 
 Final mesh for $hp$-FEM: 1854 DOF, error = 0.28 \%
 
-.. image:: example-linear-advection-diffusion/mesh-hp.png
+.. figure:: example-linear-advection-diffusion/mesh-hp.png
    :align: center
-   :height: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Mesh.
 
 Convergence graphs of adaptive h-FEM with linear elements, h-FEM with quadratic elements
 and hp-FEM are shown below.
 
-.. image:: example-linear-advection-diffusion/conv_compar_dof.png
+.. figure:: example-linear-advection-diffusion/conv_compar_dof.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 

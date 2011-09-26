@@ -52,10 +52,10 @@ Calculated by inserting the exact solution into the equation.
 Sample solution
 ~~~~~~~~~~~~~~~
 
-.. image:: benchmark-layer-boundary/solution.png
+.. figure:: benchmark-layer-boundary/solution.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Solution.
 
 Below we present a series of convergence comparisons. Note that the error plotted
@@ -68,42 +68,42 @@ Let us first compare the performance of h-FEM (p=1), h-FEM (p=2) and hp-FEM with
 
 Final mesh (h-FEM, p=1, isotropic refinements):
 
-.. image:: benchmark-layer-boundary/mesh_h1_iso.png
+.. figure:: benchmark-layer-boundary/mesh_h1_iso.png
    :align: center
-   :width: 500
-   :height: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (h-FEM, p=2, isotropic refinements):
 
-.. image:: benchmark-layer-boundary/mesh_h2_iso.png
+.. figure:: benchmark-layer-boundary/mesh_h2_iso.png
    :align: center
-   :width: 500
-   :height: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (hp-FEM, isotropic refinements):
 
-.. image:: benchmark-layer-boundary/mesh_hp_iso.png
+.. figure:: benchmark-layer-boundary/mesh_hp_iso.png
    :align: center
-   :width: 500
-   :height: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh.
 
 DOF convergence graphs:
 
-.. image:: benchmark-layer-boundary/conv_compar_dof_iso.png
+.. figure:: benchmark-layer-boundary/conv_compar_dof_iso.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
 
-.. image:: benchmark-layer-boundary/conv_compar_cpu_iso.png
+.. figure:: benchmark-layer-boundary/conv_compar_cpu_iso.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 
 Convergence comparison for anisotropic refinements
@@ -113,42 +113,42 @@ Next we compare the performance of h-FEM (p=1), h-FEM (p=2) and hp-FEM with **an
 
 Final mesh (h-FEM, p=1, anisotropic refinements):
 
-.. image:: benchmark-layer-boundary/mesh_h1_aniso.png
+.. figure:: benchmark-layer-boundary/mesh_h1_aniso.png
    :align: center
-   :width: 500
-   :height: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (h-FEM, p=2, anisotropic refinements):
 
-.. image:: benchmark-layer-boundary/mesh_h2_aniso.png
+.. figure:: benchmark-layer-boundary/mesh_h2_aniso.png
    :align: center
-   :width: 500
-   :height: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (hp-FEM, anisotropic refinements):
 
-.. image:: benchmark-layer-boundary/mesh_hp_aniso.png
+.. figure:: benchmark-layer-boundary/mesh_hp_aniso.png
    :align: center
-   :width: 500
-   :height: 400
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh.
 
 DOF convergence graphs:
 
-.. image:: benchmark-layer-boundary/conv_compar_dof_aniso.png
+.. figure:: benchmark-layer-boundary/conv_compar_dof_aniso.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
 
-.. image:: benchmark-layer-boundary/conv_compar_cpu_aniso.png
+.. figure:: benchmark-layer-boundary/conv_compar_cpu_aniso.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 
 h-FEM (p=1): comparison of isotropic and anisotropic refinements
@@ -156,18 +156,18 @@ h-FEM (p=1): comparison of isotropic and anisotropic refinements
 
 DOF convergence graphs:
 
-.. image:: benchmark-layer-boundary/conv_compar_dof_h1.png
+.. figure:: benchmark-layer-boundary/conv_compar_dof_h1.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
 
-.. image:: benchmark-layer-boundary/conv_compar_cpu_h1.png
+.. figure:: benchmark-layer-boundary/conv_compar_cpu_h1.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 
 h-FEM (p=2): comparison of isotropic and anisotropic refinements
@@ -175,18 +175,18 @@ h-FEM (p=2): comparison of isotropic and anisotropic refinements
 
 DOF convergence graphs:
 
-.. image:: benchmark-layer-boundary/conv_compar_dof_h2.png
+.. figure:: benchmark-layer-boundary/conv_compar_dof_h2.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
 
-.. image:: benchmark-layer-boundary/conv_compar_cpu_h2.png
+.. figure:: benchmark-layer-boundary/conv_compar_cpu_h2.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 
 hp-FEM: comparison of isotropic and anisotropic refinements
@@ -198,18 +198,18 @@ In the hp-FEM one has two kinds of anisotropy -- spatial and polynomial. In the 
 
 DOF convergence graphs (hp-FEM):
 
-.. image:: benchmark-layer-boundary/conv_compar_dof_hp.png
+.. figure:: benchmark-layer-boundary/conv_compar_dof_hp.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 55% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU convergence graphs (hp-FEM):
 
-.. image:: benchmark-layer-boundary/conv_compar_cpu_hp.png
+.. figure:: benchmark-layer-boundary/conv_compar_cpu_hp.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 55% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 
 The reader can see that enabling polynomially anisotropic refinements in the hp-FEM is 

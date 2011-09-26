@@ -6,6 +6,10 @@ Poisson Equation (03-poisson)
 
 **Git reference:** Tutorial example `03-poisson <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/03-poisson>`_. 
 
+.. only:: latex
+
+    `Tutorial Video <http://hpfem.org/hermes/doc/src/hermes2d/P01-linear/01-mesh/videos.html#p01-linear-03-poisson-tutorial>`_. 
+
 This example shows how to solve a simple PDE that describes stationary 
 heat transfer in an object that is heated by constant volumetric 
 heat sources (such as with a DC current). The temperature equals 
@@ -113,7 +117,10 @@ $u$ is now the approximate solution (not a basis function as above):
     + \int_{\Omega_{cu}} \lambda_{cu} \nabla u \cdot \nabla v \, \mbox{d}x \mbox{d}y
     - \int_{\Omega} C_{src} v \, \mbox{d}x \mbox{d}y.
 
-This is the constructor of the corresponding weak formulation in Hermes::
+This is the constructor of the corresponding weak formulation in Hermes:
+
+.. sourcecode::
+    .
 
     CustomWeakFormPoisson::CustomWeakFormPoisson(std::string marker_al, HermesFunction* lambda_al,
     			                         std::string marker_cu, HermesFunction* lambda_cu,
@@ -129,13 +136,41 @@ This is the constructor of the corresponding weak formulation in Hermes::
       add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, src_term));
     };
 
+.. latexcode::
+    .
+
+    CustomWeakFormPoisson::CustomWeakFormPoisson(std::string marker_al, 
+                           HermesFunction* lambda_al, std::string marker_cu, 
+                           HermesFunction* lambda_cu, HermesFunction*
+                           src_term) : WeakForm(1)
+    {
+      // Jacobian forms.
+      add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, marker_al, lambda_al));
+      add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, marker_cu, lambda_cu));
+
+      // Residual forms.
+      add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, marker_al, lambda_al));
+      add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, marker_cu, lambda_cu));
+      add_vector_form(new WeakFormsH1::DefaultVectorFormVol(0, HERMES_ANY, src_term));
+    };
+
 Here HERMES_ANY means that the volumetric vector form will be assigned to all material
 markers.
 
-For constant LAMBDA_AL and LAMBDA_CU, the form is instantiated as follows::
+For constant LAMBDA_AL and LAMBDA_CU, the form is instantiated as follows:
+
+.. sourcecode::
+    .
 
     CustomWeakFormPoisson wf("Aluminum", new HermesFunction(LAMBDA_AL), "Copper", 
                              new HermesFunction(LAMBDA_CU), new HermesFunction(-VOLUME_HEAT_SRC));
+
+.. latexcode::
+    .
+
+    CustomWeakFormPoisson wf("Aluminum", new HermesFunction(LAMBDA_AL), "Copper", 
+                             new HermesFunction(LAMBDA_CU), 
+                             new HermesFunction(-VOLUME_HEAT_SRC));
 
 To replace the constants with cubic splines, one just needs to do
 
@@ -315,20 +350,42 @@ uniform mesh refinements::
 Initializing the weak formulation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Next, an instance of the corresponding weak form class is created::
+Next, an instance of the corresponding weak form class is created:
+
+.. sourcecode::
+    .
 
     // Initialize the weak formulation.
     CustomWeakFormPoisson wf("Aluminum", new HermesFunction(LAMBDA_AL), "Copper", 
                              new HermesFunction(LAMBDA_CU), new HermesFunction(-VOLUME_HEAT_SRC));
 
+.. latexcode::
+    .
+
+    // Initialize the weak formulation.
+    CustomWeakFormPoisson wf("Aluminum", new HermesFunction(LAMBDA_AL), "Copper", 
+                             new HermesFunction(LAMBDA_CU), 
+                             new HermesFunction(-VOLUME_HEAT_SRC));
+
 Setting constant Dirichlet boundary conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Constant Dirichlet boundary conditions are assigned to the boundary markers 
-"Bottom", "Inner", "Outer", and "Left" as follows::
+"Bottom", "Inner", "Outer", and "Left" as follows:
+
+.. sourcecode::
+    .
 
     // Initialize essential boundary conditions.
     DefaultEssentialBCConst bc_essential(Hermes::vector<std::string>("Bottom", "Inner", "Outer", "Left"), FIXED_BDY_TEMP);
+    EssentialBCs bcs(&bc_essential);
+
+.. latexcode::
+    .
+
+    // Initialize essential boundary conditions.
+    DefaultEssentialBCConst bc_essential(Hermes::vector<std::string>("Bottom", "Inner",
+                                                 "Outer", "Left"), FIXED_BDY_TEMP);
     EssentialBCs bcs(&bc_essential);
 
 Do not worry about the complicated-looking Hermes::vector, this is just std::vector enhanced 
@@ -392,10 +449,20 @@ vector::
     scalar* coeff_vec = new scalar[ndof];
     memset(coeff_vec, 0, ndof*sizeof(scalar));
 
-The discrete problem is solved via the Newton's method::
+The discrete problem is solved via the Newton's method:
+
+.. sourcecode::
+    .
 
     // Perform Newton's iteration.
     if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs)) error("Newton's iteration failed.");
+
+.. latexcode::
+    .
+
+    // Perform Newton's iteration.
+    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs)) 
+        error("Newton's iteration failed.");
 
 This function comes with a number of optional parameters, see the file 
 `hermes2d/src/h2d_common.h <https://github.com/hpfem/hermes/blob/master/hermes2d/src/h2d_common.h>`_
@@ -426,7 +493,10 @@ polynomial solution using linear triangles::
     info("Solution in VTK format saved to file %s.", "sln.vtk");
 
 The function save_solution_vtk() can be found in hermes2d/src/linearizer/ and its 
-complete header is::
+complete header is:
+
+.. sourcecode::
+    .
 
     // Saves a MeshFunction (Solution, Filter) in VTK format.
     virtual void save_solution_vtk(MeshFunction* meshfn, const char* file_name, const char* quantity_name,
@@ -434,6 +504,16 @@ complete header is::
                                    double eps = HERMES_EPS_NORMAL, double max_abs = -1.0,
                                    MeshFunction* xdisp = NULL, MeshFunction* ydisp = NULL,
                                    double dmult = 1.0);
+
+.. latexcode::
+    .
+
+    // Saves a MeshFunction (Solution, Filter) in VTK format.
+    virtual void save_solution_vtk(MeshFunction* meshfn, const char* file_name, const 
+                                   char* quantity_name, bool mode_3D = true, int item 
+                                   = H2D_FN_VAL_0, double eps = HERMES_EPS_NORMAL, 
+                                   double max_abs = -1.0, MeshFunction* xdisp = NULL, 
+                                   MeshFunction* ydisp = NULL, double dmult = 1.0);
 
 Only the first three arguments are mandatory, the remaining ones are optional.
 Their meaning is as follows:
@@ -456,9 +536,10 @@ Their meaning is as follows:
  
 The following figure shows the corresponding Paraview visualization:
 
-.. image:: 03-poisson/vtk.png
+.. figure:: 03-poisson/vtk.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution of the Poisson equation.
 
 
@@ -474,9 +555,10 @@ The solution can also be visualized via the ScalarView class::
 
 Hermes' built-in OpenGL visualization looks as follows:
 
-.. image:: 03-poisson/poisson.png
+.. figure:: 03-poisson/poisson.png
    :align: center
-   :scale: 50%
+   :scale: 40% 
+   :figclass: align-center
    :alt: Solution of the Poisson equation.
 
 Visualization quality

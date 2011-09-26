@@ -39,9 +39,10 @@ nonzero Neumann on the right edge (all matching exact solution).
 Sample solution
 ~~~~~~~~~~~~~~~
 
-.. image:: nonsym-check/solution.png
+.. figure:: nonsym-check/solution.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Convergence comparison
@@ -49,36 +50,41 @@ Convergence comparison
 
 Final mesh (h-FEM with linear elements):
 
-.. image:: nonsym-check/mesh_h1_aniso.png
+.. figure:: nonsym-check/mesh_h1_aniso.png
    :align: center
-   :width: 500
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh (h-FEM with linear elements).
 
 Final mesh (h-FEM with quadratic elements):
 
-.. image:: nonsym-check/mesh_h2_aniso.png
+.. figure:: nonsym-check/mesh_h2_aniso.png
    :align: center
-   :width: 500
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh (h-FEM with quadratic elements).
 
 Final mesh (hp-FEM):
 
-.. image:: nonsym-check/mesh_hp_aniso.png
+.. figure:: nonsym-check/mesh_hp_aniso.png
    :align: center
-   :width: 500
+   :scale: 40% 
+   :figclass: align-center
    :alt: Final mesh (hp-FEM).
 
 DOF convergence graphs:
 
-.. image:: nonsym-check/conv_dof_aniso.png
+.. figure:: nonsym-check/conv_dof_aniso.png
    :align: center
-   :width: 600
+   :scale: 55% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU time convergence graphs:
 
-.. image:: nonsym-check/conv_cpu_aniso.png
+.. figure:: nonsym-check/conv_cpu_aniso.png
    :align: center
-   :width: 600
+   :scale: 55% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 

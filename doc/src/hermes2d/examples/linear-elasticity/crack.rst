@@ -13,9 +13,10 @@ Problem description
 The computational domain is a $1.5 \times 0.3$ m rectangle containing two horizontal 
 cracks, as shown in the following figure:
 
-.. image:: example-crack/domain.png
+.. figure:: example-crack/domain.png
    :align: center
-   :width: 780
+   :scale: 60% 
+   :figclass: align-center
    :alt: Domain.
 
 The cracks have a flat diamond-like shape and their width along with some other parameters 
@@ -37,9 +38,10 @@ Sample results
 
 Detail of singularity in Von Mises stress at the left end of the left crack:
 
-.. image:: example-crack/sol.png
+.. figure:: example-crack/sol.png
    :align: center
-   :width: 700
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Convergence comparisons
@@ -47,70 +49,76 @@ Convergence comparisons
 
 Final meshes for $u_1$ and $u_2$ (h-FEM with linear elements):
 
-.. image:: example-crack/mesh-x-h1.png
+.. figure:: example-crack/mesh-x-h1.png
    :align: center
-   :width: 800
+   :scale: 70% 
+   :figclass: align-center
    :alt: Solution.
 
-.. image:: example-crack/mesh-y-h1.png
+.. figure:: example-crack/mesh-y-h1.png
    :align: center
-   :width: 800
+   :scale: 70% 
+   :figclass: align-center
    :alt: Solution.
 
 Final meshes for $u_1$ and $u_2$ (h-FEM with quadratic elements):
 
-.. image:: example-crack/mesh-x-h2.png
+.. figure:: example-crack/mesh-x-h2.png
    :align: center
-   :width: 800
+   :scale: 70% 
+   :figclass: align-center
    :alt: Solution.
 
-.. image:: example-crack/mesh-x-h2.png
+.. figure:: example-crack/mesh-x-h2.png
    :align: center
-   :width: 800
+   :scale: 70% 
+   :figclass: align-center
    :alt: Solution.
 
 Final meshes for $u_1$ and $u_2$ (hp-FEM):
 
-.. image:: example-crack/mesh-x-hp.png
+.. figure:: example-crack/mesh-x-hp.png
    :align: center
-   :width: 800
+   :scale: 70% 
+   :figclass: align-center
    :alt: Solution.
 
-.. image:: example-crack/mesh-y-hp.png
+.. figure:: example-crack/mesh-y-hp.png
    :align: center
-   :width: 800
+   :scale: 70% 
+   :figclass: align-center
    :alt: Solution.
 
 DOF convergence graphs:
 
-.. image:: example-crack/conv_dof.png
+.. figure:: example-crack/conv_dof.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU time convergence graphs:
 
-.. image:: example-crack/conv_cpu.png
+.. figure:: example-crack/conv_cpu.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 
 Next let us compare the multimesh hp-FEM with the standard (single-mesh) hp-FEM:
 
-.. image:: example-crack/conv_dof_compar.png
+.. figure:: example-crack/conv_dof_compar.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 The same comparison in terms of CPU time:
 
-.. image:: example-crack/conv_cpu_compar.png
+.. figure:: example-crack/conv_cpu_compar.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 
 

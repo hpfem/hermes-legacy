@@ -31,15 +31,15 @@ using namespace RefinementSelectors;
 
 const int INIT_GLOB_REF_NUM = 3;                  // Number of initial uniform mesh refinements.
 const int INIT_REF_NUM_BDY = 5;                   // Number of initial refinements towards boundary.
-const int P_INIT = 4;                             // Initial polynomial degree.
+const int P_INIT = 2;                             // Initial polynomial degree.
 double time_step = 5e-4;                          // Time step.
 const double T_FINAL = 0.4;                       // Time interval length.
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Newton's method.
-const double NEWTON_TOL = 1e-6;                   // Stopping criterion for the Newton's method.
-const int NEWTON_MAX_ITER = 100;                  // Maximum allowed number of Newton iterations.
+const double NEWTON_TOL = 1e-5;                   // Stopping criterion for the Newton's method.
+const int NEWTON_MAX_ITER = 1000;                 // Maximum allowed number of Newton iterations.
 const double DAMPING_COEFF = 1.0;
 
 // Choose one of the following time-integration methods, or define your own Butcher's table. The last number 
@@ -96,24 +96,20 @@ int main(int argc, char* argv[])
   // Convert initial condition into a Solution.
   Solution h_time_prev, h_time_new;
   Solution::vector_to_solution(coeff_vec, &space, &h_time_prev);
+  delete [] coeff_vec;
 
   // Initialize views.
-  ScalarView view("", new WinGeom(0, 0, 600, 500));
+  ScalarView view("Initial condition", new WinGeom(0, 0, 600, 500));
   view.fix_scale_width(80);
 
   // Visualize the initial condition.
   view.show(&h_time_prev);
 
   // Initialize the weak formulation.
-  CustomWeakFormRichardsRK wf(time_step, &h_time_prev);
+  CustomWeakFormRichardsRK wf;
 
   // Initialize the FE problem.
   DiscreteProblem dp(&wf, &space);
-
-  // Set up the solver, matrix, and rhs according to the solver selection.
-  SparseMatrix* matrix = create_matrix(matrix_solver);
-  Vector* rhs = create_vector(matrix_solver);
-  Solver* solver = create_linear_solver(matrix_solver, matrix, rhs);
 
   // Initialize Runge-Kutta time stepping.
   RungeKutta runge_kutta(&dp, &bt, matrix_solver);
@@ -130,11 +126,21 @@ int main(int argc, char* argv[])
          current_time, time_step, bt.get_size());
     bool jacobian_changed = true;
     bool verbose = true;
+    double damping_coeff = 1.0;
+    double max_allowed_residual_norm = 1e10;
     if (!runge_kutta.rk_time_step(current_time, time_step, &h_time_prev, 
-                                  &h_time_new, jacobian_changed, verbose)) 
+                                  &h_time_new, jacobian_changed, verbose,
+                                  NEWTON_TOL, NEWTON_MAX_ITER, damping_coeff,
+                                  max_allowed_residual_norm)) 
     {
       error("Runge-Kutta time step failed, try to decrease time step size.");
     }
+
+    // Copy solution for the new time step.
+    h_time_prev.copy(&h_time_new);
+
+    // Increase current time.
+    current_time += time_step;
 
     // Visualize the solution.
     char title[100];
@@ -142,20 +148,10 @@ int main(int argc, char* argv[])
     view.set_title(title);
     view.show(&h_time_prev);
 
-    // Copy solution for the new time step.
-    h_time_prev.copy(&h_time_new);
-
-    // Increase current time and time step counter.
-    current_time += time_step;
+    // Increase time step counter.
     ts++;
   }
   while (current_time < T_FINAL);
-
-  // Cleaning up.
-  delete [] coeff_vec;
-  delete matrix;
-  delete rhs;
-  delete solver;
 
   // Wait for the view to be closed.
   View::wait();

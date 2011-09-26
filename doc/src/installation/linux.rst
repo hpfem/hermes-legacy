@@ -7,31 +7,36 @@ Linux
 Download and compilation
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you are using a Debian-based system, install the required libraries first:: 
+If you are using a Debian-based system, install the required libraries first:
 
-    apt-get install cmake g++ gfortran freeglut3-dev libsuitesparse-dev libglew1.5-dev python-dev python-numpy python-scipy cython python-matplotlib
+.. sourcecode::
+    .
+
+    apt-get install cmake g++ gfortran freeglut3-dev libsuitesparse-dev libglew1.5-dev python-dev python-numpy python-scipy cython python-matplotlib libxerces-c-dev xsdcxx
+
+.. latexcode::
+    .
+
+    apt-get install cmake g++ gfortran freeglut3-dev libsuitesparse-dev libglew1.5-dev 
+    python-dev python-numpy python-scipy cython python-matplotlib
 
 (Note: cmake has to be at least version 2.6 or later, matplotlib has to be at
 least 0.98.5.2 or higher.)
 
 There are multiple ways to obtain the source code. The simplest one 
-is to clone the Git repository either from the hpfem.org server::
-
-    git clone http://git.hpfem.org/git/hermes.git
-
-or from Github::
+is to clone the Git repository from Github::
   
-    git clone git://github.com/hpfem/hermes.git
+    git clone git://github.com/hpfem/hermes-legacy.git
 
-These two repositories are synchronized. For more advanced users we recommend to 
+For more advanced users we recommend to 
 create a free account at `Github <http://github.com>`_ (if you do not have one yet),
-fork the `Hermes repository <http://github.com/hpfem/hermes>`_, and then clone your 
-Github copy of Hermes to your local computer. This will establish links between
-your local copy and the master repository, and you'll become part of the Hermes 
+fork the `Hermes-legacy repository <http://github.com/hpfem/hermes-legacy>`_, and then clone your 
+Github copy of Hermes-Legacy to your local computer. This will establish links between
+your local copy and the master repository, and you'll become part of the Hermes-Legacy 
 network at Github.
 
-Once you have a local copy of the Hermes repository on your computer, change dir 
-to hermes/. There you will find a CMakeLists.txt file that contains the lines
+Once you have a local copy of the Hermes-Legacy repository on your computer, change dir 
+to hermes-legacy/. There you will find a CMakeLists.txt file that contains the lines
 ::
 
     # Testing.
@@ -94,9 +99,19 @@ file and add the following::
 (and any other option that you would like to change, see CMakeLists.txt for the
 whole list).
 
-You can also easily generate it from a script (e.g. a debian/rules file) by::
+You can also easily generate it from a script (e.g. a debian/rules file) by:
+
+.. sourcecode::
+    .
 
     python -c 'print "set(H2D_COMPLEX no)\nset(WITH_EXAMPLES no)\nset(WITH_TUTORIAL no)\nset(WITH_PYTHON yes)\nset(WITH_GLUT no)\nset(WITH_UTIL no)"' > CMake.vars
+
+.. latexcode::
+    .
+
+    python -c 'print "set(H2D_COMPLEX no)\nset(WITH_EXAMPLES no)
+    \nset(WITH_TUTORIAL no)\nset(WITH_PYTHON yes)\nset(WITH_GLUT no)
+    \nset(WITH_UTIL no)"' > CMake.vars
 
 If you are on OS X, you have to disable GLUT as the glut library is not easily
 installable on OS X. To do so, just put the following line into your
@@ -121,8 +136,8 @@ In Eclipse:
     - Keep "Copy projects into workspace" unchecked.
 
 
-Install Hermes
-~~~~~~~~~~~~~~
+Install Hermes-Legacy
+~~~~~~~~~~~~~~~~~~~~~
 
 ::
 

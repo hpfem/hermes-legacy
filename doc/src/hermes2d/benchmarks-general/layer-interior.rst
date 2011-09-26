@@ -38,7 +38,8 @@ Obtained by inserting the exact solution into the equation:
 .. math::
     :label: layer-interior-rhs
  
-    f(x, y) = \frac{27}{2} (2y + 0.5)^2 (\pi - 3t) \frac{S^3}{u^2 t_2} +
+    f(x, y) = 
+    \frac{27}{2} (2y + 0.5)^2 (\pi - 3t) \frac{S^3}{u^2 t_2} +
     \frac{27}{2} (2x - 2.5)^2 (\pi - 3t) \frac{S^3}{u^2 t_2}
     - \frac{9}{4} (2y + 0.5)^2 \frac{S}{u t^3} -
     \frac{9}{4} (2x - 2.5)^2 \frac{S}{u t^3} +
@@ -52,10 +53,10 @@ Nonconstant Dirichlet, matching the exact solution.
 Sample solution
 ~~~~~~~~~~~~~~~
 
-.. image:: benchmark-layer-interior/sol_3d_view.png
+.. figure:: benchmark-layer-interior/sol_3d_view.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Convergence comparison
@@ -63,35 +64,40 @@ Convergence comparison
 
 Final mesh (h-FEM with linear elements):
 
-.. image:: benchmark-layer-interior/mesh-h1.png
+.. figure:: benchmark-layer-interior/mesh-h1.png
    :align: center
-   :width: 500
+   :scale: 50% 
+   :figclass: align-center
    :alt: Final mesh (h-FEM with linear elements).
 
 Final mesh (h-FEM with quadratic elements):
 
-.. image:: benchmark-layer-interior/mesh-h2.png
+.. figure:: benchmark-layer-interior/mesh-h2.png
    :align: center
-   :width: 500
+   :scale: 50% 
+   :figclass: align-center
    :alt: Final mesh (h-FEM with quadratic elements).
 
 Final mesh (hp-FEM):
 
-.. image:: benchmark-layer-interior/mesh-hp.png
+.. figure:: benchmark-layer-interior/mesh-hp.png
    :align: center
-   :width: 500
+   :scale: 50% 
+   :figclass: align-center
    :alt: Final mesh (hp-FEM).
 
 DOF convergence graphs:
 
-.. image:: benchmark-layer-interior/conv_dof.png
+.. figure:: benchmark-layer-interior/conv_dof.png
    :align: center
-   :width: 600
+   :scale: 55% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU time convergence graphs:
 
-.. image:: benchmark-layer-interior/conv_cpu.png
+.. figure:: benchmark-layer-interior/conv_cpu.png
    :align: center
-   :width: 600
+   :scale: 55% 
+   :figclass: align-center
    :alt: CPU convergence graph.

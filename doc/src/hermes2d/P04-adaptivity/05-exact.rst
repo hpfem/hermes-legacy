@@ -36,8 +36,9 @@ Sample results
 
 Sample solution and mesh are shown below:
 
-.. image:: 05-exact/img.png
+.. figure:: 05-exact/img.png
    :align: center
-   :scale: 50%
+   :scale: 100% 
+   :figclass: align-center
    :alt: Resulting solution and mesh
 

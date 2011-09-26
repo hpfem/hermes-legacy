@@ -8,16 +8,74 @@ Mumps
 Linux
 ~~~~~
 
+<<<<<<< HEAD
 .. popup:: '#'
    ../../../_static/clapper.png
 
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory::
+=======
+Using standard Debian packages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For sequential version, install packages `libmumps-seq-4.9.2` and `libmumps-seq-dev`. 
+For parallel version, install `libmumps-4.9.2` and `libmumps-dev`. Newer versions 
+may be available. In Ubuntu 6.06 (Dapper)
+or newer, you can use the Synaptic package manager for that, or type::
+
+   sudo apt-get install libmumps-seq-4.9.2 libmumps-seq-dev
+
+for the sequential version and
+::
+
+   sudo apt-get install libmumps-4.9.2 libmumps-dev
+   
+for the parallel one.
+
+Now go to the directory with Hermes. Create the file CMake.vars with the
+following line (or append to the existing one)::
+
+  set(WITH_MUMPS YES)
+
+Finally execute::
+>>>>>>> upstream/master
   
-  wget https://github.com/downloads/hpfem/solvers/mumps-4.9.2.spkg --no-check-certificate
-  tar -jxvf mumps-4.9.2.spkg
-  rm mumps-4.9.2.spkg
-  cd mumps-4.9.2
+  rm CMakeCache.txt
+  cmake .
+  make
+
+Find more about :ref:`ref-usage-mumps`.
+
+Using the special Hermes/Femhub package
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. popup:: '#'
+   ../../../_static/clapper.png
+
+
+.. only:: latex
+
+    `Tutorial Video <http://hpfem.org/hermes/doc/src/installation/matrix_solvers/videos.html#>`_. 
+
+Download the software package from the `solvers repository`_ and unpack 
+it in some temporary directory:
+
+.. sourcecode::
+   .  
+
+   wget https://github.com/downloads/hpfem/solvers/mumps-4.9.2.spkg --no-check-certificate
+   tar -jxvf mumps-4.9.2.spkg
+   rm mumps-4.9.2.spkg
+   cd mumps-4.9.2
+
+.. latexcode::
+   .  
+
+   wget https://github.com/downloads/hpfem/solvers/mumps-4.9.2.spkg
+   --no-check-certificate
+   tar -jxvf mumps-4.9.2.spkg
+   rm mumps-4.9.2.spkg
+   cd mumps-4.9.2
 
 In order to install the library into say ``~/solvers/mumps`` (you may choose any
 path you like, provided that you have write access to it; the target directory 
@@ -67,6 +125,6 @@ Using MUMPS in Hermes
 ~~~~~~~~~~~~~~~~~~~~~
 
 After the installation has been completed, you may select  ``SOLVER_MUMPS`` as the matrix solver for your finite element problem, as detailed
-in the `Poisson tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-1/poisson.html>`__, or use
+in the `Poisson tutorial <http://hpfem.org/hermes/doc/src/hermes2d/P01-linear/03-poisson.html>`__, or use
 it just to solve a standalone matrix problem :math:`Ax = b` as in the 
-`Using Matrix Solvers tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-5/matrix_solvers.html>`__.
+`Using Matrix Solvers tutorial <http://hpfem.org/hermes/doc/src/hermes2d/P08-miscellaneous/35-matrix-solvers.html>`__.

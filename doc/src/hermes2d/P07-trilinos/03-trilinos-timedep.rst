@@ -29,7 +29,10 @@ Time stepping
 ~~~~~~~~~~~~~
 
 The initial coefficient vector has to be provided to NOX 
-in each time step. The time stepping loop is as follows::
+in each time step. The time stepping loop is as follows:
+
+.. sourcecode::
+    .
 
     // Time stepping loop:
     double total_time = 0.0;
@@ -53,12 +56,39 @@ in each time step. The time stepping loop is as follows::
 	solver.get_num_lin_iters(), solver.get_achieved_tol());
     }
 
+.. latexcode::
+    .
+
+    // Time stepping loop:
+    double total_time = 0.0;
+    for (int ts = 1; total_time <= 2000.0; ts++)
+    {
+      info("---- Time step %d, t = %g s", ts, total_time += TAU);
+
+      info("Assembling by DiscreteProblem, solving by NOX.");
+      solver.set_init_sln(coeff_vec);
+      if (solver.solve())
+	Solution::vector_to_solution(solver.get_solution(), &space, &t_prev_time);
+      else
+	error("NOX failed.");
+
+      // Show the new solution.
+      Tview.show(&t_prev_time);
+
+      info("Number of nonlin iterations: %d (norm of residual: %g)", 
+	solver.get_num_iters(), solver.get_residual());
+      info("Total number of iterations in linsolver: %d (achieved tolerance in the last
+           step: %g)", 
+	solver.get_num_lin_iters(), solver.get_achieved_tol());
+    }
+
 Sample results
 ~~~~~~~~~~~~~~
 
 You should see the following result:
 
-.. image:: 03-trilinos-timedep/1.png
+.. figure:: 03-trilinos-timedep/1.png
    :align: center
-   :scale: 50%
+   :scale: 35% 
+   :figclass: align-center
    :alt: Sample result

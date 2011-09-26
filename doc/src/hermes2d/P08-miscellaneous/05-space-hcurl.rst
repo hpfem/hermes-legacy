@@ -38,24 +38,28 @@ sample basis functions (higher-order bubble functions) are
 shown below. The color shows magnitude of the vector field, 
 arrows show its direction.
 
-.. image:: 05-space-hcurl/fn0.png
+.. figure:: 05-space-hcurl/fn0.png
    :align: center
-   :scale: 50%
+   :scale: 35% 
+   :figclass: align-center
    :alt: Sample basis function
 
-.. image:: 05-space-hcurl/fn1.png
+.. figure:: 05-space-hcurl/fn1.png
    :align: center
-   :scale: 50%
+   :scale: 35% 
+   :figclass: align-center
    :alt: Sample basis function
 
-.. image:: 05-space-hcurl/fn2.png
+.. figure:: 05-space-hcurl/fn2.png
    :align: center
-   :scale: 50%
+   :scale: 35% 
+   :figclass: align-center
    :alt: Sample basis function
 
-.. image:: 05-space-hcurl/fn3.png
+.. figure:: 05-space-hcurl/fn3.png
    :align: center
-   :scale: 50%
+   :scale: 35% 
+   :figclass: align-center
    :alt: Sample basis function
 
 The space H(curl) is implemented for both quadrilateral and triangular 

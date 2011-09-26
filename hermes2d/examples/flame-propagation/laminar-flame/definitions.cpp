@@ -1,497 +1,317 @@
-class InitialSolutionTemperature : public ExactSolutionScalar
+#include "definitions.h"
+
+CustomWeakForm::CustomWeakForm(double Le, double alpha, double beta, double kappa, 
+                               double x1, double tau, bool JFNK, bool PRECOND, 
+                               Filter* omega, Filter* omega_dt, Filter* omega_dc, 
+                               Solution* t_prev_time_1, Solution* c_prev_time_1, 
+                               Solution* t_prev_time_2, Solution* c_prev_time_2) 
+                               : WeakForm(2, JFNK ? true : false), Le(Le), alpha(alpha), beta(beta), kappa(kappa), x1(x1)
 {
-public:
-  InitialSolutionTemperature(Mesh* mesh, double x1) : ExactSolutionScalar(mesh), x1(x1) {};
-
-  virtual scalar value (double x, double y) const 
+  if (!JFNK || (JFNK && PRECOND == 1))
   {
-    return (x <= x1) ? 1.0 : exp(x1 - x); 
+    MatrixFormVol* mfv = new JacobianFormVol_0_0(tau);
+    mfv->ext.push_back(omega_dt);
+    add_matrix_form(mfv);
+    MatrixFormSurf* mfs = new JacobianFormSurf_0_0("Neumann", kappa);
+    add_matrix_form_surf(mfs);
+    mfv = new JacobianFormVol_0_1(tau);
+    mfv->ext.push_back(omega_dc);
+    add_matrix_form(mfv);
+    mfv = new JacobianFormVol_1_0(tau);
+    mfv->ext.push_back(omega_dt);
+    add_matrix_form(mfv);
+    mfv = new JacobianFormVol_1_1(tau, Le);
+    mfv->ext.push_back(omega_dc);
+    add_matrix_form(mfv);
+  }
+  else if (PRECOND == 2)
+  {
+    MatrixFormVol* mfv = new PreconditionerForm_0(tau, Le);
+    add_matrix_form(mfv);
+    mfv = new PreconditionerForm_1(tau, Le);
+    add_matrix_form(mfv);
   }
 
-  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const 
-  {
-    dx = 0;
-    dy = 0;
-  };
+  VectorFormVol* vfv = new ResidualFormVol_0(tau);
+  vfv->ext.push_back(t_prev_time_1);
+  vfv->ext.push_back(t_prev_time_2);
+  vfv->ext.push_back(omega);
+  add_vector_form(vfv);
+  VectorFormSurf* vfs = new ResidualFormSurf_0("Neumann", kappa);
+  add_vector_form_surf(vfs);
+  vfv = new ResidualFormVol_1(tau, Le);
+  vfv->ext.push_back(c_prev_time_1);
+  vfv->ext.push_back(c_prev_time_2);
+  vfv->ext.push_back(omega);
+  add_vector_form(vfv);
+}
 
-  virtual Ord ord(Ord x, Ord y) const 
-  {
-    return Ord(10); 
-  }
-
-  // Value.
-  double x1;
-};
-
-class InitialSolutionConcentration : public ExactSolutionScalar
+double CustomWeakForm::JacobianFormVol_0_0::value(int n, double *wt, Func<double> *u_ext[], 
+                               Func<double> *vj, Func<double> *vi, Geom<double> *e, ExtData<double> *ext) const
 {
-public:
-  InitialSolutionConcentration(Mesh* mesh, double x1) : ExactSolutionScalar(mesh), x1(x1) {};
+  double result = 0;
+  Func<double>* domegadt = ext->fn[0];
+  for (int i = 0; i < n; i++)
+    result += wt[i] * (  1.5 * vj->val[i] * vi->val[i] / tau
+                      +  vj->dx[i] * vi->dx[i] + vj->dy[i] * vi->dy[i]
+                      - domegadt->val[i] * vj->val[i] * vi->val[i] );
+  return result;
+}
 
-  virtual scalar value (double x, double y) const 
-  {
-    return (x <= x1) ? 0.0 : 1.0 - exp(Le*(x1 - x)); 
-  }
-
-  virtual void derivatives (double x, double y, scalar& dx, scalar& dy) const 
-  {
-    dx = 0;
-    dy = 0;
-  };
-
-  virtual Ord ord(Ord x, Ord y) const 
-  {
-    return Ord(10); 
-  }
-
-  // Value.
-  double x1;
-};
-
-// definition of reaction rate omega
-class DXDYFilterOmega : public DXDYFilter
+Ord CustomWeakForm::JacobianFormVol_0_0::ord(int n, double *wt, Func<Ord> *u_ext[], 
+                            Func<Ord> *vj, Func<Ord> *vi, Geom<Ord> *e, ExtData<Ord> *ext) const
 {
-public:
-  DXDYFilterOmega(Hermes::vector<MeshFunction*> solutions) : DXDYFilter(solutions) {};
-protected:
+  Ord result = Ord(0);
+  Func<Ord>* domegadt = ext->fn[0];
+  for (int i = 0; i < n; i++)
+    result += wt[i] * (  1.5 * vj->val[i] * vi->val[i] / tau
+                      +  vj->dx[i] * vi->dx[i] + vj->dy[i] * vi->dy[i]
+                      - domegadt->val[i] * vj->val[i] * vi->val[i] );
+  return result;
+}
 
-  virtual void filter_fn (int n, Hermes::vector<scalar *> values, Hermes::vector<scalar *> dx, Hermes::vector<scalar *> dy, 
-                          scalar* rslt, scalar* rslt_dx, scalar* rslt_dy) 
-  {
-    for (int i = 0; i < n; i++) 
-    {
-      scalar t1 = values.at(0)[i] - 1.0;
-      scalar t2 = t1 * beta;
-      scalar t3 = 1.0 + t1 * alpha;
-      scalar t4 = sqr(beta) / (2.0*Le) * exp(t2 / t3);
-      scalar t5 = (beta / (t3 * t3)) * values.at(1)[i];
-      rslt[i] = t4 * values.at(1)[i];
-      rslt_dx[i] = t4 * (dx.at(1)[i] + dx.at(0)[i] * t5);
-      rslt_dy[i] = t4 * (dy.at(1)[i] + dy.at(0)[i] * t5);
-    }
-  }
-};
-
-// definition of reaction rate omega_dt
-class DXDYFilterOmega_dt : public DXDYFilter
+double CustomWeakForm::JacobianFormSurf_0_0::value(int n, double *wt, Func<double> *u_ext[], 
+                               Func<double> *vj, Func<double> *vi, Geom<double> *e, ExtData<double> *ext) const
 {
-public:
-  DXDYFilterOmega_dt(Hermes::vector<MeshFunction*> solutions) : DXDYFilter(solutions) {};
-protected:
+  double result = 0;
+  for (int i = 0; i < n; i++)
+    result += wt[i] * (kappa * vj->val[i] * vi->val[i]);
+  return result;
+}
 
-  virtual void filter_fn (int n, Hermes::vector<scalar *> values, Hermes::vector<scalar *> dx, Hermes::vector<scalar *> dy, 
-                          scalar* rslt, scalar* rslt_dx, scalar* rslt_dy) 
-  {
-    for (int i = 0; i < n; i++)
-    {
-      scalar t1 = values.at(0)[i] - 1.0;
-      scalar t2 = t1 * beta;
-      scalar t3 = 1.0 + t1 * alpha;
-      scalar t4 = sqr(beta) / (2.0*Le) * exp(t2 / t3);
-      scalar t5 = (beta / (t3 * t3));
-      rslt[i] = t4 * t5 * values.at(1)[i];
-      rslt_dx[i] = 0.0;
-      rslt_dy[i] = 0.0; // not important
-    }
-  }
-};
-
-// definition of reaction rate omega_dc
-class DXDYFilterOmega_dc : public DXDYFilter
+Ord CustomWeakForm::JacobianFormSurf_0_0::ord(int n, double *wt, Func<Ord> *u_ext[], 
+                            Func<Ord> *vj, Func<Ord> *vi, Geom<Ord> *e, ExtData<Ord> *ext) const
 {
-public:
-  DXDYFilterOmega_dc(Hermes::vector<MeshFunction*> solutions) : DXDYFilter(solutions) {};
-protected:
+  Ord result = Ord(0);
+  for (int i = 0; i < n; i++)
+    result += wt[i] * (kappa * vj->val[i] * vi->val[i]);
+  return result;
+}
 
-  virtual void filter_fn (int n, Hermes::vector<scalar *> values, Hermes::vector<scalar *> dx, Hermes::vector<scalar *> dy, 
-                          scalar* rslt, scalar* rslt_dx, scalar* rslt_dy) 
-  {
-    for (int i = 0; i < n; i++)
-    {
-      scalar t1 = values.at(0)[i] - 1.0;
-      scalar t2 = t1 * beta;
-      scalar t3 = 1.0 + t1 * alpha;
-      scalar t4 = sqr(beta) / (2.0*Le) * exp(t2 / t3);
-      rslt[i] = t4;
-      rslt_dx[i] = 0.0;
-      rslt_dy[i] = 0.0; // not important
-    }
-  }
-};
-
-// weak forms for the Newton's method
-
-class CustomWeakForm : public WeakForm
+double CustomWeakForm::JacobianFormVol_0_1::value(int n, double *wt, Func<double> *u_ext[], 
+                               Func<double> *vj, Func<double> *vi, Geom<double> *e, ExtData<double> *ext) const
 {
-public:
-  CustomWeakForm(Hermes::vector<std::string> neumann_boundaries, Hermes::vector<std::string> newton_boundaries,
-                 double time_step, double Le, double kappa, 
-                 DXDYFilterOmega_dt* omega_dt, DXDYFilterOmega_dc* omega_dc, DXDYFilterOmega* omega, 
-                 InitialSolutionTemperature* t_prev_time_1, InitialSolutionTemperature* t_prev_time_2, InitialSolutionTemperature* t_prev_newton,
-                 InitialSolutionConcentration* c_prev_time_1, InitialSolutionConcentration* c_prev_time_2, InitialSolutionConcentration* c_prev_newton, 
-                 bool JFNK = false) : WeakForm(2) 
+  double result = 0;
+  Func<double>* domegady = ext->fn[0];
+  for (int i = 0; i < n; i++)
+    result += wt[i] * (- domegady->val[i] * vj->val[i] * vi->val[i] );
+  return result;
+}
+
+Ord CustomWeakForm::JacobianFormVol_0_1::ord(int n, double *wt, Func<Ord> *u_ext[], 
+                            Func<Ord> *vj, Func<Ord> *vi, Geom<Ord> *e, ExtData<Ord> *ext) const
+{
+  Ord result = Ord(0);
+  Func<Ord>* domegady = ext->fn[0];
+  for (int i = 0; i < n; i++)
+    result += wt[i] * (- domegady->val[i] * vj->val[i] * vi->val[i] );
+  return result;
+}
+
+double CustomWeakForm::JacobianFormVol_1_0::value(int n, double *wt, Func<double> *u_ext[], 
+                               Func<double> *vj, Func<double> *vi, Geom<double> *e, ExtData<double> *ext) const
+{
+  double result = 0;
+  Func<double>* domegadt = ext->fn[0];
+  for (int i = 0; i < n; i++)
+    result += wt[i] * ( domegadt->val[i] * vj->val[i] * vi->val[i] );
+  return result;
+}
+
+Ord CustomWeakForm::JacobianFormVol_1_0::ord(int n, double *wt, Func<Ord> *u_ext[], 
+                            Func<Ord> *vj, Func<Ord> *vi, Geom<Ord> *e, ExtData<Ord> *ext) const
+{
+  Ord result = Ord(0);
+  Func<Ord>* domegadt = ext->fn[0];
+  for (int i = 0; i < n; i++)
+    result += wt[i] * ( domegadt->val[i] * vj->val[i] * vi->val[i] );
+  return result;
+}
+
+double CustomWeakForm::JacobianFormVol_1_1::value(int n, double *wt, Func<double> *u_ext[], 
+                               Func<double> *vj, Func<double> *vi, Geom<double> *e, ExtData<double> *ext) const
+{
+  double result = 0;
+  Func<double>* domegady = ext->fn[0];
+  for (int i = 0; i < n; i++)
+    result += wt[i] * (  1.5 * vj->val[i] * vi->val[i] / tau
+                      +  (vj->dx[i] * vi->dx[i] + vj->dy[i] * vi->dy[i]) / Le
+                      + domegady->val[i] * vj->val[i] * vi->val[i] );
+  return result;
+}
+
+Ord CustomWeakForm::JacobianFormVol_1_1::ord(int n, double *wt, Func<Ord> *u_ext[], 
+                            Func<Ord> *vj, Func<Ord> *vi, Geom<Ord> *e, ExtData<Ord> *ext) const
+{
+  Ord result = Ord(0);
+  Func<Ord>* domegady = ext->fn[0];
+  for (int i = 0; i < n; i++)
+    result += wt[i] * (  1.5 * vj->val[i] * vi->val[i] / tau
+                      +  (vj->dx[i] * vi->dx[i] + vj->dy[i] * vi->dy[i]) / Le
+                      + domegady->val[i] * vj->val[i] * vi->val[i] );
+  return result;
+}
+
+double CustomWeakForm::ResidualFormVol_0::value(int n, double *wt, Func<double> *u_ext[], 
+                               Func<double> *vi, Geom<double> *e, ExtData<double> *ext) const
+{
+  double result = 0;
+  Func<double>* titer = u_ext[0];
+  Func<double>* t_prev_time_1 = ext->fn[0];
+  Func<double>* t_prev_time_2 = ext->fn[1];
+  Func<double>* omega = ext->fn[2];
+  for (int i = 0; i < n; i++)
+    result += wt[i] * ( (3.0 * titer->val[i] - 4.0 * t_prev_time_1->val[i] 
+                         + t_prev_time_2->val[i]) * vi->val[i] / (2.0 * tau) +
+                        (titer->dx[i] * vi->dx[i] + titer->dy[i] * vi->dy[i]) -
+                        omega->val[i] * vi->val[i]);
+  return result;
+}
+
+Ord CustomWeakForm::ResidualFormVol_0::ord(int n, double *wt, Func<Ord> *u_ext[], 
+                            Func<Ord> *vi, Geom<Ord> *e, ExtData<Ord> *ext) const
+{
+  Ord result = Ord(0);
+  Func<Ord>* titer = u_ext[0];
+  Func<Ord>* t_prev_time_1 = ext->fn[0];
+  Func<Ord>* t_prev_time_2 = ext->fn[1];
+  Func<Ord>* omega = ext->fn[2];
+  for (int i = 0; i < n; i++)
+    result += wt[i] * ( (3.0 * titer->val[i] - 4.0 * t_prev_time_1->val[i] 
+                         + t_prev_time_2->val[i]) * vi->val[i] / (2.0 * tau) +
+                        (titer->dx[i] * vi->dx[i] + titer->dy[i] * vi->dy[i]) -
+                        omega->val[i] * vi->val[i]);
+  return result;
+}
+
+double CustomWeakForm::ResidualFormSurf_0::value(int n, double *wt, Func<double> *u_ext[], 
+                               Func<double> *vi, Geom<double> *e, ExtData<double> *ext) const
+{
+  double result = 0;
+  Func<double>* t_prev_newton = u_ext[0];
+  for (int i = 0; i < n; i++)
+    result += wt[i] * (kappa * t_prev_newton->val[i] * vi->val[i]);
+  return result;
+}
+
+Ord CustomWeakForm::ResidualFormSurf_0::ord(int n, double *wt, Func<Ord> *u_ext[], 
+                            Func<Ord> *vi, Geom<Ord> *e, ExtData<Ord> *ext) const
+{
+  Ord result = Ord(0);
+  Func<Ord>* t_prev_newton = u_ext[0];
+  for (int i = 0; i < n; i++)
+    result += wt[i] * (kappa * t_prev_newton->val[i] * vi->val[i]);
+  return result;
+}
+
+double CustomWeakForm::ResidualFormVol_1::value(int n, double *wt, Func<double> *u_ext[], 
+                               Func<double> *vi, Geom<double> *e, ExtData<double> *ext) const
+{
+  double result = 0;
+  Func<double>* c_prev_newton = u_ext[1];
+  Func<double>* c_prev_time_1 = ext->fn[0];
+  Func<double>* c_prev_time_2 = ext->fn[1];
+  Func<double>* omega = ext->fn[2];
+  for (int i = 0; i < n; i++)
+		result += wt[i] * ( (3.0 * c_prev_newton->val[i] - 4.0 * c_prev_time_1->val[i] + c_prev_time_2->val[i])
+                         * vi->val[i] / (2.0 * tau) +
+                        (c_prev_newton->dx[i] * vi->dx[i] + c_prev_newton->dy[i] * vi->dy[i]) / Le +
+                        omega->val[i] * vi->val[i]);
+  return result;
+}
+
+Ord CustomWeakForm::ResidualFormVol_1::ord(int n, double *wt, Func<Ord> *u_ext[], 
+                            Func<Ord> *vi, Geom<Ord> *e, ExtData<Ord> *ext) const
+{
+  Ord result = Ord(0);
+  Func<Ord>* c_prev_newton = u_ext[1];
+  Func<Ord>* c_prev_time_1 = ext->fn[0];
+  Func<Ord>* c_prev_time_2 = ext->fn[1];
+  Func<Ord>* omega = ext->fn[2];
+  for (int i = 0; i < n; i++)
+		result += wt[i] * ( (3.0 * c_prev_newton->val[i] - 4.0 * c_prev_time_1->val[i] + c_prev_time_2->val[i])
+                         * vi->val[i] / (2.0 * tau) +
+                        (c_prev_newton->dx[i] * vi->dx[i] + c_prev_newton->dy[i] * vi->dy[i]) / Le +
+                        omega->val[i] * vi->val[i]);
+  return result;
+}
+
+// Preconditioner weak forms.
+double CustomWeakForm::PreconditionerForm_0::value(int n, double *wt, Func<double>* u_ext[], Func<double> *vj, 
+                                     Func<double> *vi, Geom<double> *e, ExtData<double> *ext) const
+{
+  double result = 0;
+  for (int i = 0; i < n; i++)
+    result += wt[i] * (  1.5 * vj->val[i] * vi->val[i] / tau
+                      +  vj->dx[i] * vi->dx[i] + vj->dy[i] * vi->dy[i]);
+  return result;
+}
+
+Ord CustomWeakForm::PreconditionerForm_0::ord(int n, double *wt, Func<Ord>* u_ext[], Func<Ord> *vj, 
+                                  Func<Ord> *vi, Geom<Ord> *e, ExtData<Ord> *ext) const
+{
+  return vj->val[0] * vi->val[0] +  vj->dx[0] * vi->dx[0] + vj->dy[0] * vi->dy[0];
+}
+
+double CustomWeakForm::PreconditionerForm_1::value(int n, double *wt, Func<double>* u_ext[], Func<double> *vj, 
+                                     Func<double> *vi, Geom<double> *e, ExtData<double> *ext) const
+{
+  double result = 0;
+  for (int i = 0; i < n; i++)
+    result += wt[i] * (  1.5 * vj->val[i] * vi->val[i] / tau
+                      +  (vj->dx[i] * vi->dx[i] + vj->dy[i] * vi->dy[i]) / Le );
+  return result;
+}
+
+Ord CustomWeakForm::PreconditionerForm_1::ord(int n, double *wt, Func<Ord>* u_ext[], Func<Ord> *vj, 
+                                  Func<Ord> *vi, Geom<Ord> *e, ExtData<Ord> *ext) const
+{
+  return vj->val[0] * vi->val[0] +  vj->dx[0] * vi->dx[0] + vj->dy[0] * vi->dy[0];
+}
+
+void CustomFilter::filter_fn(int n, Hermes::vector<double*> values, Hermes::vector<double*> dx, Hermes::vector<double*> dy,
+                             double* out, double* outdx, double* outdy)
+{
+  for (int i = 0; i < n; i++)
   {
+    double t1 = std::max(values.at(0)[i],0.0) - 1.0;
+    double t2 = t1 * beta;
+    double t3 = 1.0 + t1 * alpha;
+    double t4 = sqr(beta) / (2.0*Le) * exp(t2 / t3);
+    double t5 = (beta / (t3 * t3)) * values.at(1)[i];
+    out[i] = t4 * values.at(1)[i];
+    outdx[i] = t4 * (dx.at(1)[i] + dx.at(0)[i] * t5);
+    outdy[i] = t4 * (dy.at(1)[i] + dy.at(0)[i] * t5);
+  }
+}
 
-    // Jacobian forms - volumetric.
-    add_matrix_form(new CustomMatrixForm_0_0(0, 0, time_step));
-    add_matrix_form(new CustomMatrixForm_0_1(0, 1));
-    add_matrix_form(new CustomMatrixForm_1_0(1, 0));
-    add_matrix_form(new CustomMatrixForm_1_1(1, 1, time_step, Le));
-
-    // Jacobian forms - surface.
-    add_matrix_form_surf(new CustomMatrixForm_0_0_surf(0, 0, newton_boundaries, kappa));
-
-    // Residual forms - volumetric.
-    add_vector_form(new CustomVectorForm_0_0(0, time_step));
-    add_vector_form(new CustomVectorForm_0_1(1));
-    add_vector_form(new CustomVectorForm_1_0(0));
-    add_vector_form(new CustomVectorForm_1_1(1, time_step, Le));
-
-    add_vector_form(new CustomVectorFormVol_0(0, time_step));
-    add_vector_form(new CustomVectorFormVol_1(1, time_step, Le));
-
-    // Residual forms - surface.
-    add_vector_form_surf(new CustomVectorForm_0_surf(0, newton_boundaries, kappa));
-  };
-
-  ~CustomWeakForm() {};
-
-private:
-
-  // Jacobian part.
-  class CustomMatrixForm_0_0 : public WeakForm::MatrixFormVol
+void CustomFilterDt::filter_fn(int n, Hermes::vector<double*> values, Hermes::vector<double*> dx, Hermes::vector<double*> dy,
+                               double* out, double* outdx, double* outdy)
+{
+  for (int i = 0; i < n; i++)
   {
-  public:
-    CustomMatrixForm_0_0(int i, int j, double time_step) : WeakForm::MatrixFormVol(i, j, HERMES_ANY, HERMES_NONSYM), time_step(time_step) {};
+    double t1 = std::max(values.at(0)[i],0.0) - 1.0;
+    double t2 = t1 * beta;
+    double t3 = 1.0 + t1 * alpha;
+    double t4 = sqr(beta) / (2.0*Le) * exp(t2 / t3);
+    double t5 = (beta / (t3 * t3));
+    out[i] = t4 * t5 * values.at(1)[i];
+    outdx[i] = 0.0;
+    outdy[i] = 0.0; // not important
+  }
+}
 
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-                         Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
-    {
-      scalar result = 0;
-      Func<scalar>* domegadt = ext->fn[0];
-      for (int i = 0; i < n; i++)
-        result += wt[i] * (  1.5 * u->val[i] * v->val[i] / time_step
-                        +  u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]
-                        - domegadt->val[i] * u->val[i] * v->val[i] );
-      return result;
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, 
-                    Geom<Ord> *e, ExtData<Ord> *ext) const 
-    {
-      // Returning the sum of the degrees of the basis and test function plus two.
-      return Ord(10);
-    }
-
-    double time_step;
-  };
-
-  class CustomMatrixForm_0_0_surf : public WeakForm::MatrixFormSurf
+void CustomFilterDc::filter_fn(int n, Hermes::vector<double*> values, Hermes::vector<double*> dx, Hermes::vector<double*> dy,
+                               double* out, double* outdx, double* outdy)
+{
+  for (int i = 0; i < n; i++)
   {
-  public:
-    CustomMatrixForm_0_0_surf(int i, int j, Hermes::vector<std::string> newton_boundaries, double kappa) : WeakForm::MatrixFormSurf(i, j, newton_boundaries), kappa(kappa) {};
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-                         Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
-    {
-      scalar result = 0;
-      for (int i = 0; i < n; i++)
-        result += wt[i] * (kappa * u->val[i] * v->val[i]);
-      return result;
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, 
-                    Geom<Ord> *e, ExtData<Ord> *ext) const 
-    {
-      // Returning the sum of the degrees of the basis and test function plus two.
-      return Ord(10);
-    }
-
-    double kappa;
-  };
-
-  class CustomMatrixForm_0_1 : public WeakForm::MatrixFormVol
-  {
-  public:
-    CustomMatrixForm_0_1(int i, int j) : WeakForm::MatrixFormVol(i, j, HERMES_ANY, HERMES_NONSYM) {};
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-                         Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
-    {
-      scalar result = 0;
-      Func<scalar>* domegady = ext->fn[0];
-      for (int i = 0; i < n; i++)
-        result += wt[i] * (- domegady->val[i] * u->val[i] * v->val[i] );
-      return result;
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, 
-                    Geom<Ord> *e, ExtData<Ord> *ext) const 
-    {
-      // Returning the sum of the degrees of the basis and test function plus two.
-      return Ord(10);
-    }
-
-  };
-
-  class CustomMatrixForm_1_0 : public WeakForm::MatrixFormVol
-  {
-  public:
-    CustomMatrixForm_1_0(int i, int j) : WeakForm::MatrixFormVol(i, j, HERMES_ANY, HERMES_NONSYM) {};
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-                         Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const 
-    {
-      scalar result = 0;
-      Func<scalar>* domegadt = ext->fn[0];
-      for (int i = 0; i < n; i++)
-        result += wt[i] * ( domegadt->val[i] * u->val[i] * v->val[i] );
-      return result;
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, 
-                    Geom<Ord> *e, ExtData<Ord> *ext) const 
-    {
-      // Returning the sum of the degrees of the basis and test function plus two.
-      return Ord(10);
-    }
-
-  };
-
-  class CustomMatrixForm_1_1 : public WeakForm::MatrixFormVol
-  {
-  public:
-    CustomMatrixForm_1_1(int i, int j, double time_step, double Le) : WeakForm::MatrixFormVol(i, j, HERMES_ANY, HERMES_NONSYM), time_step(time_step), Le(Le) {};
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *u, 
-                         Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const
-    {
-      scalar result = 0;
-      Func<scalar>* domegady = ext->fn[0];
-      for (int i = 0; i < n; i++)
-        result += wt[i] * (  1.5 * u->val[i] * v->val[i] / time_step
-                          +  (u->dx[i] * v->dx[i] + u->dy[i] * v->dy[i]) / Le
-                          + domegady->val[i] * u->val[i] * v->val[i] );
-      return result;
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u, Func<Ord> *v, 
-                    Geom<Ord> *e, ExtData<Ord> *ext) const 
-    {
-      // Returning the sum of the degrees of the basis and test function plus two.
-      return Ord(10);
-    }
-
-  double time_step, Le;
-
-  };
-
-  // Residual part.
-
-  class CustomVectorForm_0_0 : public WeakForm::VectorFormVol
-  {
-  public:
-    CustomVectorForm_0_0(int i, double time_step) : WeakForm::VectorFormVol(i), time_step(time_step) {};
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,  
-                         Geom<double> *e, ExtData<scalar> *ext) const 
-    {
-      scalar result = 0;
-      Func<scalar>* domegadt = ext->fn[0];
-      for (int i = 0; i < n; i++)
-        result += wt[i] * (  1.5 * u_ext[0]->val[i] * v->val[i] / time_step
-                        +  u_ext[0]->dx[i] * v->dx[i] + u_ext[0]->dy[i] * v->dy[i]
-                        - domegadt->val[i] * u_ext[0]->val[i] * v->val[i] );
-      return result;
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
-                    Geom<Ord> *e, ExtData<Ord> *ext) const 
-    {
-      // Returning the sum of the degrees of the basis and test function plus two.
-      return Ord(10);
-    }
-
-    double time_step;
-  };
-
-  class CustomVectorForm_0_1 : public WeakForm::VectorFormVol
-  {
-  public:
-    CustomVectorForm_0_1(int i) : WeakForm::VectorFormVol(i) {};
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,  
-                         Geom<double> *e, ExtData<scalar> *ext) const 
-    {
-      scalar result = 0;
-      Func<scalar>* domegady = ext->fn[0];
-      for (int i = 0; i < n; i++)
-        result += wt[i] * (- domegady->val[i] * u_ext[1]->val[i] * v->val[i] );
-      return result;
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
-                    Geom<Ord> *e, ExtData<Ord> *ext) const 
-    {
-      // Returning the sum of the degrees of the basis and test function plus two.
-      return Ord(10);
-    }
-
-  };
-
-  class CustomVectorForm_1_0 : public WeakForm::VectorFormVol
-  {
-  public:
-    CustomVectorForm_1_0(int i) : WeakForm::VectorFormVol(i) {};
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,  
-                         Geom<double> *e, ExtData<scalar> *ext) const 
-    {
-      scalar result = 0;
-      Func<scalar>* domegadt = ext->fn[0];
-      for (int i = 0; i < n; i++)
-        result += wt[i] * ( domegadt->val[i] * u_ext[0]->val[i] * v->val[i] );
-      return result;
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
-                    Geom<Ord> *e, ExtData<Ord> *ext) const 
-    {
-      // Returning the sum of the degrees of the basis and test function plus two.
-      return Ord(10);
-    }
-
-  };
-
-  class CustomVectorForm_1_1 : public WeakForm::VectorFormVol
-  {
-  public:
-    CustomVectorForm_1_1(int i, double time_step, double Le) : WeakForm::VectorFormVol(i), time_step(time_step), Le(Le) {};
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v,  
-                         Geom<double> *e, ExtData<scalar> *ext) const 
-    {
-      scalar result = 0;
-      Func<scalar>* domegady = ext->fn[0];
-      for (int i = 0; i < n; i++)
-        result += wt[i] * (  1.5 * u_ext[1]->val[i] * v->val[i] / time_step
-                          +  (u_ext[1]->dx[i] * v->dx[i] + u_ext[1]->dy[i] * v->dy[i]) / Le
-                          + domegady->val[i] * u_ext[1]->val[i] * v->val[i] );
-      return result;
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
-                    Geom<Ord> *e, ExtData<Ord> *ext) const 
-    {
-      // Returning the sum of the degrees of the basis and test function plus two.
-      return Ord(10);
-    }
-
-  double time_step, Le;
-
-  };
-
-  class CustomVectorFormVol_0 : public WeakForm::VectorFormVol
-  {
-  public:
-    CustomVectorFormVol_0(int i, double time_step) : WeakForm::VectorFormVol(i), time_step(time_step) {}
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, 
-                         Geom<double> *e, ExtData<scalar> *ext) const {
-      scalar result = 0;
-      Func<scalar>* titer = u_ext[0];
-      Func<scalar>* t_prev_time_1 = ext->fn[0];
-      Func<scalar>* t_prev_time_2 = ext->fn[1];
-      Func<scalar>* omega = ext->fn[2];
-      for (int i = 0; i < n; i++)
-        result += wt[i] * ( (3.0 * titer->val[i] - 4.0 * t_prev_time_1->val[i] 
-                             + t_prev_time_2->val[i]) * v->val[i] / (2.0 * time_step) +
-                            (titer->dx[i] * v->dx[i] + titer->dy[i] * v->dy[i]) -
-                            omega->val[i] * v->val[i]);
-      return result;
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
-                    Geom<Ord> *e, ExtData<Ord> *ext) const {
-      // Returning the sum of the degrees of the test function and solution plus two.
-      return Ord(10);
-    }
-
-  private:
-    double time_step;
-  };
-
-  class CustomVectorFormVol_1 : public WeakForm::VectorFormVol
-  {
-  public:
-    CustomVectorFormVol_1(int i, double time_step, double Le) : WeakForm::VectorFormVol(i),
-    time_step(time_step), Le(Le)  {}
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, 
-                         Geom<double> *e, ExtData<scalar> *ext) const {
-      scalar result = 0;
-      Func<scalar>* c_prev_newton = u_ext[1];
-      Func<scalar>* c_prev_time_1 = ext->fn[0];
-      Func<scalar>* c_prev_time_2 = ext->fn[1];
-      Func<scalar>* omega = ext->fn[2];
-      for (int i = 0; i < n; i++)
-        result += wt[i] * ( (3.0 * c_prev_newton->val[i] - 4.0 * c_prev_time_1->val[i] + c_prev_time_2->val[i])
-                        * v->val[i] / (2.0 * time_step) +
-                        (c_prev_newton->dx[i] * v->dx[i] + c_prev_newton->dy[i] * v->dy[i]) / Le +
-                        omega->val[i] * v->val[i]);
-      return result;
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
-                    Geom<Ord> *e, ExtData<Ord> *ext) const {
-      // Returning the sum of the degrees of the test function and solution plus two.
-      return Ord(10);
-    }
-
-  private:
-    double time_step, Le;
-  };
-
-
-  class CustomVectorForm_0_surf : public WeakForm::VectorFormSurf
-  {
-  public:
-    CustomVectorForm_0_surf(int i, Hermes::vector<std::string> newton_boundaries, double kappa) : WeakForm::VectorFormSurf(i, newton_boundaries), 
-    kappa(kappa)  {}
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, 
-                         Geom<double> *e, ExtData<scalar> *ext) const {
-      scalar result = 0;
-      Func<scalar>* t_prev_newton = u_ext[0];
-      for (int i = 0; i < n; i++)
-        result += wt[i] * (kappa * t_prev_newton->val[i] * v->val[i]);
-      return result;  
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, 
-                    Geom<Ord> *e, ExtData<Ord> *ext) const {
-      // Returning the sum of the degrees of the test function and solution plus two.
-      return Ord(10);
-    }
-
-  private:
-    double kappa;
-  };
-
-protected:
-
-  double time_step; 
-  double Le;
-  double kappa;
-  DXDYFilterOmega_dt* omega_dt;
-  DXDYFilterOmega_dc* omega_dc;
-  DXDYFilterOmega* omega;
-  InitialSolutionTemperature* t_prev_time_1;
-  InitialSolutionTemperature* t_prev_time_2;
-  InitialSolutionTemperature* t_prev_newton;
-  InitialSolutionConcentration* c_prev_time_1; 
-  InitialSolutionConcentration* c_prev_time_2; 
-  InitialSolutionConcentration* c_prev_newton; 
-  bool JFNK;
-
-};
+    double t1 = std::max(values.at(0)[i],0.0) - 1.0;
+    double t2 = t1 * beta;
+    double t3 = 1.0 + t1 * alpha;
+    double t4 = sqr(beta) / (2.0*Le) * exp(t2 / t3);
+    out[i] = t4;
+    outdx[i] = 0.0;
+    outdy[i] = 0.0; // not important
+  }
+}

@@ -33,13 +33,29 @@ Find more about :ref:`ref-usage-umfpack`.
 
 Using the special Hermes/Femhub package
 ```````````````````````````````````````
+
+.. popup:: '#umfpack-matrix-solver'
+   ../../../_static/clapper.png
+
 Download the software package from the `solvers repository`_ and unpack 
-it in some temporary directory::
-  
-  wget https://github.com/downloads/hpfem/solvers/umfpack-5.5.1.spkg --no-check-certificate
-  tar -jxvf umfpack-5.5.1.spkg
-  rm umfpack-5.5.1.spkg
-  cd umfpack-5.5.1
+it in some temporary directory:
+
+.. sourcecode::
+   .
+
+   wget https://github.com/downloads/hpfem/solvers/umfpack-5.5.1.spkg --no-check-certificate
+   tar -jxvf umfpack-5.5.1.spkg
+   rm umfpack-5.5.1.spkg
+   cd umfpack-5.5.1
+
+.. latexcode::
+   .
+
+   wget https://github.com/downloads/hpfem/solvers/umfpack-5.5.1.spkg 
+   --no-check-certificate
+   tar -jxvf umfpack-5.5.1.spkg
+   rm umfpack-5.5.1.spkg
+   cd umfpack-5.5.1
 
 In order to install the library into say ``~/solvers/umfpack`` (you may choose any
 path you like, provided that you have write access to it; the target directory 
@@ -90,6 +106,6 @@ Using UMFPACK in Hermes
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 After the installation has been completed, you may select ``SOLVER_UMFPACK`` as the matrix solver for your finite element problem,
-as detailed in the `Poisson tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-1/poisson.html>`__, or use
+as detailed in the `Poisson tutorial <http://http://hpfem.org/hermes/doc/src/hermes2d/P01-linear/03-poisson.html>`__, or use
 it just to solve a standalone matrix problem :math:`Ax = b` as in the 
-`Using Matrix Solvers tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-5/matrix_solvers.html>`__.
+`Using Matrix Solvers tutorial <http://http://hpfem.org/hermes/doc/src/hermes2d/P08-miscellaneous/35-matrix-solvers.html>`__.

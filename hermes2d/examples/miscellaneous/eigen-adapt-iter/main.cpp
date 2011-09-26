@@ -22,19 +22,21 @@ using Hermes::EigenSolver;
 //  The following parameters can be changed:
 
 // Select one of the mesh files below.
+//const char* mesh_file = "domain_hole_trias.mesh";              // Square domain with a hole -trias (non-symmetric).
+const char* mesh_file = "domain_hole_quads.mesh";            // Square domain with a hole - quads (symmetric).
 //const char* mesh_file = "domain_square_quad_1_sym.mesh";     // Square domain with one single element (symmetric).
 //const char* mesh_file = "domain_square_quad_2_sym.mesh";     // Square domain with four quad elements (symmetric).
-const char* mesh_file = "domain_lshape_quad_sym.mesh";       // L-Shape domain with quadrilateral mesh (symmetric). 
+//const char* mesh_file = "domain_lshape_quad_sym.mesh";       // L-Shape domain with quadrilateral mesh (symmetric). 
 //const char* mesh_file = "domain_square_quad_2_nonsym.mesh";  // Square domain with four quad elements (non-symmetric).
 //const char* mesh_file = "domain_square_tria_nonsym.mesh";    // Square domain with triangular mesh    (non-symmetric).
 //const char* mesh_file = "domain_lshape_tria_nonsym.mesh";    // L-Shape domain with triangular mesh   (non-symmetric).  
 
-int TARGET_EIGENFUNCTION = 1;                     // Desired eigenfunction: 1 for the first, 2 for the second, etc.
+int TARGET_EIGENFUNCTION = 3;                     // Desired eigenfunction: 1 for the first, 2 for the second, etc.
 
 int ITERATIVE_METHOD = 1;                         // 1 = Newton, 2 = Picard.
 
 int P_INIT = 2;                                   // Uniform polynomial degree of mesh elements.
-const int INIT_REF_NUM = 1;                       // Number of initial mesh refinements.
+const int INIT_REF_NUM = 0;                       // Number of initial mesh refinements.
 const double THRESHOLD = 0.2;                     // This is a quantitative parameter of the adapt(...) function and
                                                   // it has different meanings for various adaptive strategies (see below).
 const int STRATEGY = 0;                           // Adaptive strategy:
@@ -78,8 +80,11 @@ const double PICARD_ABSTOL = 1e-10;
 const int PICARD_MAX_ITER = 100;
 const bool USE_SHIFT = false;
 
-// ORTHOGONALITY:
+/*********************************************************************************************************
+                          ADVANCED SETTINGS
+*********************************************************************************************************/
 
+// ORTHOGONALITY:
 // The orthogonality technologies are used to converge to the eigenvalues and eigenfunctions in the target 
 // eigenspace. There are three possible settings:
 // USE_ORTHO == false: No orthogonality - the method could converges not to the target eigenfucntions
@@ -89,41 +94,42 @@ const bool USE_SHIFT = false;
 //     iterative method, the computed eigenfunctions to be orthogonal to all eigenfunctions of smaller 
 //     eigenvalues. This method is robust but quite expensive, because a lot of unwanted eigenpairs are 
 //     computed
-// SE_ORTHO == true AND USE_IMPROVED_ORTHO == true: Improved orthogonality - 
+// USE_ORTHO == true AND USE_IMPROVED_ORTHO == true: Improved orthogonality - 
 //     the method try to compute only the target eigenfunctions, in case that
 //     unwanted eigenfunctions are computed, the method automatically discard them and keep all future
 //     computed eigenfunctions orthogonal to the unwanted. The value THRESHOLD_ORTHO is used to decide 
 //     wether a compute eigenfucntion is to keep or to discard. This method is also very robust and much more
 //     efficient.  
 const bool USE_ORTHO = true;
-const bool USE_IMPROVED_ORTHO = true;
+const bool USE_IMPROVED_ORTHO = false;
 const double THRESHOLD_ORTHO = 0.5; 
 
 // RECONSTRUCTION TECHNOLOGY:
-
 // The reconstruction technology makes possible to follow the target eigenfunction, no matter how the continuous
 // eigenspace is splitted by the discretization. This is possible by computing an approximation of all discrete
 // eigenfunctions, corresponding to a basis of eigenfunctions for the continuous eigenspace that contains 
 // the eigenfunction of index TARGET_EIGENFUNCTION, and thencomputing an linear interpolation of those.
 // So in practise if the continuous eigenspace has dimensions 2, then the eigenfunction of index TARGET_EIGENFUNCTION
 // and another eigenfunction are computed on each adapted mesh.
-bool RECONSTRUCTION_ON = true;                    // Use eigenfunction reconstruction.
+bool RECONSTRUCTION_ON = false;                    // Use eigenfunction reconstruction.
 
 // Dimension of the continuous eigenspace that contains the eigenfunction of index TARGET_EIGENFUNCTION. 
 // If the actual number of dimensions of the continuous eigenspace is unknown, an upperbound of it is also enough.
 int DIMENSION_TARGET_EIGENSPACE = 1;  
 
-int FIRST_INDEX_EIGENSPACE = 1;                   // Index of the first eigenfunction in the continuous eigenspace 
+int FIRST_INDEX_EIGENSPACE = TARGET_EIGENFUNCTION;// Index of the first eigenfunction in the continuous eigenspace 
                                                   // that contains the eigenfunction of index TARGET_EIGENFUNCTION            
 
 // ORTHOGONALIZATION TECHNOLOGY:
-
 // The orthogonalization technology ensures that the iterative methods converge to the eigenfunction
 // of index TARGET_EIGENFUNCTION. This is possible by computing an approximation of all discrete
 // eigenfunctions of index less or equal to TARGET_EIGENFUNCTION. So in practise if TARGET_EIGENFUNCTION = 3, then
-// also the eigenfunctions of indeces 1 and 2 are computed on each adapted mesh.
+// also the eigenfunctions of indices 1 and 2 are computed on each adapted mesh.
 // The value of DIMENSION_SUBSPACE is set automatically in the code.
-int DIMENSION_SUBSPACE = 0;              	  
+
+/*********************************************************************************************************
+                          END OF ADVANCED SETTINGS
+*********************************************************************************************************/
 
 // Main function.
 int main(int argc, char* argv[])
@@ -141,6 +147,7 @@ int main(int argc, char* argv[])
     RECONSTRUCTION_ON = false; 
 
   // Set the value of DIMENSION_SUBSPACE
+  int DIMENSION_SUBSPACE = 0;              	  
   if (RECONSTRUCTION_ON) 
   {
     DIMENSION_SUBSPACE = FIRST_INDEX_EIGENSPACE + DIMENSION_TARGET_EIGENSPACE - 1;
@@ -645,6 +652,17 @@ int main(int argc, char* argv[])
     graph_dof.add_values(Space::get_num_dofs(&space), err_est_rel);
     graph_dof.save("conv_dof_est.dat");
 
+    // Visualize the projection.
+    info("Plotting projection of reference solution to new coarse mesh.");
+    char title[100];
+    sprintf(title, "Coarse mesh projection");
+    sview.set_title(title);
+    sview.show_mesh(false);
+    sview.show(&sln);
+    sprintf(title, "Coarse mesh, step %d", as);
+    oview.set_title(title);
+    oview.show(&space);
+
     // If err_est too large, adapt the mesh.
     if (err_est_rel < ERR_STOP) done = true;
     else 
@@ -660,17 +678,6 @@ int main(int argc, char* argv[])
 
     //delete ref_space->get_mesh();
     delete ref_space;
-
-    // Visualize the projection.
-    info("Plotting projection of reference solution to new coarse mesh.");
-    char title[100];
-    sprintf(title, "Coarse mesh projection");
-    sview.set_title(title);
-    sview.show_mesh(false);
-    sview.show(&sln);
-    sprintf(title, "Coarse mesh, step %d", as);
-    oview.set_title(title);
-    oview.show(&space);
 
     // Increase the counter of performed adaptivity steps.
     if (done == false) as++;

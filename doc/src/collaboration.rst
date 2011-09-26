@@ -118,9 +118,10 @@ You can get an overview of existing branches by typing::
 
 This will show you something like this:
 
-  .. image:: hermes2d/img/intro/terminal-git.png
+  .. figure:: hermes2d/img/intro/terminal-git.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Terminal screenshot
 
 If this is your first time, then you will see
@@ -209,9 +210,10 @@ local repository, type::
 
 You will see something like this:
 
-  .. image:: hermes2d/img/intro/terminal-git-2.png
+  .. figure:: hermes2d/img/intro/terminal-git-2.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Terminal screenshot
 
 The green font tells you that git has the latest 
@@ -227,9 +229,10 @@ typing::
 
 you will see
 
-  .. image:: hermes2d/img/intro/terminal-git-3.png
+  .. figure:: hermes2d/img/intro/terminal-git-3.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: Terminal screenshot
 
 Now you can proceed with "git commit" as described above. 

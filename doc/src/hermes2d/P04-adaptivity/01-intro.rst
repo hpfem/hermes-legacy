@@ -13,9 +13,10 @@ thus (as opposed to classical electromotors) resistive to strong electromagnetic
 The following figure shows a symmetric half of the domain $\Omega$
 (dimensions need to be scaled with $10^{-5}$ and they are in meters):
 
-.. image:: 01-intro/micromotor.png
+.. figure:: 01-intro/micromotor.png
    :align: center
-   :scale: 50%
+   :scale: 55% 
+   :figclass: align-center
    :alt: Computational domain for the micromotor problem.
 
 The subdomain $\Omega_2$ represents the moving part of the domain and the area bounded by $\Gamma_2$
@@ -42,7 +43,10 @@ $\epsilon_r = 10$ in $\Omega_2$.
 Weak formulation
 ~~~~~~~~~~~~~~~~
 
-The weak forms are custom because of two materials are involved::
+The weak forms are custom because of two materials are involved:
+
+.. sourcecode::
+    .
 
     class CustomWeakFormPoisson : public WeakForm
     {
@@ -57,6 +61,29 @@ The weak forms are custom because of two materials are involved::
 	// Residual.
 	add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_motor, new HermesFunction(eps_motor)));
 	add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_air, new HermesFunction(eps_air)));
+      };
+    };
+
+.. latexcode::
+    .
+
+    class CustomWeakFormPoisson : public WeakForm
+    {
+    public:
+      CustomWeakFormPoisson(std::string mat_motor, double eps_motor, 
+			    std::string mat_air, double eps_air) : WeakForm(1)
+      {
+	// Jacobian.
+	add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_motor,
+                        new HermesFunction(eps_motor)));
+	add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, mat_air, new 
+                        HermesFunction(eps_air)));
+
+	// Residual.
+	add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_motor, 
+                        new HermesFunction(eps_motor)));
+	add_vector_form(new WeakFormsH1::DefaultResidualDiffusion(0, mat_air, new
+                        HermesFunction(eps_air)));
       };
     };
 
@@ -90,9 +117,10 @@ where $e$ and $d$ are an estimated error and an estimated number of DOF of a can
 
 The first parameter ``CAND_LIST`` specifies which candidates are generated. In a case of quadrilaterals, all possible values and considered candidates are summarized in the following table:
 
-.. image:: 01-intro/cand_list_quads.png
+.. figure:: 01-intro/cand_list_quads.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Candidates generated for a given candidate list.
 
 The second parameter ``CONV_EXP`` is a convergence exponent used to calculate the score.
@@ -171,10 +199,20 @@ and the discrete problem on the refined mesh
 
     DiscreteProblem dp(&wf, ref_space);
 
-The Newton's method is used to solve the fine mesh problem::
+The Newton's method is used to solve the fine mesh problem:
+
+.. sourcecode::
+    .
 
     // Perform Newton's iteration.
     if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs)) error("Newton's iteration failed.");
+
+.. latexcode::
+    .
+
+    // Perform Newton's iteration.
+    if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs))
+        error("Newton's iteration failed.");
 
 The coefficient vector is translated into a Solution::
 
@@ -196,7 +234,10 @@ Calculating error estimate
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The coarse and reference mesh approximations are inserted into the class Adapt
-and a global error estimate as well as element error estimates are calculated::
+and a global error estimate as well as element error estimates are calculated:
+
+.. sourcecode::
+    .
 
     // Calculate element errors and total error estimate.
     info("Calculating error estimate.");
@@ -207,6 +248,24 @@ and a global error estimate as well as element error estimates are calculated::
     // when error wrt. an exact solution is calculated). The default value is solutions_for_adapt = true,
     // The last parameter "error_flags" determine whether the total and element errors are treated as
     // absolute or relative. Its default value is error_flags = HERMES_TOTAL_ERROR_REL | HERMES_ELEMENT_ERROR_REL.
+    // In subsequent examples and benchmarks, these two parameters will be often used with
+    // their default values, and thus they will not be present in the code explicitly.
+    double err_est_rel = adaptivity->calc_err_est(&sln, &ref_sln, solutions_for_adapt,
+                         HERMES_TOTAL_ERROR_REL | HERMES_ELEMENT_ERROR_REL) * 100;
+
+.. latexcode::
+    .
+
+    // Calculate element errors and total error estimate.
+    info("Calculating error estimate.");
+    Adapt* adaptivity = new Adapt(&space);
+    bool solutions_for_adapt = true;
+    // In the following function, the Boolean parameter "solutions_for_adapt" determines
+    // whether the calculated errors are intended for use with adaptivity (this may not
+    // be the case, for example, when error wrt. an exact solution is calculated). The
+    // default value is solutions_for_adapt = true, The last parameter "error_flags"
+    // determine whether the total and element errors are treated as absolute or relative.
+    // Its default value is error_flags = HERMES_TOTAL_ERROR_REL | HERMES_ELEMENT_ERROR_REL.
     // In subsequent examples and benchmarks, these two parameters will be often used with
     // their default values, and thus they will not be present in the code explicitly.
     double err_est_rel = adaptivity->calc_err_est(&sln, &ref_sln, solutions_for_adapt,
@@ -294,37 +353,42 @@ components, but specify that its derivatives should be used::
 
     gview.show(&sln, &sln, H2D_EPS_NORMAL, H2D_FN_DX_0, H2D_FN_DY_0);
 
-.. image:: 01-intro/motor-sln.png
-   :align: left
-   :scale: 50%
+.. figure:: 01-intro/motor-sln.png
+   :align: center
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution - electrostatic potential $\varphi$ (zoomed).
 
-.. image:: 01-intro/motor-grad.png
-   :align: right
-   :scale: 50%
+.. figure:: 01-intro/motor-grad.png
+   :align: center
+   :scale: 50% 
+   :figclass: align-center
    :alt: Gradient of the solution $E = -\nabla\varphi$ and its magnitude (zoomed).
 
 .. raw:: html
 
    <hr style="clear: both; visibility: hidden;">
 
-.. image:: 01-intro/motor-orders.png
+.. figure:: 01-intro/motor-orders.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: Polynomial orders of elements near singularities (zoomed).
 
 Convergence graphs of adaptive h-FEM with linear elements, h-FEM with quadratic elements
 and hp-FEM are shown below.
 
-.. image:: 01-intro/conv_dof.png
+.. figure:: 01-intro/conv_dof.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: DOF convergence graph for tutorial example 01-intro.
 
 The following graph shows convergence in terms of CPU time. 
 
-.. image:: 01-intro/conv_cpu.png
+.. figure:: 01-intro/conv_cpu.png
    :align: center
-   :scale: 50%
+   :scale: 60% 
+   :figclass: align-center
    :alt: CPU convergence graph for tutorial example 01-intro.
 

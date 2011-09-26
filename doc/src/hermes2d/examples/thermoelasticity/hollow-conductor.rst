@@ -29,9 +29,10 @@ It is worth mentioning how the circular arcs are defined via NURBS:
 The triplet on each line consists of two boundary vertex indices and 
 the angle of the circular arc.
 
-.. image:: img-hollow-conductor/domain.png
+.. figure:: img-hollow-conductor/domain.png
    :align: center
-   :width: 700
+   :scale: 50% 
+   :figclass: align-center
    :alt: Domain.
 
 For the equations of linear thermoelasticity and the boundary conditions we refer to the 
@@ -47,91 +48,102 @@ Sample results
 
 Solution (Von Mises stress):
 
-.. image:: img-hollow-conductor/mises.png
+.. figure:: img-hollow-conductor/mises.png
    :align: center
-   :width: 790
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Solution (temperature):
 
-.. image:: img-hollow-conductor/temp.png
+.. figure:: img-hollow-conductor/temp.png
    :align: center
-   :width: 780
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Final meshes for $u_1$, $u_2$ and $T$ (h-FEM with linear elements):
 
-.. image:: img-hollow-conductor/x-mesh-h1.png
+.. figure:: img-hollow-conductor/x-mesh-h1.png
    :align: center
-   :width: 760
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
-.. image:: img-hollow-conductor/y-mesh-h1.png
+.. figure:: img-hollow-conductor/y-mesh-h1.png
    :align: center
-   :width: 760
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
-.. image:: img-hollow-conductor/t-mesh-h1.png
+.. figure:: img-hollow-conductor/t-mesh-h1.png
    :align: center
-   :width: 760
-   :alt: Solution.
-
-Final meshes for $u_1$, $u_2$ and $T$ (h-FEM with quadratic elements):
-
-.. image:: img-hollow-conductor/x-mesh-h2.png
-   :align: center
-   :width: 760
-   :alt: Solution.
-
-.. image:: img-hollow-conductor/y-mesh-h2.png
-   :align: center
-   :width: 760
-   :alt: Solution.
-
-.. image:: img-hollow-conductor/t-mesh-h2.png
-   :align: center
-   :width: 760
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 Final meshes for $u_1$, $u_2$ and $T$ (h-FEM with quadratic elements):
 
-.. image:: img-hollow-conductor/x-mesh-hp.png
+.. figure:: img-hollow-conductor/x-mesh-h2.png
    :align: center
-   :width: 760
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
-.. image:: img-hollow-conductor/y-mesh-hp.png
+.. figure:: img-hollow-conductor/y-mesh-h2.png
    :align: center
-   :width: 760
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
-.. image:: img-hollow-conductor/t-mesh-hp.png
+.. figure:: img-hollow-conductor/t-mesh-h2.png
    :align: center
-   :width: 760
+   :scale: 50% 
+   :figclass: align-center
+   :alt: Solution.
+
+Final meshes for $u_1$, $u_2$ and $T$ (h-FEM with quadratic elements):
+
+.. figure:: img-hollow-conductor/x-mesh-hp.png
+   :align: center
+   :scale: 50% 
+   :figclass: align-center
+   :alt: Solution.
+
+.. figure:: img-hollow-conductor/y-mesh-hp.png
+   :align: center
+   :scale: 50% 
+   :figclass: align-center
+   :alt: Solution.
+
+.. figure:: img-hollow-conductor/t-mesh-hp.png
+   :align: center
+   :scale: 50% 
+   :figclass: align-center
    :alt: Solution.
 
 DOF convergence graphs:
 
-.. image:: img-hollow-conductor/conv_dof.png
+.. figure:: img-hollow-conductor/conv_dof.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU time convergence graphs:
 
-.. image:: img-hollow-conductor/conv_cpu.png
+.. figure:: img-hollow-conductor/conv_cpu.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
 
 Next let us compare multimesh h-FEM with linear elements with the standard (single-mesh)
 h-FEM:
 
-.. image:: img-hollow-conductor/conv_compar_dof.png
+.. figure:: img-hollow-conductor/conv_compar_dof.png
    :align: center
-   :width: 600
-   :height: 400
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 

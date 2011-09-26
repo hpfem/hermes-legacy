@@ -42,6 +42,13 @@ Find more about :ref:`ref-usage-superlu`.
 Using the special Hermes/Femhub package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. popup:: '#superlu-matrix-solver'
+   ../../../_static/clapper.png
+
+.. only:: latex
+
+    `Tutorial Video <http://hpfem.org/hermes/doc/src/installation/matrix_solvers/videos.html#superlu-matrix-solver>`_. 
+
 Sequential
 ``````````
 Download the software package from the `solvers repository`_ and unpack 
@@ -121,12 +128,24 @@ The multithreaded library can take advantage of modern multi-core
 machines by computing the numerical factorization in parallel. The latest version 
 specifically tuned for Hermes is available in the 
 `solvers repository`_ and you may download and unpack it using the
-following commands::
+following commands:
 
-  wget https://github.com/downloads/hpfem/solvers/superlu_mt-2.0.spkg --no-check-certificate
-  tar -jxvf superlu_mt-2.0.spkg
-  rm superlu_mt-2.0.spkg
-  cd superlu_mt-2.0
+.. sourcecode::
+   .
+
+   wget https://github.com/downloads/hpfem/solvers/superlu_mt-2.0.spkg --no-check-certificate
+   tar -jxvf superlu_mt-2.0.spkg
+   rm superlu_mt-2.0.spkg
+   cd superlu_mt-2.0
+
+.. latexcode::
+   .
+
+   wget https://github.com/downloads/hpfem/solvers/superlu_mt-2.0.spkg
+   --no-check-certificate
+   tar -jxvf superlu_mt-2.0.spkg
+   rm superlu_mt-2.0.spkg
+   cd superlu_mt-2.0
 
 (the list of changes made to the original distribution from `SuperLU home page`_
 in order to make it compatible with Hermes may be found in src/MODIFICATIONS).
@@ -238,6 +257,6 @@ Using SUPERLU in Hermes
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 You may now select ``SOLVER_SUPERLU`` as the matrix solver for your finite element problem, as detailed
-in the `Poisson tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-1/poisson.html>`__, or use
+in the `Poisson tutorial <http://hpfem.org/hermes/doc/src/hermes2d/P01-linear/03-poisson.html>`__, or use
 it just to solve a standalone matrix problem :math:`Ax = b` as in the 
-`Using Matrix Solvers tutorial <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-5/matrix_solvers.html>`__.
+`Using Matrix Solvers tutorial <http://http://hpfem.org/hermes/doc/src/hermes2d/P08-miscellaneous/35-matrix-solvers.html>`__.

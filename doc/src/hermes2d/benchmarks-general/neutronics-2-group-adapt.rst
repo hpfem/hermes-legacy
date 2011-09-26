@@ -22,9 +22,10 @@ Their numerical values for this benchmark are given below.
 
 Domain of interest: 
 
-.. image:: benchmark-neutronics-2-group-adapt/domain.png
+.. figure:: benchmark-neutronics-2-group-adapt/domain.png
    :align: center
-   :width: 400
+   :scale: 37% 
+   :figclass: align-center
    :alt: Computational domain.
 
 Material properties
@@ -91,9 +92,10 @@ The function *get_material* is used to obtain the material marker given the phys
 The following picture shows the two right-hand side functions (distribution of neutron sources/sinks) - :math:`Q_1` 
 is plotted on the left, :math:`Q_2` on the right.
 
-.. image:: benchmark-neutronics-2-group-adapt/rhs.png
+.. figure:: benchmark-neutronics-2-group-adapt/rhs.png
    :align: center
-   :width: 700
+   :scale: 80% 
+   :figclass: align-center
    :alt: Right-hand side.
    
 Weak formulation
@@ -106,9 +108,10 @@ Sample results
 
 The following figures show the computed distributions of neutron flux for both neutron groups.
 
-.. image:: benchmark-neutronics-2-group-adapt/solution12.png
+.. figure:: benchmark-neutronics-2-group-adapt/solution12.png
    :align: center
-   :height: 415
+   :scale: 80% 
+   :figclass: align-center
    :alt: Both components of solution.
 
 Notice the largely different behavior of the two solution components, where the first one is quite smooth while the other one more oscillating. It reflects the typical behavior observed in real cases, which arises from the different rate of interactions of fast (`1`\ :sup:`st` group) and slow (`2`\ :sup:`nd` group) neutrons with surrounding nuclei. This makes `multimesh <http://hpfem.org/hermes/doc/src/hermes2d/tutorial-2.html#multimesh-hp-fem>`_ a preferred choice for automatic adaptivity, as can be clearly seen from the first of the series of convergence comparisons presented below. 
@@ -120,30 +123,34 @@ Comparison of single/multi-mesh hp-FEM
 
 Final mesh (hp-FEM, single-mesh): 2590 DOF, error = 3.46787%
 
-.. image:: benchmark-neutronics-2-group-adapt/mesh_hp_iso_single.png
+.. figure:: benchmark-neutronics-2-group-adapt/mesh_hp_iso_single.png
    :align: center
-   :width: 500
+   :scale: 35% 
+   :figclass: align-center
    :alt: Final mesh
 
 Final mesh (hp-FEM, multi-mesh): 1724 DOF, error = 3.46713%
 
-.. image:: benchmark-neutronics-2-group-adapt/mesh_hp_iso_multi.png
+.. figure:: benchmark-neutronics-2-group-adapt/mesh_hp_iso_multi.png
    :align: center
-   :height: 400
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final mesh
 
 DOF convergence graphs:
 
-.. image:: benchmark-neutronics-2-group-adapt/conv_dof_multimesh.png
+.. figure:: benchmark-neutronics-2-group-adapt/conv_dof_multimesh.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
 
-.. image:: benchmark-neutronics-2-group-adapt/conv_cpu_multimesh.png
+.. figure:: benchmark-neutronics-2-group-adapt/conv_cpu_multimesh.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
    
    
@@ -154,37 +161,42 @@ Now, with multimesh enabled, we proceed to compare h-adaptivity with fixed order
 
 Final mesh (h-FEM, p=1): 31441 DOF, error = 3.69096%
 
-.. image:: benchmark-neutronics-2-group-adapt/mesh_h1_1_iso_multi.png
+.. figure:: benchmark-neutronics-2-group-adapt/mesh_h1_1_iso_multi.png
    :align: center
-   :height: 400
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final mesh
    
 Final mesh (h-FEM, p=2): 27824 DOF, error = 3.46712%
 
-.. image:: benchmark-neutronics-2-group-adapt/mesh_h2_2_iso_multi.png
+.. figure:: benchmark-neutronics-2-group-adapt/mesh_h2_2_iso_multi.png
    :align: center
-   :height: 400
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (hp-FEM): 1724 DOF, error = 3.46713%
 
-.. image:: benchmark-neutronics-2-group-adapt/mesh_hp_iso_multi.png
+.. figure:: benchmark-neutronics-2-group-adapt/mesh_hp_iso_multi.png
    :align: center
-   :height: 400
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final mesh.
 
 DOF convergence graphs:
 
-.. image:: benchmark-neutronics-2-group-adapt/conv_dof_iso.png
+.. figure:: benchmark-neutronics-2-group-adapt/conv_dof_iso.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
 
-.. image:: benchmark-neutronics-2-group-adapt/conv_cpu_iso.png
+.. figure:: benchmark-neutronics-2-group-adapt/conv_cpu_iso.png
    :align: center
-   :width: 600
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.
     
 Comparison of hp-FEM with iso, p-aniso, h-aniso and hp-aniso refinements
@@ -194,42 +206,48 @@ The solution is almost isotropic in this case and using the generally more expen
 
 Final mesh (hp-FEM, isotropic refinements): 1724 DOF, error = 3.46713%
 
-.. image:: benchmark-neutronics-2-group-adapt/mesh_hp_iso_multi.png
+.. figure:: benchmark-neutronics-2-group-adapt/mesh_hp_iso_multi.png
    :align: center
-   :height: 400
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (hp-FEM, h-anisotropic refinements): 1768 DOF, error = 3.46731%
 
-.. image:: benchmark-neutronics-2-group-adapt/mesh_hp_anisoh_multi.png
+.. figure:: benchmark-neutronics-2-group-adapt/mesh_hp_anisoh_multi.png
    :align: center
-   :height: 400
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final mesh
    
 Final mesh (hp-FEM, p-anisotropic refinements): 1584 DOF, error = 3.46668%
 
-.. image:: benchmark-neutronics-2-group-adapt/mesh_hp_anisop_multi.png
+.. figure:: benchmark-neutronics-2-group-adapt/mesh_hp_anisop_multi.png
    :align: center
-   :height: 400
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final mesh.
 
 Final mesh (hp-FEM, hp-anisotropic refinements): 1926 DOF, error = 3.46626%
 
-.. image:: benchmark-neutronics-2-group-adapt/mesh_hp_aniso_multi.png
+.. figure:: benchmark-neutronics-2-group-adapt/mesh_hp_aniso_multi.png
    :align: center
-   :height: 400
+   :scale: 70% 
+   :figclass: align-center
    :alt: Final mesh.
 
 DOF convergence graphs:
 
-.. image:: benchmark-neutronics-2-group-adapt/conv_dof_hp.png
+.. figure:: benchmark-neutronics-2-group-adapt/conv_dof_hp.png
    :align: center
-   :width: 600
+   :scale: 55% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU convergence graphs:
 
-.. image:: benchmark-neutronics-2-group-adapt/conv_cpu_hp.png
+.. figure:: benchmark-neutronics-2-group-adapt/conv_cpu_hp.png
    :align: center
-   :width: 600
+   :scale: 55% 
+   :figclass: align-center
    :alt: CPU convergence graph.

@@ -62,14 +62,16 @@ The following two figures show the solutions $u$ and $v$. Notice their
 large qualitative differences: While $u$ is smooth in the entire domain, 
 $v$ has a thin boundary layer along the boundary:
 
-.. image:: 02-system/solution_u.png
+.. figure:: 02-system/solution_u.png
    :align: center
-   :scale: 50%
+   :scale: 40% 
+   :figclass: align-center
    :alt: Solution
 
-.. image:: 02-system/solution_v.png
+.. figure:: 02-system/solution_v.png
    :align: center
-   :scale: 50%
+   :scale: 40% 
+   :figclass: align-center
    :alt: Solution
 
 Manufactured right-hand side
@@ -133,7 +135,10 @@ file `definitions.cpp <http://git.hpfem.org/hermes.git/blob/HEAD:/hermes2d/tutor
 Weak forms
 ~~~~~~~~~~
 
-Weak formulation comprises default and custom forms::
+Weak formulation comprises default and custom forms:
+
+.. sourcecode::
+    .
 
     class CustomWeakForm : public WeakForm
     {
@@ -147,6 +152,35 @@ Weak formulation comprises default and custom forms::
 	add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(1, 0, HERMES_ANY, new HermesFunction(-1.0), HERMES_NONSYM));
 	add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(1, 1, HERMES_ANY, new HermesFunction(D_v * D_v)));
 	add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(1, 1, HERMES_ANY, new HermesFunction(1.0)));
+
+	// Residual.
+	add_vector_form(new CustomResidual1(D_u, g1->sigma, g1));
+	add_vector_form(new CustomResidual2(D_v, g2));
+      }
+    };
+
+.. latexcode::
+    .
+
+    class CustomWeakForm : public WeakForm
+    {
+    public:
+      CustomWeakForm(CustomRightHandSide1* g1, CustomRightHandSide2* g2)
+                     : WeakForm(2) 
+      {
+	// Jacobian.
+	add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(0, 0, HERMES_ANY,
+                        new HermesFunction(D_u * D_u)));
+	add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 0, HERMES_ANY, new 
+                        HermesFunction(-1.0)));
+	add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(0, 1, HERMES_ANY, new
+                        HermesFunction(g1->sigma), HERMES_NONSYM));
+	add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(1, 0, HERMES_ANY, new
+                        HermesFunction(-1.0), HERMES_NONSYM));
+	add_matrix_form(new WeakFormsH1::DefaultJacobianDiffusion(1, 1, HERMES_ANY,
+                        new HermesFunction(D_v * D_v)));
+	add_matrix_form(new WeakFormsH1::DefaultMatrixFormVol(1, 1, HERMES_ANY, new
+                        HermesFunction(1.0)));
 
 	// Residual.
 	add_vector_form(new CustomResidual1(D_u, g1->sigma, g1));
@@ -182,10 +216,20 @@ Solve the discrete problem using the Newton's method::
     if (!hermes2d.solve_newton(coeff_vec, &dp, solver, matrix, rhs, jacobian_changed, 
                                1e-8, 100, verbose)) error("Newton's iteration failed.");
 
-Translate the coefficient vector into the two Solutions::
+Translate the coefficient vector into the two Solutions:
+
+.. sourcecode::
+    .
 
     // Translate the resulting coefficient vector into Solutions.
     Solution::vector_to_solutions(coeff_vec, *ref_spaces, Hermes::vector<Solution *>(&u_ref_sln, &v_ref_sln));
+
+.. latexcode::
+    .
+
+    // Translate the resulting coefficient vector into Solutions.
+    Solution::vector_to_solutions(coeff_vec, *ref_spaces, Hermes::vector<Solution *>
+                                  (&u_ref_sln, &v_ref_sln));
 
 Project reference solutions to the coarse meshes::
 
@@ -193,17 +237,33 @@ Project reference solutions to the coarse meshes::
     info("Projecting reference solution on coarse mesh.");
     OGProjection::project_global(Hermes::vector<Space *>(&u_space, &v_space), 
                                  Hermes::vector<Solution *>(&u_ref_sln, &v_ref_sln), 
-                                 Hermes::vector<Solution *>(&u_sln, &v_sln), matrix_solver); 
+                                 Hermes::vector<Solution *>(&u_sln, &v_sln), 
+                                                            matrix_solver); 
 
-Calculate error estimates::
+Calculate error estimates:
+
+.. sourcecode::
+    .
 
     // Calculate error estimate for each solution component and the total error estimate.
     Hermes::vector<double> err_est_rel;
     double err_est_rel_total = adaptivity->calc_err_est(Hermes::vector<Solution *>(&u_sln, &v_sln), 
-                                                        Hermes::vector<Solution *>(&u_ref_sln, &v_ref_sln), 
-                                                        &err_est_rel) * 100;
+                               Hermes::vector<Solution *>(&u_ref_sln, &v_ref_sln), 
+                               &err_est_rel) * 100;
 
-Calculate exact errors (optional)::
+.. latexcode::
+    .
+
+    // Calculate error estimate for each solution component and the total error estimate.
+    Hermes::vector<double> err_est_rel;
+    double err_est_rel_total = adaptivity->calc_err_est(Hermes::vector<Solution *>
+                               (&u_sln, &v_sln), Hermes::vector<Solution *>
+                               (&u_ref_sln, &v_ref_sln), &err_est_rel) * 100;
+
+Calculate exact errors (optional):
+
+.. sourcecode::
+    .
 
     // Calculate exact error for each solution component and the total exact error.
     Hermes::vector<double> err_exact_rel;
@@ -212,7 +272,21 @@ Calculate exact errors (optional)::
                                                             Hermes::vector<Solution *>(&exact_u, &exact_v), 
                                                             &err_exact_rel, solutions_for_adapt) * 100;
 
-Adapt the coarse meshes::
+.. latexcode::
+    .
+
+    // Calculate exact error for each solution component and the total exact error.
+    Hermes::vector<double> err_exact_rel;
+    bool solutions_for_adapt = false;
+    double err_exact_rel_total = adaptivity->calc_err_exact(Hermes::vector<Solution *>
+                                 (&u_sln, &v_sln), Hermes::vector<Solution *>
+                                 (&exact_u, &exact_v), &err_exact_rel,
+                                  solutions_for_adapt) * 100;
+
+Adapt the coarse meshes:
+
+.. sourcecode::
+    .
 
     // If err_est too large, adapt the mesh.
     if (err_est_rel_total < ERR_STOP) 
@@ -224,6 +298,22 @@ Adapt the coarse meshes::
                                THRESHOLD, STRATEGY, MESH_REGULARITY);
     }
     if (Space::get_num_dofs(Hermes::vector<Space *>(&u_space, &v_space)) >= NDOF_STOP) done = true;
+
+.. latexcode::
+    .
+
+    // If err_est too large, adapt the mesh.
+    if (err_est_rel_total < ERR_STOP) 
+      done = true;
+    else 
+    {
+      info("Adapting coarse mesh.");
+      done = adaptivity->adapt(Hermes::vector<RefinementSelectors::Selector *>
+                               (&selector, &selector), THRESHOLD, STRATEGY,
+                               MESH_REGULARITY);
+    }
+    if (Space::get_num_dofs(Hermes::vector<Space *>(&u_space, &v_space)) >= NDOF_STOP)
+        done = true;
 
 Clean up::
 
@@ -247,14 +337,16 @@ Now we can show some numerical results.
 First let us show the resulting meshes for $u$ and $v$ obtained using 
 conventional (single-mesh) hp-FEM: **9,330 DOF** (4665 for each solution component). 
 
-.. image:: 02-system/mesh_single.png
-   :align: left
-   :scale: 50%
+.. figure:: 02-system/mesh_single.png
+   :align: center
+   :scale: 40% 
+   :figclass: align-center
    :alt: Mesh
 
-.. image:: 02-system/mesh_single.png
-   :align: right
-   :scale: 50%
+.. figure:: 02-system/mesh_single.png
+   :align: center
+   :scale: 40% 
+   :figclass: align-center
    :alt: Mesh
 
 .. raw:: html
@@ -264,14 +356,16 @@ conventional (single-mesh) hp-FEM: **9,330 DOF** (4665 for each solution compone
 Next we show the resulting meshes for $u$ and $v$ obtained using 
 the multimesh hp-FEM: **1,723 DOF** (49 DOF for $u$ and $1,673$ for $v$). 
 
-.. image:: 02-system/mesh_multi_u.png
-   :align: left
-   :scale: 50%
+.. figure:: 02-system/mesh_multi_u.png
+   :align: center
+   :scale: 40% 
+   :figclass: align-center
    :alt: Mesh
 
-.. image:: 02-system/mesh_multi_v.png
-   :align: right
-   :scale: 50%
+.. figure:: 02-system/mesh_multi_v.png
+   :align: center
+   :scale: 40% 
+   :figclass: align-center
    :alt: Mesh
 
 .. raw:: html
@@ -283,14 +377,16 @@ for both cases:
 
 DOF convergence graphs:
 
-.. image:: 02-system/conv_dof.png
+.. figure:: 02-system/conv_dof.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: DOF convergence graph.
 
 CPU time convergence graphs:
 
-.. image:: 02-system/conv_cpu.png
+.. figure:: 02-system/conv_cpu.png
    :align: center
-   :scale: 50%
+   :scale: 50% 
+   :figclass: align-center
    :alt: CPU convergence graph.

@@ -27,29 +27,34 @@ And the projection is done as follows::
 
 Sample basis functions:
 
-.. image:: 15-space-l2/fn0.png
+.. figure:: 15-space-l2/fn0.png
    :align: center
-   :width: 400
+   :scale: 45% 
+   :figclass: align-center
    :alt: Sample basis function
 
-.. image:: 15-space-l2/fn1.png
+.. figure:: 15-space-l2/fn1.png
    :align: center
-   :width: 400
+   :scale: 45% 
+   :figclass: align-center
    :alt: Sample basis function
 
-.. image:: 15-space-l2/fn2.png
+.. figure:: 15-space-l2/fn2.png
    :align: center
-   :width: 400
+   :scale: 45% 
+   :figclass: align-center
    :alt: Sample basis function
 
-.. image:: 15-space-l2/fn3.png
+.. figure:: 15-space-l2/fn3.png
    :align: center
-   :width: 400
+   :scale: 45% 
+   :figclass: align-center
    :alt: Sample basis function
 
 The projection (note that this is a discontinuous function):
 
-.. image:: 15-space-l2/sol.png
+.. figure:: 15-space-l2/sol.png
    :align: center
-   :width: 400
+   :scale: 45% 
+   :figclass: align-center
    :alt: Projection
