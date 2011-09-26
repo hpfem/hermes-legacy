@@ -1,15 +1,15 @@
 PETSc
 -----
 
-.. popup:: '#petsc-matrix-solver'
-   ../../../_static/clapper.png
-
 .. _PETSc home page: http://www.mcs.anl.gov/petsc/
 .. _solvers repository: https://github.com/hpfem/solvers
 .. _manual: https://github.com/hpfem/solvers/raw/master/manuals/petsc.pdf
 
 Linux
 ~~~~~
+
+.. popup:: '#petsc-matrix-solver'
+   ../../../_static/clapper.png
 
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory::

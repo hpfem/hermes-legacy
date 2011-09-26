@@ -1,6 +1,9 @@
 Neumann BC (05-bc-neumann)
 --------------------------
 
+.. popup:: '#p01-linear-05-bc-neumann-tutorial'
+   ../../../_static/clapper.png
+
 **Git reference:** Tutorial example `05-bc-neumann 
 <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/05-bc-neumann>`_. 
 

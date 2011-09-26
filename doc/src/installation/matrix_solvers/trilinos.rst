@@ -8,6 +8,9 @@ Trilinos
 Linux
 ~~~~~
 
+.. popup:: '#trilinos-matrix-solver'
+   ../../../_static/clapper.png
+
 Using the special Hermes/Femhub package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

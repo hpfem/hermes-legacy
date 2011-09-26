@@ -1,6 +1,9 @@
 Linux
 =====
 
+.. popup:: '#'
+   ../../_static/clapper.png
+
 Download and compilation
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

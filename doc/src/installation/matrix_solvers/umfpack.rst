@@ -8,6 +8,9 @@ UMFpack
 Linux
 ~~~~~
 
+.. popup:: '#umfpack-matrix-solver'
+   ../../../_static/clapper.png
+
 Using standard Debian packages
 ``````````````````````````````
 Install the `libsuitesparse-metis-3.1.0` and `libsuitesparse-dev` packages.

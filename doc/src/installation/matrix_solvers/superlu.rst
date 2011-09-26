@@ -1,9 +1,6 @@
 SuperLU
 --------
 
-.. popup:: '#superlu-matrix-solver'
-   ../../../_static/clapper.png
-
 .. _SuperLU home page: http://crd.lbl.gov/~xiaoye/SuperLU/
 .. _solvers repository: https://github.com/hpfem/solvers
 .. _manual: https://github.com/hpfem/solvers/raw/master/manuals/SuperLU.pdf
@@ -15,6 +12,9 @@ library.
 
 Linux
 ~~~~~
+
+.. popup:: '#superlu-matrix-solver'
+   ../../../_static/clapper.png
 
 Using standard Debian packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

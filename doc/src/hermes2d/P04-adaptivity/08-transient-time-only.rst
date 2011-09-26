@@ -135,7 +135,7 @@ Solution and temporal error at t = 0.797 s:
 
 .. image:: 08-transient-time-only/Screenshot-4.png
    :align: center
-    :scale: 50%
+   :scale: 50%
    :alt: Sample screenshot
 
 Solution and temporal error at t = 1.226 s:

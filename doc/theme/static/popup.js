@@ -13,7 +13,7 @@ function popup(myPopup)
  {
   // open the popup
   popupHandle = window.open( win, "myWindow", 
-"height = 550, width = 900, resizable = 0" )
+"height = 550, width = 950, resizable = 0" )
   return popupHandle;
  }
 }

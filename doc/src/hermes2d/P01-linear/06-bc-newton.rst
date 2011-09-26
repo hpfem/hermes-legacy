@@ -1,6 +1,9 @@
 Newton BC (06-bc-newton)
 ------------------------
 
+.. popup:: '#p01-linear-06-bc-newton-tutorial'
+   ../../../_static/clapper.png
+
 **Git reference:** Tutorial example `06-bc-newton 
 <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/06-bc-newton>`_. 
 
