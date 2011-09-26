@@ -30,7 +30,6 @@ Find more about :ref:`ref-usage-umfpack`.
 
 Using the special Hermes/Femhub package
 ```````````````````````````````````````
-
 .. popup:: '#umfpack-matrix-solver'
    ../../../_static/clapper.png
 

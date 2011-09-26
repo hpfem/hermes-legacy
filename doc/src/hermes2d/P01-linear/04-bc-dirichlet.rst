@@ -1,6 +1,9 @@
 Nonzero Dirichlet BC (04-bc-dirichlet)
 --------------------------------------
 
+.. popup:: '#p01-linear-04-bc-dirichlet-tutorial'
+   ../../../_static/clapper.png
+
 **Git reference:** Tutorial example `04-bc-dirichlet 
 <http://git.hpfem.org/hermes.git/tree/HEAD:/hermes2d/tutorial/P01-linear/04-bc-dirichlet>`_. 
 

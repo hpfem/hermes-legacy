@@ -1,6 +1,9 @@
 Essential and Natural Boundary Conditions
 -----------------------------------------
 
+.. popup:: '#p01-linear-essential-natural-bc-tutorial'
+   ../../../_static/clapper.png
+
 Hermes distinguishes between **essential** and **natural** boundary conditions. 
 The former type eliminates degrees of freedom from the domain's boundary
 (the solution or its portion is prescribed) while the latter does not. 

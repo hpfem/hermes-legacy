@@ -8,6 +8,9 @@ PETSc
 Linux
 ~~~~~
 
+Download the software package from the `solvers repository`_ and unpack 
+it in some temporary directory::
+
 Using standard Debian packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
