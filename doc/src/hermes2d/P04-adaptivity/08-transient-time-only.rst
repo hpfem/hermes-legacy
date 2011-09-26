@@ -156,12 +156,8 @@ Solution and temporal error at t = 0.797 s:
 
 .. figure:: 08-transient-time-only/Screenshot-4.png
    :align: center
-<<<<<<< HEAD
    :scale: 50%
-=======
-   :scale: 70% 
    :figclass: align-center
->>>>>>> upstream/master
    :alt: Sample screenshot
 
 Solution and temporal error at t = 1.226 s:

@@ -8,10 +8,6 @@ Trilinos
 Linux
 ~~~~~
 
-<<<<<<< HEAD
-.. popup:: '#trilinos-matrix-solver'
-   ../../../_static/clapper.png
-=======
 Using standard Debian packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -32,7 +28,6 @@ Finally execute::
   make
 
 Find more about :ref:`ref-usage-trilinos`.
->>>>>>> upstream/master
 
 Using the special Hermes/Femhub package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

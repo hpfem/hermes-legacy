@@ -8,13 +8,9 @@ PETSc
 Linux
 ~~~~~
 
-<<<<<<< HEAD
-.. popup:: '#petsc-matrix-solver'
-   ../../../_static/clapper.png
-
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory::
-=======
+
 Using standard Debian packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -30,7 +26,6 @@ following line (or append to the existing one)::
   set(WITH_PETSC YES)
 
 Finally execute::
->>>>>>> upstream/master
   
   rm CMakeCache.txt
   cmake .

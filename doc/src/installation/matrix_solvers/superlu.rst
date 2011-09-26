@@ -13,9 +13,6 @@ library.
 Linux
 ~~~~~
 
-.. popup:: '#superlu-matrix-solver'
-   ../../../_static/clapper.png
-
 Using standard Debian packages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
