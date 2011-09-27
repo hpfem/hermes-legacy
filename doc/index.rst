@@ -18,9 +18,9 @@ Hermes version 1.0 is now available in separate
 repositories for the library itself, the tutorial, and examples. To obtain the source codes,
 type::
 
-    git clone http://git.hpfem.org/git/hermes.git
-    git clone http://git.hpfem.org/git/hermes-tutorial.git
-    git clone http://git.hpfem.org/git/hermes-examples.git
+    git clone git://github.com/hpfem/hermes.git
+    git clone git://github.com/hpfem/hermes-tutorial.git
+    git clone git://github.com/hpfem/hermes-examples.git
 
 Each of these repositories contains a folder doc/ with Sphinx documentation. To build 
 the docs, type "make html" in that folder. 
