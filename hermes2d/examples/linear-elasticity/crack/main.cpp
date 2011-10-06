@@ -1,6 +1,4 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
 #include "hermes2d.h"
 
@@ -63,13 +61,13 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
 const double E  = 200e9;                          // Young modulus for steel: 200 GPa.
 const double nu = 0.3;                            // Poisson ratio.
 const double g1 = -9.81;                          // Gravitational acceleration.
-const double rho = 8000;                          // Material density in kg / m^3. 
+const double rho = 8000.0;                        // Material density in kg / m^3. 
 
 // Boundary markers.
-const std::string BDY_LEFT = "1";
+const std::string BDY_LEFT = "Bdy_left";
 
 // Weak forms.
-#include "weakform_library/elasticity.h"
+#include "definitions.h"
 
 int main(int argc, char* argv[])
 {
@@ -89,16 +87,22 @@ int main(int argc, char* argv[])
   // This also initializes the multimesh hp-FEM.
   u2_mesh.copy(&u1_mesh);
 
+  // Show mesh.
+  MeshView mv("Mesh", new WinGeom(0, 0, 580, 400));
+  mv.show(&u1_mesh);
+
   // Initialize boundary conditions
   DefaultEssentialBCConst zero_disp(BDY_LEFT, 0.0);
   EssentialBCs bcs(&zero_disp);
 
-  // Initialize the weak formulation.
-  DefaultWeakFormLinearElasticity wf(E, nu, g1*rho);
-
-  // Create H1 spaces with default shapeset for both displacement components.
+  // Create x- and y- displacement space using the default H1 shapeset.
   H1Space u1_space(&u1_mesh, &bcs, P_INIT_U1);
   H1Space u2_space(&u2_mesh, &bcs, P_INIT_U2);
+  int ndof = Space::get_num_dofs(Hermes::vector<Space *>(&u1_space, &u2_space));
+  info("ndof = %d", ndof);
+
+  // Initialize the weak formulation.
+  CustomWeakFormLinearElasticity wf(E, nu, rho*g1);
 
   // Initialize coarse and reference mesh solutions.
   Solution u1_sln, u2_sln, u1_ref_sln, u2_ref_sln;
@@ -135,8 +139,7 @@ int main(int argc, char* argv[])
 
     // Assemble the reference problem.
     info("Solving on reference mesh.");
-    bool is_linear = true;
-    DiscreteProblem* dp = new DiscreteProblem(&wf, *ref_spaces, is_linear);
+    DiscreteProblem* dp = new DiscreteProblem(&wf, *ref_spaces);
     dp->assemble(matrix, rhs);
 
     // Time measurement.
