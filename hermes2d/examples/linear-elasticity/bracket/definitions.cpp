@@ -1,61 +1,51 @@
-#include "weakform_library/elasticity.h"
-#include "integrals/h1.h"
-#include "boundaryconditions/essential_bcs.h"
+#include "definitions.h"
 
-class CustomWeakForm : public DefaultWeakFormLinearElasticity
+CustomWeakFormLinearElasticity::CustomWeakFormLinearElasticity(double E, double nu, double rho_g,
+                                 std::string surface_force_bdy, double f0, double f1) : WeakForm(2)
 {
-public:
-  CustomWeakForm(double E, double nu, double rho_g, std::string non_zero_neumann_bnd, double f0, double f1) 
-            : DefaultWeakFormLinearElasticity(E, nu, rho_g) {
-    double lambda = (E * nu) / ((1 + nu) * (1 - 2*nu));  // First Lame constant.
-    double mu = E / (2*(1 + nu));                        // Second Lame constant.
+  double lambda = (E * nu) / ((1 + nu) * (1 - 2*nu));
+  double mu = E / (2*(1 + nu));
+       
+#ifdef USE_MULTICOMPONENT_FORMS
+  // Jacobian matrix.
+  // There is one multi-component and one single-component form since we want to exploit symmetry of the forms.
+  add_multicomponent_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_00_11(
+        Hermes::vector<std::pair<unsigned int, unsigned int> >(make_pair(0, 0), make_pair(1, 1)), 
+        HERMES_ANY, lambda, mu));
+  add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_0_1(0, 1, lambda, mu));
 
-    add_vector_form_surf(new VectorFormSurfForce_0(non_zero_neumann_bnd, f0));
-    add_vector_form_surf(new VectorFormSurfForce_1(non_zero_neumann_bnd, f1));
-  };
+  // Residual.
+  add_multicomponent_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_00_11(
+				  Hermes::vector<unsigned int>(0, 1), lambda, mu));
+  add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_0_1(0, lambda, mu));
+  add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_0(1, lambda, mu));
 
-private:
-  class VectorFormSurfForce_0 : public WeakForm::VectorFormSurf
-  {
-  public:
-    VectorFormSurfForce_0(std::string marker, double f0) : WeakForm::VectorFormSurf(0, marker), f0(f0) {}
+  // Gravity loading.
+  add_vector_form(new WeakFormsH1::DefaultVectorFormVol(1, HERMES_ANY, new HermesFunction(-rho_g)));
 
-    template<typename Real, typename Scalar>
-    Scalar vector_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
-      return f0 * int_v<Real, Scalar>(n, wt, v);
-    }
+  // External forces.
+  add_multicomponent_vector_form_surf(new WeakFormsH1::DefaultMultiComponentVectorFormSurf(
+                                      Hermes::vector<unsigned int>(0, 1), surface_force_bdy, 
+                                      Hermes::vector<double>(-f0, -f1)));
+#else 
+  // SINGLE-COMPONENT FORMS. USEFUL FOR MULTIMESH, DO NOT REMOVE.
+  // Jacobian.
+  add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_0_0(0, 0, lambda, mu));
+  add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_0_1(0, 1, lambda, mu));
+  add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_1_1(1, 1, lambda, mu));
 
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
-      return vector_form<scalar, scalar>(n, wt, u_ext, v, e, ext);
-    }
+  // Residual - first equation.
+  add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_0_0(0, HERMES_ANY, lambda, mu));
+  add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_0_1(0, HERMES_ANY, lambda, mu));
+  // Surface force (first component).
+  add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(0, surface_force_bdy, new HermesFunction(-f0))); 
 
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
-      return vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext);
-    }
-
-    // Member.
-    double f0;
-  };
-
-  class VectorFormSurfForce_1 : public WeakForm::VectorFormSurf
-  {
-  public:
-    VectorFormSurfForce_1(std::string marker, double f1) : WeakForm::VectorFormSurf(1, marker), f1(f1) {}
-
-    template<typename Real, typename Scalar>
-    Scalar vector_form(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext) const {
-      return f1 * int_v<Real, Scalar>(n, wt, v);
-    }
-
-    virtual scalar value(int n, double *wt, Func<scalar> *u_ext[], Func<double> *v, Geom<double> *e, ExtData<scalar> *ext) const {
-      return vector_form<scalar, scalar>(n, wt, u_ext, v, e, ext);
-    }
-
-    virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext) const {
-      return vector_form<Ord, Ord>(n, wt, u_ext, v, e, ext);
-    }
-
-    // Member.
-    double f1;
-  };
-};
+  // Residual - second equation.
+  add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_0(1, HERMES_ANY, lambda, mu));
+  add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_1(1, HERMES_ANY, lambda, mu));
+  // Gravity loading in the second vector component.
+  add_vector_form(new WeakFormsH1::DefaultVectorFormVol(1, HERMES_ANY, new HermesFunction(-rho_g)));
+  // Surface force (second component).
+  add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(1, surface_force_bdy, new HermesFunction(-f1))); 
+#endif
+}

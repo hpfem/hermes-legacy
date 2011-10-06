@@ -1,6 +1,4 @@
-#define HERMES_REPORT_WARN
-#define HERMES_REPORT_INFO
-#define HERMES_REPORT_VERBOSE
+#define HERMES_REPORT_ALL
 #define HERMES_REPORT_FILE "application.log"
 #include "hermes2d.h"
 
@@ -59,7 +57,7 @@ MatrixSolverType matrix_solver = SOLVER_UMFPACK;  // Possibilities: SOLVER_AMESO
                                                   // SOLVER_PETSC, SOLVER_SUPERLU, SOLVER_UMFPACK.
 
 // Boundary markers.
-const std::string BDY_RIGHT = "1", BDY_TOP = "2";
+const std::string BDY_RIGHT = "Bdy_right", BDY_TOP = "Bdy_top";
 
 // Problem parameters.
 const double E  = 200e9;                          // Young modulus for steel: 200 GPa.
@@ -70,7 +68,7 @@ const double f0  = 0;                             // Surface force in x-directio
 const double f1  = 1e3;                           // Surface force in y-direction.
 
 // Weak forms.
-#include "definitions.cpp"
+#include "definitions.h"
 
 int main(int argc, char* argv[])
 {
@@ -91,6 +89,10 @@ int main(int argc, char* argv[])
   // This also initializes the multimesh hp-FEM.
   u2_mesh.copy(&u1_mesh);
 
+  // Show mesh.
+  MeshView mv("Mesh", new WinGeom(0, 0, 580, 400));
+  mv.show(&u1_mesh);
+
   // Initialize boundary conditions.
   DefaultEssentialBCConst zero_disp(BDY_RIGHT, 0.0);
   EssentialBCs bcs(&zero_disp);
@@ -98,15 +100,14 @@ int main(int argc, char* argv[])
   // Create x- and y- displacement space using the default H1 shapeset.
   H1Space u1_space(&u1_mesh, &bcs, P_INIT);
   H1Space u2_space(&u2_mesh, &bcs, P_INIT);
-  info("ndof = %d.", Space::get_num_dofs(Hermes::vector<Space *>(&u1_space, &u2_space)));
+  int ndof = Space::get_num_dofs(Hermes::vector<Space *>(&u1_space, &u2_space));
+  info("ndof = %d", ndof);
 
   // Initialize the weak formulation.
-  // NOTE; These weak forms are identical to those in example P01-linear/08-system.
-  CustomWeakForm wf(E, nu, rho*g1, BDY_TOP, f0, f1);
+  CustomWeakFormLinearElasticity wf(E, nu, rho*g1, BDY_TOP, f0, f1);
 
   // Initialize the FE problem.
-  bool is_linear = true;
-  DiscreteProblem dp(&wf, Hermes::vector<Space *>(&u1_space, &u2_space), is_linear);
+  DiscreteProblem dp(&wf, Hermes::vector<Space *>(&u1_space, &u2_space));
 
   // Initialize coarse and reference mesh solutions.
   Solution u1_sln, u2_sln, u1_ref_sln, u2_ref_sln;
@@ -143,8 +144,7 @@ int main(int argc, char* argv[])
 
     // Assemble the reference problem.
     info("Solving on reference mesh.");
-    bool is_linear = true;
-    DiscreteProblem* dp = new DiscreteProblem(&wf, *ref_spaces, is_linear);
+    DiscreteProblem* dp = new DiscreteProblem(&wf, *ref_spaces);
     dp->assemble(matrix, rhs);
 
     // Time measurement.
