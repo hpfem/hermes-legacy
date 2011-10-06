@@ -1,38 +1,43 @@
-template<typename Real, typename Scalar>
-Scalar bilinear_form_0_0(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return (lambda + 2*mu) * int_dudx_dvdx<Real, Scalar>(n, wt, u, v) +
-                      mu * int_dudy_dvdy<Real, Scalar>(n, wt, u, v);
-}
+#include "definitions.h"
 
-template<typename Real, typename Scalar>
-Scalar bilinear_form_0_1(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
+CustomWeakFormLinearElasticity::CustomWeakFormLinearElasticity(double E, double nu, double rho_g) : WeakForm(2)
 {
-  return lambda * int_dudy_dvdx<Real, Scalar>(n, wt, u, v) +
-             mu * int_dudx_dvdy<Real, Scalar>(n, wt, u, v);
-}
+  double lambda = (E * nu) / ((1 + nu) * (1 - 2*nu));
+  double mu = E / (2*(1 + nu));
+       
+#ifdef USE_MULTICOMPONENT_FORMS
+  // Jacobian matrix.
+  // There is one multi-component and one single-component form since we want to exploit symmetry of the forms.
+  add_multicomponent_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_00_11(
+        Hermes::vector<std::pair<unsigned int, unsigned int> >(make_pair(0, 0), make_pair(1, 1)), 
+        HERMES_ANY, lambda, mu));
+  add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_0_1(0, 1, lambda, mu));
 
-template<typename Real, typename Scalar>
-Scalar bilinear_form_1_0(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return     mu * int_dudy_dvdx<Real, Scalar>(n, wt, u, v) +
-         lambda * int_dudx_dvdy<Real, Scalar>(n, wt, u, v);
-}
+  // Residual.
+  add_multicomponent_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_00_11(
+				  Hermes::vector<unsigned int>(0, 1), lambda, mu));
+  add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_0_1(0, lambda, mu));
+  add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_0(1, lambda, mu));
 
-template<typename Real, typename Scalar>
-Scalar bilinear_form_1_1(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *u, Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return              mu * int_dudx_dvdx<Real, Scalar>(n, wt, u, v) +
-         (lambda + 2*mu) * int_dudy_dvdy<Real, Scalar>(n, wt, u, v);
-}
+  // Gravity loading.
+  add_vector_form(new WeakFormsH1::DefaultVectorFormVol(1, HERMES_ANY, new HermesFunction(-rho_g)));
 
-template<typename Real, typename Scalar>
-Scalar linear_form_surf_1(int n, double *wt, Func<Scalar> *u_ext[], Func<Real> *v, Geom<Real> *e, ExtData<Scalar> *ext)
-{
-  return -f * int_v<Real, Scalar>(n, wt, v);
-}
+#else 
+  // SINGLE-COMPONENT FORMS. USEFUL FOR MULTIMESH, DO NOT REMOVE.
+  // Jacobian.
+  add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_0_0(0, 0, lambda, mu));
+  add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_0_1(0, 1, lambda, mu));
+  add_matrix_form(new WeakFormsElasticity::DefaultJacobianElasticity_1_1(1, 1, lambda, mu));
 
-Ord linear_form_surf_1_ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *v, Geom<Ord> *e, ExtData<Ord> *ext)
-{
-  return Ord(30);
+  // Residual - first equation.
+  add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_0_0(0, HERMES_ANY, lambda, mu));
+  add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_0_1(0, HERMES_ANY, lambda, mu));
+
+  // Residual - second equation.
+  add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_0(1, HERMES_ANY, lambda, mu));
+  add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_1(1, HERMES_ANY, lambda, mu));
+  // Gravity loading in the second vector component.
+  add_vector_form(new WeakFormsH1::DefaultVectorFormVol(1, HERMES_ANY, new HermesFunction(-rho_g)));
+
+#endif
 }
