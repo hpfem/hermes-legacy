@@ -22,8 +22,8 @@ using Hermes::EigenSolver;
 //  The following parameters can be changed:
 
 // Select one of the mesh files below.
-//const char* mesh_file = "domain_hole_trias.mesh";              // Square domain with a hole -trias (non-symmetric).
-const char* mesh_file = "domain_hole_quads.mesh";            // Square domain with a hole - quads (symmetric).
+const char* mesh_file = "domain_hole_trias.mesh";              // Square domain with a hole -trias (non-symmetric).
+//const char* mesh_file = "domain_hole_quads.mesh";            // Square domain with a hole - quads (symmetric).
 //const char* mesh_file = "domain_square_quad_1_sym.mesh";     // Square domain with one single element (symmetric).
 //const char* mesh_file = "domain_square_quad_2_sym.mesh";     // Square domain with four quad elements (symmetric).
 //const char* mesh_file = "domain_lshape_quad_sym.mesh";       // L-Shape domain with quadrilateral mesh (symmetric). 
@@ -48,7 +48,7 @@ const int STRATEGY = 0;                           // Adaptive strategy:
                                                   // STRATEGY = 2 ... refine all elements whose error is larger
                                                   //   than THRESHOLD.
                                                   // More adaptive strategies can be created in adapt_ortho_h1.cpp.
-const CandList CAND_LIST = H2D_HP_ANISO;          // Predefined list of element refinement candidates. Possible values are
+const CandList CAND_LIST = H2D_HP_ISO;          // Predefined list of element refinement candidates. Possible values are
                                                   // H2D_P_ISO, H2D_P_ANISO, H2D_H_ISO, H2D_H_ANISO, H2D_HP_ISO, H2D_HP_ANISO_H
                                                   // H2D_HP_ANISO_P, H2D_HP_ANISO. See User Documentation for details.
 const int MESH_REGULARITY = -1;                   // Maximum allowed level of hanging nodes:
