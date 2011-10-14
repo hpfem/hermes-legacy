@@ -26,7 +26,7 @@ CustomWeakFormLinearElasticity::CustomWeakFormLinearElasticity(double E, double 
   // External forces.
   add_multicomponent_vector_form_surf(new WeakFormsH1::DefaultMultiComponentVectorFormSurf(
                                       Hermes::vector<unsigned int>(0, 1), surface_force_bdy, 
-                                      Hermes::vector<double>(-f0, -f1)));
+                                      Hermes::vector<double>(f0, f1)));
 #else 
   // SINGLE-COMPONENT FORMS. USEFUL FOR MULTIMESH, DO NOT REMOVE.
   // Jacobian.
@@ -38,7 +38,7 @@ CustomWeakFormLinearElasticity::CustomWeakFormLinearElasticity(double E, double 
   add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_0_0(0, HERMES_ANY, lambda, mu));
   add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_0_1(0, HERMES_ANY, lambda, mu));
   // Surface force (first component).
-  add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(0, surface_force_bdy, new HermesFunction(-f0))); 
+  add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(0, surface_force_bdy, new HermesFunction(f0))); 
 
   // Residual - second equation.
   add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_0(1, HERMES_ANY, lambda, mu));
@@ -46,6 +46,6 @@ CustomWeakFormLinearElasticity::CustomWeakFormLinearElasticity(double E, double 
   // Gravity loading in the second vector component.
   add_vector_form(new WeakFormsH1::DefaultVectorFormVol(1, HERMES_ANY, new HermesFunction(-rho_g)));
   // Surface force (second component).
-  add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(1, surface_force_bdy, new HermesFunction(-f1))); 
+  add_vector_form_surf(new WeakFormsH1::DefaultVectorFormSurf(1, surface_force_bdy, new HermesFunction(f1))); 
 #endif
 }

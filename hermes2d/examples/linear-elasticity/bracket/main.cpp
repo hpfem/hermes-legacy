@@ -65,7 +65,7 @@ const double nu = 0.3;                            // Poisson ratio.
 const double rho = 8000.0;                        // Density.
 const double g1 = -9.81;                          // Gravitational acceleration.
 const double f0  = 0;                             // Surface force in x-direction.
-const double f1  = 1e3;                           // Surface force in y-direction.
+const double f1  = -1e3;                          // Surface force in y-direction.
 
 // Weak forms.
 #include "definitions.h"
