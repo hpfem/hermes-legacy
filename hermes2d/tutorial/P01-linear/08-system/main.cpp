@@ -18,7 +18,7 @@
 // The following parameters can be changed:
 
 const int P_INIT = 6;                                      // Initial polynomial degree of all elements.
-const double NEWTON_TOL = 1e-8;                            // Stopping criterion for the Newton's method.
+const double NEWTON_TOL = 1e-7;                            // Stopping criterion for the Newton's method.
 const int NEWTON_MAX_ITER = 100;                           // Maximum allowed number of Newton iterations.
 
 MatrixSolverType matrix_solver = SOLVER_UMFPACK;           // Possibilities: SOLVER_AMESOS, SOLVER_AZTECOO, SOLVER_MUMPS,

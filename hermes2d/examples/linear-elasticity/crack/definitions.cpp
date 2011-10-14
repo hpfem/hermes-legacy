@@ -20,7 +20,7 @@ CustomWeakFormLinearElasticity::CustomWeakFormLinearElasticity(double E, double 
   add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_0(1, lambda, mu));
 
   // Gravity loading.
-  add_vector_form(new WeakFormsH1::DefaultVectorFormVol(1, HERMES_ANY, new HermesFunction(-rho_g)));
+  add_vector_form(new WeakFormsH1::DefaultVectorFormVol(1, HERMES_ANY, new HermesFunction(rho_g)));
 
 #else 
   // SINGLE-COMPONENT FORMS. USEFUL FOR MULTIMESH, DO NOT REMOVE.
@@ -37,7 +37,7 @@ CustomWeakFormLinearElasticity::CustomWeakFormLinearElasticity(double E, double 
   add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_0(1, HERMES_ANY, lambda, mu));
   add_vector_form(new WeakFormsElasticity::DefaultResidualElasticity_1_1(1, HERMES_ANY, lambda, mu));
   // Gravity loading in the second vector component.
-  add_vector_form(new WeakFormsH1::DefaultVectorFormVol(1, HERMES_ANY, new HermesFunction(-rho_g)));
+  add_vector_form(new WeakFormsH1::DefaultVectorFormVol(1, HERMES_ANY, new HermesFunction(rho_g)));
 
 #endif
 }
