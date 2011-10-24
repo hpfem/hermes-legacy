@@ -156,7 +156,7 @@ Solution and temporal error at t = 0.797 s:
 
 .. figure:: 08-transient-time-only/Screenshot-4.png
    :align: center
-   :scale: 50%
+   :scale: 70%
    :figclass: align-center
    :alt: Sample screenshot
 
