@@ -329,7 +329,7 @@ Sample temperature distribution is shown below:
 
 .. figure:: 01-implicit-euler/vitus1.png
    :align: center
-   :scale: 50% 
+   :scale: 40% 
    :figclass: align-center
    :alt: sample result
 

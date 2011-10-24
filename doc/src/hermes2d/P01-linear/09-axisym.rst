@@ -171,7 +171,7 @@ below. We start with the stationary temperature distribution:
 
 .. figure:: 09-axisym/solution.png
    :align: center
-   :scale: 50% 
+   :scale: 60% 
    :figclass: align-center
    :alt: Temperature.
 
@@ -179,7 +179,7 @@ and the following figure shows the temperature gradient:
 
 .. figure:: 09-axisym/gradient.png
    :align: center
-   :scale: 50% 
+   :scale: 60% 
    :figclass: align-center
    :alt: Temperature gradient.
 

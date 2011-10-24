@@ -22,7 +22,7 @@ the midpoint of the left side. It is filled with air:
 
 .. figure:: benchmark-screen/domain.png
    :align: center
-   :scale: 60% 
+   :scale: 45% 
    :figclass: align-center
    :alt: Computational domain.
 
