@@ -44,14 +44,6 @@ Find more about :ref:`ref-usage-mumps`.
 Using the special Hermes/Femhub package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. popup:: '#'
-   ../../../_static/clapper.png
-
-
-.. only:: latex
-
-    `Tutorial Video <http://hpfem.org/hermes/doc/src/installation/matrix_solvers/videos.html#>`_. 
-
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory:
 
