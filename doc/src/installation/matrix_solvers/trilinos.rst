@@ -32,9 +32,6 @@ Find more about :ref:`ref-usage-trilinos`.
 Using the special Hermes/Femhub package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. popup:: '#trilinos-matrix-solver'
-   ../../../_static/clapper.png
-
 Download the software package from the `solvers repository`_ and unpack 
 it in some temporary directory:
 
